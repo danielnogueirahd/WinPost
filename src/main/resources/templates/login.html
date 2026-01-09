@@ -1,70 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - WinPost</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="/css/estilo.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - WinPost</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet" href="/css/estilo.css">
 </head>
 
 <body class="login-body">
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-12 login-container">
-                <div class="row h-100">
-                    
-                    <div class="col-lg-6 login-image-section d-none d-lg-flex">
-                        <p class="text-muted mb-1 text-uppercase small fw-bold">WINPOST</p>
-                        <h1 class="mb-3">Bem vindo de volta</h1>
-                        <p class="text-muted mb-4 px-4">
-                            Acesse o painel administrativo do WinPost para gerenciar contatos e visualizar relatórios.
-                        </p>
-                        <img src="https://input.com.vc/wp-content/uploads/2023/08/logo-IG.png" alt=" Login Image" class="img-fluid">
-                    </div>
-
-                    <div class="col-lg-6 login-form-section">
-                        <h3 class="mb-4 fw-bold">Login</h3>
-
-                        <div th:if="${param.error}" class="alert alert-danger text-center py-2" role="alert">
-                            <i class="fa-solid fa-circle-exclamation me-1"></i> Usuário ou senha inválidos.
-                        </div>
-                        <div th:if="${param.logout}" class="alert alert-info text-center py-2" role="alert">
-                            <i class="fa-solid fa-circle-info me-1"></i> Você saiu do sistema.
-                        </div>
-
-                        <form th:action="@{/login}" method="post">
-                            <div class="mb-3">
-                                <label for="username" class="form-label fw-bold text-secondary small">USERNAME*</label>
-                                <input type="text" class="form-control" id="username" name="username" placeholder="Digite seu usuário" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="password" class="form-label fw-bold text-secondary small">PASSWORD*</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Digite sua senha" required>
-                            </div>
-                            
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
-                                <label class="form-check-label text-muted small" for="remember-me">Lembrar-me</label>
-                            </div>
-
-                            <button type="submit" class="btn btn-custom">Conecte-se</button>
-
-                            <div class="links-uteis">
-                                <a href="#">Esqueceu a senha?</a>
-                                <a href="#">Não tem uma conta? Cadastre-se</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+    <div class="login-container">
+        
+        <div class="login-image-section d-none d-md-block">
+            <img src="/img/winpost-login.png" alt="Fundo" class="login-bg-img">
+            
+            <div class="login-content-overlay">
+                <p class="text-uppercase small fw-bold mb-2">WINPOST</p>
+                <h2 class="mb-3 fw-bold">Bem vindo</h2>
+                <p class="small opacity-75">
+                    Gerencie seus contatos e relatórios em um único lugar.
+                </p>
             </div>
         </div>
+
+        <div class="login-form-section">
+            <div class="form-wrapper">
+                <h3 class="mb-4 fw-bold text-dark">Login</h3>
+
+                <div th:if="${param.error}" class="alert alert-danger py-2 small text-center mb-3">
+                    Usuário ou senha inválidos.
+                </div>
+                <div th:if="${param.logout}" class="alert alert-info py-2 small text-center mb-3">
+                    Você saiu do sistema.
+                </div>
+
+                <form th:action="@{/login}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">USUÁRIO</label>
+                        <input type="text" class="form-control" name="username" placeholder="Seu usuário" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">SENHA</label>
+                        <input type="password" class="form-control" name="password" placeholder="Sua senha" required>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
+                        <label class="form-check-label small text-muted" for="remember-me">Lembrar-me</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-custom">ENTRAR</button>
+
+                    <div class="links-uteis">
+                        <a href="#">Esqueceu a senha?</a>
+                        <a href="#">Cadastre-se</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 
 </body>
