@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Novo Contato | WinPost</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/estilo.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="sidebarMenu"
+        aria-labelledby="sidebarMenuLabel" style="width: 280px;">
+
+        <div class="offcanvas-header sidebar-header">
+            <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel">
+                <i class="fa-solid fa-layer-group me-2"></i> Navegação
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                
+                <a href="/administrativo" class="list-group-item list-group-item-action sidebar-item">
+                    <i class="fa-solid fa-house me-2"></i> Dashboard
+                </a>
+
+                <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                    style="cursor: pointer;" onclick="toggleMenu('menu-anotacoes', 'icon-anotacoes')">
+                    <span><i class="fa-solid fa-gears me-2"></i> Funcionalidades</span>
+                    <i id="icon-anotacoes" class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div id="menu-anotacoes" class="d-none submenu-container">
+                    <a href="#" class="submenu-link">Anotações Gerais</a>
+                </div>
+
+                <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                    style="cursor: pointer;" onclick="toggleMenu('menu-cadastros', 'icon-cadastros')">
+                    <span><i class="fa-solid fa-user-plus me-2"></i> Cadastros</span>
+                    <i id="icon-cadastros" class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div id="menu-cadastros" class="d-none submenu-container">
+                    <a href="/cadastroContatos" class="submenu-link fw-bold text-primary">Novo Contato</a>
+                </div>
+
+                <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                    style="cursor: pointer;" onclick="toggleMenu('menu-consultas', 'icon-consultas')">
+                    <span><i class="fa-solid fa-list me-2"></i> Consultas</span>
+                    <i id="icon-consultas" class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div id="menu-consultas" class="d-none submenu-container">
+                    <a href="/listarContatos" class="submenu-link">Listar Contatos</a>
+                </div>
+
+            </div>
+            
+            <div class="mt-auto p-4 text-center text-muted small" style="opacity: 0.7;">
+                <hr>
+                <p class="mb-0">Sistema WinPost v1.0</p>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow-1">
+        
+        <div style="margin-top: 80px;"></div>
+
+        <div class="container py-4 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
+                            <h4 class="fw-bold text-dark mb-0 d-inline-block">
+                                <i class="fa-solid fa-user-plus text-primary me-2"></i>Novo Contato
+                            </h4>
+                        </div>
+
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 small bg-white p-2 rounded shadow-sm">
+                                <li class="breadcrumb-item"><a href="/administrativo" class="text-decoration-none">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/listarContatos" class="text-decoration-none">Contatos</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Cadastro</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/salvarContato" th:object="${contato}" method="post">
+                <div class="container">
+                    <div class="row mb-3 ">
+                        <div class="col-12 text-center">
+                            <h4 class="fw-bold text-secondary">
+                                Preencha com seus dados abaixo para <span class="text-primary">CADASTRAR</span> seu contato!
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="card card-modern mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0 fw-bold text-primary">
+                                        <i class="fa-regular fa-id-card me-2"></i>Dados Pessoais
+                                    </h6>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row g-3">
+                                        <div class="col-md-2 d-none">
+                                            <input type="text" readonly class="form-control" id="id" th:field="*{id}">
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <label for="nome" class="form-label-modern">Nome Completo *</label> 
+                                            <input type="text" class="form-control form-control-lg fs-6" id="nome" th:field="*{nome}" maxlength="50" placeholder="Ex: João da Silva" th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+                                        </div>
+
+                                        <div class="col-md-5">
+                                            <label for="email" class="form-label-modern">E-mail *</label>
+                                            <input type="email" class="form-control" id="email" th:field="*{email}" maxlength="255" placeholder="exemplo@email.com" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="telefone" class="form-label-modern">Telefone *</label> 
+                                            <input type="text" class="form-control" id="telefone" th:field="*{telefone}" placeholder="(00) 00000-0000" th:classappend="${#fields.hasErrors('telefone')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label-modern">Data Cadastro</label> 
+                                            <input type="date" class="form-control bg-light" th:field="*{dataCadastro}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card card-modern mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0 fw-bold text-primary">
+                                        <i class="fa-solid fa-map-location-dot me-2"></i>Endereço
+                                    </h6>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="cep" class="form-label-modern">CEP *</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="cep" th:field="*{cep}" placeholder="00000-000" onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}" th:classappend="${#fields.hasErrors('cep')} ? 'is-invalid'">
+                                                <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cep')}" th:errors="*{cep}"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-7">
+                                            <label for="rua" class="form-label-modern">Rua *</label> 
+                                            <input type="text" class="form-control" id="rua" th:field="*{rua}" maxlength="150" th:classappend="${#fields.hasErrors('rua')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('rua')}" th:errors="*{rua}"></div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label for="numero" class="form-label-modern">Número *</label> 
+                                            <input type="number" class="form-control" id="numero" th:field="*{numero}" th:classappend="${#fields.hasErrors('numero')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="complemento" class="form-label-modern">Complemento</label>
+                                            <input type="text" class="form-control" id="complemento" th:field="*{complemento}" placeholder="Apto, Bloco, etc.">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="bairro" class="form-label-modern">Bairro *</label> 
+                                            <input type="text" class="form-control" id="bairro" th:field="*{bairro}" maxlength="100" th:classappend="${#fields.hasErrors('bairro')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('bairro')}" th:errors="*{bairro}"></div>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <label for="cidade" class="form-label-modern">Cidade *</label> 
+                                            <input type="text" class="form-control" id="cidade" th:field="*{cidade}" maxlength="100" th:classappend="${#fields.hasErrors('cidade')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}"></div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="estado" class="form-label-modern">Estado *</label> 
+                                            <select class="form-select" id="estado" th:field="*{estado}" th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid'">
+                                                <option value="">Selecione...</option>
+                                                <option th:each="uf : ${listaEstados}" th:value="${uf}" th:text="${uf}"></option>
+                                            </select>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <div class="alert alert-info shadow-sm border-0 h-100 d-flex flex-column justify-content-center mb-0" role="alert" style="background-color: #e7f1ff; border-left: 4px solid #0dcaf0 !important;">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="fa-solid fa-circle-info fs-5 me-2 text-info"></i>
+                                            <h6 class="fw-bold mb-0 text-dark">Busca Automática</h6>
+                                        </div>
+                                        <p class="small mb-0 text-muted ps-4">Ao digitar o CEP, o endereço será preenchido automaticamente.</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body d-flex flex-column justify-content-center p-3">
+                                            <div class="d-grid gap-2">
+                                                <button type="submit" class="btn btn-primary fw-bold btn-modern" title="Salvar">
+                                                    <i class="fa-solid fa-floppy-disk me-2"></i> Salvar Registro
+                                                </button>
+                                                <div class="d-flex gap-2">
+                                                    <a href="/listarContatos" class="btn btn-outline-secondary w-100 btn-modern" title="Lista">
+                                                        <i class="fa-solid fa-list me-1"></i> Lista
+                                                    </a>
+                                                    <a href="/administrativo" class="btn btn-outline-danger w-100 btn-modern" title="Voltar">
+                                                        <i class="fa-solid fa-share me-1"></i> Voltar
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/viacep.js}"></script>
+
+    <script>
+        function toggleMenu(menuId, iconId) {
+            var menu = document.getElementById(menuId);
+            var icon = document.getElementById(iconId);
+
+            if (menu.classList.contains('d-none')) {
+                menu.classList.remove('d-none');
+                if (icon) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            } else {
+                menu.classList.add('d-none');
+                if (icon) {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

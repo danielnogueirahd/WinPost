@@ -1,0 +1,396 @@
+/* ==========================================================================
+   1. GLOBAIS & RESET
+   ========================================================================== */
+body {
+    background: linear-gradient(180deg, #e3f2fd 0%, #ffffff 100%) no-repeat !important;
+    background-attachment: fixed;
+    min-height: 100vh;
+
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ==========================================================================
+   2. ESTRUTURA DE LAYOUT (SIDEBAR)
+   ========================================================================== */
+#wrapper {
+    overflow-x: hidden;
+    flex: 1;
+    display: flex;
+}
+
+#sidebar-wrapper {
+    min-height: 100%;
+    margin-left: -15rem;
+    width: 15rem;
+    transition: margin 0.25s ease-out;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    flex: 1;
+    transition: all 0.25s ease-out;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+}
+
+.sidebar-link {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.sidebar-link:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+}
+
+/* ==========================================================================
+   3. COMPONENTES: CARDS
+   ========================================================================== */
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-modern {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.card-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+.card-modern .card-body {
+    padding: 2rem;
+}
+
+/* Headers de Card */
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: bold;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.card-modern .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #f8f9fa;
+    padding: 1.5rem 2rem 1rem;
+}
+
+.card-header-custom {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    border-left: 4px solid #0d6efd;
+}
+
+/* KPIs */
+.card-kpi {
+    border: none;
+    border-radius: 10px;
+    color: white;
+}
+
+.icon-kpi {
+    font-size: 3rem;
+    opacity: 0.3;
+}
+
+/* ==========================================================================
+   4. COMPONENTES: FORMULÁRIOS & INPUTS
+   ========================================================================== */
+.form-control, 
+.form-select {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, 
+.form-select:focus {
+    background-color: #fff;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #eee;
+    color: #6c757d;
+}
+
+/* Labels */
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.2rem;
+}
+
+.form-label-modern {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+/* ==========================================================================
+   5. COMPONENTES: BOTÕES & ALERTS
+   ========================================================================== */
+.btn-modern {
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: none;
+}
+
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.btn-primary.btn-modern {
+    background-color: #0d6efd;
+}
+
+.alert-modern {
+    border-radius: 15px;
+    border: none;
+    background-color: #e7f1ff;
+    color: #084298;
+}
+
+/* ==========================================================================
+   6. COMPONENTES: LISTAS & GRUPOS
+   ========================================================================== */
+.list-group > div > .list-group-item {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0;
+}
+
+.list-group-item.bg-light.fw-bold {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.list-group-item { 
+    border: none; 
+    padding: 20px 30px; 
+}
+
+.list-group-item.active { 
+    background-color: transparent; 
+    color: #0d6efd; 
+    font-weight: bold; 
+    border-left: 4px solid #0d6efd; 
+}
+
+/* ==========================================================================
+   7. PÁGINA: LOGIN
+   ========================================================================== */
+.login-body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.login-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    max-width: 900px;
+    width: 100%;
+    min-height: 550px;
+}
+
+.login-image-section {
+    background-color: #ffffff;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-right: 1px solid #f0f0f0;
+}
+
+.login-image-section h1 {
+    font-weight: 700;
+    color: #333;
+}
+
+.login-image-section img {
+    margin-top: 20px;
+    max-width: 80%;
+    height: auto;
+    animation: float 6s ease-in-out infinite;
+}
+
+.login-form-section {
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.btn-custom {
+    background-color: #2b52c0;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: all 0.3s;
+}
+
+.btn-custom:hover {
+    background-color: #1f3b8c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(43, 82, 192, 0.3);
+}
+
+.links-uteis {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.links-uteis a {
+    text-decoration: none;
+    color: #6c757d;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.links-uteis a:hover {
+    color: #2b52c0;
+}
+
+/* ==========================================================================
+   8. ANIMAÇÕES E RESPONSIVIDADE
+   ========================================================================== */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .login-image-section {
+        border-right: none;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 30px;
+    }
+    .login-form-section {
+        padding: 30px;
+    }
+}
+
+/* ==========================================================================
+   ATUALIZAÇÃO DO MENU LATERAL (SIDEBAR)
+   ========================================================================== */
+
+/* Remove a borda padrão e ajusta o fundo */
+.offcanvas {
+    border-right: none;
+    box-shadow: 0 0 30px rgba(0,0,0,0.1) !important;
+}
+
+/* Cabeçalho do Menu com Gradiente */
+.sidebar-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    padding: 1.5rem;
+    color: white;
+}
+
+/* Itens do Menu (Links e Triggers) */
+.sidebar-item {
+    border: none !important; /* Remove bordas */
+    color: #555;
+    font-weight: 500;
+    padding: 15px 25px;
+    transition: all 0.3s ease; /* Animação suave */
+    background-color: transparent;
+    border-left: 4px solid transparent !important; /* Prepara a borda lateral */
+}
+
+/* Efeito Hover (Mouse em cima) */
+.sidebar-item:hover, 
+.sidebar-item:focus {
+    background-color: #f8f9fa;
+    color: #0d6efd; /* Azul primário */
+    border-left: 4px solid #0d6efd !important; /* Borda azul na esquerda */
+    padding-left: 30px; /* Move levemente para a direita */
+}
+
+/* Ícones do Menu */
+.sidebar-item i {
+    width: 25px; /* Alinha os ícones verticalmente */
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-item:hover i {
+    transform: scale(1.2); /* Aumenta o ícone levemente */
+}
+
+/* Submenus (Itens filhos) */
+.submenu-container {
+    background-color: #f8f9fa; /* Fundo levemente cinza */
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.03); /* Sombra interna sutil */
+}
+
+.submenu-link {
+    padding-left: 60px !important; /* Indentação maior */
+    font-size: 0.9rem;
+    color: #666;
+    background-color: transparent;
+    border: none;
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.submenu-link:hover {
+    color: #0d6efd;
+    font-weight: 600;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Seta do Dropdown */
+.sidebar-item .fa-chevron-down,
+.sidebar-item .fa-chevron-up {
+    font-size: 0.75rem;
+    opacity: 0.6;
+}

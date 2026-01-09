@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista de Contatos | WinPost</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/2.3.6/css/dataTables.dataTables.css" />
+
+<style>
+/* Ajuste fino para tabelas com muitas colunas */
+.table-small-font {
+	font-size: 0.9rem;
+}
+
+.table-header-nowrap th {
+	white-space: nowrap;
+}
+</style>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    
+	<div class="offcanvas offcanvas-start bg-light" tabindex="-1"
+		id="sidebarMenu">
+		<div class="offcanvas-header bg-primary text-white">
+			<h5 class="offcanvas-title fw-bold">
+				<i class="fa-solid fa-layer-group me-2"></i> Navegação
+			</h5>
+			<button type="button" class="btn-close btn-close-white"
+				data-bs-dismiss="offcanvas"></button>
+		</div>
+		<div class="offcanvas-body p-0">
+			<div class="list-group list-group-flush">
+				<a href="/administrativo"
+					class="list-group-item list-group-item-action py-3 border-bottom">
+					<i class="fa-solid fa-house me-2 text-primary"></i> Dashboard
+				</a> <a href="/cadastroContatos"
+					class="list-group-item list-group-item-action py-3 border-bottom">
+					<i class="fa-solid fa-user-plus me-2 text-primary"></i> Novo
+					Contato
+				</a> <a href="/listarContatos"
+					class="list-group-item list-group-item-action py-3 border-bottom bg-light fw-bold">
+					<i class="fa-solid fa-list me-2 text-primary"></i> Listar Contatos
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<div style="margin-top: 80px;"></div>
+
+	<div class="container-fluid px-4 mt-4 mb-4">
+
+		<div th:if="${mensagemSucesso}"
+			class="alert alert-success alert-dismissible fade show shadow-sm border-start border-success border-4"
+			role="alert">
+			<div class="d-flex align-items-center">
+				<i class="fa-solid fa-circle-check fs-4 me-2"></i>
+				<div>
+					<strong class="d-block">Sucesso!</strong> <span
+						th:text="${mensagemSucesso}">Ação realizada.</span>
+				</div>
+			</div>
+			<button type="button" class="btn-close" data-bs-dismiss="alert"
+				aria-label="Close"></button>
+		</div>
+
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+
+				<h2 class="fw-bold text-primary">Gerenciar Contatos</h2>
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb mb-0 small">
+						<li class="breadcrumb-item"><a href="/administrativo">Home</a></li>
+						<li class="breadcrumb-item active">Listagem Completa</li>
+					</ol>
+				</nav>
+			</div>
+			<a href="/cadastroContatos" class="btn btn-primary fw-bold shadow-sm">
+				<i class="fa-solid fa-plus me-2"></i> Novo Contato
+			</a>
+		</div>
+
+		<div class="card shadow-sm border-0">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table
+						class="table table-hover align-middle table-small-font table-header-nowrap"
+						id="tabela">
+						<thead class="bg-light">
+							<tr>
+								<th>ID</th>
+								<th>Nome</th>
+								<th>Email</th>
+								<th>Telefone</th>
+
+								<th>CEP</th>
+								<th>Rua</th>
+								<th>Nº</th>
+								<th>Bairro</th>
+								<th>Cidade/UF</th>
+								<th>Compl.</th>
+
+								<th>Data</th>
+								<th class="text-end">Ações</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="contato : ${listaContatos}">
+								<td class="fw-bold text-muted" th:text="${contato.id}">1</td>
+
+								<td class="fw-bold text-dark text-nowrap"
+									th:text="${contato.nome}">Nome</td>
+								<td class="text-muted small" th:text="${contato.email}">email</td>
+								<td class="text-nowrap" th:text="${contato.telefone}">tel</td>
+
+								<td class="text-nowrap small" th:text="${contato.cep}">00000-000</td>
+								<td class="text-nowrap small" th:text="${contato.rua}">Rua
+									Exemplo</td>
+								<td class="text-center small" th:text="${contato.numero}">10</td>
+								<td class="text-nowrap small" th:text="${contato.bairro}">Centro</td>
+								<td><span
+									class="badge bg-light text-primary border border-primary border-opacity-25 shadow-sm rounded-pill px-3 py-1">
+										<i class="fa-solid fa-location-dot me-1 small"></i> <span
+										th:text="${contato.cidade}">Cidade</span> <span
+										class="small text-secondary" th:text="'/' + ${contato.estado}">/UF</span>
+								</span></td>
+								<td class="text-muted small text-truncate"
+									style="max-width: 100px;" th:text="${contato.complemento}"
+									title="Ver detalhes">Ap 10</td>
+
+								<td class="small text-nowrap"
+									th:text="${#temporals.format(contato.dataCadastro, 'dd/MM/yyyy')}"></td>
+
+								<td class="text-end text-nowrap">
+									<div class="btn-group">
+										<a th:href="@{/editarContatos/{id}(id=${contato.id})}"
+											class="btn btn-sm btn-outline-primary" title="Editar"> <i
+											class="fa-solid fa-pen-to-square"></i>
+										</a> <a th:href="@{/removerContatos/{id}(id=${contato.id})}"
+											class="btn btn-sm btn-outline-danger" title="Excluir"
+											onclick="return confirm('Tem certeza que deseja excluir?');">
+											<i class="fa-regular fa-trash-can"></i>
+										</a>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="mt-3">
+			<a href="/administrativo"
+				class="text-decoration-none text-secondary small"> <i
+				class="fa-solid fa-arrow-left me-1"></i> Voltar ao Dashboard
+			</a>
+		</div>
+	</div>
+
+
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.datatables.net/2.3.6/js/dataTables.js"></script>
+
+	<script>
+        $(document).ready(function () {
+            $('#tabela').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
+                },
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Não ordenar pelos botões
+                ]
+            });
+        });
+    </script>
+    <div class = "footer" th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/estilo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <title>WINPOST</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="sidebarMenu"
+    aria-labelledby="sidebarMenuLabel" style="width: 280px;">
+
+    <div class="offcanvas-header sidebar-header">
+        <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel">
+            <i class="fa-solid fa-layer-group me-2"></i> Navegação
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+            aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0">
+        <div class="list-group list-group-flush">
+            
+            <a href="/administrativo" class="list-group-item list-group-item-action sidebar-item">
+                <i class="fa-solid fa-house me-2"></i> Dashboard
+            </a>
+
+            <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                style="cursor: pointer;" onclick="toggleMenu('menu-anotacoes', 'icon-anotacoes')">
+                <span><i class="fa-solid fa-gears me-2"></i> Funcionalidades</span>
+                <i id="icon-anotacoes" class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div id="menu-anotacoes" class="d-none submenu-container">
+                <a href="#" class="submenu-link">Anotações Gerais</a>
+            </div>
+
+            <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                style="cursor: pointer;" onclick="toggleMenu('menu-cadastros', 'icon-cadastros')">
+                <span><i class="fa-solid fa-user-plus me-2"></i> Cadastros</span>
+                <i id="icon-cadastros" class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div id="menu-cadastros" class="d-none submenu-container">
+                <a href="/cadastroContatos" class="submenu-link">Novo Contato</a>
+            </div>
+
+            <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                style="cursor: pointer;" onclick="toggleMenu('menu-consultas', 'icon-consultas')">
+                <span><i class="fa-solid fa-list me-2"></i> Consultas</span>
+                <i id="icon-consultas" class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div id="menu-consultas" class="d-none submenu-container">
+                <a href="/listarContatos" class="submenu-link">Listar Contatos</a>
+            </div>
+
+        </div>
+        
+        <div class="mt-auto p-4 text-center text-muted small" style="opacity: 0.7;">
+            <hr>
+            <p class="mb-0">Sistema WinPost v1.0</p>
+        </div>
+    </div>
+</div>
+
+    <main class="flex-grow-1" id="wrapper">
+
+        <div style="margin-top: 80px;"></div>
+
+        <div class="container-fluid px-4">
+            <div class="row">
+                <div class="col-12">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-outline-primary me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
+                            <div>
+                                <h2 class="fw-bold text-primary mb-0">Dashboard</h2>
+                                <p class="text-muted mb-0">Visão geral do seu sistema.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRelatorio">
+                            <i class="fa-solid fa-print me-2"></i> Relatório
+                        </button>
+                    </div>
+
+                    <div class="row mb-4 g-3">
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 border-start border-4 border-primary h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-uppercase text-muted fw-bold mb-1">Total de Contatos</h6>
+                                            <h2 class="fw-bold mb-0" th:text="${totalContatos} ?: '0'">0</h2>
+                                        </div>
+                                        <div class="bg-primary text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fa-solid fa-users fs-5"></i>
+                                        </div>
+                                    </div>
+                                    <small class="text-success fw-bold mt-2 d-block"><i class="fa-solid fa-arrow-up"></i> Base ativa</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 border-start border-4 border-success h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-uppercase text-muted fw-bold mb-1">Novo Cadastro</h6>
+                                            <p class="text-muted small mb-0">Adicionar registro</p>
+                                        </div>
+                                        <div class="bg-success text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fa-solid fa-user-plus fs-5"></i>
+                                        </div>
+                                    </div>
+                                    <a href="/cadastroContatos" class="btn btn-sm btn-outline-success w-100 mt-3">Ir para Cadastro <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 border-start border-4 border-info h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-uppercase text-muted fw-bold mb-1">Status Sistema</h6>
+                                            <h5 class="fw-bold mb-0 text-success">Online</h5>
+                                        </div>
+                                        <div class="bg-info text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fa-solid fa-server fs-5"></i>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Versão 1.0.0</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-white py-3">
+                                    <h6 class="m-0 fw-bold text-primary"><i class="fa-solid fa-clock-rotate-left me-1"></i> Últimos Cadastrados</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th class="ps-3">Nome</th>
+                                                    <th>Email</th>
+                                                    <th>Data</th>
+                                                    <th class="text-end pe-3">Ação</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:if="${ultimosContatos == null or #lists.isEmpty(ultimosContatos)}">
+                                                    <td colspan="4" class="text-center py-4 text-muted">Nenhum contato recente encontrado.</td>
+                                                </tr>
+                                                <tr th:each="contato : ${ultimosContatos}">
+                                                    <td class="ps-3 fw-bold text-dark" th:text="${contato.nome}">Nome</td>
+                                                    <td class="text-muted small" th:text="${contato.email}">email@exemplo.com</td>
+                                                    <td>
+                                                        <span class="badge bg-light text-dark border" th:text="${#temporals.format(contato.dataCadastro, 'dd/MM/yyyy')}">01/01/2024</span>
+                                                    </td>
+                                                    <td class="text-end pe-3">
+                                                        <a th:href="@{/editarContatos/{id}(id=${contato.id})}" class="btn btn-sm btn-light text-primary"><i class="fa-solid fa-pen"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white text-center">
+                                    <a href="/listarContatos" class="text-decoration-none small fw-bold">Ver todos os contatos</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center p-3 mb-4" role="alert" style="background-color: #fff3cd; border-left: 4px solid #ffc107 !important;">
+                                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px;">
+                                    <i class="fa-regular fa-lightbulb fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-dark">Dica do Dia!</h6>
+                                    <p class="mb-0 small text-muted" style="line-height: 1.3;">Use a busca na listagem para filtrar contatos.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="card border-0 shadow-sm overflow-hidden text-white bg-primary" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+                                <div class="card-body p-4 position-relative z-1">
+                                    <h5 class="fw-bold mb-2">Turbine sua gestão</h5>
+                                    <p class="small mb-3 opacity-75">Novos relatórios em breve.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="modalRelatorio" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalLabel"><i class="fa-solid fa-filter me-2"></i>Filtrar Relatório</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/relatorio/pdf" method="get" target="_blank">
+                    <div class="modal-body">
+                        <div class="alert alert-light border shadow-sm small mb-3">Deixe em branco para todos os registros.</div>
+                        <div class="mb-3">
+                            <label for="filtroNome" class="form-label fw-bold small text-secondary">NOME</label>
+                            <input type="text" class="form-control" name="nome" id="filtroNome">
+                        </div>
+                        
+                        <div class="row g-2" th:if="${listaEstados != null}">
+                             <div class="col-md-8">
+                                <label for="filtroCidade" class="form-label fw-bold small text-secondary">CIDADE</label>
+                                <input type="text" class="form-control" name="cidade" id="filtroCidade">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="filtroEstado" class="form-label fw-bold small text-secondary">UF</label>
+                                <select class="form-select" name="estado" id="filtroEstado">
+                                    <option value="">Todas</option>
+                                    <option th:each="uf : ${listaEstados}" th:value="${uf.name()}" th:text="${uf.descricao} ?: ${uf.name()}"></option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="alert alert-danger small" th:if="${listaEstados == null}">
+                            Erro: Lista de estados não carregada.
+                        </div>
+
+                        <hr class="text-muted">
+                        <p class="small fw-bold text-secondary mb-2">PERÍODO</p>
+                        <div class="row g-2">
+                            <div class="col-6"><label class="form-label small text-muted">De:</label><input type="date" class="form-control" name="dataInicio"></div>
+                            <div class="col-6"><label class="form-label small text-muted">Até:</label><input type="date" class="form-control" name="dataFim"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-success fw-bold"><i class="fa-solid fa-file-pdf me-2"></i> Gerar PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        function toggleMenu(menuId, iconId) {
+            var menu = document.getElementById(menuId);
+            var icon = document.getElementById(iconId);
+
+            if (menu.classList.contains('d-none')) {
+                menu.classList.remove('d-none');
+                if (icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
+            } else {
+                menu.classList.add('d-none');
+                if (icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
+            }
+        }
+    </script>
+</body>
+</html>
