@@ -5,12 +5,11 @@ body {
     background: linear-gradient(180deg, #e3f2fd 0%, #ffffff 100%) no-repeat !important;
     background-attachment: fixed;
     min-height: 100vh;
-
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* ==========================================================================
-   2. ESTRUTURA DE LAYOUT (SIDEBAR)
+   2. ESTRUTURA DE LAYOUT (SIDEBAR ANTIGO/WRAPPER)
    ========================================================================== */
 #wrapper {
     overflow-x: hidden;
@@ -73,7 +72,6 @@ body {
     padding: 2rem;
 }
 
-/* Headers de Card */
 .card-header {
     background-color: transparent;
     border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -107,7 +105,7 @@ body {
 }
 
 /* ==========================================================================
-   4. COMPONENTES: FORMULÁRIOS & INPUTS
+   4. COMPONENTES: FORMULÁRIOS & INPUTS (CORRIGIDO)
    ========================================================================== */
 .form-control, 
 .form-select {
@@ -117,6 +115,30 @@ body {
     font-size: 0.95rem;
     background-color: #fff;
     transition: all 0.3s ease;
+}
+
+/* Ícones de Input Group (Lupa, User, etc) com a mesma altura do input */
+.input-group-text {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    background-color: #fff;
+    color: #6c757d;
+}
+
+/* Remove bordas arredondadas internas quando agrupado */
+.input-group > .form-control:not(:first-child), 
+.input-group > .form-select:not(:first-child),
+.input-group > .input-group-text:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.input-group > .form-control:not(:last-child), 
+.input-group > .form-select:not(:last-child), 
+.input-group > .input-group-text:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .form-control:focus, 
@@ -132,7 +154,6 @@ body {
     color: #6c757d;
 }
 
-/* Labels */
 .form-label {
     font-size: 0.85rem;
     font-weight: 500;
@@ -205,10 +226,8 @@ body {
 }
 
 /* ==========================================================================
-   LOGIN PERFEITO (VERSÃO AMPLIADA)
+   7. PÁGINA: LOGIN
    ========================================================================== */
-
-/* 1. Centraliza a caixa na tela inteira */
 .login-body {
     min-height: 100vh;
     width: 100%;
@@ -220,7 +239,6 @@ body {
     padding: 0;
 }
 
-/* 2. Container Principal do Login */
 .login-container {
     background: white;
     width: 100%;
@@ -233,7 +251,6 @@ body {
     position: relative;
 }
 
-/* 3. Lado Esquerdo (Imagem) - Exatamente 50% */
 .login-image-section {
     width: 50%;
     height: 100%;
@@ -250,7 +267,6 @@ body {
     opacity: 0.6; 
 }
 
-/* Texto sobre a imagem centralizado */
 .login-content-overlay {
     position: absolute;
     top: 0;
@@ -267,7 +283,6 @@ body {
     z-index: 2;
 }
 
-
 .login-form-section {
     width: 50%;
     height: 100%;
@@ -279,20 +294,11 @@ body {
     padding: 40px;
 }
 
-
 .form-wrapper {
     width: 100%;
     max-width: 380px; 
 }
 
-/* Estilos cosméticos (Botões e Inputs) */
-.form-control {
-    padding: 12px 15px; 
-    border-radius: 6px;
-    border: 1px solid #dee2e6;
-    margin-bottom: 10px; 
-    font-size: 1rem; 
-}
 .btn-custom {
     background-color: #2b52c0;
     color: white;
@@ -308,7 +314,7 @@ body {
 .links-uteis { margin-top: 25px; text-align: center; font-size: 0.9rem; }
 .links-uteis a { text-decoration: none; color: #666; display: block; margin-bottom: 5px; }
 
-/* Responsividade: Celular fica uma coluna só */
+/* Responsividade Login */
 @media (max-width: 992px) { 
     .login-container {
         flex-direction: column;
@@ -322,32 +328,17 @@ body {
     .login-image-section { height: 250px; } 
     .login-form-section { padding: 50px 20px; }
 }
-/* ==========================================================================
-   8. ANIMAÇÕES E RESPONSIVIDADE
-   ========================================================================== */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
 
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;
         min-height: auto;
     }
-    .login-image-section {
-        border-right: none;
-        border-bottom: 1px solid #f0f0f0;
-        padding: 30px;
-    }
-    .login-form-section {
-        padding: 30px;
-    }
 }
 
+
 /* ==========================================================================
-   ATUALIZAÇÃO DO MENU LATERAL (SIDEBAR)
+   ATUALIZAÇÃO DO MENU LATERAL (SIDEBAR) - VOLTOU AQUI!
    ========================================================================== */
 
 /* Remove a borda padrão e ajusta o fundo */

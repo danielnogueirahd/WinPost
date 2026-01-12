@@ -4,7 +4,7 @@
 
             <div class="d-flex align-items-center">
                 <a class="navbar-brand me-3" href="/administrativo">
-                    <img src="img/logoInput.png" alt="Input Logo" height="35"
+                    <img th:src="@{/img/logoInput.png}" src="/img/logoInput.png" alt="Input Logo" height="35"
                         class="d-inline-block align-text-top rounded px-1">
                 </a>
 
@@ -18,7 +18,6 @@
                 </button>
             </div>
 
-
             <div class="position-absolute top-50 start-50 translate-middle text-center pointer-events-none d-none d-md-block">
                 <div class="text-white"
                     style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase;">
@@ -27,10 +26,7 @@
             </div>
 
             <div class="d-flex align-items-center ms-auto">
-                <form class="d-none d-md-flex me-3">
-                    <input class="form-control form-control-sm" type="search"
-                        placeholder="Pesquisar..." aria-label="Search">
-                </form>
+                
 
                 <div class="vr text-white opacity-50 d-none d-lg-block"></div>
 
