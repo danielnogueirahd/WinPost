@@ -9,15 +9,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-// Imports de validação
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.EntityListeners;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.annotation.CreatedDate;
+
 
 @Entity
 @Table(name = "contatos")
+@EntityListeners(AuditingEntityListener.class) // <--- Adicione esta linha
 public class Contatos implements Serializable {
+
 	
 	private static final long serialVersionUID = 1L;
 
@@ -49,7 +54,7 @@ public class Contatos implements Serializable {
     private String rua;
 	
 	@NotNull(message = "O número é obrigatório")
-	private Integer numero; // <-- Mude de 'int' para 'Integer' para funcionar a validação de vazio
+	private Integer numero; 
 	
 	@Column(length = 100)
     @NotBlank(message = "O bairro é obrigatório")
@@ -68,7 +73,10 @@ public class Contatos implements Serializable {
 	// @NotBlank(message = "O complemento é obrigatório") 
 	private String complemento;
 	
-	private LocalDate dataCadastro;
+	@CreatedDate // 
+    @Column(updatable = false) // Opcional: Impede que a data mude se você editar o contato depois
+    private LocalDate dataCadastro;
+	
 
 	
 	public Long getId() {

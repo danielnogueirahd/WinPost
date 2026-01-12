@@ -2,7 +2,7 @@
    1. GLOBAIS & RESET
    ========================================================================== */
 body {
-    background: linear-gradient(180deg, #e3f2fd 0%, #ffffff 100%) no-repeat !important;
+    background: linear-gradient(180deg, rgb(198, 226, 255) 0%, #ffffff 100%) no-repeat !important;
     background-attachment: fixed;
     min-height: 100vh;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -356,43 +356,43 @@ body {
 
 /* Itens do Menu (Links e Triggers) */
 .sidebar-item {
-    border: none !important; /* Remove bordas */
+    border: none !important; 
     color: #555;
     font-weight: 500;
     padding: 15px 25px;
-    transition: all 0.3s ease; /* Animação suave */
+    transition: all 0.3s ease; 
     background-color: transparent;
-    border-left: 4px solid transparent !important; /* Prepara a borda lateral */
+    border-left: 4px solid transparent !important; 
 }
 
 /* Efeito Hover (Mouse em cima) */
 .sidebar-item:hover, 
 .sidebar-item:focus {
     background-color: #f8f9fa;
-    color: #0d6efd; /* Azul primário */
-    border-left: 4px solid #0d6efd !important; /* Borda azul na esquerda */
-    padding-left: 30px; /* Move levemente para a direita */
+    color: #0d6efd;
+    border-left: 4px solid #0d6efd !important; 
+    padding-left: 30px; 
 }
 
 /* Ícones do Menu */
 .sidebar-item i {
-    width: 25px; /* Alinha os ícones verticalmente */
+    width: 25px; 
     text-align: center;
     transition: transform 0.3s ease;
 }
 
 .sidebar-item:hover i {
-    transform: scale(1.2); /* Aumenta o ícone levemente */
+    transform: scale(1.2); 
 }
 
 /* Submenus (Itens filhos) */
 .submenu-container {
-    background-color: #f8f9fa; /* Fundo levemente cinza */
-    box-shadow: inset 0 3px 6px rgba(0,0,0,0.03); /* Sombra interna sutil */
+    background-color: #f8f9fa; 
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.03); 
 }
 
 .submenu-link {
-    padding-left: 60px !important; /* Indentação maior */
+    padding-left: 60px !important; 
     font-size: 0.9rem;
     color: #666;
     background-color: transparent;
@@ -414,4 +414,15 @@ body {
 .sidebar-item .fa-chevron-up {
     font-size: 0.75rem;
     opacity: 0.6;
+}
+/* ==========================================================================
+   8. COMPONENTES: TABELAS
+   ========================================================================== */
+/* Ajuste fino para tabelas com muitas colunas */
+.table-small-font {
+	font-size: 0.9rem;
+}
+
+.table-header-nowrap th {
+	white-space: nowrap;
 }

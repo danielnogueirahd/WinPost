@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org">
+
+<div th:fragment="sidebar(paginaAtiva)" class="offcanvas offcanvas-start bg-white" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="width: 280px;">
+
+    <div class="offcanvas-header sidebar-header">
+        <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel">
+            <i class="fa-solid fa-layer-group me-2"></i> Navegação
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0">
+        <div class="list-group list-group-flush">
+            
+            <a href="/administrativo" class="list-group-item list-group-item-action sidebar-item"
+               th:classappend="${paginaAtiva == 'dashboard'} ? 'text-primary fw-bold border-start border-4 border-primary' : ''">
+                <i class="fa-solid fa-house me-2"></i> Dashboard
+            </a>
+
+            <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                style="cursor: pointer;" onclick="toggleMenu('menu-anotacoes', 'icon-anotacoes')">
+                <span><i class="fa-solid fa-gears me-2"></i> Funcionalidades</span>
+                <i id="icon-anotacoes" class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div id="menu-anotacoes" class="d-none submenu-container">
+                <a href="#" class="submenu-link">Anotações Gerais</a>
+            </div>
+
+            <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                style="cursor: pointer;" onclick="toggleMenu('menu-cadastros', 'icon-cadastros')">
+                <span><i class="fa-solid fa-user-plus me-2"></i> Cadastros</span>
+                <i id="icon-cadastros" class="fa-solid fa-chevron-down"
+                   th:classappend="${paginaAtiva == 'cadastro'} ? 'fa-chevron-up' : ''"></i>
+            </div>
+            <div id="menu-cadastros" class="submenu-container"
+                 th:classappend="${paginaAtiva == 'cadastro'} ? '' : 'd-none'">
+                <a href="/cadastroContatos" class="submenu-link"
+                   th:classappend="${paginaAtiva == 'cadastro'} ? 'fw-bold text-primary' : ''">Novo Contato</a>
+            </div>
+
+            <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
+                style="cursor: pointer;" onclick="toggleMenu('menu-consultas', 'icon-consultas')">
+                <span><i class="fa-solid fa-list me-2"></i> Consultas</span>
+                <i id="icon-consultas" class="fa-solid fa-chevron-down"
+                   th:classappend="${paginaAtiva == 'lista'} ? 'fa-chevron-up' : ''"></i>
+            </div>
+            <div id="menu-consultas" class="submenu-container"
+                 th:classappend="${paginaAtiva == 'lista'} ? '' : 'd-none'">
+                <a href="/listarContatos" class="submenu-link"
+                   th:classappend="${paginaAtiva == 'lista'} ? 'fw-bold text-primary' : ''">Listar Contatos</a>
+            </div>
+
+        </div>
+        
+        <div class="mt-auto p-4 text-center text-muted small" style="opacity: 0.7;">
+            <hr>
+            <p class="mb-0">Sistema WinPost v1.0</p>
+        </div>
+    </div>
+</div>
+</html>
