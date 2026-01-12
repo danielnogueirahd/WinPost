@@ -2,11 +2,12 @@
    1. GLOBAIS & RESET
    ========================================================================== */
 body {
-    background: linear-gradient(180deg, rgb(198, 226, 255) 0%, #ffffff 100%) no-repeat !important;
+    background: linear-gradient(180deg, #F0F8FF 0%, #ffffff 100%) no-repeat fixed !important;
     background-attachment: fixed;
     min-height: 100vh;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
+
 
 /* ==========================================================================
    2. ESTRUTURA DE LAYOUT (SIDEBAR ANTIGO/WRAPPER)
