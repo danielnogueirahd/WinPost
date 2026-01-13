@@ -427,3 +427,92 @@ body {
 .table-header-nowrap th {
 	white-space: nowrap;
 }
+/* ==========================================================================
+   9. GESTÃO DE GRUPOS
+   ========================================================================== */
+
+/* Variáveis para a tela de grupos */
+:root {
+    --bs-font-sans-serif: 'Inter', sans-serif;
+    --primary-color: #0d6efd;
+    --accent-color: #ffc107;
+}
+
+/* Header da Página */
+.page-header h2 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Card Flutuante */
+.card-pro {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    background: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+.card-pro:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Sticky Column */
+.sticky-column {
+    position: sticky;
+    top: 90px;
+    z-index: 10;
+    height: fit-content;
+}
+
+/* Inputs */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+    border-color: var(--primary-color);
+}
+
+/* Checkbox */
+.form-check-input {
+    cursor: pointer;
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.form-check-input:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* Tabela */
+#tabelaSelecao thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    color: #8898aa;
+    border-bottom: 1px solid #eee;
+    padding: 12px;
+}
+
+#tabelaSelecao tbody td {
+    vertical-align: middle;
+    padding: 12px;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+/* Linha Selecionada */
+.row-selected {
+    background-color: #fff9e6 !important;
+}
+
+.row-selected td:first-child {
+    border-left: 3px solid var(--accent-color);
+}

@@ -28,11 +28,25 @@
             </div>
 
             <div class="list-group-item list-group-item-action sidebar-item d-flex justify-content-between align-items-center"
-                style="cursor: pointer;" onclick="toggleMenu('menu-cadastros', 'icon-cadastros')">
-                <span><i class="fa-solid fa-user-plus me-2"></i> Cadastros</span>
-                <i id="icon-cadastros" class="fa-solid fa-chevron-down"
-                   th:classappend="${paginaAtiva == 'cadastro'} ? 'fa-chevron-up' : ''"></i>
-            </div>
+    style="cursor: pointer;" onclick="toggleMenu('menu-cadastros', 'icon-cadastros')">
+    <span><i class="fa-solid fa-user-plus me-2"></i> Cadastros</span>
+    <i id="icon-cadastros" class="fa-solid fa-chevron-down"
+       th:classappend="${paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo'} ? 'fa-chevron-up' : ''"></i>
+</div>
+
+<div id="menu-cadastros" class="submenu-container"
+     th:classappend="${paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo'} ? '' : 'd-none'">
+    
+    <a href="/cadastroContatos" class="submenu-link"
+       th:classappend="${paginaAtiva == 'cadastro'} ? 'fw-bold text-primary' : ''">
+       Novo Contato
+    </a>
+
+    <a href="/grupos/cadastro" class="submenu-link"
+       th:classappend="${paginaAtiva == 'cadastroGrupo'} ? 'fw-bold text-primary' : ''">
+       Novo Grupo
+    </a>
+</div>
             <div id="menu-cadastros" class="submenu-container"
                  th:classappend="${paginaAtiva == 'cadastro'} ? '' : 'd-none'">
                 <a href="/cadastroContatos" class="submenu-link"

@@ -32,26 +32,25 @@ public class RelatorioControle {
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "cidade", required = false) String cidade,
             @RequestParam(value = "estado", required = false) String estado,
+            @RequestParam(value = "grupoId", required = false) Long grupoId, // <--- Adicionado
             @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
         
-        // Trata strings vazias como null para o banco ignorar o filtro
         if (nome != null && nome.isEmpty()) nome = null;
         if (cidade != null && cidade.isEmpty()) cidade = null;
         if (estado != null && estado.isEmpty()) estado = null;
 
-        // Busca filtrada
-        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, dataInicio, dataFim);
+        // Passando grupoId para o repositório
+        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId, dataInicio, dataFim);
         
         ByteArrayInputStream bis = relatorioService.gerarRelatorioContatos(contatos);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=relatorio_personalizado.pdf");
+        headers.add("Content-Disposition", "inline; filename=relatorio_contatos.pdf");
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
-    }
-}
+    }}

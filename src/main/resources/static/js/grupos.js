@@ -1,113 +1,75 @@
 $(document).ready(function() {
     
-    // Inicializa o DataTable com as configurações
-    // Se você já tiver essa inicialização no HTML, pode remover de lá e deixar só aqui
-    var table = $('#tabela').DataTable({
-        language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
+    // Inicialização do DataTables
+    var table = $('#tabelaSelecao').DataTable({
+        language: { 
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json',
+            search: "",
+            searchPlaceholder: "Buscar..."
         },
-        columnDefs: [
-            { orderable: false, targets: 0 },  // Desabilita ordenação na coluna dos Checkboxes (primeira)
-            { orderable: false, targets: -1 }  // Desabilita ordenação na coluna de Ações (última)
-        ]
+        pageLength: 9, 
+        lengthChange: false,
+        dom: "<'row mb-3'<'col-sm-12'f>><'row'<'col-sm-12'tr>><'row mt-3'<'col-sm-12'p>>",
+        columnDefs: [{ orderable: false, targets: 0 }]
     });
 
-    // 1. Lógica do "Selecionar Todos"
-    $('#checkAll').on('click', function() {
-        // Pega se está marcado ou não
-        var isChecked = $(this).is(':checked');
+    // Estilização do campo de busca gerado dinamicamente
+    $('.dataTables_filter input').addClass('form-control ps-3').css('border-radius', '8px');
+
+    // Função de atualização visual
+    function atualizarInterface() {
+        var selecionados = 0;
+        table.rows().nodes().to$().each(function() {
+            var row = $(this);
+            if (row.find('.check-item').is(':checked')) {
+                row.addClass('row-selected');
+                selecionados++;
+            } else {
+                row.removeClass('row-selected');
+            }
+        });
         
-        // Marca/Desmarca todos os checkboxes com a classe .check-contato
-        $('.check-contato').prop('checked', isChecked);
+        var texto = selecionados === 0 ? '0 contatos selecionados' : 
+                    selecionados === 1 ? '1 contato selecionado' : selecionados + ' contatos selecionados';
+        $('#contadorSelecao').text(texto);
         
-        atualizarBotaoGrupo();
+        if(selecionados > 0) $('#contadorSelecao').addClass('text-primary').removeClass('text-muted');
+        else $('#contadorSelecao').addClass('text-muted').removeClass('text-primary');
+    }
+
+    // Eventos
+    $('#tabelaSelecao').on('change', '.check-item', function() {
+        atualizarInterface();
+        if(!$(this).is(':checked')) $('#checkAll').prop('checked', false);
     });
 
-    // 2. Lógica ao clicar em um checkbox individual
-    // Usamos 'on' no document para funcionar mesmo se mudar de página na tabela
-    $(document).on('change', '.check-contato', function() {
-        atualizarBotaoGrupo();
-        
-        // Se desmarcar um item, desmarca o "Todos" lá em cima
-        if(!$(this).is(':checked')){
-            $('#checkAll').prop('checked', false);
+    $('#tabelaSelecao').on('click', 'tbody tr', function(e) {
+        if (e.target.type !== 'checkbox') {
+            var checkbox = $(this).find('.check-item');
+            checkbox.prop('checked', !checkbox.is(':checked')).trigger('change');
         }
+    });
+
+    $('#checkAll').on('click', function() {
+        var isChecked = this.checked;
+        var rows = table.rows({ 'search': 'applied' }).nodes();
+        $('input[type="checkbox"]', rows).prop('checked', isChecked);
+        atualizarInterface();
     });
 });
 
-// ==========================================
-// FUNÇÕES AUXILIARES
-// ==========================================
-
-// Habilita ou Desabilita o botão de ação
-function atualizarBotaoGrupo() {
-    var selecionados = $('.check-contato:checked').length;
-    var btn = $('#btnCriarGrupo');
-    
-    if (selecionados > 0) {
-        btn.removeAttr('disabled');
-        btn.removeClass('btn-light text-muted').addClass('btn-warning text-dark');
-        btn.html('<i class="fa-solid fa-users-viewfinder"></i> Criar Grupo (' + selecionados + ')');
-    } else {
-        btn.attr('disabled', 'disabled');
-        btn.addClass('btn-light text-muted').removeClass('btn-warning text-dark');
-        btn.html('<i class="fa-solid fa-users-viewfinder"></i> Criar Grupo');
-    }
-}
-
-// Abre o Modal e atualiza o contador
-function abrirModalGrupo() {
-    var qtd = $('.check-contato:checked').length;
-    $('#qtdSelecionados').text(qtd);
-    
-    // Abre o modal usando Bootstrap 5
-    var modal = new bootstrap.Modal(document.getElementById('modalCriarGrupo'));
-    modal.show();
-}
-
-// Envia os dados para o Backend (Java)
-function salvarGrupo() {
-    var nome = $('#nomeGrupo').val();
-    
-    if (!nome) {
-        // Você pode usar SweetAlert aqui se preferir
-        alert("Por favor, digite um nome para o grupo.");
-        return;
-    }
-
-    // Coleta os IDs dos checkboxes marcados
-    var ids = [];
-    $('.check-contato:checked').each(function() {
-        ids.push($(this).val());
-    });
-
-    // Faz a chamada AJAX para o Controller
-    $.ajax({
-        url: "/grupos/criar",
-        type: "POST",
-        data: {
-            nome: nome,
-            ids: ids
-        },
-        success: function(response) {
-            // Fecha o modal
-            var modalEl = document.getElementById('modalCriarGrupo');
-            var modal = bootstrap.Modal.getInstance(modalEl);
-            modal.hide();
-            
-            // Mostra mensagem de sucesso
-            Swal.fire({
-                title: 'Sucesso!',
-                text: response,
-                icon: 'success',
-                confirmButtonColor: '#0d6efd'
-            }).then(() => {
-                location.reload(); // Recarrega a página
-            });
-        },
-        error: function(xhr) {
-            Swal.fire('Erro', 'Ocorreu um erro ao criar o grupo.', 'error');
-            console.error(xhr.responseText);
+// FUNÇÃO GLOBAL DO SIDEBAR
+// Precisa estar fora do $(document).ready para ser acessível pelo HTML
+window.toggleMenu = function(menuId, iconId) {
+    var menu = document.getElementById(menuId);
+    var icon = document.getElementById(iconId);
+    if (menu) {
+        if (menu.classList.contains('d-none')) {
+            menu.classList.remove('d-none');
+            if(icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
+        } else {
+            menu.classList.add('d-none');
+            if(icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
         }
-    });
-}
+    }
+};

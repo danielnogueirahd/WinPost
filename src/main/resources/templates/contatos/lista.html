@@ -40,10 +40,6 @@
             </div>
 
             <div class="d-flex gap-2">
-                <button type="button" id="btnCriarGrupo" class="btn btn-light text-muted fw-bold shadow-sm" disabled onclick="abrirModalGrupo()">
-                    <i class="fa-solid fa-users-viewfinder"></i> <span class="d-none d-md-inline ms-1">Criar Grupo</span>
-                </button>
-
                 <button type="button" class="btn btn-light text-primary border shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRelatorio" title="Gerar Relatório PDF">
                     <i class="fa-solid fa-file-pdf"></i> <span class="d-none d-md-inline ms-1">Relatório</span>
                 </button>
@@ -88,9 +84,6 @@
                     <table class="table table-hover align-middle table-small-font table-header-nowrap" id="tabela">
                         <thead class="bg-light">
                             <tr>
-                                <th class="text-center" style="width: 40px;">
-                                    <input type="checkbox" class="form-check-input" id="checkAll" style="cursor: pointer;">
-                                </th>
                                 <th>ID</th>
                                 <th>Nome</th>
                                 <th>Email</th>
@@ -107,10 +100,6 @@
                         </thead>
                         <tbody>
                             <tr th:each="contato : ${listaContatos}">
-                                <td class="text-center">
-                                    <input type="checkbox" class="form-check-input check-contato" th:value="${contato.id}" style="cursor: pointer;">
-                                </td>
-
                                 <td class="fw-bold text-muted" th:text="${contato.id}"></td>
                                 <td class="fw-bold text-dark text-nowrap" th:text="${contato.nome}"></td>
                                 <td class="text-muted small" th:text="${contato.email}"></td>
@@ -153,47 +142,27 @@
         </div>
     </div>
 
-    
     <div th:replace="~{fragments/modals :: modalRelatorio}"></div>
 
-    <div class="modal fade" id="modalCriarGrupo" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title fw-bold text-dark">
-                        <i class="fa-solid fa-layer-group me-2"></i>Novo Grupo Inteligente
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="small text-muted mb-3">
-                        Você selecionou <strong id="qtdSelecionados">0</strong> contatos.
-                    </p>
-                    <div class="mb-3">
-                        <label for="nomeGrupo" class="form-label fw-bold small text-secondary">NOME DO GRUPO</label>
-                        <input type="text" class="form-control" id="nomeGrupo" placeholder="Ex: Clientes VIP..." autofocus>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-dark fw-bold" onclick="salvarGrupo()">
-                        <i class="fa-solid fa-save me-2"></i> Salvar Grupo
-                    </button>
-                </div>
-            </div>
-        </div>
-      
-    </div>
-      <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.6/js/dataTables.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="/js/grupos.js"></script>
-
     <script>
+        $(document).ready(function () {
+            $('#tabela').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
+                },
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Não ordenar apenas a coluna de ações
+                ]
+            });
+        });
+
         // Toggle do Menu
         function toggleMenu(menuId, iconId) {
             var menu = document.getElementById(menuId);
@@ -225,5 +194,19 @@
             timerProgressBar : true
         });
     </script>
+    <script>
+        // Sincroniza o filtro da tela principal com o modal de relatório
+        var modalRelatorio = document.getElementById('modalRelatorio');
+        modalRelatorio.addEventListener('show.bs.modal', function (event) {
+            // Pega o valor do select da tela principal (se existir)
+            var filtroPrincipal = document.querySelector('select[name="grupoId"]');
+            var selectModal = document.getElementById('relatorioGrupo');
+            
+            if(filtroPrincipal && selectModal) {
+                selectModal.value = filtroPrincipal.value;
+            }
+        });
+    </script>
+    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
