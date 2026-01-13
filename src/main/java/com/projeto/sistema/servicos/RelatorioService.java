@@ -3,11 +3,8 @@ package com.projeto.sistema.servicos;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -24,7 +21,7 @@ import com.projeto.sistema.modelos.Contatos;
 public class RelatorioService {
 
     public ByteArrayInputStream gerarRelatorioContatos(List<Contatos> contatos) {
-        // MUDANÇA 1: PageSize.A4.rotate() coloca a folha deitada (Paisagem)
+        // Define documento em Paisagem (A4 Deitado)
         Document document = new Document(PageSize.A4.rotate());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -39,30 +36,37 @@ public class RelatorioService {
             document.add(titulo);
             document.add(new Paragraph(" "));
 
-            // MUDANÇA 2: Tabela com 8 colunas para caber todos os dados importantes
-            PdfPTable tabela = new PdfPTable(8);
+            // MUDANÇA: Tabela agora tem 7 colunas (removemos a Data)
+            PdfPTable tabela = new PdfPTable(7);
             tabela.setWidthPercentage(100);
-            // Ajuste fino das larguras das colunas
-            tabela.setWidths(new float[]{0.5f, 2f, 2f, 1.5f, 2.5f, 1.5f, 0.8f, 1.2f});
+            
+            // MUDANÇA: Removido o último valor (1.2f) referente à data
+            tabela.setWidths(new float[]{0.5f, 2f, 2f, 1.5f, 2.5f, 1.5f, 0.8f});
 
-            // Cabeçalho estilizado
-            adicionarCabecalho(tabela, "ID", "Nome", "Email", "Telefone", "Endereço", "Cidade", "UF", "Data");
+            // MUDANÇA: Removido "Data" do cabeçalho
+            adicionarCabecalho(tabela, "ID", "Nome", "Email", "Telefone", "Endereço", "Cidade", "UF");
 
             // Dados
             Font fontDados = FontFactory.getFont(FontFactory.HELVETICA, 10);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            
+            // Loop simplificado (sem formatador de data)
+            for (Contatos contato : contatos) {
+                // Tratamento básico para evitar NULL no endereço
+                String rua = contato.getRua() != null ? contato.getRua() : "";
+                String numero = contato.getNumero() != null ? String.valueOf(contato.getNumero()) : "S/N";
+                String cep = contato.getCep() != null ? contato.getCep() : "";
+                
+                String endereco = rua + ", " + numero + " - CEP: " + cep;
 
-            for (Contatos c : contatos) {
+                // MUDANÇA: Removido o argumento de dataCadastro no final
                 adicionarCelulas(tabela, fontDados,
-                    String.valueOf(c.getId()),
-                    c.getNome(),
-                    c.getEmail(),
-                    c.getTelefone(),
-                    // Concatenando endereço para economizar espaço
-                    c.getRua() + ", " + c.getNumero() + (c.getComplemento() != null ? " - " + c.getComplemento() : ""),
-                    c.getCidade(),
-                    c.getEstado(),
-                    c.getDataCadastro() != null ? c.getDataCadastro().format(formatter) : "-"
+                        String.valueOf(contato.getId()),
+                        contato.getNome(),
+                        contato.getEmail(),
+                        contato.getTelefone(),
+                        endereco,
+                        contato.getCidade(),
+                        contato.getEstado()
                 );
             }
 
@@ -76,7 +80,7 @@ public class RelatorioService {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    // Métodos auxiliares para limpar o código
+    // Métodos auxiliares
     private void adicionarCabecalho(PdfPTable tabela, String... colunas) {
         Font fontHead = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Color.WHITE);
         for (String coluna : colunas) {

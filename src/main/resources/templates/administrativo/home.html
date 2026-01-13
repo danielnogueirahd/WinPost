@@ -117,7 +117,7 @@
                                                     <td class="ps-3 fw-bold text-dark" th:text="${contato.nome}">Nome</td>
                                                     <td class="text-muted small" th:text="${contato.email}">email@exemplo.com</td>
                                                     <td>
-                                                        <span class="badge bg-light text-dark border" th:text="${#temporals.format(contato.dataCadastro, 'dd/MM/yyyy')}">01/01/2024</span>
+                                                        <span class="badge bg-light text-dark border" th:text="${contato.dataNascimento != null ? #temporals.format(contato.dataNascimento, 'dd/MM/yyyy') : '-'}">01/01/2024</span>
                                                     </td>
                                                     <td class="text-end pe-3">
                                                         <a th:href="@{/editarContatos/{id}(id=${contato.id})}" class="btn btn-sm btn-light text-primary"><i class="fa-solid fa-pen"></i></a>

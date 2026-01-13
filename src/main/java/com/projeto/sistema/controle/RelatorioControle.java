@@ -53,4 +53,5 @@ public class RelatorioControle {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
-    }}
+    }
+    }

@@ -116,7 +116,7 @@
                                     </span>
                                 </td>
                                 <td class="text-muted small text-truncate" style="max-width: 100px;" th:text="${contato.complemento}"></td>
-                                <td class="small text-nowrap" th:text="${#temporals.format(contato.dataCadastro, 'dd/MM/yyyy')}"></td>
+                                <td class="small text-nowrap" th:text="${contato.dataNascimento != null ? #temporals.format(contato.dataNascimento, 'dd/MM/yyyy') : '-'}"></td>
 
                                 <td class="text-end text-nowrap">
                                     <div class="btn-group">

@@ -75,8 +75,9 @@ public class Contatos implements Serializable {
     private String complemento;
 
     @CreatedDate
-    @Column(updatable = false)
-    private LocalDate dataCadastro;
+    
+    @Column(name = "data_nascimento")
+    private LocalDate dataNascimento;
 
     // Relacionamento ManyToMany com inicialização segura
     @ManyToMany
@@ -176,12 +177,12 @@ public class Contatos implements Serializable {
         this.complemento = complemento;
     }
 
-    public LocalDate getDataCadastro() {
-        return dataCadastro;
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
     }
 
-    public void setDataCadastro(LocalDate dataCadastro) {
-        this.dataCadastro = dataCadastro;
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 
     public List<Grupo> getGrupos() {

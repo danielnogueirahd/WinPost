@@ -11,22 +11,19 @@ import com.projeto.sistema.modelos.Contatos;
 
 public interface ContatosRepositorio extends JpaRepository<Contatos, Long> {
 
-    // 1. Método existente (usado nos cards do Dashboard)
     List<Contatos> findTop10ByOrderByIdDesc();
 
-    // 2. Método para buscar contatos de um Grupo Específico (Usado na listagem)
     @Query("SELECT c FROM Contatos c JOIN c.grupos g WHERE g.id = :grupoId")
     List<Contatos> findByGrupoId(@Param("grupoId") Long grupoId);
 
-    // 3. Filtro Inteligente para o Relatório (AGORA COM GRUPO)
-    // Usamos DISTINCT para evitar duplicar contatos se eles pertencerem a mais de um grupo no join
+    // CORREÇÃO: Mudamos c.dataCadastro para c.dataNascimento
     @Query("SELECT DISTINCT c FROM Contatos c LEFT JOIN c.grupos g WHERE " +
            "(:nome IS NULL OR lower(c.nome) LIKE lower(concat('%', :nome, '%'))) AND " +
            "(:cidade IS NULL OR lower(c.cidade) LIKE lower(concat('%', :cidade, '%'))) AND " +
            "(:estado IS NULL OR c.estado = :estado) AND " +
            "(:grupoId IS NULL OR g.id = :grupoId) AND " + 
-           "(:dataInicio IS NULL OR c.dataCadastro >= :dataInicio) AND " +
-           "(:dataFim IS NULL OR c.dataCadastro <= :dataFim)")
+           "(:dataInicio IS NULL OR c.dataNascimento >= :dataInicio) AND " +
+           "(:dataFim IS NULL OR c.dataNascimento <= :dataFim)")
     List<Contatos> filtrarRelatorio(
             @Param("nome") String nome, 
             @Param("cidade") String cidade,
