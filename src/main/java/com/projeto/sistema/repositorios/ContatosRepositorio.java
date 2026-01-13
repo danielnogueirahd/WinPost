@@ -12,10 +12,14 @@ import com.projeto.sistema.modelos.Contatos;
 public interface ContatosRepositorio extends JpaRepository<Contatos, Long> {
 
     // 1. Método existente (usado nos cards do Dashboard)
-	List<Contatos> findTop10ByOrderByIdDesc();
+    List<Contatos> findTop10ByOrderByIdDesc();
 
-    // 2. NOVO MÉTODO: Filtro Inteligente para o Relatório
-    // A lógica ":parametro IS NULL" faz com que o banco ignore o filtro se ele vier vazio.
+    // 2. NOVO MÉTODO (ADICIONADO AGORA): Buscar contatos de um Grupo Específico
+    // O "JOIN c.grupos g" navega na lista de grupos do contato para achar o ID
+    @Query("SELECT c FROM Contatos c JOIN c.grupos g WHERE g.id = :grupoId")
+    List<Contatos> findByGrupoId(@Param("grupoId") Long grupoId);
+
+    // 3. Método existente: Filtro Inteligente para o Relatório
     @Query("SELECT c FROM Contatos c WHERE " +
            "(:nome IS NULL OR lower(c.nome) LIKE lower(concat('%', :nome, '%'))) AND " +
            "(:cidade IS NULL OR lower(c.cidade) LIKE lower(concat('%', :cidade, '%'))) AND " +

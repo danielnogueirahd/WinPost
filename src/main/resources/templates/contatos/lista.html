@@ -2,44 +2,34 @@
 <html xmlns:th="https://thymeleaf.org">
 
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lista de Contatos | WinPost</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de Contatos | WinPost</title>
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet"
-	href="https://cdn.datatables.net/2.3.6/css/dataTables.dataTables.css" />
-<link rel="stylesheet" href="/css/estilo.css">
-<style>
-.table-small-font {
-	font-size: 0.9rem;
-}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.6/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="/css/estilo.css">
 
-.table-header-nowrap th {
-	white-space: nowrap;
-}
-</style>
+    <style>
+        .table-small-font { font-size: 0.9rem; }
+        .table-header-nowrap th { white-space: nowrap; }
+    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-	<div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/sidebar :: sidebar('lista')}"></div>
 
-	<div th:replace="~{fragments/sidebar :: sidebar('lista')}"></div>
+    <div style="margin-top: 80px;"></div>
 
-	<div style="margin-top: 80px;"></div>
+    <div class="container-fluid px-4 mt-4 mb-5">
 
-	<div class="container-fluid px-4 mt-4 mb-5">
-
-		<div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center ps-3 border-start border-4 border-primary">
                 <button class="btn btn-sm btn-outline-primary d-lg-none me-3"
-                    type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#sidebarMenu">
+                    type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
                     <i class="fa-solid fa-bars"></i>
                 </button>
 
@@ -50,8 +40,11 @@
             </div>
 
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-light text-primary border shadow-sm fw-bold" 
-                        data-bs-toggle="modal" data-bs-target="#modalRelatorio" title="Gerar Relatório PDF">
+                <button type="button" id="btnCriarGrupo" class="btn btn-light text-muted fw-bold shadow-sm" disabled onclick="abrirModalGrupo()">
+                    <i class="fa-solid fa-users-viewfinder"></i> <span class="d-none d-md-inline ms-1">Criar Grupo</span>
+                </button>
+
+                <button type="button" class="btn btn-light text-primary border shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRelatorio" title="Gerar Relatório PDF">
                     <i class="fa-solid fa-file-pdf"></i> <span class="d-none d-md-inline ms-1">Relatório</span>
                 </button>
 
@@ -60,133 +53,177 @@
                 </a>
             </div>
         </div>
-		
 
-		<div class="card shadow-sm border-0">
-			<div class="card-body">
-				<div class="table-responsive">
-					<table
-						class="table table-hover align-middle table-small-font table-header-nowrap"
-						id="tabela">
-						<thead class="bg-light">
-							<tr>
-								<th>ID</th>
-								<th>Nome</th>
-								<th>Email</th>
-								<th>Telefone</th>
-								<th>CEP</th>
-								<th>Rua</th>
-								<th>Nº</th>
-								<th>Bairro</th>
-								<th>Cidade/UF</th>
-								<th>Compl.</th>
-								<th>Data</th>
-								<th class="text-end">Ações</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="contato : ${listaContatos}">
-								<td class="fw-bold text-muted" th:text="${contato.id}"></td>
-								<td class="fw-bold text-dark text-nowrap"
-									th:text="${contato.nome}"></td>
-								<td class="text-muted small" th:text="${contato.email}"></td>
-								<td class="text-nowrap" th:text="${contato.telefone}"></td>
-								<td class="text-nowrap small" th:text="${contato.cep}"></td>
-								<td class="text-nowrap small" th:text="${contato.rua}"></td>
-								<td class="text-center small" th:text="${contato.numero}"></td>
-								<td class="text-nowrap small" th:text="${contato.bairro}"></td>
-								<td><span
-									class="badge bg-light text-primary border border-primary border-opacity-25 shadow-sm rounded-pill px-3 py-1">
-										<i class="fa-solid fa-location-dot me-1 small"></i> <span
-										th:text="${contato.cidade}"></span> <span
-										class="small text-secondary" th:text="'/' + ${contato.estado}"></span>
-								</span></td>
-								<td class="text-muted small text-truncate"
-									style="max-width: 100px;" th:text="${contato.complemento}"></td>
-								<td class="small text-nowrap"
-									th:text="${#temporals.format(contato.dataCadastro, 'dd/MM/yyyy')}"></td>
-								<td class="text-end text-nowrap">
-									<div class="btn-group">
-										<a th:href="@{/editarContatos/{id}(id=${contato.id})}"
-											class="btn btn-sm btn-outline-primary" title="Editar"><i
-											class="fa-solid fa-pen-to-square"></i></a> <a
-											th:href="@{/removerContatos/{id}(id=${contato.id})}"
-											class="btn btn-sm btn-outline-danger" title="Excluir"
-											onclick="return confirm('Confirmar exclusão?');"><i
-											class="fa-regular fa-trash-can"></i></a>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+        <div class="card bg-white border-0 shadow-sm mb-4">
+            <div class="card-body py-3">
+                <form action="/listarContatos" method="GET" class="row g-2 align-items-center">
+                    <div class="col-auto">
+                        <i class="fa-solid fa-filter text-secondary me-2"></i> 
+                        <span class="fw-bold small text-muted">FILTRAR POR:</span>
+                    </div>
 
-		<div class="mt-3">
-			<a href="/administrativo"
-				class="text-decoration-none text-secondary small"><i
-				class="fa-solid fa-arrow-left me-1"></i> Voltar ao Dashboard</a>
-		</div>
-	</div>
+                    <div class="col-md-4">
+                        <select class="form-select form-select-sm" name="grupoId" onchange="this.form.submit()">
+                            <option value="">Todos os Contatos</option>
+                            <option th:each="grupo : ${listaGrupos}" 
+                                    th:value="${grupo.id}" 
+                                    th:text="${grupo.nome}"
+                                    th:selected="${grupoSelecionado == grupo.id}">
+                            </option>
+                        </select>
+                    </div>
 
-	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
-	<div th:replace="~{fragments/modals :: modalRelatorio}"></div>
+                    <div class="col-auto" th:if="${grupoSelecionado != null}">
+                        <a href="/listarContatos" class="btn btn-sm btn-outline-secondary" title="Limpar Filtro">
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script src="https://cdn.datatables.net/2.3.6/js/dataTables.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-small-font table-header-nowrap" id="tabela">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="text-center" style="width: 40px;">
+                                    <input type="checkbox" class="form-check-input" id="checkAll" style="cursor: pointer;">
+                                </th>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>CEP</th>
+                                <th>Rua</th>
+                                <th>Nº</th>
+                                <th>Bairro</th>
+                                <th>Cidade/UF</th>
+                                <th>Compl.</th>
+                                <th>Data</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="contato : ${listaContatos}">
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input check-contato" th:value="${contato.id}" style="cursor: pointer;">
+                                </td>
 
-	<script>
-		$(document)
-				.ready(
-						function() {
-							$('#tabela')
-									.DataTable(
-											{
-												language : {
-													url : 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
-												},
-												columnDefs : [ {
-													orderable : false,
-													targets : -1
-												} ]
-											});
-						});
+                                <td class="fw-bold text-muted" th:text="${contato.id}"></td>
+                                <td class="fw-bold text-dark text-nowrap" th:text="${contato.nome}"></td>
+                                <td class="text-muted small" th:text="${contato.email}"></td>
+                                <td class="text-nowrap" th:text="${contato.telefone}"></td>
+                                <td class="text-nowrap small" th:text="${contato.cep}"></td>
+                                <td class="text-nowrap small" th:text="${contato.rua}"></td>
+                                <td class="text-center small" th:text="${contato.numero}"></td>
+                                <td class="text-nowrap small" th:text="${contato.bairro}"></td>
+                                <td>
+                                    <span class="badge bg-light text-primary border border-primary border-opacity-25 shadow-sm rounded-pill px-3 py-1">
+                                        <i class="fa-solid fa-location-dot me-1 small"></i> 
+                                        <span th:text="${contato.cidade}"></span> 
+                                        <span class="small text-secondary" th:text="'/' + ${contato.estado}"></span>
+                                    </span>
+                                </td>
+                                <td class="text-muted small text-truncate" style="max-width: 100px;" th:text="${contato.complemento}"></td>
+                                <td class="small text-nowrap" th:text="${#temporals.format(contato.dataCadastro, 'dd/MM/yyyy')}"></td>
 
-		// Toggle do Menu (necessário para o clique nos itens pais)
-		function toggleMenu(menuId, iconId) {
-			var menu = document.getElementById(menuId);
-			var icon = document.getElementById(iconId);
-			if (menu.classList.contains('d-none')) {
-				menu.classList.remove('d-none');
-				if (icon) {
-					icon.classList.remove('fa-chevron-down');
-					icon.classList.add('fa-chevron-up');
-				}
-			} else {
-				menu.classList.add('d-none');
-				if (icon) {
-					icon.classList.remove('fa-chevron-up');
-					icon.classList.add('fa-chevron-down');
-				}
-			}
-		}
-	</script>
+                                <td class="text-end text-nowrap">
+                                    <div class="btn-group">
+                                        <a th:href="@{/editarContatos/{id}(id=${contato.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a> 
+                                        <a th:href="@{/removerContatos/{id}(id=${contato.id})}" class="btn btn-sm btn-outline-danger" title="Excluir" onclick="return confirm('Confirmar exclusão?');">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-	<script th:if="${mensagemSucesso}">
-		Swal.fire({
-			title : 'Sucesso!',
-			text : '[[${mensagemSucesso}]]',
-			icon : 'success',
-			confirmButtonColor : '#0d6efd',
-			confirmButtonText : 'Continuar',
-			timer : 3000,
-			timerProgressBar : true
-		});
-	</script>
+        <div class="mt-3">
+            <a href="/administrativo" class="text-decoration-none text-secondary small">
+                <i class="fa-solid fa-arrow-left me-1"></i> Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+
+    
+    <div th:replace="~{fragments/modals :: modalRelatorio}"></div>
+
+    <div class="modal fade" id="modalCriarGrupo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fa-solid fa-layer-group me-2"></i>Novo Grupo Inteligente
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-3">
+                        Você selecionou <strong id="qtdSelecionados">0</strong> contatos.
+                    </p>
+                    <div class="mb-3">
+                        <label for="nomeGrupo" class="form-label fw-bold small text-secondary">NOME DO GRUPO</label>
+                        <input type="text" class="form-control" id="nomeGrupo" placeholder="Ex: Clientes VIP..." autofocus>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-dark fw-bold" onclick="salvarGrupo()">
+                        <i class="fa-solid fa-save me-2"></i> Salvar Grupo
+                    </button>
+                </div>
+            </div>
+        </div>
+      
+    </div>
+      <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.6/js/dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="/js/grupos.js"></script>
+
+    <script>
+        // Toggle do Menu
+        function toggleMenu(menuId, iconId) {
+            var menu = document.getElementById(menuId);
+            var icon = document.getElementById(iconId);
+            if (menu.classList.contains('d-none')) {
+                menu.classList.remove('d-none');
+                if (icon) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            } else {
+                menu.classList.add('d-none');
+                if (icon) {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            }
+        }
+    </script>
+
+    <script th:if="${mensagemSucesso}">
+        Swal.fire({
+            title : 'Sucesso!',
+            text : '[[${mensagemSucesso}]]',
+            icon : 'success',
+            confirmButtonColor : '#0d6efd',
+            confirmButtonText : 'Continuar',
+            timer : 3000,
+            timerProgressBar : true
+        });
+    </script>
 </body>
 </html>
