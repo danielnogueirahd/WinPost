@@ -15,8 +15,13 @@ public interface ContatosRepositorio extends JpaRepository<Contatos, Long> {
 
     @Query("SELECT c FROM Contatos c JOIN c.grupos g WHERE g.id = :grupoId")
     List<Contatos> findByGrupoId(@Param("grupoId") Long grupoId);
+    
+    // --- NOVO CÓDIGO (Passo 1) ---
+    // Busca aniversariantes pelo mês (1 = Janeiro, 2 = Fevereiro, etc.)
+    @Query("SELECT c FROM Contatos c WHERE MONTH(c.dataNascimento) = :mes")
+    List<Contatos> findByMesAniversario(@Param("mes") Integer mes);
+    // -----------------------------
 
-    // CORREÇÃO: Mudamos c.dataCadastro para c.dataNascimento
     @Query("SELECT DISTINCT c FROM Contatos c LEFT JOIN c.grupos g WHERE " +
            "(:nome IS NULL OR lower(c.nome) LIKE lower(concat('%', :nome, '%'))) AND " +
            "(:cidade IS NULL OR lower(c.cidade) LIKE lower(concat('%', :cidade, '%'))) AND " +

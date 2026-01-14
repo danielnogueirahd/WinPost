@@ -37,25 +37,22 @@ public class ContatosControle {
         return mv;
     }
 
-    // Método LISTAR atualizado (Substitui o antigo)
+ 
     @GetMapping("/listarContatos")
     public ModelAndView listar(@RequestParam(value = "grupoId", required = false) Long grupoId) {
         
         ModelAndView mv = new ModelAndView("contatos/lista");
 
-        // Lógica de Filtro
+        // Lógica de Filtro Apenas por Grupo (padrão agenda)
         if (grupoId != null) {
-            // Se veio um ID, busca só os daquele grupo
             mv.addObject("listaContatos", contatosRepositorio.findByGrupoId(grupoId));
-            mv.addObject("grupoSelecionado", grupoId); // Para manter o combo selecionado na tela
+            mv.addObject("grupoSelecionado", grupoId); 
         } else {
-            // Se não, busca todos (comportamento padrão)
             mv.addObject("listaContatos", contatosRepositorio.findAll());
         }
 
-        // Carrega as listas auxiliares
         mv.addObject("listaEstados", UF.values());
-        mv.addObject("listaGrupos", grupoRepositorio.findAll()); // Carrega os grupos para o dropdown de filtro
+        mv.addObject("listaGrupos", grupoRepositorio.findAll());
 
         return mv;
     }
