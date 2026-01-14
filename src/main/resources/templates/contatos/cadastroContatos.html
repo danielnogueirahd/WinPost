@@ -28,22 +28,25 @@
 		<div style="margin-top: 80px;"></div>
 
 		<div class="container py-4 mb-5">
-			
+
 			<div class="row justify-content-center">
 				<div class="col-lg-10">
 					<div class="d-flex align-items-center mb-4">
-						<div class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+						<div
+							class="d-flex align-items-center ps-3 border-start border-4 border-primary">
 							<button class="btn btn-sm btn-outline-primary d-lg-none me-3"
 								type="button" data-bs-toggle="offcanvas"
 								data-bs-target="#sidebarMenu">
 								<i class="fa-solid fa-bars"></i>
 							</button>
-		
+
 							<div>
 								<h2 class="fw-bold text-dark mb-0 h3">Novo Cadastro</h2>
 								<nav aria-label="breadcrumb">
-									<ol class="breadcrumb mb-0 small" style="background: none; padding: 0;">
-										<li class="breadcrumb-item"><a href="/listarContatos" class="text-decoration-none">Contatos</a></li>
+									<ol class="breadcrumb mb-0 small"
+										style="background: none; padding: 0;">
+										<li class="breadcrumb-item"><a href="/listarContatos"
+											class="text-decoration-none">Contatos</a></li>
 										<li class="breadcrumb-item active" aria-current="page">Adicionar</li>
 									</ol>
 								</nav>
@@ -54,14 +57,15 @@
 			</div>
 
 			<form action="/salvarContato" th:object="${contato}" method="post">
-				
+
 				<div class="row justify-content-center mb-4">
 					<div class="col-lg-10">
-						<div class="alert alert-light border-0 shadow-sm d-flex align-items-center" role="alert">
+						<div
+							class="alert alert-light border-0 shadow-sm d-flex align-items-center"
+							role="alert">
 							<i class="fa-solid fa-circle-info text-primary me-2 fs-5"></i>
-							<div>
-								Preencha os dados abaixo para registrar um novo contato no sistema.
-							</div>
+							<div>Preencha os dados abaixo para registrar um novo
+								contato no sistema.</div>
 						</div>
 					</div>
 				</div>
@@ -75,168 +79,168 @@
 								</h6>
 							</div>
 							<div class="card-body p-4">
-                                
-									<div class="row g-3">
-										<div class="col-md-2 d-none">
-											<input type="text" readonly class="form-control" id="id"
-												th:field="*{id}">
-										</div>
 
-										<div class="col-md-12">
-											<label for="nome" class="form-label-modern">Nome
-												Completo *</label> <input type="text"
-												class="form-control form-control-lg fs-6" id="nome"
-												th:field="*{nome}" maxlength="50"
-												placeholder="Ex: João da Silva"
-												th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
-										</div>
+								<div class="row g-3">
+									<div class="col-md-2 d-none">
+										<input type="text" readonly class="form-control" id="id"
+											th:field="*{id}">
+									</div>
 
-										<div class="col-md-5">
-											<label for="email" class="form-label-modern">E-mail *</label>
-											<input type="email" class="form-control" id="email"
-												th:field="*{email}" maxlength="255"
-												placeholder="exemplo@email.com"
-												th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-										</div>
+									<div class="col-md-12">
+										<label for="nome" class="form-label-modern">Nome
+											Completo *</label> <input type="text"
+											class="form-control form-control-lg fs-6" id="nome"
+											th:field="*{nome}" maxlength="50"
+											placeholder="Ex: João da Silva"
+											th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+									</div>
 
-										<div class="col-md-4">
-											<label for="telefone" class="form-label-modern">Telefone
-												*</label> <input type="text" class="form-control" id="telefone"
-												th:field="*{telefone}" placeholder="(00) 00000-0000"
-												th:classappend="${#fields.hasErrors('telefone')} ? 'is-invalid'">
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('telefone')}"
-												th:errors="*{telefone}"></div>
-										</div>
+									<div class="col-md-5">
+										<label for="email" class="form-label-modern">E-mail *</label>
+										<input type="email" class="form-control" id="email"
+											th:field="*{email}" maxlength="255"
+											placeholder="exemplo@email.com"
+											th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+									</div>
 
-										<div class="col-md-3">
-    <label for="dataNascimento" class="form-label-modern">Data de Nascimento</label> 
-    <input type="date" class="form-control" id="dataNascimento" th:field="*{dataNascimento}">
-</div>
+									<div class="col-md-4">
+										<label for="telefone" class="form-label-modern">Telefone
+											*</label> <input type="text" class="form-control" id="telefone"
+											th:field="*{telefone}" placeholder="(00) 00000-0000"
+											th:classappend="${#fields.hasErrors('telefone')} ? 'is-invalid'">
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('telefone')}"
+											th:errors="*{telefone}"></div>
+									</div>
+
+									<div class="col-md-3">
+										<label for="dataNascimento" class="form-label-modern">Data
+											de Nascimento</label> <input type="date" class="form-control"
+											id="dataNascimento" th:field="*{dataNascimento}"
+											onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}">
 									</div>
 								</div>
 							</div>
-
-							<div class="card card-modern mb-4">
-								<div class="card-header">
-									<h6 class="mb-0 fw-bold text-primary">
-										<i class="fa-solid fa-map-location-dot me-2"></i>Endereço
-									</h6>
-								</div>
-								<div class="card-body p-4">
-									<div class="row g-3">
-										<div class="col-md-3">
-											<label for="cep" class="form-label-modern">CEP *</label>
-											<div class="input-group">
-												<input type="text" class="form-control" id="cep"
-													th:field="*{cep}" placeholder="00000-000"
-													onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}"
-													th:classappend="${#fields.hasErrors('cep')} ? 'is-invalid'">
-												<span class="input-group-text bg-white"><i
-													class="fa-solid fa-magnifying-glass text-muted"></i></span>
-												<div class="invalid-feedback"
-													th:if="${#fields.hasErrors('cep')}" th:errors="*{cep}"></div>
-											</div>
-										</div>
-
-										<div class="col-md-7">
-											<label for="rua" class="form-label-modern">Rua *</label> <input
-												type="text" class="form-control" id="rua" th:field="*{rua}"
-												maxlength="150"
-												th:classappend="${#fields.hasErrors('rua')} ? 'is-invalid'">
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('rua')}" th:errors="*{rua}"></div>
-										</div>
-
-										<div class="col-md-2">
-											<label for="numero" class="form-label-modern">Número
-												*</label> <input type="number" class="form-control" id="numero"
-												th:field="*{numero}"
-												th:classappend="${#fields.hasErrors('numero')} ? 'is-invalid'">
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
-										</div>
-
-										<div class="col-md-6">
-											<label for="complemento" class="form-label-modern">Complemento</label>
-											<input type="text" class="form-control" id="complemento"
-												th:field="*{complemento}" placeholder="Apto, Bloco, etc.">
-										</div>
-
-										<div class="col-md-6">
-											<label for="bairro" class="form-label-modern">Bairro
-												*</label> <input type="text" class="form-control" id="bairro"
-												th:field="*{bairro}" maxlength="100"
-												th:classappend="${#fields.hasErrors('bairro')} ? 'is-invalid'">
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('bairro')}" th:errors="*{bairro}"></div>
-										</div>
-
-										<div class="col-md-8">
-											<label for="cidade" class="form-label-modern">Cidade
-												*</label> <input type="text" class="form-control" id="cidade"
-												th:field="*{cidade}" maxlength="100"
-												th:classappend="${#fields.hasErrors('cidade')} ? 'is-invalid'">
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}"></div>
-										</div>
-
-										<div class="col-md-4">
-											<label for="estado" class="form-label-modern">Estado
-												*</label> <select class="form-select" id="estado"
-												th:field="*{estado}"
-												th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid'">
-												<option value="">Selecione...</option>
-												<option th:each="uf : ${listaEstados}" th:value="${uf}"
-													th:text="${uf}"></option>
-											</select>
-											<div class="invalid-feedback"
-												th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="row g-3">
-								<div class="col-md-8">
-									<div
-										class="alert alert-info shadow-sm border-0 h-100 d-flex flex-column justify-content-center mb-0"
-										role="alert"
-										style="background-color: #e7f1ff; border-left: 4px solid #0dcaf0 !important;">
-										<div class="d-flex align-items-center mb-1">
-											<i class="fa-solid fa-circle-info fs-5 me-2 text-info"></i>
-											<h6 class="fw-bold mb-0 text-dark">Busca Automática</h6>
-										</div>
-										<p class="small mb-0 text-muted ps-4">Ao digitar o CEP, o
-											endereço será preenchido automaticamente.</p>
-									</div>
-								</div>
-
-								<div class="col-md-4">
-									<div class="card border-0 shadow-sm h-100">
-										<div
-											class="card-body d-flex flex-column justify-content-center p-3">
-											<div class="d-grid gap-2">
-												<button type="submit"
-													class="btn btn-primary fw-bold btn-modern" title="Salvar">
-													<i class="fa-solid fa-floppy-disk me-2"></i> Salvar
-													Registro
-												</button>
-
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
 						</div>
+
+						<div class="card card-modern mb-4">
+							<div class="card-header">
+								<h6 class="mb-0 fw-bold text-primary">
+									<i class="fa-solid fa-map-location-dot me-2"></i>Endereço
+								</h6>
+							</div>
+							<div class="card-body p-4">
+								<div class="row g-3">
+									<div class="col-md-3">
+										<label for="cep" class="form-label-modern">CEP *</label>
+										<div class="input-group">
+											<input type="text" class="form-control" id="cep"
+												th:field="*{cep}" placeholder="00000-000"
+												onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}"
+												th:classappend="${#fields.hasErrors('cep')} ? 'is-invalid'">
+											<span class="input-group-text bg-white"><i
+												class="fa-solid fa-magnifying-glass text-muted"></i></span>
+											<div class="invalid-feedback"
+												th:if="${#fields.hasErrors('cep')}" th:errors="*{cep}"></div>
+										</div>
+									</div>
+
+									<div class="col-md-7">
+										<label for="rua" class="form-label-modern">Rua *</label> <input
+											type="text" class="form-control" id="rua" th:field="*{rua}"
+											maxlength="150"
+											th:classappend="${#fields.hasErrors('rua')} ? 'is-invalid'">
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('rua')}" th:errors="*{rua}"></div>
+									</div>
+
+									<div class="col-md-2">
+										<label for="numero" class="form-label-modern">Número *</label>
+										<input type="number" class="form-control" id="numero"
+											th:field="*{numero}"
+											th:classappend="${#fields.hasErrors('numero')} ? 'is-invalid'">
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
+									</div>
+
+									<div class="col-md-6">
+										<label for="complemento" class="form-label-modern">Complemento</label>
+										<input type="text" class="form-control" id="complemento"
+											th:field="*{complemento}" placeholder="Apto, Bloco, etc.">
+									</div>
+
+									<div class="col-md-6">
+										<label for="bairro" class="form-label-modern">Bairro *</label>
+										<input type="text" class="form-control" id="bairro"
+											th:field="*{bairro}" maxlength="100"
+											th:classappend="${#fields.hasErrors('bairro')} ? 'is-invalid'">
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('bairro')}" th:errors="*{bairro}"></div>
+									</div>
+
+									<div class="col-md-8">
+										<label for="cidade" class="form-label-modern">Cidade *</label>
+										<input type="text" class="form-control" id="cidade"
+											th:field="*{cidade}" maxlength="100"
+											th:classappend="${#fields.hasErrors('cidade')} ? 'is-invalid'">
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}"></div>
+									</div>
+
+									<div class="col-md-4">
+										<label for="estado" class="form-label-modern">Estado *</label>
+										<select class="form-select" id="estado" th:field="*{estado}"
+											th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid'">
+											<option value="">Selecione...</option>
+											<option th:each="uf : ${listaEstados}" th:value="${uf}"
+												th:text="${uf}"></option>
+										</select>
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row g-3">
+							<div class="col-md-8">
+								<div
+									class="alert alert-info shadow-sm border-0 h-100 d-flex flex-column justify-content-center mb-0"
+									role="alert"
+									style="background-color: #e7f1ff; border-left: 4px solid #0dcaf0 !important;">
+									<div class="d-flex align-items-center mb-1">
+										<i class="fa-solid fa-circle-info fs-5 me-2 text-info"></i>
+										<h6 class="fw-bold mb-0 text-dark">Busca Automática</h6>
+									</div>
+									<p class="small mb-0 text-muted ps-4">Ao digitar o CEP, o
+										endereço será preenchido automaticamente.</p>
+								</div>
+							</div>
+
+							<div class="col-md-4">
+								<div class="card border-0 shadow-sm h-100">
+									<div
+										class="card-body d-flex flex-column justify-content-center p-3">
+										<div class="d-grid gap-2">
+											<button type="submit"
+												class="btn btn-primary fw-bold btn-modern" title="Salvar">
+												<i class="fa-solid fa-floppy-disk me-2"></i> Salvar Registro
+											</button>
+
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
 					</div>
 				</div>
-			</form>
+		</div>
+		</form>
 		</div>
 	</main>
 
