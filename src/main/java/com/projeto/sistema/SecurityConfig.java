@@ -14,25 +14,26 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class SecurityConfig {
 
 	@Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/login").permitAll() // <--- Adicionei /login aqui para não bloquear a própria tela de login
-                .anyRequest().authenticated()
-            )
-            .formLogin(login -> login
-                .loginPage("/login") // <--- ESSA LINHA É A MÁGICA. Ela aponta para sua nova tela.
-                .defaultSuccessUrl("/administrativo", true)
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            )
-            .csrf(csrf -> csrf.disable());
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	    http
+	        .authorizeHttpRequests(auth -> auth
+	            // IMPORTANTE: "/login" TEM QUE ESTAR AQUI NOS PERMITIDOS
+	            .requestMatchers("/css/**", "/js/**", "/img/**", "/login").permitAll()
+	            .anyRequest().authenticated()
+	        )
+	        .formLogin(login -> login
+	            .loginPage("/login") // Diz onde fica a tela
+	            .defaultSuccessUrl("/administrativo", true)
+	            .permitAll() // Permite acesso a ela
+	        )
+	        .logout(logout -> logout
+	            .logoutSuccessUrl("/login?logout")
+	            .permitAll()
+	        )
+	        .csrf(csrf -> csrf.disable());
 
-        return http.build();
-    }
+	    return http.build();
+	}
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withDefaultPasswordEncoder()

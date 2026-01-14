@@ -1,7 +1,7 @@
 package com.projeto.sistema.controle;
 
 import java.util.List;
-import java.util.Optional; // Import necessário
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.projeto.sistema.modelos.Contatos; // Import necessário
+import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.Grupo;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
+import com.projeto.sistema.servicos.EmailService; // Importação do serviço de e-mail
 import com.projeto.sistema.servicos.GrupoService;
 
 @Controller
@@ -32,14 +33,17 @@ public class GrupoControle {
     @Autowired
     private GrupoRepositorio grupoRepositorio;
 
-    // 1. TELA DE CADASTRO (Mantida com ajustes de navegação)
+    @Autowired
+    private EmailService emailService; // Serviço injetado corretamente
+    
+    // 1. TELA DE CADASTRO
     @GetMapping("/cadastro")
     public ModelAndView cadastrar(Grupo grupo,
                                   @RequestParam(value = "mesAniversario", required = false) Integer mesAniversario) {
         
         ModelAndView mv = new ModelAndView("grupos/cadastro");
         mv.addObject("grupo", grupo);
-        mv.addObject("paginaAtiva", "cadastroGrupo"); // Marcador para a Sidebar
+        mv.addObject("paginaAtiva", "cadastroGrupo"); 
         
         if (mesAniversario != null) {
             mv.addObject("listaContatos", contatosRepositorio.findByMesAniversario(mesAniversario));
@@ -49,12 +53,10 @@ public class GrupoControle {
             mv.addObject("listaContatos", contatosRepositorio.findAll());
         }
         
-        // OBS: Removi "listaGruposExistentes" daqui, pois agora ela vive na tela "gerenciar"
-        
         return mv;
     }
 
-    // 2. SALVAR NOVO GRUPO (Atualizado redirecionamento)
+    // 2. SALVAR NOVO GRUPO
     @PostMapping("/salvar")
     public ModelAndView salvar(Grupo grupo, 
                                @RequestParam(value = "idsContatos", required = false) List<Long> idsContatos,
@@ -70,20 +72,19 @@ public class GrupoControle {
             e.printStackTrace();
             attributes.addFlashAttribute("mensagemErro", "Erro ao salvar grupo.");
         }
-        // ALTERADO: Agora redireciona para a lista de gerenciamento
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-    // 3. TELA DE GERENCIAR (NOVO - Lista todos os grupos)
+    // 3. TELA DE GERENCIAR
     @GetMapping("/gerenciar")
     public ModelAndView gerenciar() {
         ModelAndView mv = new ModelAndView("grupos/gerenciar");
         mv.addObject("listaGrupos", grupoRepositorio.findAll());
-        mv.addObject("paginaAtiva", "gerenciarGrupo"); // Marcador para a Sidebar
+        mv.addObject("paginaAtiva", "gerenciarGrupo");
         return mv;
     }
 
-    // 4. TELA DE EDIÇÃO (NOVO - Abre um grupo específico)
+    // 4. TELA DE EDIÇÃO
     @GetMapping("/editar/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(id);
@@ -91,7 +92,6 @@ public class GrupoControle {
         if (grupoOpt.isPresent()) {
             ModelAndView mv = new ModelAndView("grupos/editar");
             mv.addObject("grupo", grupoOpt.get());
-            // Carrega todos os contatos para o dropdown de "Adicionar Novos Membros"
             mv.addObject("todosContatos", contatosRepositorio.findAll());
             mv.addObject("paginaAtiva", "gerenciarGrupo");
             return mv;
@@ -99,20 +99,17 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-    // 5. ATUALIZAR GRUPO (NOVO - Salva edições e adiciona membros)
+    // 5. ATUALIZAR GRUPO
     @PostMapping("/atualizar")
     public ModelAndView atualizar(Grupo grupo, 
                                   @RequestParam(value = "novosMembros", required = false) List<Long> novosMembros,
                                   RedirectAttributes attributes) {
         try {
-            // Salva nome/descrição
             Grupo grupoSalvo = grupoRepositorio.save(grupo);
             
-            // Lógica para adicionar novos membros selecionados na tela de edição
             if(novosMembros != null && !novosMembros.isEmpty()) {
                 List<Contatos> contatosAdd = contatosRepositorio.findAllById(novosMembros);
                 for(Contatos c : contatosAdd) {
-                    // Só adiciona se ainda não estiver no grupo
                     if(!c.getGrupos().contains(grupoSalvo)) {
                          c.getGrupos().add(grupoSalvo);
                          contatosRepositorio.save(c);
@@ -127,7 +124,7 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/editar/" + grupo.getId());
     }
 
-    // 6. REMOVER MEMBRO (NOVO - Remove uma pessoa específica do grupo)
+    // 6. REMOVER MEMBRO
     @GetMapping("/removerMembro/{grupoId}/{contatoId}")
     public ModelAndView removerMembro(@PathVariable("grupoId") Long grupoId, 
                                       @PathVariable("contatoId") Long contatoId,
@@ -140,7 +137,6 @@ public class GrupoControle {
                 Contatos contato = contatoOpt.get();
                 Grupo grupo = grupoOpt.get();
                 
-                // Remove a relação
                 contato.getGrupos().remove(grupo);
                 contatosRepositorio.save(contato);
                 
@@ -150,11 +146,10 @@ public class GrupoControle {
             e.printStackTrace();
             attributes.addFlashAttribute("mensagemErro", "Erro ao remover membro.");
         }
-        // Volta para a mesma tela de edição
         return new ModelAndView("redirect:/grupos/editar/" + grupoId);
     }
 
-    // 7. EXCLUIR GRUPO (Atualizado redirecionamento)
+    // 7. EXCLUIR GRUPO
     @GetMapping("/excluir/{id}")
     public ModelAndView excluir(@PathVariable("id") Long id, RedirectAttributes attributes) {
         try {
@@ -164,7 +159,35 @@ public class GrupoControle {
             e.printStackTrace();
             attributes.addFlashAttribute("mensagemErro", "Erro ao excluir grupo.");
         }
-        // ALTERADO: Agora redireciona para a lista de gerenciamento
+        return new ModelAndView("redirect:/grupos/gerenciar");
+    }
+   
+    // 8. DISPARAR AÇÃO (E-MAIL EM MASSA)
+    @PostMapping("/disparar")
+    public ModelAndView dispararAcao(@RequestParam("grupoId") Long grupoId,
+                                     @RequestParam("assunto") String assunto,
+                                     @RequestParam("mensagem") String mensagem,
+                                     RedirectAttributes attributes) {
+        try {
+            Optional<Grupo> grupoOpt = grupoRepositorio.findById(grupoId);
+            
+            if (grupoOpt.isPresent()) {
+                Grupo grupo = grupoOpt.get();
+                
+                if (grupo.getContatos() == null || grupo.getContatos().isEmpty()) {
+                    attributes.addFlashAttribute("mensagemErro", "O grupo está vazio. Adicione membros antes de disparar.");
+                } else {
+                    // Chama o serviço de e-mail injetado
+                    emailService.enviarMensagemEmMassa(assunto, mensagem, grupo.getContatos());
+                    attributes.addFlashAttribute("mensagemSucesso", "Disparo iniciado para " + grupo.getContatos().size() + " membros do grupo '" + grupo.getNome() + "'!");
+                }
+            } else {
+                attributes.addFlashAttribute("mensagemErro", "Grupo não encontrado.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            attributes.addFlashAttribute("mensagemErro", "Erro interno ao processar disparo.");
+        }
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 }

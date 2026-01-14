@@ -24,6 +24,11 @@
                 <i class="fa-solid fa-check-circle me-2"></i> <span th:text="${mensagemSucesso}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+            
+            <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${mensagemErro}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -58,8 +63,17 @@
                                             </td>
                                             <td class="text-end pe-4">
                                                 <div class="btn-group">
+                                                    
+                                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                                            th:data-id="${grupo.id}" 
+                                                            th:data-nome="${grupo.nome}"
+                                                            onclick="prepararDisparo(this)"
+                                                            title="Disparar Mensagem" data-bs-toggle="modal" data-bs-target="#modalDisparo">
+                                                        <i class="fa-regular fa-paper-plane"></i>
+                                                    </button>
+
                                                     <a th:href="@{/grupos/editar/{id}(id=${grupo.id})}" class="btn btn-sm btn-outline-primary" title="Editar Usuários/Grupo">
-                                                        <i class="fa-solid fa-pen-to-square me-1"></i> Editar
+                                                        <i class="fa-solid fa-pen-to-square me-1"></i>
                                                     </a>
                                                     <a th:href="@{/grupos/excluir/{id}(id=${grupo.id})}" class="btn btn-sm btn-outline-danger" 
                                                        onclick="return confirm('Tem certeza que deseja excluir este grupo inteiro?');" title="Excluir Grupo">
@@ -84,9 +98,56 @@
         </div>
     </main>
 
+    <div class="modal fade" id="modalDisparo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-rocket me-2"></i>Disparar Ação</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/grupos/disparar" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="grupoId" id="inputGrupoId">
+                        
+                        <div class="alert alert-light border shadow-sm small mb-3">
+                            Enviando para: <strong id="nomeGrupoDisplay" class="text-success">...</strong>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">ASSUNTO</label>
+                            <input type="text" class="form-control" name="assunto" required placeholder="Ex: Feliz Aniversário!">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">MENSAGEM</label>
+                            <textarea class="form-control" name="mensagem" rows="5" required placeholder="Digite sua mensagem aqui... Use {nome} para personalizar."></textarea>
+                            <div class="form-text small">Dica: Use <strong>{nome}</strong> para substituir pelo nome do contato.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success fw-bold">
+                            <i class="fa-regular fa-paper-plane me-2"></i> Enviar Agora
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
+        // SCRIPT CORRIGIDO: Lê os atributos data-id e data-nome do botão clicado
+        function prepararDisparo(botao) {
+            var id = botao.getAttribute('data-id');
+            var nome = botao.getAttribute('data-nome');
+            
+            document.getElementById('inputGrupoId').value = id;
+            document.getElementById('nomeGrupoDisplay').innerText = nome;
+        }
+
         function toggleMenu(menuId, iconId) {
             var menu = document.getElementById(menuId);
             var icon = document.getElementById(iconId);
