@@ -1,9 +1,11 @@
 package com.projeto.sistema.controle;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,20 +38,25 @@ public class GrupoControle {
     @Autowired
     private EmailService emailService; // Serviço injetado corretamente
     
-    // 1. TELA DE CADASTRO
     @GetMapping("/cadastro")
     public ModelAndView cadastrar(Grupo grupo,
-                                  @RequestParam(value = "mesAniversario", required = false) Integer mesAniversario) {
+                                  @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+                                  @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
         
         ModelAndView mv = new ModelAndView("grupos/cadastro");
         mv.addObject("grupo", grupo);
         mv.addObject("paginaAtiva", "cadastroGrupo"); 
         
-        if (mesAniversario != null) {
-            mv.addObject("listaContatos", contatosRepositorio.findByMesAniversario(mesAniversario));
-            mv.addObject("mesSelecionado", mesAniversario);
+        // Mantém as datas no formulário para o usuário ver o que filtrou
+        mv.addObject("dataInicio", dataInicio);
+        mv.addObject("dataFim", dataFim);
+
+        if (dataInicio != null && dataFim != null) {
+            // Usa o novo método de busca por período
+            mv.addObject("listaContatos", contatosRepositorio.findByAniversarioNoPeriodo(dataInicio, dataFim));
             mv.addObject("filtrado", true); 
         } else {
+            // Se não filtrar, traz todos (ou poderia trazer ninguém para a tela ficar limpa)
             mv.addObject("listaContatos", contatosRepositorio.findAll());
         }
         

@@ -516,3 +516,27 @@ body {
 .row-selected td:first-child {
     border-left: 3px solid var(--accent-color);
 }
+
+/* ==========================================================================
+   10. MODAL GMAIL
+   ========================================================================== */
+.note-editor.note-frame {
+    border: none !important; /* Remove borda do editor */
+    box-shadow: none !important;
+}
+
+.note-toolbar {
+    border-bottom: 1px solid #eee !important;
+    background: #fff !important;
+}
+
+.note-statusbar {
+    display: none !important; /* Esconde a barra de redimensionamento padrão */
+}
+
+/* Efeito hover nos ícones do rodapé */
+.hover-effect:hover {
+    color: #333;
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 4px;
+}

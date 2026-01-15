@@ -12,6 +12,13 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
 
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
+	rel="stylesheet">
+
 </head>
 
 
@@ -168,59 +175,143 @@
 	</main>
 
 	<div class="modal fade" id="modalDisparo" tabindex="-1"
-		aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header bg-success text-white">
-					<h5 class="modal-title fw-bold">
-						<i class="fa-solid fa-rocket me-2"></i>Disparar Ação
-					</h5>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal"></button>
-				</div>
-				<form action="/grupos/disparar" method="post">
-					<div class="modal-body">
-						<input type="hidden" name="grupoId" id="inputGrupoId">
+		aria-hidden="true" data-bs-backdrop="static">
+		<div class="modal-dialog modal-lg modal-dialog-scrollable">
+			<div class="modal-content shadow-lg"
+				style="border-radius: 8px; border: none;">
 
-						<div class="alert alert-light border shadow-sm small mb-3">
-							Enviando para: <strong id="nomeGrupoDisplay" class="text-success">...</strong>
-						</div>
-
-						<div class="mb-3">
-							<label class="form-label fw-bold small text-secondary">ASSUNTO</label>
-							<input type="text" class="form-control" name="assunto" required
-								placeholder="Ex: Feliz Aniversário!">
-						</div>
-
-						<div class="mb-3">
-							<label class="form-label fw-bold small text-secondary">MENSAGEM</label>
-							<textarea class="form-control" name="mensagem" rows="5" required
-								placeholder="Digite sua mensagem aqui... Use {nome} para personalizar."></textarea>
-							<div class="form-text small">
-								Dica: Use <strong>{nome}</strong> para substituir pelo nome do
-								contato.
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer bg-light">
-						<button type="button"
-							class="btn btn-link text-secondary text-decoration-none"
-							data-bs-dismiss="modal">Cancelar</button>
-						<button type="submit" class="btn btn-success fw-bold">
-							<i class="fa-regular fa-paper-plane me-2"></i> Enviar Agora
+				<div
+					class="modal-header bg-light py-2 px-3 border-bottom-0 d-flex justify-content-between align-items-center">
+					<h6 class="modal-title fw-bold small text-secondary">Nova
+						mensagem</h6>
+					<div class="d-flex gap-2">
+						<button type="button" class="btn btn-sm btn-link text-muted p-0">
+							<i class="fa-solid fa-minus"></i>
+						</button>
+						<button type="button" class="btn btn-sm btn-link text-muted p-0">
+							<i class="fa-solid fa-expand"></i>
+						</button>
+						<button type="button" class="btn btn-sm btn-link text-muted p-0"
+							data-bs-dismiss="modal">
+							<i class="fa-solid fa-xmark"></i>
 						</button>
 					</div>
+				</div>
+
+				<form action="/grupos/disparar" method="post"
+					enctype="multipart/form-data" class="d-flex flex-column h-100">
+					<input type="hidden" name="grupoId" id="inputGrupoId">
+
+					<div class="modal-body p-0 d-flex flex-column">
+
+						<div class="px-3 py-2 border-bottom">
+							<div class="d-flex align-items-center">
+								<span class="text-muted small me-2">Para</span> <span
+									id="nomeGrupoDisplay"
+									class="badge bg-light text-dark border rounded-pill px-3">...</span>
+							</div>
+						</div>
+
+						<div class="px-3 py-2 border-bottom">
+							<input type="text"
+								class="form-control border-0 shadow-none p-0 fw-bold"
+								name="assunto" placeholder="Assunto" required>
+						</div>
+
+						<div class="flex-grow-1">
+							<textarea id="summernote" name="mensagem"></textarea>
+						</div>
+
+						<input type="file" id="inputAnexos" name="anexos" multiple
+							style="display: none;">
+					</div>
+
+					<div
+						class="modal-footer justify-content-between px-3 py-2 border-top-0">
+						<div class="d-flex align-items-center gap-3">
+							<div class="btn-group dropup">
+								<button type="submit"
+									class="btn btn-primary rounded-pill px-4 fw-bold">Enviar</button>
+								<button type="button"
+									class="btn btn-primary dropdown-toggle dropdown-toggle-split rounded-pill rounded-start-0 ps-1 pe-2"
+									data-bs-toggle="dropdown" aria-expanded="false">
+									<span class="visually-hidden">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><a class="dropdown-item" href="#">Programar envio</a></li>
+								</ul>
+							</div>
+
+							<div class="d-flex gap-3 text-secondary fs-5 align-items-center">
+								<i class="fa-solid fa-font cursor-pointer"
+									title="Formatar (Automático no Editor)"
+									style="cursor: pointer;"></i> <i
+									class="fa-solid fa-paperclip cursor-pointer hover-effect"
+									onclick="document.getElementById('inputAnexos').click()"
+									title="Anexar arquivos" style="cursor: pointer;"></i> <i
+									class="fa-regular fa-face-smile cursor-pointer hover-effect"
+									style="cursor: pointer;"></i> <i
+									class="fa-brands fa-google-drive cursor-pointer hover-effect"
+									style="cursor: pointer;"></i> <i
+									class="fa-regular fa-image cursor-pointer hover-effect"
+									style="cursor: pointer;"></i> <i
+									class="fa-solid fa-lock cursor-pointer hover-effect"
+									title="Modo confidencial" style="cursor: pointer;"></i>
+							</div>
+						</div>
+
+						<button type="button"
+							class="btn btn-light text-secondary border-0"
+							data-bs-dismiss="modal" title="Descartar rascunho">
+							<i class="fa-regular fa-trash-can"></i>
+						</button>
+					</div>
+
+					<div id="listaAnexos" class="px-3 pb-2 small text-muted"></div>
 				</form>
 			</div>
 		</div>
 	</div>
 
 	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
-	<script>
-        // SCRIPT CORRIGIDO: Lê os atributos data-id e data-nome do botão clicado
+    <script>
+        $(document).ready(function() {
+            // Inicializa o Summernote
+            $('#summernote').summernote({
+                placeholder: 'Digite sua mensagem aqui...',
+                tabsize: 2,
+                height: 300,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                disableResizeEditor: true
+            });
+
+            // Mostra os nomes dos arquivos ao selecionar
+            $('#inputAnexos').change(function() {
+                var files = $(this)[0].files;
+                var nomes = "";
+                for (var i = 0; i < files.length; i++) {
+                    nomes += '<span class="badge bg-light text-dark border me-1"><i class="fa-solid fa-paperclip me-1"></i>' + files[i].name + '</span>';
+                }
+                $('#listaAnexos').html(nomes);
+            });
+        });
+
+        // Função para passar os dados para o modal
         function prepararDisparo(botao) {
             var id = botao.getAttribute('data-id');
             var nome = botao.getAttribute('data-nome');
@@ -229,6 +320,7 @@
             document.getElementById('nomeGrupoDisplay').innerText = nome;
         }
 
+        // Função do menu lateral
         function toggleMenu(menuId, iconId) {
             var menu = document.getElementById(menuId);
             var icon = document.getElementById(iconId);

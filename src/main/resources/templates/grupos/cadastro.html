@@ -1,196 +1,229 @@
 <!DOCTYPE html>
 <html xmlns:th="https://thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Novo Grupo | WinPost</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Novo Grupo | WinPost</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
-    <link rel="stylesheet" href="/css/estilo.css">
-    
-    <style>
-        .btn-white-pro {
-            background-color: #fff;
-            border: 1px solid #e3e6f0;
-            color: #4e73df; /* Ajuste para sua cor primária */
-            transition: all 0.2s;
-        }
-        .btn-white-pro:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-            color: #224abe;
-        }
-    </style>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/estilo.css">
+
+<style>
+.btn-white-pro {
+	background-color: #fff;
+	border: 1px solid #e3e6f0;
+	color: #4e73df; /* Ajuste para sua cor primária */
+	transition: all 0.2s;
+}
+
+.btn-white-pro:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+	color: #224abe;
+}
+</style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-    <div th:replace="~{fragments/navbar :: navbar}"></div>
-    <div th:replace="~{fragments/sidebar :: sidebar('cadastroGrupo')}"></div>
+	<div th:replace="~{fragments/navbar :: navbar}"></div>
+	<div th:replace="~{fragments/sidebar :: sidebar('cadastroGrupo')}"></div>
 
-    <main class="flex-grow-1">
-        <div style="margin-top: 80px;"></div>
+	<main class="flex-grow-1">
+		<div style="margin-top: 80px;"></div>
 
-        <div class="container py-4 mb-5">
-            
-            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
-                <i class="fa-solid fa-check-circle me-2"></i> <span th:text="${mensagemSucesso}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-             <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${mensagemErro}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+		<div class="container py-4 mb-5">
 
-            <div class="d-flex justify-content-between align-items-end mb-4 page-header">
-                <div>
-                    <h6 class="text-uppercase text-muted small fw-bold mb-1">Cadastros</h6>
-                    <h2 class="text-dark mb-0 fw-bold">Novo Grupo</h2>
-                </div>
-                <a href="/grupos/gerenciar" class="btn btn-white-pro shadow-sm fw-bold px-3 py-2 rounded-3 text-decoration-none">
-                    <i class="fa-solid fa-list-check me-2"></i>Gerenciar Grupos
-                </a>
-            </div>
+			<div th:if="${mensagemSucesso}"
+				class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
+				<i class="fa-solid fa-check-circle me-2"></i> <span
+					th:text="${mensagemSucesso}"></span>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+			</div>
+			<div th:if="${mensagemErro}"
+				class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
+				<i class="fa-solid fa-triangle-exclamation me-2"></i> <span
+					th:text="${mensagemErro}"></span>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+			</div>
 
-            <div class="row g-4">
-                
-                <div class="col-lg-5">
-                    <div class="sticky-column">
-                        
-                        <form action="/grupos/salvar" method="post" id="formGrupo" th:object="${grupo}">
-                            <div class="card card-pro mb-4">
-                                <div class="card-body p-4">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div class="bg-primary bg-opacity-10 text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                            <i class="fa-solid fa-layer-group"></i>
-                                        </div>
-                                        <div>
-                                            <h5 class="fw-bold mb-0 text-dark">Dados do Grupo</h5>
-                                            <span class="text-muted small">Defina o nome e descrição</span>
-                                        </div>
-                                    </div>
+			<div
+				class="d-flex justify-content-between align-items-end mb-4 page-header">
+				<div>
+					<h6 class="text-uppercase text-muted small fw-bold mb-1">Cadastros</h6>
+					<h2 class="text-dark mb-0 fw-bold">Novo Grupo</h2>
+				</div>
+				<a href="/grupos/gerenciar"
+					class="btn btn-white-pro shadow-sm fw-bold px-3 py-2 rounded-3 text-decoration-none">
+					<i class="fa-solid fa-list-check me-2"></i>Gerenciar Grupos
+				</a>
+			</div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold small text-secondary">NOME <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" th:field="*{nome}" placeholder="Ex: Aniversariantes Janeiro" required>
-                                    </div>
-                                    
-                                    <div class="mb-4">
-                                        <label class="form-label fw-bold small text-secondary">DESCRIÇÃO</label>
-                                        <textarea class="form-control" th:field="*{descricao}" rows="3" placeholder="Opcional: Detalhes sobre o grupo..."></textarea>
-                                    </div>
+			<div class="row g-4">
 
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-dark fw-bold py-2 shadow-sm">
-                                            <i class="fa-solid fa-check me-2"></i> Salvar Grupo
-                                        </button>
-                                        
-                                        <div class="bg-light rounded p-2 text-center border mt-2">
-                                            <span id="contadorSelecao" class="small text-muted fw-bold">
-                                                0 contatos selecionados
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+				<div class="col-lg-5">
+					<div class="sticky-column">
 
-                <div class="col-lg-7">
-                    <div class="card card-pro h-100">
-                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
-                            <div class="row align-items-center">
-                                <div class="col-xl-4 col-lg-12 mb-lg-2 mb-xl-0">
-                                    <h5 class="fw-bold mb-1">Membros</h5>
-                                    <p class="text-muted small mb-0">
-                                        <span th:if="${dataInicio != null or dataFim != null}" class="text-primary fw-bold">
-                                            <i class="fa-solid fa-filter me-1"></i> Filtrado por data
-                                        </span>
-                                        <span th:unless="${dataInicio != null or dataFim != null}">Selecione os contatos.</span>
-                                    </p>
-                                </div>
-                                
-                                <div class="col-xl-8 col-lg-12">
-                                    <form action="/grupos/cadastro" method="get" class="d-flex gap-2 align-items-center justify-content-end">
-                                        
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text bg-light text-muted border-end-0">De</span>
-                                            <input type="date" class="form-control border-start-0 ps-1" name="dataInicio" 
-                                                   th:value="${dataInicio}" aria-label="Data Início">
-                                        </div>
+						<form action="/grupos/salvar" method="post" id="formGrupo"
+							th:object="${grupo}">
+							<div class="card card-pro mb-4">
+								<div class="card-body p-4">
+									<div class="d-flex align-items-center mb-4">
+										<div
+											class="bg-primary bg-opacity-10 text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
+											style="width: 40px; height: 40px;">
+											<i class="fa-solid fa-layer-group"></i>
+										</div>
+										<div>
+											<h5 class="fw-bold mb-0 text-dark">Dados do Grupo</h5>
+											<span class="text-muted small">Defina o nome e
+												descrição</span>
+										</div>
+									</div>
 
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text bg-light text-muted border-end-0">Até</span>
-                                            <input type="date" class="form-control border-start-0 ps-1" name="dataFim" 
-                                                   th:value="${dataFim}" aria-label="Data Fim">
-                                        </div>
+									<div class="mb-3">
+										<label class="form-label fw-bold small text-secondary">NOME
+											<span class="text-danger">*</span>
+										</label> <input type="text" class="form-control" th:field="*{nome}"
+											placeholder="Ex: Aniversariantes Janeiro" required>
+									</div>
 
-                                        <button type="submit" class="btn btn-primary btn-sm px-3" title="Filtrar">
-                                            <i class="fa-solid fa-magnifying-glass"></i>
-                                        </button>
+									<div class="mb-4">
+										<label class="form-label fw-bold small text-secondary">DESCRIÇÃO</label>
+										<textarea class="form-control" th:field="*{descricao}"
+											rows="3" placeholder="Opcional: Detalhes sobre o grupo..."></textarea>
+									</div>
 
-                                        <a th:if="${dataInicio != null or dataFim != null}" href="/grupos/cadastro" 
-                                           class="btn btn-outline-secondary btn-sm" title="Limpar Filtros">
-                                            <i class="fa-solid fa-xmark"></i>
-                                        </a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="card-body p-4">
-                            <div class="table-responsive">
-                                <table class="table align-middle w-100" id="tabelaSelecao">
-                                    <thead class="bg-light rounded-3">
-                                        <tr>
-                                            <th class="text-center rounded-start" width="40">
-                                                <input type="checkbox" class="form-check-input" id="checkAll">
-                                            </th>
-                                            <th>Contato</th>
-                                            <th>Email</th>
-                                            <th class="rounded-end">Local</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="c : ${listaContatos}" class="cursor-pointer row-contato">
-                                            <td class="text-center">
-                                                <input type="checkbox" class="form-check-input check-item" name="idsContatos" th:value="${c.id}" form="formGrupo">
-                                            </td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="bg-primary bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 30px; height: 30px; font-size: 0.75rem;">
-                                                        <span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
-                                                    </div>
-                                                    <div>
-                                                        <span class="fw-bold text-dark small d-block" th:text="${c.nome}">Nome</span>
-                                                        </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-muted small" th:text="${c.email}">email</td>
-                                            <td>
-                                                <span class="badge bg-light text-secondary border fw-normal" th:text="${c.cidade}">Local</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+									<div class="d-grid gap-2">
+										<button type="submit"
+											class="btn btn-dark fw-bold py-2 shadow-sm">
+											<i class="fa-solid fa-check me-2"></i> Salvar Grupo
+										</button>
 
-    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+										<div class="bg-light rounded p-2 text-center border mt-2">
+											<span id="contadorSelecao" class="small text-muted fw-bold">
+												0 contatos selecionados </span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="/js/grupos.js"></script>
+				<div class="col-lg-7">
+					<div class="card card-pro h-100">
+						<div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+							<div class="row align-items-center">
+								<div class="col-xl-4 col-lg-12 mb-lg-2 mb-xl-0">
+									<h5 class="fw-bold mb-1">Membros</h5>
+									<p class="text-muted small mb-0">
+										<span th:if="${dataInicio != null or dataFim != null}"
+											class="text-primary fw-bold"> <i
+											class="fa-solid fa-filter me-1"></i> Filtrado por data
+										</span> <span th:unless="${dataInicio != null or dataFim != null}">Selecione
+											os contatos.</span>
+									</p>
+								</div>
+
+								<div class="col-xl-8 col-lg-12">
+									<form action="/grupos/cadastro" method="get"
+										class="d-flex gap-2 align-items-center justify-content-end">
+
+										<div class="input-group input-group-sm">
+											<span
+												class="input-group-text bg-light text-muted border-end-0">De</span>
+											<input type="date" class="form-control border-start-0 ps-1"
+												name="dataInicio" th:value="${dataInicio}"
+												aria-label="Data Início" required>
+										</div>
+
+										<div class="input-group input-group-sm">
+											<span
+												class="input-group-text bg-light text-muted border-end-0">Até</span>
+											<input type="date" class="form-control border-start-0 ps-1"
+												name="dataFim" th:value="${dataFim}" aria-label="Data Fim"
+												required>
+										</div>
+
+										<button type="submit" class="btn btn-primary btn-sm px-3"
+											title="Filtrar Aniversariantes">
+											<i class="fa-solid fa-magnifying-glass"></i>
+										</button>
+
+										<a th:if="${dataInicio != null}" href="/grupos/cadastro"
+											class="btn btn-outline-secondary btn-sm" title="Limpar">
+											<i class="fa-solid fa-xmark"></i>
+										</a>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div class="card-body p-4">
+							<div class="table-responsive">
+								<table class="table align-middle w-100" id="tabelaSelecao">
+									<thead class="bg-light rounded-3">
+										<tr>
+											<th class="text-center rounded-start" width="40"><input
+												type="checkbox" class="form-check-input" id="checkAll">
+											</th>
+											<th>Contato</th>
+											<th>Email</th>
+											<th class="rounded-end">Local</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="c : ${listaContatos}"
+											class="cursor-pointer row-contato">
+											<td class="text-center"><input type="checkbox"
+												class="form-check-input check-item" name="idsContatos"
+												th:value="${c.id}" form="formGrupo"></td>
+											<td>
+												<div class="d-flex align-items-center">
+													<div
+														class="bg-primary bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold"
+														style="width: 30px; height: 30px; font-size: 0.75rem;">
+														<span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
+													</div>
+													<div>
+														<span class="fw-bold text-dark small d-block"
+															th:text="${c.nome}">Nome</span>
+													</div>
+												</div>
+											</td>
+											<td class="text-muted small" th:text="${c.email}">email</td>
+											<td><span
+												class="badge bg-light text-secondary border fw-normal"
+												th:text="${c.cidade}">Local</span></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+	<script src="/js/grupos.js"></script>
 
 </body>
 </html>

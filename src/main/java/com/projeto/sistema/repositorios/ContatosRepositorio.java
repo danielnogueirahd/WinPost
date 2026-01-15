@@ -36,4 +36,11 @@ public interface ContatosRepositorio extends JpaRepository<Contatos, Long> {
             @Param("grupoId") Long grupoId, 
             @Param("dataInicio") LocalDate dataInicio, 
             @Param("dataFim") LocalDate dataFim);
+
+
+@Query("SELECT c FROM Contatos c WHERE (MONTH(c.dataNascimento) * 100 + DAY(c.dataNascimento)) " +
+	       "BETWEEN (MONTH(:dataInicio) * 100 + DAY(:dataInicio)) " +
+	       "AND (MONTH(:dataFim) * 100 + DAY(:dataFim))")
+	List<Contatos> findByAniversarioNoPeriodo(@Param("dataInicio") LocalDate dataInicio, 
+	                                          @Param("dataFim") LocalDate dataFim);
 }
