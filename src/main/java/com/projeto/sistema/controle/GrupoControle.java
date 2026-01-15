@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -174,26 +175,25 @@ public class GrupoControle {
     public ModelAndView dispararAcao(@RequestParam("grupoId") Long grupoId,
                                      @RequestParam("assunto") String assunto,
                                      @RequestParam("mensagem") String mensagem,
+                                     @RequestParam(value = "anexos", required = false) MultipartFile[] anexos, // Recebe arquivos
                                      RedirectAttributes attributes) {
         try {
             Optional<Grupo> grupoOpt = grupoRepositorio.findById(grupoId);
             
             if (grupoOpt.isPresent()) {
                 Grupo grupo = grupoOpt.get();
-                
-                if (grupo.getContatos() == null || grupo.getContatos().isEmpty()) {
-                    attributes.addFlashAttribute("mensagemErro", "O grupo está vazio. Adicione membros antes de disparar.");
+                if (grupo.getContatos().isEmpty()) {
+                    attributes.addFlashAttribute("mensagemErro", "O grupo está vazio.");
                 } else {
-                    // Chama o serviço de e-mail injetado
-                    emailService.enviarMensagemEmMassa(assunto, mensagem, grupo.getContatos());
-                    attributes.addFlashAttribute("mensagemSucesso", "Disparo iniciado para " + grupo.getContatos().size() + " membros do grupo '" + grupo.getNome() + "'!");
+                    // Chama o novo método que envia e loga
+                    emailService.enviarDisparo(grupo, assunto, mensagem, anexos);
+                    
+                    attributes.addFlashAttribute("mensagemSucesso", "Envio iniciado em segundo plano para " + grupo.getNome());
                 }
-            } else {
-                attributes.addFlashAttribute("mensagemErro", "Grupo não encontrado.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            attributes.addFlashAttribute("mensagemErro", "Erro interno ao processar disparo.");
+            attributes.addFlashAttribute("mensagemErro", "Erro ao processar envio.");
         }
         return new ModelAndView("redirect:/grupos/gerenciar");
     }

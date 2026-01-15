@@ -6,11 +6,27 @@ body {
     background-attachment: fixed;
     min-height: 100vh;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #333; /* Cor base para texto */
 }
 
+/* Scrollbar personalizada (opcional, mas dá um toque moderno) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; 
+}
 
 /* ==========================================================================
-   2. ESTRUTURA DE LAYOUT (SIDEBAR ANTIGO/WRAPPER)
+   2. ESTRUTURA DE LAYOUT (SIDEBAR & WRAPPER)
    ========================================================================== */
 #wrapper {
     overflow-x: hidden;
@@ -35,17 +51,73 @@ body {
     margin-left: 0;
 }
 
-.sidebar-link {
-    text-decoration: none;
-    color: #333;
-    display: block;
-    width: 100%;
-    height: 100%;
+/* Sidebar Offcanvas Customization */
+.offcanvas {
+    border-right: none;
+    box-shadow: 0 0 30px rgba(0,0,0,0.1) !important;
 }
 
-.sidebar-link:hover {
+.sidebar-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    padding: 1.5rem;
+    color: white;
+}
+
+.sidebar-item {
+    border: none !important; 
+    color: #555;
+    font-weight: 500;
+    padding: 15px 25px;
+    transition: all 0.3s ease; 
+    background-color: transparent;
+    border-left: 4px solid transparent !important; 
+}
+
+.sidebar-item:hover, 
+.sidebar-item:focus {
     background-color: #f8f9fa;
     color: #0d6efd;
+    border-left: 4px solid #0d6efd !important; 
+    padding-left: 30px; 
+}
+
+.sidebar-item i {
+    width: 25px; 
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-item:hover i {
+    transform: scale(1.2); 
+}
+
+.submenu-container {
+    background-color: #f8f9fa; 
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.03); 
+}
+
+.submenu-link {
+    padding-left: 60px !important; 
+    font-size: 0.9rem;
+    color: #666;
+    background-color: transparent;
+    border: none;
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.submenu-link:hover {
+    color: #0d6efd;
+    font-weight: 600;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.sidebar-item .fa-chevron-down,
+.sidebar-item .fa-chevron-up {
+    font-size: 0.75rem;
+    opacity: 0.6;
 }
 
 /* ==========================================================================
@@ -53,6 +125,7 @@ body {
    ========================================================================== */
 .card {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    border: none; /* Remove borda padrão do Bootstrap */
 }
 
 .card-modern {
@@ -93,6 +166,20 @@ body {
     border-left: 4px solid #0d6efd;
 }
 
+/* Card Pro (usado em Grupos) */
+.card-pro {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    background: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+.card-pro:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
 /* KPIs */
 .card-kpi {
     border: none;
@@ -106,7 +193,7 @@ body {
 }
 
 /* ==========================================================================
-   4. COMPONENTES: FORMULÁRIOS & INPUTS (CORRIGIDO)
+   4. COMPONENTES: FORMULÁRIOS & INPUTS
    ========================================================================== */
 .form-control, 
 .form-select {
@@ -118,7 +205,6 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Ícones de Input Group (Lupa, User, etc) com a mesma altura do input */
 .input-group-text {
     border-radius: 10px;
     border: 1px solid #dee2e6;
@@ -127,7 +213,7 @@ body {
     color: #6c757d;
 }
 
-/* Remove bordas arredondadas internas quando agrupado */
+/* Ajustes de bordas em input groups */
 .input-group > .form-control:not(:first-child), 
 .input-group > .form-select:not(:first-child),
 .input-group > .input-group-text:not(:first-child) {
@@ -172,6 +258,18 @@ body {
     display: block;
 }
 
+/* Checkbox Customizado */
+.form-check-input {
+    cursor: pointer;
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd; /* Padronizado para Primary */
+    border-color: #0d6efd;
+}
+
 /* ==========================================================================
    5. COMPONENTES: BOTÕES & ALERTS
    ========================================================================== */
@@ -202,32 +300,7 @@ body {
 }
 
 /* ==========================================================================
-   6. COMPONENTES: LISTAS & GRUPOS
-   ========================================================================== */
-.list-group > div > .list-group-item {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-top: 0;
-}
-
-.list-group-item.bg-light.fw-bold {
-    border-bottom: 1px solid rgba(0,0,0,.125);
-}
-
-.list-group-item { 
-    border: none; 
-    padding: 20px 30px; 
-}
-
-.list-group-item.active { 
-    background-color: transparent; 
-    color: #0d6efd; 
-    font-weight: bold; 
-    border-left: 4px solid #0d6efd; 
-}
-
-/* ==========================================================================
-   7. PÁGINA: LOGIN
+   6. PÁGINA: LOGIN
    ========================================================================== */
 .login-body {
     min-height: 100vh;
@@ -311,187 +384,43 @@ body {
     margin-top: 15px;
     font-size: 1rem;
 }
-.btn-custom:hover { background-color: #1f3b8c; }
+.btn-custom:hover { background-color: #1f3b8c; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(43, 82, 192, 0.3); }
+
 .links-uteis { margin-top: 25px; text-align: center; font-size: 0.9rem; }
-.links-uteis a { text-decoration: none; color: #666; display: block; margin-bottom: 5px; }
+.links-uteis a { text-decoration: none; color: #666; display: block; margin-bottom: 5px; transition: color 0.2s; }
+.links-uteis a:hover { color: #2b52c0; }
 
 /* Responsividade Login */
 @media (max-width: 992px) { 
-    .login-container {
-        flex-direction: column;
-        height: auto;
-        max-width: 90%;
-    }
-    .login-image-section, .login-form-section {
-        width: 100%;
-        height: auto;
-    }
+    .login-container { flex-direction: column; height: auto; max-width: 90%; }
+    .login-image-section, .login-form-section { width: 100%; height: auto; }
     .login-image-section { height: 250px; } 
     .login-form-section { padding: 50px 20px; }
 }
 
 @media (max-width: 768px) {
-    .login-container {
-        flex-direction: column;
-        min-height: auto;
-    }
+    .login-container { flex-direction: column; min-height: auto; }
 }
 
+/* Animação Flutuante */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
 
 /* ==========================================================================
-   ATUALIZAÇÃO DO MENU LATERAL (SIDEBAR) - VOLTOU AQUI!
+   7. TABELAS & DATA TABLES
    ========================================================================== */
-
-/* Remove a borda padrão e ajusta o fundo */
-.offcanvas {
-    border-right: none;
-    box-shadow: 0 0 30px rgba(0,0,0,0.1) !important;
-}
-
-/* Cabeçalho do Menu com Gradiente */
-.sidebar-header {
-    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-    padding: 1.5rem;
-    color: white;
-}
-
-/* Itens do Menu (Links e Triggers) */
-.sidebar-item {
-    border: none !important; 
-    color: #555;
-    font-weight: 500;
-    padding: 15px 25px;
-    transition: all 0.3s ease; 
-    background-color: transparent;
-    border-left: 4px solid transparent !important; 
-}
-
-/* Efeito Hover (Mouse em cima) */
-.sidebar-item:hover, 
-.sidebar-item:focus {
-    background-color: #f8f9fa;
-    color: #0d6efd;
-    border-left: 4px solid #0d6efd !important; 
-    padding-left: 30px; 
-}
-
-/* Ícones do Menu */
-.sidebar-item i {
-    width: 25px; 
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.sidebar-item:hover i {
-    transform: scale(1.2); 
-}
-
-/* Submenus (Itens filhos) */
-.submenu-container {
-    background-color: #f8f9fa; 
-    box-shadow: inset 0 3px 6px rgba(0,0,0,0.03); 
-}
-
-.submenu-link {
-    padding-left: 60px !important; 
-    font-size: 0.9rem;
-    color: #666;
-    background-color: transparent;
-    border: none;
-    display: block;
-    padding: 12px 20px;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.submenu-link:hover {
-    color: #0d6efd;
-    font-weight: 600;
-    background-color: rgba(13, 110, 253, 0.05);
-}
-
-/* Seta do Dropdown */
-.sidebar-item .fa-chevron-down,
-.sidebar-item .fa-chevron-up {
-    font-size: 0.75rem;
-    opacity: 0.6;
-}
-/* ==========================================================================
-   8. COMPONENTES: TABELAS
-   ========================================================================== */
-/* Ajuste fino para tabelas com muitas colunas */
 .table-small-font {
-	font-size: 0.9rem;
+    font-size: 0.9rem;
 }
 
 .table-header-nowrap th {
-	white-space: nowrap;
-}
-/* ==========================================================================
-   9. GESTÃO DE GRUPOS
-   ========================================================================== */
-
-/* Variáveis para a tela de grupos */
-:root {
-    --bs-font-sans-serif: 'Inter', sans-serif;
-    --primary-color: #0d6efd;
-    --accent-color: #ffc107;
+    white-space: nowrap;
 }
 
-/* Header da Página */
-.page-header h2 {
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
-
-/* Card Flutuante */
-.card-pro {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-    background: #fff;
-    transition: all 0.2s ease-in-out;
-}
-
-.card-pro:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-}
-
-/* Sticky Column */
-.sticky-column {
-    position: sticky;
-    top: 90px;
-    z-index: 10;
-    height: fit-content;
-}
-
-/* Inputs */
-.form-control {
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    padding: 10px 15px;
-    font-size: 0.95rem;
-}
-
-.form-control:focus {
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
-    border-color: var(--primary-color);
-}
-
-/* Checkbox */
-.form-check-input {
-    cursor: pointer;
-    width: 1.2em;
-    height: 1.2em;
-}
-
-.form-check-input:checked {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-}
-
-/* Tabela */
+/* Estilo para Tabela de Seleção de Grupos */
 #tabelaSelecao thead th {
     font-weight: 600;
     text-transform: uppercase;
@@ -514,14 +443,29 @@ body {
 }
 
 .row-selected td:first-child {
-    border-left: 3px solid var(--accent-color);
+    border-left: 3px solid #ffc107; /* Accent Color */
 }
 
 /* ==========================================================================
-   10. MODAL GMAIL
+   8. LAYOUTS ESPECÍFICOS (GRUPOS, STICKY)
+   ========================================================================== */
+.page-header h2 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.sticky-column {
+    position: sticky;
+    top: 90px;
+    z-index: 10;
+    height: fit-content;
+}
+
+/* ==========================================================================
+   9. MODAL GMAIL & EDITOR SUMMERNOTE
    ========================================================================== */
 .note-editor.note-frame {
-    border: none !important; /* Remove borda do editor */
+    border: none !important;
     box-shadow: none !important;
 }
 
@@ -531,12 +475,18 @@ body {
 }
 
 .note-statusbar {
-    display: none !important; /* Esconde a barra de redimensionamento padrão */
+    display: none !important;
 }
 
-/* Efeito hover nos ícones do rodapé */
 .hover-effect:hover {
     color: #333;
     background-color: rgba(0,0,0,0.05);
     border-radius: 4px;
 }
+
+
+
+
+
+
+

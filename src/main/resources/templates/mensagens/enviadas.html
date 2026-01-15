@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mensagens Enviadas | WinPost</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="/css/estilo.css">
+    
+    <style>
+        /* --- ESTILO DA TABELA --- */
+        body { background-color: #f4f6f9; }
+
+        #tabelaMensagens {
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .table-gmail thead { display: none; }
+
+        .table-gmail tbody tr {
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s ease-in-out;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* CLASSE PARA MENSAGEM NÃO LIDA (VERDE) */
+        .table-gmail tbody tr.row-unread {
+            background-color: #d1e7dd !important; /* Verde suave */
+            border-left: 4px solid #198754; /* Borda verde mais forte */
+        }
+        
+        .table-gmail tbody tr.row-unread td {
+            background-color: #d1e7dd !important; /* Garante que a célula pegue a cor */
+            font-weight: 600; /* Texto em negrito para destacar */
+        }
+
+        .table-gmail tbody tr td {
+            border: none;
+            padding: 18px 20px;
+            vertical-align: middle;
+        }
+
+        .table-gmail tbody tr td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        .table-gmail tbody tr td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+        .table-gmail tbody tr:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+            z-index: 2;
+            position: relative;
+        }
+
+        /* Badge LIDO */
+        .badge-lido {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #adb5bd;
+            border: 1px solid #dee2e6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        /* Tipografia */
+        .texto-grupo { color: #2c3e50; font-size: 0.95rem; }
+        .texto-assunto { color: #495057; }
+        .icon-status-wrapper { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .bg-status-success { background-color: #d1e7dd; color: #198754; }
+        .bg-status-error { background-color: #f8d7da; color: #dc3545; }
+        
+        /* Modal */
+        .modal-leitura-content { border: none; border-radius: 15px; overflow: hidden; }
+        .email-header { background: linear-gradient(to right, #f8f9fa, #ffffff); padding: 20px 25px; border-bottom: 1px solid #eee; }
+        .avatar-circle { width: 45px; height: 45px; background-color: #0d6efd; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+        .email-body-container { padding: 30px; background-color: #fff; min-height: 300px; font-family: 'Georgia', serif; line-height: 1.6; color: #333; }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/sidebar :: sidebar('mensagens')}"></div>
+
+    <main class="flex-grow-1">
+        <div style="margin-top: 80px;"></div>
+
+        <div class="container py-4 mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                <div>
+                    <h3 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-paper-plane text-primary me-2"></i>Histórico de Envios
+                    </h3>
+                    <p class="text-muted small mb-0">Acompanhe todas as campanhas disparadas.</p>
+                </div>
+            </div>
+
+            <div class="table-responsive px-2">
+                <table class="table table-gmail align-middle mb-0" id="tabelaMensagens">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Grupo</th>
+                            <th>Assunto</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="msg : ${listaMensagens}" 
+                            th:id="'linha-' + ${msg.id}"
+                            th:classappend="${!msg.lida} ? 'row-unread' : ''"
+                            th:onclick="'verMensagem(' + ${msg.id} + ')'">
+                            
+                            <td width="60" class="text-center">
+                                <div th:if="${msg.status == 'SUCESSO'}" class="icon-status-wrapper bg-status-success mx-auto">
+                                    <i class="fa-solid fa-check fs-6"></i>
+                                </div>
+                                <div th:unless="${msg.status == 'SUCESSO'}" class="icon-status-wrapper bg-status-error mx-auto">
+                                    <i class="fa-solid fa-exclamation fs-6"></i>
+                                </div>
+                            </td>
+
+                            <td width="220">
+                                <div class="d-flex flex-column">
+                                    <span class="small text-uppercase text-muted fw-bold" style="font-size: 0.65rem;">PARA</span>
+                                    <span class="texto-grupo text-truncate" style="max-width: 200px;" th:text="${msg.nomeGrupoDestino}">Grupo</span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="texto-assunto me-2" th:text="${msg.assunto}">Assunto</span>
+                                    
+                                    <span th:id="'badge-lido-' + ${msg.id}" 
+                                          class="badge-lido ms-2" 
+                                          th:classappend="${!msg.lida} ? 'd-none' : ''">
+                                        LIDO
+                                    </span>
+
+                                    <span th:if="${msg.temAnexo}" class="badge bg-light text-secondary border ms-2 rounded-pill">
+                                        <i class="fa-solid fa-paperclip"></i>
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td class="text-end pe-4" width="160">
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="fw-bold text-dark small" th:text="${#temporals.format(msg.dataEnvio, 'dd/MM/yyyy')}">Data</span>
+                                    <span class="text-muted small" style="font-size: 0.75rem;" th:text="${#temporals.format(msg.dataEnvio, 'HH:mm')}">Hora</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(listaMensagens)}" class="text-center py-5 opacity-50">
+                <i class="fa-regular fa-folder-open display-4 mb-3 text-muted"></i>
+                <p>Nenhuma mensagem enviada ainda.</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="modalLeitura" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content modal-leitura-content shadow-lg">
+                <div class="email-header">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h4 class="fw-bold mb-0 text-dark" id="modalAssunto">Assunto</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle me-3 shadow-sm"><i class="fa-solid fa-users"></i></div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <strong>Para: <span id="modalGrupo" class="text-primary">Grupo</span></strong>
+                                <small class="text-muted" id="modalData">Data</small>
+                            </div>
+                            <div class="small text-muted">
+                                <i class="fa-solid fa-paperclip me-1"></i> Anexos: <span id="modalAnexos">Nenhum</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="email-body-container" id="modalConteudo"></div>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fa-solid fa-rotate-right me-2"></i>Reutilizar Modelo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#tabelaMensagens').DataTable({
+                "ordering": false,
+                "language": { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
+                "dom": 'rt<"d-flex justify-content-center mt-4"p>',
+                "pageLength": 8
+            });
+        });
+
+        function verMensagem(id) {
+            // 1. Abre o Modal com Loading
+            $('#modalConteudo').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>');
+            var modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
+            modal.show();
+
+            // 2. Atualiza a Interface Imediatamente (Visual "Lido")
+            // Remove a cor verde
+            $('#linha-' + id).removeClass('row-unread');
+            // Mostra o texto "LIDO"
+            $('#badge-lido-' + id).removeClass('d-none');
+
+            // 3. Busca os dados no Backend (que vai salvar como lido no banco)
+            $.get("/mensagens/detalhes/" + id, function(data) {
+                $('#modalAssunto').text(data.assunto);
+                $('#modalGrupo').text(data.nomeGrupoDestino);
+                $('#modalData').text(new Date(data.dataEnvio).toLocaleString('pt-BR'));
+                $('#modalAnexos').text(data.nomesAnexos ? data.nomesAnexos : "Nenhum");
+                
+                var conteudoLimpo = data.conteudo; 
+                $('#modalConteudo').html(conteudoLimpo);
+                $('#modalConteudo img').addClass('img-fluid rounded'); 
+            });
+        }
+        
+        function toggleMenu(menuId, iconId) {
+             var menu = document.getElementById(menuId);
+             var icon = document.getElementById(iconId);
+             if (menu.classList.contains('d-none')) {
+                 menu.classList.remove('d-none');
+                 if(icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
+             } else {
+                 menu.classList.add('d-none');
+                 if(icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
+             }
+        }
+    </script>
+</body>
+</html>

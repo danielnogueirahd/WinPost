@@ -21,6 +21,10 @@
 				class="list-group-item list-group-item-action sidebar-item"
 				th:classappend="${paginaAtiva == 'dashboard'} ? 'text-primary fw-bold border-start border-4 border-primary' : ''">
 				<i class="fa-solid fa-house me-2"></i> Dashboard
+			</a> <a href="/mensagens/enviadas"
+				class="list-group-item list-group-item-action sidebar-item"
+				th:classappend="${paginaAtiva == 'mensagens'} ? 'text-primary fw-bold border-start border-4 border-primary' : ''">
+				<i class="fa-solid fa-paper-plane me-2"></i> Itens Enviados
 			</a>
 
 			<div
