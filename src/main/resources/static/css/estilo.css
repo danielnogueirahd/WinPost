@@ -485,7 +485,96 @@ body {
 }
 
 
+/* ==========================================================================
+    10. ESTILO ESPECÍFICO: TABELA DE MENSAGENS (GMAIL STYLE)
+    ========================================================================== */
+    
+    /* --- ESTILO GERAL --- */
+    body { background-color: #f4f6f9; }
 
+    /* --- TABELA / LISTA --- */
+    #tabelaMensagens {
+        border-collapse: separate;
+        border-spacing: 0 8px; /* Espaço entre os cards */
+    }
+
+    .table-gmail thead { display: none; }
+
+    /* ESTADO LIDO (PADRÃO) - Visual "Apagado" */
+    .table-gmail tbody tr {
+        background: #f8f9fa; /* Fundo cinza bem claro */
+        box-shadow: none;
+        border: 1px solid #eee; /* Borda sutil */
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #6c757d; /* Texto cinza */
+    }
+
+    /* ESTADO NÃO LIDO - Visual "Destacado" (Profissional) */
+    .table-gmail tbody tr.row-unread {
+        background-color: #ffffff !important; /* Branco Puro */
+        color: #212529 !important; /* Texto Preto */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Sombra para "flutuar" */
+        border-left: 5px solid #0d6efd; /* Apenas uma barra azul lateral elegante */
+        font-weight: 600; /* Texto em Negrito */
+    }
+    
+    /* Garante que as células herdem a cor correta */
+    .table-gmail tbody tr.row-unread td {
+        background-color: #ffffff !important;
+        color: #212529;
+    }
+
+    /* Hover em qualquer estado */
+    .table-gmail tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        border-color: transparent;
+        z-index: 2;
+        position: relative;
+    }
+
+    /* Células */
+    .table-gmail tbody tr td {
+        border: none;
+        padding: 18px 20px;
+        vertical-align: middle;
+    }
+
+    /* Arredondamento */
+    .table-gmail tbody tr td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+    .table-gmail tbody tr td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+    
+    /* Correção do arredondamento na esquerda quando tem a borda colorida */
+    .table-gmail tbody tr.row-unread td:first-child {
+        border-radius: 4px 0 0 4px;
+    }
+
+    /* --- OUTROS ELEMENTOS --- */
+    .badge-lido {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: normal;
+        color: #adb5bd;
+        background: #f1f3f5;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    /* Tipografia Específica */
+    .texto-grupo { font-size: 0.95rem; } /* Negrito é controlado pela linha pai */
+    .texto-assunto { font-size: 0.95rem; }
+    
+    .icon-status-wrapper { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .bg-status-success { background-color: #d1e7dd; color: #198754; }
+    .bg-status-error { background-color: #f8d7da; color: #dc3545; }
+    
+    /* Modal */
+    .modal-leitura-content { border: none; border-radius: 15px; overflow: hidden; }
+    .email-header { background: linear-gradient(to right, #f8f9fa, #ffffff); padding: 20px 25px; border-bottom: 1px solid #eee; }
+    .avatar-circle { width: 45px; height: 45px; background-color: #0d6efd; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+    .email-body-container { padding: 30px; background-color: #fff; min-height: 300px; font-family: 'Georgia', serif; line-height: 1.6; color: #333; }
 
 
 
