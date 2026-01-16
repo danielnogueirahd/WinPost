@@ -50,32 +50,6 @@
             </div>
         </div>
 
-        <div class="card-body py-3">
-    <form action="/listarContatos" method="GET" class="row g-2 align-items-center">
-        <div class="col-auto">
-            <i class="fa-solid fa-filter text-secondary me-2"></i> 
-            <span class="fw-bold small text-muted">FILTRAR POR:</span>
-        </div>
-
-        <div class="col-md-4">
-            <select class="form-select form-select-sm" name="grupoId" onchange="this.form.submit()">
-                <option value="">Todos os Contatos</option>
-                <option th:each="grupo : ${listaGrupos}" 
-                        th:value="${grupo.id}" 
-                        th:text="${grupo.nome}"
-                        th:selected="${grupoSelecionado == grupo.id}">
-                </option>
-            </select>
-        </div>
-
-        <div class="col-auto" th:if="${grupoSelecionado != null}">
-            <a href="/listarContatos" class="btn btn-sm btn-outline-secondary" title="Limpar Filtro">
-                <i class="fa-solid fa-xmark"></i>
-            </a>
-        </div>
-    </form>
-</div>
-
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <div class="table-responsive">
@@ -192,18 +166,6 @@
             timerProgressBar : true
         });
     </script>
-    <script>
-        // Sincroniza o filtro da tela principal com o modal de relatório
-        var modalRelatorio = document.getElementById('modalRelatorio');
-        modalRelatorio.addEventListener('show.bs.modal', function (event) {
-            // Pega o valor do select da tela principal (se existir)
-            var filtroPrincipal = document.querySelector('select[name="grupoId"]');
-            var selectModal = document.getElementById('relatorioGrupo');
-            
-            if(filtroPrincipal && selectModal) {
-                selectModal.value = filtroPrincipal.value;
-            }
-        });
-    </script>
-</body>
+    
+    </body>
 </html>

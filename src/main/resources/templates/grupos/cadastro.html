@@ -64,6 +64,7 @@
 					<i class="fa-solid fa-list-check me-2"></i>Gerenciar Grupos
 				</a>
 			</div>
+			<hr>
 
 			<div class="row g-4">
 
@@ -90,14 +91,16 @@
 									<div class="mb-3">
 										<label class="form-label fw-bold small text-secondary">NOME
 											<span class="text-danger">*</span>
-										</label> <input type="text" class="form-control" th:field="*{nome}"
-											placeholder="Ex: Aniversariantes Janeiro" required>
+										</label> <input type="text" class="form-control" id="inputNome"
+											th:field="*{nome}" placeholder="Ex: Aniversariantes Janeiro"
+											required>
 									</div>
 
 									<div class="mb-4">
 										<label class="form-label fw-bold small text-secondary">DESCRIÇÃO</label>
-										<textarea class="form-control" th:field="*{descricao}"
-											rows="3" placeholder="Opcional: Detalhes sobre o grupo..."></textarea>
+										<textarea class="form-control" id="inputDescricao"
+											th:field="*{descricao}" rows="3"
+											placeholder="Opcional: Detalhes sobre o grupo..."></textarea>
 									</div>
 
 									<div class="d-grid gap-2">
@@ -133,27 +136,30 @@
 								</div>
 
 								<div class="col-xl-8 col-lg-12">
-									<form action="/grupos/cadastro" method="get"
+									<form action="/grupos/cadastro" method="get" id="formFiltro"
+										onsubmit="prepararFiltro()"
 										class="d-flex gap-2 align-items-center justify-content-end">
+
+										<input type="hidden" name="nome" id="hiddenNome"> <input
+											type="hidden" name="descricao" id="hiddenDescricao">
 
 										<div class="input-group input-group-sm">
 											<span
 												class="input-group-text bg-light text-muted border-end-0">De</span>
 											<input type="date" class="form-control border-start-0 ps-1"
 												name="dataInicio" th:value="${dataInicio}"
-												aria-label="Data Início" required>
+												aria-label="Data Início">
 										</div>
 
 										<div class="input-group input-group-sm">
 											<span
 												class="input-group-text bg-light text-muted border-end-0">Até</span>
 											<input type="date" class="form-control border-start-0 ps-1"
-												name="dataFim" th:value="${dataFim}" aria-label="Data Fim"
-												required>
+												name="dataFim" th:value="${dataFim}" aria-label="Data Fim">
 										</div>
 
 										<button type="submit" class="btn btn-primary btn-sm px-3"
-											title="Filtrar Aniversariantes">
+											title="Filtrar">
 											<i class="fa-solid fa-magnifying-glass"></i>
 										</button>
 
