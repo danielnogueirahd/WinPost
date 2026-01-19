@@ -2,7 +2,6 @@ package com.projeto.sistema.modelos;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -10,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -50,7 +48,11 @@ public class MensagemLog implements Serializable {
 
     // --- Construtores ---
     public MensagemLog() {
+    	
     }
+    
+    @Column(columnDefinition = "BIT DEFAULT 0", nullable = false) 
+    private boolean favorito = false;
 
     // --- Getters e Setters ---
     public Long getId() {
@@ -112,5 +114,12 @@ public class MensagemLog implements Serializable {
     }
     public void setLida(boolean lida) {
         this.lida = lida;
+    }
+    public boolean isFavorito() {
+        return favorito;
+    }
+
+    public void setFavorito(boolean favorito) {
+        this.favorito = favorito;
     }
 }

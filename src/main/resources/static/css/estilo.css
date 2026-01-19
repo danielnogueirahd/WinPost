@@ -578,4 +578,112 @@ body {
 
 
 
+/* ==========================================================================
+   11. NOVO ESTILO: CAIXA DE SAÍDA (GMAIL CLEAN)
+   ========================================================================== */
+
+/* Barra de Ferramentas */
+.toolbar-container {
+    padding: 10px 0;
+}
+
+.btn-filter {
+    background-color: #fff;
+    border: 1px solid #dadce0;
+    color: #3c4043;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 5px 15px;
+    transition: all 0.2s;
+}
+.btn-filter:hover { background-color: #f1f3f4; color: #202124; }
+.btn-filter.active { background-color: #e8f0fe; color: #1967d2; border-color: transparent; }
+
+/* Container da Lista (Papel Branco) */
+.inbox-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* Tabela Customizada */
+.table-inbox { margin-bottom: 0; width: 100%; border-collapse: collapse; }
+
+.table-inbox tr {
+    border-bottom: 1px solid #f2f2f2;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background-color 0.1s;
+}
+
+.table-inbox tr:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    z-index: 10;
+    position: relative;
+    background-color: #fdfdfd;
+}
+
+.table-inbox td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border: none;
+    color: #202124;
+    font-size: 0.9rem;
+}
+
+/* Estados de Leitura */
+.row-unread { background-color: #ffffff; font-weight: 700; }
+.row-unread .email-subject { color: #202124; font-weight: 700; }
+
+.row-read { background-color: #f8f9fa; font-weight: 400; }
+.row-read .email-subject { color: #5f6368; font-weight: 400; }
+
+/* Componentes da Linha */
+.star-check { color: #dadce0; cursor: pointer; transition: color 0.2s; }
+.star-check:hover { color: #5f6368; }
+.star-check.active { color: #f4b400; }
+
+.email-sender {
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.email-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.email-subject { white-space: nowrap; }
+.email-snippet { color: #5f6368; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; font-size: 0.9rem;}
+
+.email-date {
+    width: 100px;
+    text-align: right;
+    font-size: 0.8rem;
+    color: #5f6368;
+    font-weight: 500;
+}
+
+/* Chips de Anexo */
+.attachment-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+    background-color: #fff;
+    font-size: 0.75rem;
+    color: #3c4043;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 8px;
+}
+.attachment-chip i { margin-right: 4px; color: #ea4335; }
+.attachment-chip.zip i { color: #fbbc04; }
+
 

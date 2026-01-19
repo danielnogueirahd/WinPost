@@ -3,16 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mensagens Enviadas | WinPost</title>
+    <title>Caixa de Saída | WinPost</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="/css/estilo.css">
-    
-    </head>
+</head>
 
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
     <div th:replace="~{fragments/navbar :: navbar}"></div>
     <div th:replace="~{fragments/sidebar :: sidebar('mensagens')}"></div>
@@ -20,114 +18,175 @@
     <main class="flex-grow-1">
         <div style="margin-top: 80px;"></div>
 
-        <div class="container py-4 mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-                <div>
-                    <h3 class="fw-bold text-dark mb-0">
-                        <i class="fa-solid fa-paper-plane text-primary me-2"></i>Histórico de Envios
-                    </h3>
-                   
-              
-                    <p class="text-muted small mb-0">Acompanhe todas as mensagens enviadas.</p>
+        <div class="container-fluid px-4 mb-5">
+            
+            <div class="d-flex justify-content-between align-items-center toolbar-container mb-2">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-filter d-flex align-items-center gap-2">
+                        <span>Qualquer período</span> <i class="fa-solid fa-caret-down text-muted small"></i>
+                    </button>
+
+                    <a th:href="@{/mensagens/enviadas(comAnexo=${filtroAnexo == null ? true : null})}" 
+                       class="btn btn-filter" 
+                       th:classappend="${filtroAnexo} ? 'active' : ''">
+                        <span>Com anexo</span>
+                    </a>
+
+                    <button class="btn btn-filter d-flex align-items-center gap-2">
+                        <span>Para</span> <i class="fa-solid fa-caret-down text-muted small"></i>
+                    </button>
+                    
+                    <a href="#" class="btn btn-link text-decoration-none text-primary fw-bold small pt-2">Pesquisa avançada</a>
+                </div>
+
+                <div class="d-flex align-items-center text-muted small">
+                    <span class="me-3">
+                        Página <span th:text="${paginaAtual + 1}">1</span> de <span th:text="${totalPaginas}">1</span>
+                    </span>
+                    
+                    <a th:if="${paginaAtual > 0}" 
+                       th:href="@{/mensagens/enviadas(page=${paginaAtual - 1}, comAnexo=${filtroAnexo})}" 
+                       class="btn btn-icon btn-sm text-muted">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                    <button th:unless="${paginaAtual > 0}" class="btn btn-icon btn-sm text-muted" disabled>
+                        <i class="fa-solid fa-chevron-left opacity-25"></i>
+                    </button>
+
+                    <a th:if="${paginaAtual < totalPaginas - 1}" 
+                       th:href="@{/mensagens/enviadas(page=${paginaAtual + 1}, comAnexo=${filtroAnexo})}" 
+                       class="btn btn-icon btn-sm text-muted">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                    <button th:unless="${paginaAtual < totalPaginas - 1}" class="btn btn-icon btn-sm text-muted" disabled>
+                        <i class="fa-solid fa-chevron-right opacity-25"></i>
+                    </button>
                 </div>
             </div>
-             <hr>
 
-            <div class="table-responsive px-2">
-                <table class="table table-gmail align-middle mb-0" id="tabelaMensagens">
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Grupo</th>
-                            <th>Assunto</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="msg : ${listaMensagens}" 
-                            th:id="'linha-' + ${msg.id}"
-                            th:classappend="${!msg.lida} ? 'row-unread' : ''"
-                            th:onclick="'verMensagem(' + ${msg.id} + ')'">
-                            
-                            <td width="60" class="text-center">
-                                <div th:if="${msg.status == 'SUCESSO'}" class="icon-status-wrapper bg-status-success mx-auto">
-                                    <i class="fa-solid fa-check fs-6"></i>
-                                </div>
-                                <div th:unless="${msg.status == 'SUCESSO'}" class="icon-status-wrapper bg-status-error mx-auto">
-                                    <i class="fa-solid fa-exclamation fs-6"></i>
-                                </div>
-                            </td>
+            <div class="inbox-card">
+                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                    <div class="me-3">
+                        <input type="checkbox" class="form-check-input" id="checkAll">
+                    </div>
+                    <button class="btn btn-sm text-secondary" title="Atualizar" onclick="location.reload()">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                    <button class="btn btn-sm text-secondary ms-2" title="Mais opções">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+                </div>
 
-                            <td width="220">
-                                <div class="d-flex flex-column">
-                                    <span class="small text-uppercase text-muted fw-bold" style="font-size: 0.65rem;">PARA</span>
-                                    <span class="texto-grupo text-truncate" style="max-width: 200px;" th:text="${msg.nomeGrupoDestino}">Grupo</span>
-                                </div>
-                            </td>
+                <div class="table-responsive">
+                    <table class="table table-inbox align-middle" id="tabelaMensagens">
+                        <tbody>
+                            <tr th:each="msg : ${listaMensagens}" 
+                                th:id="'linha-' + ${msg.id}"
+                                th:classappend="${!msg.lida} ? 'row-unread' : 'row-read'"
+                                th:onclick="'verMensagem(' + ${msg.id} + ')'">
+                                
+                                <td style="width: 40px;" onclick="event.stopPropagation()">
+                                    <input type="checkbox" class="form-check-input">
+                                </td>
+                                
+                                <td style="width: 40px;" onclick="event.stopPropagation()">
+                                    <i class="fa-star star-check"
+                                       th:classappend="${msg.favorito} ? 'fa-solid active' : 'fa-regular'"
+                                       th:onclick="'toggleFavorito(' + ${msg.id} + ', this)'"></i>
+                                </td>
 
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="texto-assunto me-2" th:text="${msg.assunto}">Assunto</span>
-                                    
-                                    <span th:id="'badge-lido-' + ${msg.id}" 
-                                          class="badge-lido ms-2" 
-                                          th:classappend="${!msg.lida} ? 'd-none' : ''">
-                                        LIDO
-                                    </span>
+                                <td class="email-sender">
+                                    <span th:if="${!msg.lida}" class="text-dark">Para: <span th:text="${msg.nomeGrupoDestino}">Grupo</span></span>
+                                    <span th:if="${msg.lida}">Para: <span th:text="${msg.nomeGrupoDestino}">Grupo</span></span>
+                                </td>
 
-                                    <span th:if="${msg.temAnexo}" class="badge bg-light text-secondary border ms-2 rounded-pill">
-                                        <i class="fa-solid fa-paperclip"></i>
-                                    </span>
-                                </div>
-                            </td>
+                                <td>
+                                    <div class="email-content-wrapper">
+                                        <span class="email-subject" th:text="${msg.assunto}">Assunto Principal</span>
+                                        <span class="text-muted mx-1">-</span>
+                                        <span class="email-snippet" th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 60)}">
+                                            Resumo do conteúdo...
+                                        </span>
 
-                            <td class="text-end pe-4" width="160">
-                                <div class="d-flex flex-column align-items-end">
-                                    <span class="fw-bold text-dark small" th:text="${#temporals.format(msg.dataEnvio, 'dd/MM/yyyy')}">Data</span>
-                                    <span class="text-muted small" style="font-size: 0.75rem;" th:text="${#temporals.format(msg.dataEnvio, 'HH:mm')}">Hora</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                        <span th:if="${msg.temAnexo}" class="attachment-chip" title="Arquivo PDF">
+                                            <i class="fa-solid fa-file-pdf"></i> anexo.pdf
+                                        </span>
+                                        <span th:if="${msg.temAnexo and msg.nomesAnexos.contains('.zip')}" class="attachment-chip zip" title="Outros arquivos">
+                                            <i class="fa-solid fa-file-zipper"></i> +arquivos
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td class="email-date">
+                                    <span th:text="${#temporals.format(msg.dataEnvio, 'dd MMM')}">16 jan.</span>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(listaMensagens)}">
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <div class="py-4">
+                                        <i class="fa-regular fa-folder-open display-4 mb-3 opacity-25"></i>
+                                        <p>Nenhuma mensagem enviada.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
-            <div th:if="${#lists.isEmpty(listaMensagens)}" class="text-center py-5 opacity-50">
-                <i class="fa-regular fa-folder-open display-4 mb-3 text-muted"></i>
-                <p>Nenhuma mensagem enviada ainda.</p>
+            <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 100;">
+                <a href="/grupos/gerenciar" class="btn btn-primary rounded-pill shadow-lg d-flex align-items-center gap-2 px-4 py-3 fw-bold" 
+                   style="border-radius: 16px !important; font-family: 'Google Sans', sans-serif;">
+                    <i class="fa-solid fa-pen"></i> 
+                    <span class="d-none d-md-inline">Escrever</span>
+                </a>
             </div>
+
         </div>
     </main>
 
     <div class="modal fade" id="modalLeitura" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content modal-leitura-content shadow-lg">
-                <div class="email-header">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h4 class="fw-bold mb-0 text-dark" id="modalAssunto">Assunto</h4>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalAssunto">Assunto</h5>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-light rounded-circle" title="Imprimir"><i class="fa-solid fa-print"></i></button>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-circle me-3 shadow-sm"><i class="fa-solid fa-users"></i></div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between">
-                                <strong>Para: <span id="modalGrupo" class="text-primary">Grupo</span></strong>
-                                <small class="text-muted" id="modalData">Data</small>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fs-5" style="width: 40px; height: 40px;">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-bold text-dark">Você</span>
+                                <span class="text-muted small">&lt;admin@winpost.com&gt;</span>
                             </div>
-                            <div class="small text-muted">
-                                <i class="fa-solid fa-paperclip me-1"></i> Anexos: <span id="modalAnexos">Nenhum</span>
+                            <div class="text-muted small">
+                                para <span id="modalGrupo" class="text-dark fw-bold">Grupo</span>
                             </div>
+                        </div>
+                        <div class="ms-auto text-muted small" id="modalData">Data</div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <div id="modalConteudo" style="font-family: sans-serif;"></div>
+                    </div>
+                    
+                    <div id="areaAnexosModal" class="d-none mt-3 border-top pt-3">
+                        <h6 class="small fw-bold text-muted mb-2"><i class="fa-solid fa-paperclip me-1"></i>Anexos</h6>
+                        <div class="d-flex gap-2">
+                            <span class="attachment-chip"><i class="fa-solid fa-file"></i> <span id="modalAnexos"></span></span>
                         </div>
                     </div>
                 </div>
-                <div class="modal-body p-0">
-                    <div class="email-body-container" id="modalConteudo"></div>
-                </div>
-                <div class="modal-footer bg-light border-top-0">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
-                        <i class="fa-solid fa-rotate-right me-2"></i>Reutilizar Modelo
-                    </button>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4">Reutilizar</button>
                 </div>
             </div>
         </div>
@@ -137,54 +196,57 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            $('#tabelaMensagens').DataTable({
-                "ordering": false,
-                "language": { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
-                "dom": 'rt<"d-flex justify-content-center mt-4"p>',
-                "pageLength": 8
-            });
-        });
-
         function verMensagem(id) {
-            // 1. Abre o Modal com Loading
-            $('#modalConteudo').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>');
+            // Loading
+            $('#modalConteudo').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>');
             var modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
             modal.show();
 
-            // 2. Atualiza a Interface Imediatamente (Visual "Lido")
-            // Remove a cor verde
-            $('#linha-' + id).removeClass('row-unread');
-            // Mostra o texto "LIDO"
-            $('#badge-lido-' + id).removeClass('d-none');
+            // Atualiza visual da linha para LIDO
+            var linha = $('#linha-' + id);
+            linha.removeClass('row-unread').addClass('row-read');
 
-            // 3. Busca os dados no Backend (que vai salvar como lido no banco)
+            // Busca dados
             $.get("/mensagens/detalhes/" + id, function(data) {
                 $('#modalAssunto').text(data.assunto);
                 $('#modalGrupo').text(data.nomeGrupoDestino);
                 $('#modalData').text(new Date(data.dataEnvio).toLocaleString('pt-BR'));
-                $('#modalAnexos').text(data.nomesAnexos ? data.nomesAnexos : "Nenhum");
+                
+                // Anexos
+                if(data.nomesAnexos) {
+                    $('#modalAnexos').text(data.nomesAnexos);
+                    $('#areaAnexosModal').removeClass('d-none');
+                } else {
+                    $('#areaAnexosModal').addClass('d-none');
+                }
                 
                 var conteudoLimpo = data.conteudo; 
                 $('#modalConteudo').html(conteudoLimpo);
                 $('#modalConteudo img').addClass('img-fluid rounded'); 
             });
         }
-        
-        function toggleMenu(menuId, iconId) {
-             var menu = document.getElementById(menuId);
-             var icon = document.getElementById(iconId);
-             if (menu.classList.contains('d-none')) {
-                 menu.classList.remove('d-none');
-                 if(icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
-             } else {
-                 menu.classList.add('d-none');
-                 if(icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
-             }
+
+        // --- FUNÇÃO FAVORITAR (Estrela) ---
+        function toggleFavorito(id, elementoIcone) {
+            // Impede que o clique abra o modal de leitura
+            event.stopPropagation(); 
+
+            // Chama o backend
+            fetch('/mensagens/favoritar/' + id, { method: 'POST' })
+                .then(response => response.json())
+                .then(isFavorito => {
+                    // Atualiza o ícone visualmente
+                    if (isFavorito) {
+                        elementoIcone.classList.remove('fa-regular');
+                        elementoIcone.classList.add('fa-solid', 'active');
+                    } else {
+                        elementoIcone.classList.remove('fa-solid', 'active');
+                        elementoIcone.classList.add('fa-regular');
+                    }
+                })
+                .catch(err => console.error("Erro ao favoritar:", err));
         }
     </script>
 </body>

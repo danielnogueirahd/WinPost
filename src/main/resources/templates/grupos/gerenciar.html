@@ -47,13 +47,10 @@
 			</div>
 
 			<div class="d-flex justify-content-between align-items-center mb-4">
-				<div>
-				
-					<h2 class="text-dark mb-0 fw-bold" >Gerenciar Grupos</h2>
-					<p class="text-muted small">Visualize, edite ou exclua seus
-						grupos de contatos.</p>
-				</div>
-
+				<div class="border-start border-4 border-primary ps-3">
+    <h2 class="text-dark mb-0 fw-bold">Gerenciar Grupos</h2>
+    <p class="text-muted small mb-0">Visualize, edite ou exclua seus grupos de contatos.</p>
+</div>
 				<div class="d-flex gap-2">
 					<a href="/mensagens/enviadas"
 						class="btn btn-light text-secondary border shadow-sm rounded-pill px-3 fw-bold"
@@ -65,7 +62,7 @@
 					</a>
 				</div>
 			</div>
-			<hr>
+			
 			<div class="row mb-4 g-4" th:if="${!#lists.isEmpty(listaGrupos)}">
 				<div class="col-md-4 col-sm-6">
 					<div class="card-modern p-3 d-flex flex-row align-items-center">
