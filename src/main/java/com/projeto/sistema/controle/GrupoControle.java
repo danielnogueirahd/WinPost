@@ -83,15 +83,27 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-    // 3. TELA DE GERENCIAR
+
+    
+    // 3. TELA DE GERENCIAR (Atualizado com Pesquisa)
     @GetMapping("/gerenciar")
-    public ModelAndView gerenciar() {
+    public ModelAndView gerenciar(@RequestParam(value = "pesquisa", required = false) String pesquisa) {
         ModelAndView mv = new ModelAndView("grupos/gerenciar");
-        mv.addObject("listaGrupos", grupoRepositorio.findAll());
+        
+        if (pesquisa != null && !pesquisa.isEmpty()) {
+            // Se tiver pesquisa, busca filtrado
+            mv.addObject("listaGrupos", grupoRepositorio.findByNomeContainingIgnoreCase(pesquisa));
+            mv.addObject("termoPesquisa", pesquisa); // Devolve para a tela para manter no input
+        } else {
+            // Se não, busca tudo
+            mv.addObject("listaGrupos", grupoRepositorio.findAll());
+        }
+        
         mv.addObject("paginaAtiva", "gerenciarGrupo");
         return mv;
     }
-
+    
+  
     // 4. TELA DE EDIÇÃO
     @GetMapping("/editar/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {

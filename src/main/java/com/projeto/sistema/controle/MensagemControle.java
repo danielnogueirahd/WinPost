@@ -29,14 +29,25 @@ public class MensagemControle {
     @Autowired
     private MensagemLogRepositorio mensagemRepositorio;
 
+    // 1. Redireciona a rota antiga para a nova estrutura (para manter compatibilidade)
     @GetMapping("/enviadas")
-    public ModelAndView listarEnviadas(
+    public String redirecionarEnviadas() {
+        return "redirect:/mensagens/caixa/ENVIADAS";
+    }
+
+    // 2. NOVA ROTA GENÉRICA: Aceita "ENTRADA", "ENVIADAS", "RASCUNHOS", "LIXEIRA", etc.
+    @GetMapping("/caixa/{pasta}")
+    public ModelAndView listarPorPasta(
+            @PathVariable("pasta") String pasta,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "comAnexo", required = false) Boolean comAnexo,
             @RequestParam(value = "busca", required = false) String busca,
             @RequestParam(value = "data", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         
-        ModelAndView mv = new ModelAndView("mensagens/enviadas");
+        // Convertemos para maiúsculo para garantir consistência no banco
+        String pastaNormalizada = pasta.toUpperCase(); 
+        
+        ModelAndView mv = new ModelAndView("mensagens/enviadas"); // Reutiliza o HTML existente
         
         // Configura Paginação (8 itens por página, ordenado por data decrescente)
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by("dataEnvio").descending());
@@ -45,18 +56,21 @@ public class MensagemControle {
         LocalDateTime inicio = (data != null) ? data.atStartOfDay() : null;
         LocalDateTime fim = (data != null) ? data.atTime(LocalTime.MAX) : null;
 
-        // Busca no banco usando o novo método do repositório
-        Page<MensagemLog> paginaMensagens = mensagemRepositorio.filtrarMensagens(comAnexo, busca, inicio, fim, pageRequest);
+        // Busca no banco usando o novo parâmetro de PASTA
+        Page<MensagemLog> paginaMensagens = mensagemRepositorio.filtrarMensagens(pastaNormalizada, comAnexo, busca, inicio, fim, pageRequest);
         
         mv.addObject("listaMensagens", paginaMensagens.getContent());
         mv.addObject("paginaAtual", page);
         mv.addObject("totalPaginas", paginaMensagens.getTotalPages());
         mv.addObject("totalItens", paginaMensagens.getTotalElements());
         
-        // Devolve os filtros para a tela manter o estado
+        // Devolve os filtros para a tela manter o estado visual
         mv.addObject("filtroAnexo", comAnexo);
         mv.addObject("filtroBusca", busca);
         mv.addObject("filtroData", data);
+        
+        // Variáveis para o Menu Lateral
+        mv.addObject("pastaAtiva", pastaNormalizada); 
         mv.addObject("paginaAtiva", "mensagens");
         
         return mv;

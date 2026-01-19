@@ -46,23 +46,46 @@
 				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 			</div>
 
-			<div class="d-flex justify-content-between align-items-center mb-4">
+			<div
+				class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 				<div class="border-start border-4 border-primary ps-3">
-    <h2 class="text-dark mb-0 fw-bold">Gerenciar Grupos</h2>
-    <p class="text-muted small mb-0">Visualize, edite ou exclua seus grupos de contatos.</p>
-</div>
-				<div class="d-flex gap-2">
+					<h2 class="text-dark mb-0 fw-bold">Gerenciar Grupos</h2>
+					<p class="text-muted small mb-0">Visualize, edite ou exclua
+						seus grupos de contatos.</p>
+				</div>
+
+				<div class="d-flex gap-2 align-items-center">
+
+					<form action="/grupos/gerenciar" method="get" class="d-flex me-2">
+						<div class="input-group shadow-sm">
+							<input type="text" class="form-control border-end-0"
+								name="pesquisa" th:value="${termoPesquisa}"
+								placeholder="Pesquisar grupo..." aria-label="Pesquisar"
+								style="border-top-left-radius: 20px; border-bottom-left-radius: 20px;">
+							<button
+								class="btn btn-white border border-start-0 bg-white text-primary"
+								type="submit"
+								style="border-top-right-radius: 20px; border-bottom-right-radius: 20px;">
+								<i class="fa-solid fa-magnifying-glass"></i>
+							</button>
+						</div>
+						<a th:if="${termoPesquisa}" href="/grupos/gerenciar"
+							class="btn btn-light text-danger ms-2 rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+							style="width: 38px; height: 38px;" title="Limpar Filtro"> <i
+							class="fa-solid fa-xmark"></i>
+						</a>
+					</form>
 					<a href="/mensagens/enviadas"
-						class="btn btn-light text-secondary border shadow-sm rounded-pill px-3 fw-bold"
+						class="btn btn-light text-secondary border shadow-sm rounded-pill px-3 fw-bold d-none d-md-inline-flex align-items-center"
 						title="Ver Histórico de Envios"> <i
 						class="fa-solid fa-clock-rotate-left me-2"></i> Mensagens
 					</a> <a href="/grupos/cadastro"
-						class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm"> <i
-						class="fa-solid fa-plus me-2"></i> Novo Grupo
+						class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center">
+						<i class="fa-solid fa-plus me-2"></i> <span
+						class="d-none d-sm-inline">Novo Grupo</span>
 					</a>
 				</div>
 			</div>
-			
 			<div class="row mb-4 g-4" th:if="${!#lists.isEmpty(listaGrupos)}">
 				<div class="col-md-4 col-sm-6">
 					<div class="card-modern p-3 d-flex flex-row align-items-center">

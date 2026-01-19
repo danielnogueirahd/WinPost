@@ -16,16 +16,21 @@ public interface MensagemLogRepositorio extends JpaRepository<MensagemLog, Long>
     // Mantido para compatibilidade
     List<MensagemLog> findAllByOrderByDataEnvioDesc();
     
-    // NOVO MÉTODO: Suporta Filtros (Anexo, Grupo, Data) e Paginação
+    // ATUALIZADO: Adicionado filtro por PASTA
     @Query("SELECT m FROM MensagemLog m WHERE " +
+           "(:pasta IS NULL OR m.pasta = :pasta) AND " + // <--- Filtro de Pasta
            "(:temAnexo IS NULL OR (:temAnexo = true AND m.nomesAnexos IS NOT NULL AND m.nomesAnexos != '')) AND " +
            "(:grupo IS NULL OR lower(m.nomeGrupoDestino) LIKE lower(concat('%', :grupo, '%'))) AND " +
            "(:dataInicio IS NULL OR m.dataEnvio >= :dataInicio) AND " +
            "(:dataFim IS NULL OR m.dataEnvio <= :dataFim)")
     Page<MensagemLog> filtrarMensagens(
+            @Param("pasta") String pasta, // <--- Novo parâmetro
             @Param("temAnexo") Boolean temAnexo,
             @Param("grupo") String grupo,
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable);
+            
+    // Contadores para o menu lateral (Opcional, mas útil)
+    long countByPasta(String pasta);
 }

@@ -38,6 +38,11 @@ public class MensagemLog implements Serializable {
 
     private String status; // "SUCESSO", "ERRO"
 
+    
+    @Column(length = 50) 
+    private String pasta = "ENVIADAS";
+    // --------------------------------------------------------
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataEnvio;
@@ -45,14 +50,14 @@ public class MensagemLog implements Serializable {
     // CORREÇÃO 2: Campo organizado e com regra de não-nulo
     @Column(nullable = false)
     private boolean lida = false;
-
-    // --- Construtores ---
-    public MensagemLog() {
-    	
-    }
     
     @Column(columnDefinition = "BIT DEFAULT 0", nullable = false) 
     private boolean favorito = false;
+
+    // --- Construtores ---
+    public MensagemLog() {
+        
+    }
 
     // --- Getters e Setters ---
     public Long getId() {
@@ -97,6 +102,16 @@ public class MensagemLog implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+    
+    // --- Getters e Setters da Pasta ---
+    public String getPasta() {
+        return pasta;
+    }
+    public void setPasta(String pasta) {
+        this.pasta = pasta;
+    }
+    // ----------------------------------
+
     public LocalDateTime getDataEnvio() {
         return dataEnvio;
     }

@@ -1,203 +1,345 @@
 <!DOCTYPE html>
 <html xmlns:th="https://thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Caixa de Saída | WinPost</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/estilo.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caixa de Saída | WinPost</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/css/estilo.css">
+
+<style>
+/* Estilos específicos para o Menu Lateral de E-mail */
+.email-sidebar-btn {
+	text-align: left;
+	padding: 10px 20px;
+	font-weight: 600;
+	border-radius: 30px; /* Arredondado igual Gmail */
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	transition: all 0.2s;
+}
+
+.email-sidebar-btn:hover {
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+	transform: translateY(-1px);
+}
+
+.folder-list {
+	list-style: none;
+	padding-left: 0;
+	margin-top: 15px;
+}
+
+.folder-item {
+	display: flex;
+	align-items: center;
+	padding: 8px 12px 8px 24px; /* Recuo à esquerda */
+	border-radius: 0 20px 20px 0; /* Arredondado só na direita */
+	color: #5f6368;
+	text-decoration: none;
+	font-size: 0.95rem;
+	font-weight: 500;
+	margin-bottom: 2px;
+	cursor: pointer;
+	transition: background-color 0.1s;
+}
+
+.folder-item:hover {
+	background-color: #f1f3f4;
+	color: #202124;
+}
+
+.folder-item.active {
+	background-color: #e8f0fe; /* Azul claro da imagem */
+	color: #1967d2; /* Azul escuro */
+	font-weight: 700;
+}
+
+.folder-item i {
+	width: 20px;
+	margin-right: 12px;
+	text-align: center;
+}
+
+.folder-section-title {
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	color: #5f6368;
+	font-weight: 700;
+	margin: 20px 0 10px 24px;
+}
+
+/* Ajuste para esconder o menu lateral em telas muito pequenas */
+@media ( max-width : 992px) {
+	.email-sidebar-col {
+		display: none;
+	}
+}
+</style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
-    <div th:replace="~{fragments/navbar :: navbar}"></div>
-    <div th:replace="~{fragments/sidebar :: sidebar('mensagens')}"></div>
+	<div th:replace="~{fragments/navbar :: navbar}"></div>
+	<div th:replace="~{fragments/sidebar :: sidebar('mensagens')}"></div>
 
-    <main class="flex-grow-1">
-        <div style="margin-top: 80px;"></div>
+	<main class="flex-grow-1">
+		<div style="margin-top: 80px;"></div>
 
-        <div class="container-fluid px-4 mb-5">
-            
-            <div class="d-flex justify-content-between align-items-center toolbar-container mb-2">
-                <div class="d-flex gap-2">
-                    <button class="btn btn-filter d-flex align-items-center gap-2">
-                        <span>Qualquer período</span> <i class="fa-solid fa-caret-down text-muted small"></i>
-                    </button>
+		<div class="container-fluid px-4 mb-5">
 
-                    <a th:href="@{/mensagens/enviadas(comAnexo=${filtroAnexo == null ? true : null})}" 
-                       class="btn btn-filter" 
-                       th:classappend="${filtroAnexo} ? 'active' : ''">
-                        <span>Com anexo</span>
-                    </a>
+			<div class="row">
+				<div class="col-lg-2 email-sidebar-col pe-0">
 
-                    <button class="btn btn-filter d-flex align-items-center gap-2">
-                        <span>Para</span> <i class="fa-solid fa-caret-down text-muted small"></i>
-                    </button>
-                    
-                    <a href="#" class="btn btn-link text-decoration-none text-primary fw-bold small pt-2">Pesquisa avançada</a>
-                </div>
+					<div class="mb-4 pt-2 ps-2">
+						<a href="/grupos/gerenciar"
+							class="btn btn-white email-sidebar-btn bg-white text-primary">
+							<i class="fa-solid fa-pen me-2"></i> Nova mensagem
+						</a>
+					</div>
 
-                <div class="d-flex align-items-center text-muted small">
-                    <span class="me-3">
-                        Página <span th:text="${paginaAtual + 1}">1</span> de <span th:text="${totalPaginas}">1</span>
-                    </span>
-                    
-                    <a th:if="${paginaAtual > 0}" 
-                       th:href="@{/mensagens/enviadas(page=${paginaAtual - 1}, comAnexo=${filtroAnexo})}" 
-                       class="btn btn-icon btn-sm text-muted">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </a>
-                    <button th:unless="${paginaAtual > 0}" class="btn btn-icon btn-sm text-muted" disabled>
-                        <i class="fa-solid fa-chevron-left opacity-25"></i>
-                    </button>
+					<ul class="folder-list">
+						<li><a href="/mensagens/caixa/ENTRADA" class="folder-item"
+							th:classappend="${pastaAtiva == 'ENTRADA'} ? 'active' : ''">
+								<i class="fa-solid fa-inbox"></i> Entrada
+						</a></li>
 
-                    <a th:if="${paginaAtual < totalPaginas - 1}" 
-                       th:href="@{/mensagens/enviadas(page=${paginaAtual + 1}, comAnexo=${filtroAnexo})}" 
-                       class="btn btn-icon btn-sm text-muted">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </a>
-                    <button th:unless="${paginaAtual < totalPaginas - 1}" class="btn btn-icon btn-sm text-muted" disabled>
-                        <i class="fa-solid fa-chevron-right opacity-25"></i>
-                    </button>
-                </div>
-            </div>
+						<li><a href="/mensagens/caixa/ENVIADAS" class="folder-item"
+							th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'active' : ''">
+								<i class="fa-solid fa-paper-plane"></i> Enviadas
+						</a></li>
 
-            <div class="inbox-card">
-                <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                    <div class="me-3">
-                        <input type="checkbox" class="form-check-input" id="checkAll">
-                    </div>
-                    <button class="btn btn-sm text-secondary" title="Atualizar" onclick="location.reload()">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </button>
-                    <button class="btn btn-sm text-secondary ms-2" title="Mais opções">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-                </div>
+		
 
-                <div class="table-responsive">
-                    <table class="table table-inbox align-middle" id="tabelaMensagens">
-                        <tbody>
-                            <tr th:each="msg : ${listaMensagens}" 
-                                th:id="'linha-' + ${msg.id}"
-                                th:classappend="${!msg.lida} ? 'row-unread' : 'row-read'"
-                                th:onclick="'verMensagem(' + ${msg.id} + ')'">
-                                
-                                <td style="width: 40px;" onclick="event.stopPropagation()">
-                                    <input type="checkbox" class="form-check-input">
-                                </td>
-                                
-                                <td style="width: 40px;" onclick="event.stopPropagation()">
-                                    <i class="fa-star star-check"
-                                       th:classappend="${msg.favorito} ? 'fa-solid active' : 'fa-regular'"
-                                       th:onclick="'toggleFavorito(' + ${msg.id} + ', this)'"></i>
-                                </td>
+						<li><a href="#" class="folder-item"> <i
+								class="fa-solid fa-trash-can"></i> Lixeira
+						</a></li>
+					</ul>
 
-                                <td class="email-sender">
-                                    <span th:if="${!msg.lida}" class="text-dark">Para: <span th:text="${msg.nomeGrupoDestino}">Grupo</span></span>
-                                    <span th:if="${msg.lida}">Para: <span th:text="${msg.nomeGrupoDestino}">Grupo</span></span>
-                                </td>
+					<div class="folder-section-title">Outros</div>
+					<ul class="folder-list">
+						<li><a href="#" class="folder-item"> <i
+								class="fa-solid fa-magnifying-glass"></i> Buscas
+						</a></li>
+						<li><a href="#" class="folder-item"> <i
+								class="fa-solid fa-tag"></i> Marcadores
+						</a></li>
+					</ul>
 
-                                <td>
-                                    <div class="email-content-wrapper">
-                                        <span class="email-subject" th:text="${msg.assunto}">Assunto Principal</span>
-                                        <span class="text-muted mx-1">-</span>
-                                        <span class="email-snippet" th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 60)}">
-                                            Resumo do conteúdo...
-                                        </span>
+				</div>
 
-                                        <span th:if="${msg.temAnexo}" class="attachment-chip" title="Arquivo PDF">
-                                            <i class="fa-solid fa-file-pdf"></i> anexo.pdf
-                                        </span>
-                                        <span th:if="${msg.temAnexo and msg.nomesAnexos.contains('.zip')}" class="attachment-chip zip" title="Outros arquivos">
-                                            <i class="fa-solid fa-file-zipper"></i> +arquivos
-                                        </span>
-                                    </div>
-                                </td>
+				<div class="col-lg-10 ps-lg-4">
 
-                                <td class="email-date">
-                                    <span th:text="${#temporals.format(msg.dataEnvio, 'dd MMM')}">16 jan.</span>
-                                </td>
-                            </tr>
+					<div
+						class="d-flex justify-content-between align-items-center toolbar-container mb-2">
+						<div class="d-flex gap-2">
+							<button class="btn btn-filter d-flex align-items-center gap-2">
+								<span>Qualquer período</span> <i
+									class="fa-solid fa-caret-down text-muted small"></i>
+							</button>
 
-                            <tr th:if="${#lists.isEmpty(listaMensagens)}">
-                                <td colspan="5" class="text-center py-5 text-muted">
-                                    <div class="py-4">
-                                        <i class="fa-regular fa-folder-open display-4 mb-3 opacity-25"></i>
-                                        <p>Nenhuma mensagem enviada.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 100;">
-                <a href="/grupos/gerenciar" class="btn btn-primary rounded-pill shadow-lg d-flex align-items-center gap-2 px-4 py-3 fw-bold" 
-                   style="border-radius: 16px !important; font-family: 'Google Sans', sans-serif;">
-                    <i class="fa-solid fa-pen"></i> 
-                    <span class="d-none d-md-inline">Escrever</span>
-                </a>
-            </div>
+							<a
+								th:href="@{/mensagens/enviadas(comAnexo=${filtroAnexo == null ? true : null})}"
+								class="btn btn-filter"
+								th:classappend="${filtroAnexo} ? 'active' : ''"> <span>Com
+									anexo</span>
+							</a>
 
-        </div>
-    </main>
+							<button class="btn btn-filter d-flex align-items-center gap-2">
+								<span>Para</span> <i
+									class="fa-solid fa-caret-down text-muted small"></i>
+							</button>
 
-    <div class="modal fade" id="modalLeitura" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-                <div class="modal-header border-bottom-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="modalAssunto">Assunto</h5>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm btn-light rounded-circle" title="Imprimir"><i class="fa-solid fa-print"></i></button>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fs-5" style="width: 40px; height: 40px;">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="fw-bold text-dark">Você</span>
-                                <span class="text-muted small">&lt;admin@winpost.com&gt;</span>
-                            </div>
-                            <div class="text-muted small">
-                                para <span id="modalGrupo" class="text-dark fw-bold">Grupo</span>
-                            </div>
-                        </div>
-                        <div class="ms-auto text-muted small" id="modalData">Data</div>
-                    </div>
+							<a href="#"
+								class="btn btn-link text-decoration-none text-primary fw-bold small pt-2">Pesquisa
+								avançada</a>
+						</div>
 
-                    <div class="p-3 bg-light rounded-3 mb-3 border">
-                        <div id="modalConteudo" style="font-family: sans-serif;"></div>
-                    </div>
-                    
-                    <div id="areaAnexosModal" class="d-none mt-3 border-top pt-3">
-                        <h6 class="small fw-bold text-muted mb-2"><i class="fa-solid fa-paperclip me-1"></i>Anexos</h6>
-                        <div class="d-flex gap-2">
-                            <span class="attachment-chip"><i class="fa-solid fa-file"></i> <span id="modalAnexos"></span></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary rounded-pill px-4">Reutilizar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+						<div class="d-flex align-items-center text-muted small">
+							<span class="me-3"> Página <span
+								th:text="${paginaAtual + 1}">1</span> de <span
+								th:text="${totalPaginas}">1</span>
+							</span> <a th:if="${paginaAtual > 0}"
+								th:href="@{/mensagens/enviadas(page=${paginaAtual - 1}, comAnexo=${filtroAnexo})}"
+								class="btn btn-icon btn-sm text-muted"> <i
+								class="fa-solid fa-chevron-left"></i>
+							</a>
+							<button th:unless="${paginaAtual > 0}"
+								class="btn btn-icon btn-sm text-muted" disabled>
+								<i class="fa-solid fa-chevron-left opacity-25"></i>
+							</button>
 
-    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+							<a th:if="${paginaAtual < totalPaginas - 1}"
+								th:href="@{/mensagens/enviadas(page=${paginaAtual + 1}, comAnexo=${filtroAnexo})}"
+								class="btn btn-icon btn-sm text-muted"> <i
+								class="fa-solid fa-chevron-right"></i>
+							</a>
+							<button th:unless="${paginaAtual < totalPaginas - 1}"
+								class="btn btn-icon btn-sm text-muted" disabled>
+								<i class="fa-solid fa-chevron-right opacity-25"></i>
+							</button>
+						</div>
+					</div>
 
-    <script>
+					<div class="inbox-card">
+						<div class="d-flex align-items-center px-3 py-2 border-bottom">
+							<div class="me-3">
+								<input type="checkbox" class="form-check-input" id="checkAll">
+							</div>
+							<button class="btn btn-sm text-secondary" title="Atualizar"
+								onclick="location.reload()">
+								<i class="fa-solid fa-rotate-right"></i>
+							</button>
+							<button class="btn btn-sm text-secondary ms-2"
+								title="Mais opções">
+								<i class="fa-solid fa-ellipsis-vertical"></i>
+							</button>
+						</div>
+
+						<div class="table-responsive">
+							<table class="table table-inbox align-middle"
+								id="tabelaMensagens">
+								<tbody>
+									<tr th:each="msg : ${listaMensagens}"
+										th:id="'linha-' + ${msg.id}"
+										th:classappend="${!msg.lida} ? 'row-unread' : 'row-read'"
+										th:onclick="'verMensagem(' + ${msg.id} + ')'">
+
+										<td style="width: 40px;" onclick="event.stopPropagation()">
+											<input type="checkbox" class="form-check-input">
+										</td>
+
+										<td style="width: 40px;" onclick="event.stopPropagation()">
+											<i class="fa-star star-check"
+											th:classappend="${msg.favorito} ? 'fa-solid active' : 'fa-regular'"
+											th:onclick="'toggleFavorito(' + ${msg.id} + ', this)'"></i>
+										</td>
+
+										<td class="email-sender"><span th:if="${!msg.lida}"
+											class="text-dark">Para: <span
+												th:text="${msg.nomeGrupoDestino}">Grupo</span></span> <span
+											th:if="${msg.lida}">Para: <span
+												th:text="${msg.nomeGrupoDestino}">Grupo</span></span></td>
+
+										<td>
+											<div class="email-content-wrapper">
+												<span class="email-subject" th:text="${msg.assunto}">Assunto
+													Principal</span> <span class="text-muted mx-1">-</span> <span
+													class="email-snippet"
+													th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 60)}">
+													Resumo do conteúdo... </span> <span th:if="${msg.temAnexo}"
+													class="attachment-chip" title="Arquivo PDF"> <i
+													class="fa-solid fa-file-pdf"></i> anexo.pdf
+												</span> <span
+													th:if="${msg.temAnexo and msg.nomesAnexos.contains('.zip')}"
+													class="attachment-chip zip" title="Outros arquivos">
+													<i class="fa-solid fa-file-zipper"></i> +arquivos
+												</span>
+											</div>
+										</td>
+
+										<td class="email-date"><span
+											th:text="${#temporals.format(msg.dataEnvio, 'dd MMM')}">16
+												jan.</span></td>
+									</tr>
+
+									<tr th:if="${#lists.isEmpty(listaMensagens)}">
+										<td colspan="5" class="text-center py-5 text-muted">
+											<div class="py-4">
+												<i
+													class="fa-regular fa-folder-open display-4 mb-3 opacity-25"></i>
+												<p>Nenhuma mensagem enviada.</p>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="position-fixed bottom-0 end-0 p-4 d-lg-none"
+				style="z-index: 100;">
+				<a href="/grupos/gerenciar"
+					class="btn btn-primary rounded-pill shadow-lg d-flex align-items-center gap-2 px-4 py-3 fw-bold"
+					style="border-radius: 16px !important; font-family: 'Google Sans', sans-serif;">
+					<i class="fa-solid fa-pen"></i> <span class="d-none d-md-inline">Escrever</span>
+				</a>
+			</div>
+
+		</div>
+	</main>
+
+	<div class="modal fade" id="modalLeitura" tabindex="-1">
+		<div
+			class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content border-0 shadow-lg"
+				style="border-radius: 12px;">
+				<div class="modal-header border-bottom-0 pb-0">
+					<h5 class="modal-title fw-bold" id="modalAssunto">Assunto</h5>
+					<div class="d-flex gap-2">
+						<button type="button" class="btn btn-sm btn-light rounded-circle"
+							title="Imprimir">
+							<i class="fa-solid fa-print"></i>
+						</button>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="d-flex align-items-center mb-4">
+						<div
+							class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fs-5"
+							style="width: 40px; height: 40px;">
+							<i class="fa-solid fa-user"></i>
+						</div>
+						<div>
+							<div class="d-flex align-items-center gap-2">
+								<span class="fw-bold text-dark">Você</span> <span
+									class="text-muted small">&lt;admin@winpost.com&gt;</span>
+							</div>
+							<div class="text-muted small">
+								para <span id="modalGrupo" class="text-dark fw-bold">Grupo</span>
+							</div>
+						</div>
+						<div class="ms-auto text-muted small" id="modalData">Data</div>
+					</div>
+
+					<div class="p-3 bg-light rounded-3 mb-3 border">
+						<div id="modalConteudo" style="font-family: sans-serif;"></div>
+					</div>
+
+					<div id="areaAnexosModal" class="d-none mt-3 border-top pt-3">
+						<h6 class="small fw-bold text-muted mb-2">
+							<i class="fa-solid fa-paperclip me-1"></i>Anexos
+						</h6>
+						<div class="d-flex gap-2">
+							<span class="attachment-chip"><i class="fa-solid fa-file"></i>
+								<span id="modalAnexos"></span></span>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer border-top-0 pt-0">
+					<button type="button" class="btn btn-secondary rounded-pill px-4"
+						data-bs-dismiss="modal">Fechar</button>
+					<button type="button" class="btn btn-primary rounded-pill px-4">Reutilizar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
         function verMensagem(id) {
             // Loading
             $('#modalConteudo').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>');
