@@ -49,7 +49,7 @@
                                             <h6 class="text-uppercase text-muted fw-bold mb-1" style="font-size: 0.75rem;">Total de Contatos</h6>
                                             <h2 class="fw-bold mb-0 text-dark" th:text="${totalContatos} ?: '0'">0</h2>
                                         </div>
-                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <div class="bg-primary bg-opacity-10 text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                             <i class="fa-solid fa-users fs-5"></i>
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@
                                             <h6 class="text-uppercase text-muted fw-bold mb-1" style="font-size: 0.75rem;">Novo Cadastro</h6>
                                             <p class="text-muted small mb-0">Adicionar registro</p>
                                         </div>
-                                        <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <div class="bg-success bg-opacity-10 text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                             <i class="fa-solid fa-user-plus fs-5"></i>
                                         </div>
                                     </div>
@@ -87,7 +87,7 @@
                                             <h6 class="text-uppercase text-muted fw-bold mb-1" style="font-size: 0.75rem;">Status Sistema</h6>
                                             <h5 class="fw-bold mb-0 text-success">Online</h5>
                                         </div>
-                                        <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <div class="bg-info bg-opacity-10 text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                             <i class="fa-solid fa-server fs-5"></i>
                                         </div>
                                     </div>
@@ -214,23 +214,5 @@
 
     <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
 
-    <script>
-        function toggleMenu(menuId, iconId) {
-            var menu = document.getElementById(menuId);
-            var icon = document.getElementById(iconId);
-
-            if (menu && icon) {
-                if (menu.classList.contains('d-none')) {
-                    menu.classList.remove('d-none');
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                } else {
-                    menu.classList.add('d-none');
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                }
-            }
-        }
-    </script>
 </body>
 </html>
