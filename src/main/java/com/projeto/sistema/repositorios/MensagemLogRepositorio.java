@@ -33,4 +33,14 @@ public interface MensagemLogRepositorio extends JpaRepository<MensagemLog, Long>
             
     // Contadores para o menu lateral (Opcional, mas útil)
     long countByPasta(String pasta);
+    
+    long countByLidaFalse();
+    
+   // Busca as 5 mensagens mais recentes que NÃO foram lidas
+    List<MensagemLog> findTop5ByLidaFalseOrderByDataEnvioDesc();
+    
+ 
+    // NOVO: Busca mensagens enviadas dentro de um intervalo de datas (Ex: 01/01 a 31/01)
+    List<MensagemLog> findByDataEnvioBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
 }
+    

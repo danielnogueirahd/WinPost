@@ -687,3 +687,117 @@ body {
 .attachment-chip.zip i { color: #fbbc04; }
 
 
+/* ==========================================================================
+   12. NOVO ESTILO: CALENDÁRIO MODERNO
+   ========================================================================== */
+/* --- Estilos do Calendário --- */
+.calendar-header {
+	background-color: #fff;
+	border-radius: 12px 12px 0 0;
+	padding: 20px;
+	border-bottom: 1px solid #eee;
+}
+
+.calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	/* 7 Colunas fixas (Dom a Sáb) */
+	background-color: #dee2e6;
+	gap: 1px;
+	border: 1px solid #dee2e6;
+}
+
+.calendar-day-header {
+	background-color: #f8f9fa;
+	color: #6c757d;
+	font-weight: 700;
+	text-transform: uppercase;
+	font-size: 0.75rem;
+	text-align: center;
+	padding: 10px;
+}
+
+.calendar-day {
+	background-color: #fff;
+	min-height: 120px;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	transition: background-color 0.2s;
+}
+
+.calendar-day:hover {
+	background-color: #fcfcfc;
+}
+
+/* Dia vazio (mês anterior/próximo) */
+.day-empty {
+	background-color: #f9f9f9;
+}
+
+.day-number {
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 4px;
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+}
+
+/* Destaque para o dia de HOJE */
+.day-today .day-number {
+	background-color: #0d6efd;
+	color: white;
+}
+
+/* --- Badges de Eventos --- */
+.event-badge {
+	display: flex;
+	align-items: center;
+	padding: 4px 8px;
+	border-radius: 6px;
+	font-size: 0.75rem;
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
+	cursor: pointer;
+	transition: transform 0.1s;
+}
+
+.event-badge:hover {
+	transform: scale(1.02);
+	opacity: 0.9;
+	color: inherit;
+}
+
+/* Cores dos Eventos */
+.event-niver {
+	background-color: #d1e7dd;
+	color: #0f5132;
+	border-left: 3px solid #198754;
+}
+
+.event-envio {
+	background-color: #cfe2ff;
+	color: #084298;
+	border-left: 3px solid #0d6efd;
+}
+
+/* Adicione logo abaixo de .event-envio */
+.event-feriado {
+	background-color: #f8d7da;
+	color: #842029;
+	border-left: 3px solid #dc3545;
+}
+
+.event-badge span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+

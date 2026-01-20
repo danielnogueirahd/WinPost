@@ -1,55 +1,133 @@
 <div th:fragment="navbar">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
-        <div class="container-fluid px-4 position-relative">
+
+    <style>
+        /* Estilo específico apenas para o "Modal" de mensagens verde */
+        .dropdown-menu-notifications {
+            border-top: 3px solid #198754; /* Topo verde para destaque */
+        }
+        
+        /* Fundo verde clarinho para os ícones dentro do menu */
+        .bg-green-light {
+            background-color: #d1e7dd !important; /* Verde bem suave */
+            color: #146c43 !important; /* Verde escuro */
+        }
+
+        /* Hover nos itens da notificação */
+        .notification-item:hover {
+            background-color: #f8f9fa;
+            border-left: 3px solid #198754; /* Barrinha verde ao passar o mouse */
+        }
+    </style>
+
+	<nav
+        class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
+		<div class="container-fluid px-4 position-relative">
 
             <div class="d-flex align-items-center">
-                <a class="navbar-brand me-3" href="/administrativo">
-                    <img th:src="@{/img/logoInput.png}" src="/img/logoInput.png" alt="Input Logo" height="35"
-                        class="d-inline-block align-text-top rounded px-1">
-                </a>
+				<a class="navbar-brand me-3" href="/administrativo"> 
+                    <img th:src="@{/img/logoInput.png}" src="/img/logoInput.png"
+					alt="Input Logo" height="35"
+					class="d-inline-block align-text-top rounded px-1">
+				</a>
 
-                <button class="btn btn-outline-light border-0 me-2" type="button" onclick="history.back()">
-                    <i class="fa-solid fa-arrow-left me-1"></i> <span class="d-none d-sm-inline"></span>
-                </button>
-                <button class="btn btn-outline-light border-0" type="button"
-                    data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
-                    aria-controls="sidebarMenu">
-                    <i class="fa-solid fa-bars me-1"></i> <span class="d-none d-sm-inline">Menu</span>
-                </button>
-            </div>
+				<button class="btn btn-outline-light border-0 me-2" type="button"
+					onclick="history.back()">
+					<i class="fa-solid fa-arrow-left me-1"></i> <span
+						class="d-none d-sm-inline"></span>
+				</button>
+				<button class="btn btn-outline-light border-0" type="button"
+					data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+					aria-controls="sidebarMenu">
+					<i class="fa-solid fa-bars me-1"></i> <span
+						class="d-none d-sm-inline">Menu</span>
+				</button>
+			</div>
 
             <div class="position-absolute top-50 start-50 translate-middle text-center pointer-events-none d-none d-md-block">
-                <div class="text-white"
-                    style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase;">
-                    WINPOST
-                
-                </div>
-                
-            </div>
+				<div class="text-white"
+					style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase;">
+					WINPOST</div>
+			</div>
 
             <div class="d-flex align-items-center ms-auto">
-                
 
-                <div class="vr text-white opacity-50 d-none d-lg-block"></div>
-
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                        data-bs-toggle="dropdown">
-                        <div class="bg-white text-primary rounded-circle d-flex justify-content-center align-items-center me-2"
-                            style="width: 32px; height: 32px;">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <span class="d-none d-lg-block">Admin</span>
+                <div class="dropdown me-3">
+                    <a href="#" class="text-white text-decoration-none position-relative" 
+                       id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-regular fa-bell fs-5"></i>
+                        
+                        <span th:if="${notificacoesNaoLidas > 0}" 
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
+                              style="font-size: 0.6rem;">
+                            <span th:text="${notificacoesNaoLidas}">0</span>
+                        </span>
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item" href="/perfil">Perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Configurações</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 dropdown-menu-notifications" 
+                        aria-labelledby="dropdownNotificacoes" 
+                        style="width: 320px; max-height: 400px; overflow-y: auto;">
+                        
+                        <li><h6 class="dropdown-header text-uppercase fw-bold text-success small">Notificações</h6></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/logout">Sair</a></li>
+
+                        <li th:each="msg : ${listaNotificacoes}">
+                            <a class="dropdown-item p-3 border-bottom notification-item" href="/mensagens/enviadas">
+                                <div class="d-flex align-items-start">
+                                    
+                                    <div class="bg-green-light rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" 
+                                         style="width: 35px; height: 35px;">
+                                        <i class="fa-solid fa-envelope"></i>
+                                    </div>
+                                    
+                                    <div class="flex-grow-1" style="min-width: 0;">
+                                        <h6 class="mb-1 fw-bold text-dark small text-truncate" th:text="${msg.assunto}">Assunto</h6>
+                                        <p class="mb-1 text-muted small text-truncate" th:text="${msg.nomeGrupoDestino}">Grupo</p>
+                                        
+                                        <small class="text-success fw-bold" style="font-size: 0.7rem;">
+                                            <i class="fa-regular fa-clock me-1"></i>
+                                            <span th:text="${#temporals.format(msg.dataEnvio, 'dd/MM HH:mm')}">Data</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li th:if="${#lists.isEmpty(listaNotificacoes)}">
+                            <div class="text-center py-4 text-muted">
+                                <i class="fa-regular fa-bell-slash fs-4 mb-2 opacity-50"></i>
+                                <p class="small mb-0">Tudo limpo por aqui!</p>
+                            </div>
+                        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-center small fw-bold text-success py-2" href="/mensagens/enviadas">
+                                Ver todas as mensagens
+                            </a>
+                        </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-    </nav>
+                <div class="vr text-white opacity-50 d-none d-lg-block me-3"></div>
+
+                <div class="dropdown">
+					<a href="#"
+						class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                        id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+						<div class="bg-white text-primary rounded-circle d-flex justify-content-center align-items-center me-2"
+							style="width: 32px; height: 32px;">
+							<i class="fa-solid fa-user"></i>
+						</div> 
+                        <span class="d-none d-lg-block">Admin</span>
+					</a>
+
+					<ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUser">
+						<li><a class="dropdown-item" href="/perfil">Perfil</a></li>
+						<li><a class="dropdown-item" href="#">Configurações</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item text-danger" href="/logout">Sair</a></li>
+					</ul>
+				</div>
+                </div>
+		</div>
+	</nav>
 </div>

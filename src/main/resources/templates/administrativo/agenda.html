@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agenda | WinPost</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/css/estilo.css">
+
+
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+	<div th:replace="~{fragments/navbar :: navbar}"></div>
+	<div th:replace="~{fragments/sidebar :: sidebar('agenda')}"></div>
+
+	<main class="flex-grow-1">
+		<div style="margin-top: 80px;"></div>
+
+		<div class="container py-4 mb-5">
+
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div class="border-start border-4 border-primary ps-3">
+					<h2 class="text-dark mb-0 fw-bold">Agenda</h2>
+					<p class="text-muted small mb-0">Eventos e disparos do mês.</p>
+				</div>
+
+				<button class="btn btn-primary shadow-sm fw-bold"
+					onclick="alert('Funcionalidade futura: Modal de Agendamento')">
+					<i class="fa-solid fa-plus me-2"></i>Novo Evento
+				</button>
+			</div>
+
+			<div class="card card-modern shadow-sm border-0">
+
+				<div
+					class="calendar-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+					<div class="btn-group shadow-sm">
+						<a
+							th:href="@{/agenda(mes=${mesExibicao == 1 ? 12 : mesExibicao - 1}, ano=${mesExibicao == 1 ? anoExibicao - 1 : anoExibicao})}"
+							class="btn btn-outline-secondary btn-sm px-3"> <i
+							class="fa-solid fa-chevron-left"></i>
+						</a> <a href="/agenda"
+							class="btn btn-outline-secondary btn-sm fw-bold px-3">Hoje</a> <a
+							th:href="@{/agenda(mes=${mesExibicao == 12 ? 1 : mesExibicao + 1}, ano=${mesExibicao == 12 ? anoExibicao + 1 : anoExibicao})}"
+							class="btn btn-outline-secondary btn-sm px-3"> <i
+							class="fa-solid fa-chevron-right"></i>
+						</a>
+					</div>
+
+					<h4 class="fw-bold text-dark mb-0 text-uppercase">
+						<span
+							th:text="${T(java.time.Month).of(mesExibicao).getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('pt-BR'))}">Mês</span>
+						<span th:text="${anoExibicao}" class="text-primary">2024</span>
+					</h4>
+
+					<div class="d-flex gap-3 small text-muted">
+						<span class="d-flex align-items-center"><i
+							class="fa-solid fa-square text-success me-2 fs-5 opacity-25"></i>
+							Aniversários</span> <span class="d-flex align-items-center"><i
+							class="fa-solid fa-square text-primary me-2 fs-5 opacity-25"></i>
+							Envios</span>
+					</div>
+				</div>
+
+				<div class="calendar-grid">
+
+					<div class="calendar-day-header">Dom</div>
+					<div class="calendar-day-header">Seg</div>
+					<div class="calendar-day-header">Ter</div>
+					<div class="calendar-day-header">Qua</div>
+					<div class="calendar-day-header">Qui</div>
+					<div class="calendar-day-header">Sex</div>
+					<div class="calendar-day-header">Sáb</div>
+
+					<th:block th:if="${diaSemanaInicio != 7}"
+						th:each="i : ${#numbers.sequence(1, diaSemanaInicio)}">
+						<div class="calendar-day day-empty"></div>
+					</th:block>
+
+					<th:block th:each="dia : ${#numbers.sequence(1, totalDiasMes)}">
+
+						<div class="calendar-day cursor-pointer" 
+                             th:classappend="${dia == #temporals.createNow().dayOfMonth and mesExibicao == #temporals.createNow().monthValue and anoExibicao == #temporals.createNow().year} ? 'day-today'"
+							th:onclick="'verDetalhesDia(' + ${dia} + ', ' + ${mesExibicao} + ', ' + ${anoExibicao} + ')'"
+							style="cursor: pointer;">
+							<span class="day-number" th:text="${dia}">1</span>
+
+							<th:block th:each="evento : ${listaEventos}">
+								<div th:if="${evento.data.dayOfMonth == dia}"
+									th:class="'event-badge ' + ${evento.cor}"
+									th:title="${evento.titulo}">
+
+									<i th:if="${evento.tipo == 'NIVER'}"
+										class="fa-solid fa-cake-candles me-2"></i> <i
+										th:if="${evento.tipo == 'ENVIO'}"
+										class="fa-solid fa-paper-plane me-2"></i> <i
+										th:if="${evento.tipo == 'FERIADO'}"
+										class="fa-regular fa-calendar-check me-2"></i> <span
+										th:text="${evento.titulo}">Título do Evento</span>
+								</div>
+							</th:block>
+
+						</div>
+					</th:block>
+
+				</div>
+			</div>
+
+		</div>
+	</main>
+	<div class="modal fade" id="modalDetalhesDia" tabindex="-1"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow">
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title fw-bold">
+						<i class="fa-regular fa-calendar me-2"></i> <span
+							id="modalTituloData">Detalhes</span>
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body p-0">
+					<div id="listaDetalhes" class="list-group list-group-flush">
+					</div>
+
+					<div id="msgVazio" class="text-center py-4 d-none">
+						<i
+							class="fa-regular fa-calendar-xmark fs-2 text-muted mb-2 opacity-50"></i>
+						<p class="text-muted small mb-0">Nenhum evento registrado
+							neste dia.</p>
+					</div>
+				</div>
+				<div class="modal-footer bg-light border-0">
+					<button type="button" class="btn btn-sm btn-secondary"
+						data-bs-dismiss="modal">Fechar</button>
+					<button type="button" class="btn btn-sm btn-primary fw-bold"
+						onclick="alert('Funcionalidade futura: Adicionar novo')">
+						<i class="fa-solid fa-plus me-1"></i> Adicionar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script th:src="@{/js/agenda.js}"></script>
+</body>
+</html>

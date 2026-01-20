@@ -22,6 +22,11 @@ public interface ContatosRepositorio extends JpaRepository<Contatos, Long> {
     List<Contatos> findByMesAniversario(@Param("mes") Integer mes);
     // -----------------------------
 
+ // Busca aniversariantes de um dia e mês específicos (Ex: 20 de Janeiro)
+    @Query("SELECT c FROM Contatos c WHERE DAY(c.dataNascimento) = :dia AND MONTH(c.dataNascimento) = :mes")
+    List<Contatos> findByDiaEMesAniversario(@Param("dia") int dia, @Param("mes") int mes);
+    
+   
     @Query("SELECT DISTINCT c FROM Contatos c LEFT JOIN c.grupos g WHERE " +
            "(:nome IS NULL OR lower(c.nome) LIKE lower(concat('%', :nome, '%'))) AND " +
            "(:cidade IS NULL OR lower(c.cidade) LIKE lower(concat('%', :cidade, '%'))) AND " +
