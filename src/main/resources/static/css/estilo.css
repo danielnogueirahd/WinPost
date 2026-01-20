@@ -6,10 +6,10 @@ body {
     background-attachment: fixed;
     min-height: 100vh;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #333; /* Cor base para texto */
+    color: #333;
 }
 
-/* Scrollbar personalizada (opcional, mas dá um toque moderno) */
+/* Scrollbar personalizada */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -26,106 +26,11 @@ body {
 }
 
 /* ==========================================================================
-   2. ESTRUTURA DE LAYOUT (SIDEBAR & WRAPPER)
-   ========================================================================== */
-#wrapper {
-    overflow-x: hidden;
-    flex: 1;
-    display: flex;
-}
-
-#sidebar-wrapper {
-    min-height: 100%;
-    margin-left: -15rem;
-    width: 15rem;
-    transition: margin 0.25s ease-out;
-}
-
-#page-content-wrapper {
-    width: 100%;
-    flex: 1;
-    transition: all 0.25s ease-out;
-}
-
-#wrapper.toggled #sidebar-wrapper {
-    margin-left: 0;
-}
-
-/* Sidebar Offcanvas Customization */
-.offcanvas {
-    border-right: none;
-    box-shadow: 0 0 30px rgba(0,0,0,0.1) !important;
-}
-
-.sidebar-header {
-    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-    padding: 1.5rem;
-    color: white;
-}
-
-.sidebar-item {
-    border: none !important; 
-    color: #555;
-    font-weight: 500;
-    padding: 15px 25px;
-    transition: all 0.3s ease; 
-    background-color: transparent;
-    border-left: 4px solid transparent !important; 
-}
-
-.sidebar-item:hover, 
-.sidebar-item:focus {
-    background-color: #f8f9fa;
-    color: #0d6efd;
-    border-left: 4px solid #0d6efd !important; 
-    padding-left: 30px; 
-}
-
-.sidebar-item i {
-    width: 25px; 
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.sidebar-item:hover i {
-    transform: scale(1.2); 
-}
-
-.submenu-container {
-    background-color: #f8f9fa; 
-    box-shadow: inset 0 3px 6px rgba(0,0,0,0.03); 
-}
-
-.submenu-link {
-    padding-left: 60px !important; 
-    font-size: 0.9rem;
-    color: #666;
-    background-color: transparent;
-    border: none;
-    display: block;
-    padding: 12px 20px;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.submenu-link:hover {
-    color: #0d6efd;
-    font-weight: 600;
-    background-color: rgba(13, 110, 253, 0.05);
-}
-
-.sidebar-item .fa-chevron-down,
-.sidebar-item .fa-chevron-up {
-    font-size: 0.75rem;
-    opacity: 0.6;
-}
-
-/* ==========================================================================
-   3. COMPONENTES: CARDS
+   2. COMPONENTES: CARDS
    ========================================================================== */
 .card {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
-    border: none; /* Remove borda padrão do Bootstrap */
+    border: none;
 }
 
 .card-modern {
@@ -160,12 +65,6 @@ body {
     padding: 1.5rem 2rem 1rem;
 }
 
-.card-header-custom {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #eee;
-    border-left: 4px solid #0d6efd;
-}
-
 /* Card Pro (usado em Grupos) */
 .card-pro {
     border: none;
@@ -193,7 +92,7 @@ body {
 }
 
 /* ==========================================================================
-   4. COMPONENTES: FORMULÁRIOS & INPUTS
+   3. COMPONENTES: FORMULÁRIOS & INPUTS
    ========================================================================== */
 .form-control, 
 .form-select {
@@ -266,12 +165,12 @@ body {
 }
 
 .form-check-input:checked {
-    background-color: #0d6efd; /* Padronizado para Primary */
+    background-color: #0d6efd;
     border-color: #0d6efd;
 }
 
 /* ==========================================================================
-   5. COMPONENTES: BOTÕES & ALERTS
+   4. COMPONENTES: BOTÕES & ALERTS
    ========================================================================== */
 .btn-modern {
     border-radius: 10px;
@@ -300,7 +199,7 @@ body {
 }
 
 /* ==========================================================================
-   6. PÁGINA: LOGIN
+   5. PÁGINA: LOGIN
    ========================================================================== */
 .login-body {
     min-height: 100vh;
@@ -402,7 +301,6 @@ body {
     .login-container { flex-direction: column; min-height: auto; }
 }
 
-/* Animação Flutuante */
 @keyframes float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -410,7 +308,7 @@ body {
 }
 
 /* ==========================================================================
-   7. TABELAS & DATA TABLES
+   6. TABELAS & DATA TABLES
    ========================================================================== */
 .table-small-font {
     font-size: 0.9rem;
@@ -437,17 +335,16 @@ body {
     border-bottom: 1px solid #f9f9f9;
 }
 
-/* Linha Selecionada */
 .row-selected {
     background-color: #fff9e6 !important;
 }
 
 .row-selected td:first-child {
-    border-left: 3px solid #ffc107; /* Accent Color */
+    border-left: 3px solid #ffc107;
 }
 
 /* ==========================================================================
-   8. LAYOUTS ESPECÍFICOS (GRUPOS, STICKY)
+   7. UTILITÁRIOS (Sticky Column)
    ========================================================================== */
 .page-header h2 {
     font-weight: 700;
@@ -462,7 +359,7 @@ body {
 }
 
 /* ==========================================================================
-   9. MODAL GMAIL & EDITOR SUMMERNOTE
+   8. EDITOR SUMMERNOTE
    ========================================================================== */
 .note-editor.note-frame {
     border: none !important;
@@ -484,105 +381,90 @@ body {
     border-radius: 4px;
 }
 
+/* ==========================================================================
+   9. ESTILO ESPECÍFICO: TABELA DE MENSAGENS (GMAIL STYLE)
+   ========================================================================== */
+    
+#tabelaMensagens {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.table-gmail thead { display: none; }
+
+/* ESTADO LIDO */
+.table-gmail tbody tr {
+    background: #f8f9fa;
+    box-shadow: none;
+    border: 1px solid #eee;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+/* ESTADO NÃO LIDO */
+.table-gmail tbody tr.row-unread {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-left: 5px solid #0d6efd;
+    font-weight: 600;
+}
+
+.table-gmail tbody tr.row-unread td {
+    background-color: #ffffff !important;
+    color: #212529;
+}
+
+.table-gmail tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border-color: transparent;
+    z-index: 2;
+    position: relative;
+}
+
+.table-gmail tbody tr td {
+    border: none;
+    padding: 18px 20px;
+    vertical-align: middle;
+}
+
+.table-gmail tbody tr td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.table-gmail tbody tr td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+.table-gmail tbody tr.row-unread td:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.badge-lido {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: normal;
+    color: #adb5bd;
+    background: #f1f3f5;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.texto-grupo { font-size: 0.95rem; }
+.texto-assunto { font-size: 0.95rem; }
+
+.icon-status-wrapper { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.bg-status-success { background-color: #d1e7dd; color: #198754; }
+.bg-status-error { background-color: #f8d7da; color: #dc3545; }
+
+/* Modal Leitura Email */
+.modal-leitura-content { border: none; border-radius: 15px; overflow: hidden; }
+.email-header { background: linear-gradient(to right, #f8f9fa, #ffffff); padding: 20px 25px; border-bottom: 1px solid #eee; }
+.avatar-circle { width: 45px; height: 45px; background-color: #0d6efd; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+.email-body-container { padding: 30px; background-color: #fff; min-height: 300px; font-family: 'Georgia', serif; line-height: 1.6; color: #333; }
 
 /* ==========================================================================
-    10. ESTILO ESPECÍFICO: TABELA DE MENSAGENS (GMAIL STYLE)
-    ========================================================================== */
-    
-    /* --- ESTILO GERAL --- */
-    body { background-color: #f4f6f9; }
-
-    /* --- TABELA / LISTA --- */
-    #tabelaMensagens {
-        border-collapse: separate;
-        border-spacing: 0 8px; /* Espaço entre os cards */
-    }
-
-    .table-gmail thead { display: none; }
-
-    /* ESTADO LIDO (PADRÃO) - Visual "Apagado" */
-    .table-gmail tbody tr {
-        background: #f8f9fa; /* Fundo cinza bem claro */
-        box-shadow: none;
-        border: 1px solid #eee; /* Borda sutil */
-        transition: all 0.2s ease;
-        border-radius: 8px;
-        cursor: pointer;
-        color: #6c757d; /* Texto cinza */
-    }
-
-    /* ESTADO NÃO LIDO - Visual "Destacado" (Profissional) */
-    .table-gmail tbody tr.row-unread {
-        background-color: #ffffff !important; /* Branco Puro */
-        color: #212529 !important; /* Texto Preto */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Sombra para "flutuar" */
-        border-left: 5px solid #0d6efd; /* Apenas uma barra azul lateral elegante */
-        font-weight: 600; /* Texto em Negrito */
-    }
-    
-    /* Garante que as células herdem a cor correta */
-    .table-gmail tbody tr.row-unread td {
-        background-color: #ffffff !important;
-        color: #212529;
-    }
-
-    /* Hover em qualquer estado */
-    .table-gmail tbody tr:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        border-color: transparent;
-        z-index: 2;
-        position: relative;
-    }
-
-    /* Células */
-    .table-gmail tbody tr td {
-        border: none;
-        padding: 18px 20px;
-        vertical-align: middle;
-    }
-
-    /* Arredondamento */
-    .table-gmail tbody tr td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-    .table-gmail tbody tr td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
-    
-    /* Correção do arredondamento na esquerda quando tem a borda colorida */
-    .table-gmail tbody tr.row-unread td:first-child {
-        border-radius: 4px 0 0 4px;
-    }
-
-    /* --- OUTROS ELEMENTOS --- */
-    .badge-lido {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        font-weight: normal;
-        color: #adb5bd;
-        background: #f1f3f5;
-        padding: 2px 8px;
-        border-radius: 4px;
-    }
-
-    /* Tipografia Específica */
-    .texto-grupo { font-size: 0.95rem; } /* Negrito é controlado pela linha pai */
-    .texto-assunto { font-size: 0.95rem; }
-    
-    .icon-status-wrapper { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .bg-status-success { background-color: #d1e7dd; color: #198754; }
-    .bg-status-error { background-color: #f8d7da; color: #dc3545; }
-    
-    /* Modal */
-    .modal-leitura-content { border: none; border-radius: 15px; overflow: hidden; }
-    .email-header { background: linear-gradient(to right, #f8f9fa, #ffffff); padding: 20px 25px; border-bottom: 1px solid #eee; }
-    .avatar-circle { width: 45px; height: 45px; background-color: #0d6efd; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
-    .email-body-container { padding: 30px; background-color: #fff; min-height: 300px; font-family: 'Georgia', serif; line-height: 1.6; color: #333; }
-
-
-
-/* ==========================================================================
-   11. NOVO ESTILO: CAIXA DE SAÍDA (GMAIL CLEAN)
+   10. NOVO ESTILO: CAIXA DE SAÍDA (GMAIL CLEAN)
    ========================================================================== */
 
-/* Barra de Ferramentas */
 .toolbar-container {
     padding: 10px 0;
 }
@@ -600,7 +482,6 @@ body {
 .btn-filter:hover { background-color: #f1f3f4; color: #202124; }
 .btn-filter.active { background-color: #e8f0fe; color: #1967d2; border-color: transparent; }
 
-/* Container da Lista (Papel Branco) */
 .inbox-card {
     background: #fff;
     border-radius: 16px;
@@ -608,7 +489,6 @@ body {
     overflow: hidden;
 }
 
-/* Tabela Customizada */
 .table-inbox { margin-bottom: 0; width: 100%; border-collapse: collapse; }
 
 .table-inbox tr {
@@ -632,14 +512,12 @@ body {
     font-size: 0.9rem;
 }
 
-/* Estados de Leitura */
 .row-unread { background-color: #ffffff; font-weight: 700; }
 .row-unread .email-subject { color: #202124; font-weight: 700; }
 
 .row-read { background-color: #f8f9fa; font-weight: 400; }
 .row-read .email-subject { color: #5f6368; font-weight: 400; }
 
-/* Componentes da Linha */
 .star-check { color: #dadce0; cursor: pointer; transition: color 0.2s; }
 .star-check:hover { color: #5f6368; }
 .star-check.active { color: #f4b400; }
@@ -669,7 +547,6 @@ body {
     font-weight: 500;
 }
 
-/* Chips de Anexo */
 .attachment-chip {
     display: inline-flex;
     align-items: center;
@@ -686,11 +563,9 @@ body {
 .attachment-chip i { margin-right: 4px; color: #ea4335; }
 .attachment-chip.zip i { color: #fbbc04; }
 
-
 /* ==========================================================================
-   12. NOVO ESTILO: CALENDÁRIO MODERNO
+   11. CALENDÁRIO MODERNO
    ========================================================================== */
-/* --- Estilos do Calendário --- */
 .calendar-header {
 	background-color: #fff;
 	border-radius: 12px 12px 0 0;
@@ -701,7 +576,6 @@ body {
 .calendar-grid {
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
-	/* 7 Colunas fixas (Dom a Sáb) */
 	background-color: #dee2e6;
 	gap: 1px;
 	border: 1px solid #dee2e6;
@@ -731,7 +605,6 @@ body {
 	background-color: #fcfcfc;
 }
 
-/* Dia vazio (mês anterior/próximo) */
 .day-empty {
 	background-color: #f9f9f9;
 }
@@ -748,13 +621,11 @@ body {
 	border-radius: 50%;
 }
 
-/* Destaque para o dia de HOJE */
 .day-today .day-number {
 	background-color: #0d6efd;
 	color: white;
 }
 
-/* --- Badges de Eventos --- */
 .event-badge {
 	display: flex;
 	align-items: center;
@@ -775,7 +646,6 @@ body {
 	color: inherit;
 }
 
-/* Cores dos Eventos */
 .event-niver {
 	background-color: #d1e7dd;
 	color: #0f5132;
@@ -788,7 +658,6 @@ body {
 	border-left: 3px solid #0d6efd;
 }
 
-/* Adicione logo abaixo de .event-envio */
 .event-feriado {
 	background-color: #f8d7da;
 	color: #842029;
@@ -799,5 +668,3 @@ body {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-
-

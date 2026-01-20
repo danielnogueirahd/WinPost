@@ -1,12 +1,21 @@
-
 <div th:fragment="footer">
-    <footer class="bg-primary border-top py-3 mt-auto">
+    
+    <style>
+        .footer-custom {
+            /* Mesmo gradiente da Navbar para consistência visual */
+            background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+            color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1); /* Sombra invertida (para cima) */
+        }
+    </style>
+
+    <footer class="footer-custom border-top py-3 mt-auto">
         <div class="container text-center">
-            <p class="mb-0 text-white small">
+            <p class="mb-0 small" style="font-weight: 500;">
                 &copy; 2025 <strong class="text-white">Input Tecnologia</strong>.
                 Todos os direitos reservados.
             </p>
-           
         </div>
     </footer>
-</div> 
+
+</div>

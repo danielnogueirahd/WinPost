@@ -1,133 +1,308 @@
 <div th:fragment="navbar">
 
     <style>
-        /* Estilo específico apenas para o "Modal" de mensagens verde */
-        .dropdown-menu-notifications {
-            border-top: 3px solid #198754; /* Topo verde para destaque */
-        }
-        
-        /* Fundo verde clarinho para os ícones dentro do menu */
-        .bg-green-light {
-            background-color: #d1e7dd !important; /* Verde bem suave */
-            color: #146c43 !important; /* Verde escuro */
+        /* --- ESTILO GERAL DA NAVBAR --- */
+        .navbar-custom {
+            /* Gradiente Azul Profissional (Estilo Fintech/Corporativo) */
+            background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
         }
 
-        /* Hover nos itens da notificação */
-        .notification-item:hover {
-            background-color: #f8f9fa;
-            border-left: 3px solid #198754; /* Barrinha verde ao passar o mouse */
+        /* --- LINKS DE NAVEGAÇÃO --- */
+        .navbar-nav .nav-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85) !important;
+            padding: 0.6rem 1rem !important;
+            margin: 0 2px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Espaço entre ícone e texto */
+        }
+
+        /* Hover (Efeito Vidro) */
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link:focus {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px); /* Leve flutuação */
+        }
+
+        /* Item Ativo (Destaque Sólido Suave) */
+        .navbar-nav .nav-link.active {
+            color: #ffffff !important;
+            font-weight: 700;
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* --- DROPDOWNS --- */
+        .dropdown-menu {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 0.5rem;
+            margin-top: 12px; /* Afastamento do topo */
+            background-color: #ffffff;
+        }
+
+        /* Seta indicativa no topo do dropdown (opcional, estilo iOS) */
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 20px;
+            width: 12px;
+            height: 12px;
+            background-color: #fff;
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 5px rgba(0,0,0,0.04);
+            border-radius: 2px;
+        }
+
+        .dropdown-item {
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: #495057;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-item i {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+            color: #6c757d; /* Cor ícone inativo */
+            transition: color 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f7ff; /* Azul bem clarinho no hover */
+            color: #0d6efd;
+            transform: translateX(3px); /* Move levemente para a direita */
+        }
+
+        .dropdown-item:hover i {
+            color: #0d6efd; /* Ícone fica azul no hover */
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: #f1f3f5;
+        }
+
+        /* --- ANIMAÇÃO DE ENTRADA (Desktop) --- */
+        @media (min-width: 992px) {
+            .nav-item.dropdown:hover .dropdown-menu {
+                display: block;
+                animation: slideUpFade 0.3s ease forwards;
+            }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- NOTIFICAÇÕES E PERFIL --- */
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        .icon-btn:hover {
+            background-color: rgba(255,255,255,0.2);
         }
     </style>
 
-	<nav
-        class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
-		<div class="container-fluid px-4 position-relative">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+        <div class="container-fluid px-4">
 
-            <div class="d-flex align-items-center">
-				<a class="navbar-brand me-3" href="/administrativo"> 
-                    <img th:src="@{/img/logoInput.png}" src="/img/logoInput.png"
-					alt="Input Logo" height="35"
-					class="d-inline-block align-text-top rounded px-1">
-				</a>
+            <a class="navbar-brand d-flex align-items-center me-4" href="/administrativo">
+                <img src="/img/logoInput.png" alt="Logo" height="30" class="d-inline-block align-text-top me-2 bg-primary rounded px-1">
+                <span style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; letter-spacing: 1px;">WINPOST</span>
+            </a>
 
-				<button class="btn btn-outline-light border-0 me-2" type="button"
-					onclick="history.back()">
-					<i class="fa-solid fa-arrow-left me-1"></i> <span
-						class="d-none d-sm-inline"></span>
-				</button>
-				<button class="btn btn-outline-light border-0" type="button"
-					data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
-					aria-controls="sidebarMenu">
-					<i class="fa-solid fa-bars me-1"></i> <span
-						class="d-none d-sm-inline">Menu</span>
-				</button>
-			</div>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <div class="position-absolute top-50 start-50 translate-middle text-center pointer-events-none d-none d-md-block">
-				<div class="text-white"
-					style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase;">
-					WINPOST</div>
-			</div>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                           th:classappend="${paginaAtiva == 'dashboard'} ? 'active'" 
+                           href="/administrativo">
+                           <i class="fa-solid fa-chart-line"></i> Dashboard
+                        </a>
+                    </li>
 
-            <div class="d-flex align-items-center ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropCadastros" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                           th:classappend="${paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">
+                            <i class="fa-solid fa-folder-plus"></i> Cadastros
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropCadastros">
+                            <li>
+                                <a class="dropdown-item" href="/cadastroContatos" 
+                                   th:classappend="${paginaAtiva == 'cadastro'} ? 'fw-bold text-primary'">
+                                   <i class="fa-solid fa-user-plus"></i>Novo Contato
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="/grupos/cadastro"
+                                   th:classappend="${paginaAtiva == 'cadastroGrupo'} ? 'fw-bold text-primary'">
+                                   <i class="fa-solid fa-users-viewfinder"></i>Novo Grupo
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/grupos/gerenciar"
+                                   th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'fw-bold text-primary'">
+                                   <i class="fa-solid fa-list-check"></i>Gerenciar Grupos
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-                <div class="dropdown me-3">
-                    <a href="#" class="text-white text-decoration-none position-relative" 
-                       id="dropdownNotificacoes" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa-regular fa-bell fs-5"></i>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropConsultas" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                           th:classappend="${paginaAtiva == 'lista'} ? 'active'">
+                            <i class="fa-solid fa-magnifying-glass"></i> Consultas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropConsultas">
+                            <li>
+                                <a class="dropdown-item" href="/listarContatos"
+                                   th:classappend="${paginaAtiva == 'lista'} ? 'fw-bold text-primary'">
+                                   <i class="fa-solid fa-address-book"></i>Listar Contatos
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                           th:classappend="${paginaAtiva == 'agenda'} ? 'active'" 
+                           href="/agenda">
+                           <i class="fa-regular fa-calendar-check"></i> Agenda
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                           th:classappend="${paginaAtiva == 'mensagens'} ? 'active'" 
+                           href="/mensagens/enviadas">
+                           <i class="fa-regular fa-paper-plane"></i> Mensagens
+                        </a>
+                    </li>
+
+                     <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropFunc" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-layer-group"></i> Extra
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropFunc">
+                            <li><a class="dropdown-item" href="#"><i class="fa-regular fa-note-sticky"></i>Anotações</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-sliders"></i>Configurações</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    
+                    <div class="dropdown">
+                        <a href="#" class="text-white icon-btn position-relative" id="dropdownNotif" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-regular fa-bell fs-5"></i>
+                            
+                            <span th:if="${notificacoesNaoLidas > 0}" 
+                                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light shadow-sm"
+                                  style="font-size: 0.6rem; transform: translate(-50%, 5px);">
+                                <span th:text="${notificacoesNaoLidas}">0</span>
+                            </span>
+                        </a>
                         
-                        <span th:if="${notificacoesNaoLidas > 0}" 
-                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
-                              style="font-size: 0.6rem;">
-                            <span th:text="${notificacoesNaoLidas}">0</span>
-                        </span>
-                    </a>
-
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 dropdown-menu-notifications" 
-                        aria-labelledby="dropdownNotificacoes" 
-                        style="width: 320px; max-height: 400px; overflow-y: auto;">
-                        
-                        <li><h6 class="dropdown-header text-uppercase fw-bold text-success small">Notificações</h6></li>
-                        <li><hr class="dropdown-divider"></li>
-
-                        <li th:each="msg : ${listaNotificacoes}">
-                            <a class="dropdown-item p-3 border-bottom notification-item" href="/mensagens/enviadas">
-                                <div class="d-flex align-items-start">
-                                    
-                                    <div class="bg-green-light rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" 
-                                         style="width: 35px; height: 35px;">
-                                        <i class="fa-solid fa-envelope"></i>
-                                    </div>
-                                    
-                                    <div class="flex-grow-1" style="min-width: 0;">
-                                        <h6 class="mb-1 fw-bold text-dark small text-truncate" th:text="${msg.assunto}">Assunto</h6>
-                                        <p class="mb-1 text-muted small text-truncate" th:text="${msg.nomeGrupoDestino}">Grupo</p>
-                                        
-                                        <small class="text-success fw-bold" style="font-size: 0.7rem;">
-                                            <i class="fa-regular fa-clock me-1"></i>
-                                            <span th:text="${#temporals.format(msg.dataEnvio, 'dd/MM HH:mm')}">Data</span>
-                                        </small>
-                                    </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="dropdownNotif" style="width: 300px;">
+                            <li><h6 class="dropdown-header text-uppercase fw-bold text-muted small letter-spacing-1">Notificações</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            
+                            <li th:if="${#lists.isEmpty(listaNotificacoes)}">
+                                <div class="text-center py-4 text-muted opacity-50">
+                                    <i class="fa-regular fa-bell-slash fs-4 mb-2"></i>
+                                    <p class="small mb-0">Tudo limpo por aqui!</p>
                                 </div>
-                            </a>
-                        </li>
+                            </li>
 
-                        <li th:if="${#lists.isEmpty(listaNotificacoes)}">
-                            <div class="text-center py-4 text-muted">
-                                <i class="fa-regular fa-bell-slash fs-4 mb-2 opacity-50"></i>
-                                <p class="small mb-0">Tudo limpo por aqui!</p>
+                            <li th:each="msg : ${listaNotificacoes}">
+                                <a class="dropdown-item py-2" href="/mensagens/enviadas">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fa-solid fa-circle text-success mt-2 me-2" style="font-size: 8px;"></i>
+                                        <div style="overflow: hidden;">
+                                            <span class="d-block fw-bold text-dark small text-truncate" th:text="${msg.assunto}">Assunto</span>
+                                            <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">Novo envio registrado</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            
+                            <li th:if="${notificacoesNaoLidas > 0}">
+                                <div class="text-center pt-2 pb-1 bg-light rounded-bottom">
+                                    <a href="/mensagens/enviadas" class="text-decoration-none small fw-bold text-primary">Ver todas</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="vr text-white opacity-25 mx-2" style="height: 25px;"></div>
+
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle px-2 py-1 rounded hover-effect" 
+                           id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false" 
+                           style="transition: background 0.3s;">
+                            
+                            <div class="bg-white text-primary rounded-circle d-flex justify-content-center align-items-center shadow-sm me-2" 
+                                 style="width: 35px; height: 35px; font-weight: 800; border: 2px solid rgba(255,255,255,0.5);">
+                                A
+                            </div> 
+                            <div class="d-none d-lg-block text-start lh-1">
+                                <span class="d-block small fw-bold">Admin</span>
+                                <span class="d-block text-white-50" style="font-size: 0.7rem;">Gestor</span>
                             </div>
-                        </li>
-
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-center small fw-bold text-success py-2" href="/mensagens/enviadas">
-                                Ver todas as mensagens
-                            </a>
-                        </li>
-                    </ul>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg" aria-labelledby="dropdownUser">
+                            <li>
+                                <a class="dropdown-item" href="/perfil">
+                                    <i class="fa-regular fa-user"></i> Meu Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fa-solid fa-sliders"></i> Configurações
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="/logout">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="vr text-white opacity-50 d-none d-lg-block me-3"></div>
-
-                <div class="dropdown">
-					<a href="#"
-						class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                        id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-						<div class="bg-white text-primary rounded-circle d-flex justify-content-center align-items-center me-2"
-							style="width: 32px; height: 32px;">
-							<i class="fa-solid fa-user"></i>
-						</div> 
-                        <span class="d-none d-lg-block">Admin</span>
-					</a>
-
-					<ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUser">
-						<li><a class="dropdown-item" href="/perfil">Perfil</a></li>
-						<li><a class="dropdown-item" href="#">Configurações</a></li>
-						<li><hr class="dropdown-divider"></li>
-						<li><a class="dropdown-item text-danger" href="/logout">Sair</a></li>
-					</ul>
-				</div>
-                </div>
-		</div>
-	</nav>
+            </div>
+        </div>
+    </nav>
 </div>
