@@ -25,7 +25,7 @@
 <body class="d-flex flex-column min-vh-100 bg-light">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
-	
+
 
 	<main class="flex-grow-1">
 		<div style="margin-top: 80px;"></div>
@@ -49,7 +49,7 @@
 			<div
 				class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 				<div class="border-start border-4 border-primary ps-3">
-					<h2 class="text-dark mb-0 fw-bold">Gerenciar Grupos</h2>
+					<h2 class="text-dark mb-0 fw-bold">Disparar Campanhas</h2>
 					<p class="text-muted small mb-0">Visualize, edite ou exclua
 						seus grupos de contatos.</p>
 				</div>
@@ -113,10 +113,15 @@
 											<th class="ps-4 text-uppercase text-secondary small py-3">Grupo</th>
 											<th class="text-uppercase text-secondary small py-3">Descrição</th>
 											<th
-												class="text-center text-uppercase text-secondary small py-3">Total
-												Membros</th>
+												class="text-center text-uppercase text-secondary small py-3">Membros</th>
+
 											<th
-												class="text-end pe-4 text-uppercase text-secondary small py-3">Ações</th>
+												class="text-center text-uppercase text-primary small py-3 fw-bold"
+												style="letter-spacing: 1px;"><i
+												class="fa-solid fa-rocket me-1"></i> Enviar</th>
+
+											<th
+												class="text-end pe-4 text-uppercase text-secondary small py-3">Opções</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -131,9 +136,6 @@
 													<div>
 														<h6 class="mb-0 fw-bold text-dark" th:text="${grupo.nome}">Nome
 															do Grupo</h6>
-														<span class="text-muted small" style="font-size: 0.75rem;">ID:
-															<span th:text="${grupo.id}">#</span>
-														</span>
 													</div>
 												</div>
 											</td>
@@ -144,39 +146,42 @@
 													<span class="d-inline-block text-truncate"
 														th:if="${grupo.descricao != null and !grupo.descricao.isEmpty()}"
 														th:text="${grupo.descricao}" title="${grupo.descricao}">
-														Descrição do grupo... </span> <span
-														class="fst-italic opacity-50 small"
+														Descrição... </span> <span class="fst-italic opacity-50 small"
 														th:if="${grupo.descricao == null or grupo.descricao.isEmpty()}">
-														Sem descrição definida </span>
+														Sem descrição </span>
 												</div>
 											</td>
 
 											<td class="text-center">
 												<div
-													class="d-inline-flex align-items-center bg-primary bg-opacity-10 text-white border border-primary border-opacity-10 px-3 py-1 rounded-pill">
-													<i class="fa-solid fa-user-group me-2 small"></i> <span
-														class="fw-bold small"
+													class="d-inline-flex align-items-center bg-light text-secondary border px-3 py-1 rounded-pill">
+													<span class="fw-bold small"
 														th:text="${#lists.size(grupo.contatos)}">0</span>
 												</div>
 											</td>
 
-											<td class="text-end pe-4">
-												<div class="btn-group shadow-sm">
-													<button type="button"
-														class="btn btn-sm btn-light border text-success"
-														th:data-id="${grupo.id}" th:data-nome="${grupo.nome}"
-														onclick="prepararDisparo(this)" title="Disparar Mensagem"
-														data-bs-toggle="modal" data-bs-target="#modalDisparo">
-														<i class="fa-regular fa-paper-plane"></i>
-													</button>
+											<td class="text-center">
+												<button type="button"
+													class="btn btn-success btn-sm px-4 fw-bold shadow-sm rounded-pill d-inline-flex align-items-center"
+													th:data-id="${grupo.id}" th:data-nome="${grupo.nome}"
+													onclick="prepararDisparo(this)" data-bs-toggle="modal"
+													data-bs-target="#modalDisparo"
+													title="Iniciar nova campanha para este grupo">
+													<i class="fa-regular fa-paper-plane me-2"></i> 
+												</button>
+											</td>
 
+											<td class="text-end pe-4">
+												<div class="btn-group">
 													<a th:href="@{/grupos/editar/{id}(id=${grupo.id})}"
-														class="btn btn-sm btn-light border text-primary"
-														title="Editar"> <i class="fa-solid fa-pen-to-square"></i>
+														class="btn btn-sm btn-link text-secondary text-decoration-none opacity-75 hover-effect"
+														title="Editar Grupo"> <i
+														class="fa-solid fa-pen-to-square"></i>
 													</a> <a th:href="@{/grupos/excluir/{id}(id=${grupo.id})}"
-														class="btn btn-sm btn-light border text-danger"
+														class="btn btn-sm btn-link text-danger text-decoration-none opacity-75 hover-effect"
 														onclick="return confirm('Tem certeza que deseja excluir este grupo inteiro?');"
-														title="Excluir"> <i class="fa-solid fa-trash-can"></i>
+														title="Excluir Grupo"> <i
+														class="fa-solid fa-trash-can"></i>
 													</a>
 												</div>
 											</td>
@@ -184,12 +189,13 @@
 										</tr>
 
 										<tr th:if="${#lists.isEmpty(listaGrupos)}">
-											<td colspan="4" class="text-center py-5">
+											<td colspan="5" class="text-center py-5">
 												<div
 													class="d-flex flex-column align-items-center justify-content-center text-muted opacity-50">
 													<i class="fa-solid fa-folder-open display-4 mb-3"></i>
 													<h5 class="fw-light">Nenhum grupo encontrado</h5>
-													<p class="small mb-0">Crie um novo grupo para começar.</p>
+													<p class="small mb-0">Crie um novo grupo para começar
+														suas campanhas.</p>
 												</div>
 											</td>
 										</tr>
