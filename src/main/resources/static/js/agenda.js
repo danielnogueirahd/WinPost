@@ -1,7 +1,36 @@
 // --- agenda.js ---
 
-// Função para abrir o modal ao clicar no dia
-// (Agora está no escopo global, acessível pelo onclick do HTML)
+// 1. NOVA FUNÇÃO: Abre o modal de cadastro pré-preenchido
+function abrirModalNovoEvento(dia, mes, ano) {
+    // Fecha o modal de detalhes atual (se estiver aberto)
+    var elDetalhes = document.getElementById('modalDetalhesDia');
+    var modalDetalhes = bootstrap.Modal.getInstance(elDetalhes);
+    if (modalDetalhes) {
+        modalDetalhes.hide();
+    }
+
+    // Formata a data para o padrão do input datetime-local (YYYY-MM-DDTHH:mm)
+    var mesFmt = mes < 10 ? '0' + mes : mes;
+    var diaFmt = dia < 10 ? '0' + dia : dia;
+    
+    // Define um horário padrão (ex: 09:00) para facilitar
+    var dataHoraISO = `${ano}-${mesFmt}-${diaFmt}T09:00`;
+
+    // Preenche o campo de data no formulário de novo evento
+    // Seleciona o input name="dataHora" dentro do modalNovoEvento
+    $('#modalNovoEvento input[name="dataHora"]').val(dataHoraISO);
+    
+    // Limpa os outros campos para não trazer lixo de cadastros anteriores
+    $('#modalNovoEvento input[name="titulo"]').val('');
+    $('#modalNovoEvento textarea[name="descricao"]').val('');
+    $('#modalNovoEvento select[name="tipo"]').val('TAREFA');
+
+    // Abre o modal de cadastro
+    var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
+    modalNovo.show();
+}
+
+// 2. FUNÇÃO ATUALIZADA: Abre o modal de detalhes e configura o botão "Adicionar"
 function verDetalhesDia(dia, mes, ano) {
     // Formata data para o título (Visual)
     var dataVisual = dia + '/' + mes + '/' + ano;
@@ -11,6 +40,12 @@ function verDetalhesDia(dia, mes, ano) {
     var mesFormatado = mes < 10 ? '0' + mes : mes;
     var diaFormatado = dia < 10 ? '0' + dia : dia;
     var dataISO = ano + '-' + mesFormatado + '-' + diaFormatado;
+
+    // --- IMPORTANTE: VINCULA O CLIQUE DO BOTÃO À DATA ATUAL ---
+    // Isso garante que ao clicar em "Adicionar" no modal de detalhes,
+    // ele saiba exatamente qual dia enviar para o modal de cadastro.
+    $('#btnAdicionarNestaData').attr('onclick', `abrirModalNovoEvento(${dia}, ${mes}, ${ano})`);
+    // -----------------------------------------------------------
 
     // Limpa e mostra carregando
     $('#listaDetalhes').html('<div class="text-center py-3"><div class="spinner-border text-primary spinner-border-sm"></div></div>');
@@ -45,6 +80,10 @@ function verDetalhesDia(dia, mes, ano) {
                 } else if (item.tipo === 'FERIADO') {
                     icone = 'fa-calendar-check';
                     cor = 'text-danger';
+                } else {
+                    // Ícone padrão para tarefas manuais
+                    icone = 'fa-check';
+                    cor = 'text-info';
                 }
 
                 html += `
@@ -65,4 +104,3 @@ function verDetalhesDia(dia, mes, ano) {
         }
     });
 }
-

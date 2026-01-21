@@ -7,19 +7,28 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.projeto.sistema.modelos.UF;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
+import com.projeto.sistema.repositorios.GrupoRepositorio; // <--- Import Novo
 
 @Controller
 public class PrincipalControle {
 	
     @Autowired
     private ContatosRepositorio contatosRepositorio;
+
+    @Autowired
+    private GrupoRepositorio grupoRepositorio; // <--- Injeção Nova
+
     @GetMapping("/administrativo")
     public ModelAndView acessarPrincipal() {
         ModelAndView mv = new ModelAndView("administrativo/home");
         
         mv.addObject("totalContatos", contatosRepositorio.count()); 
         mv.addObject("ultimosContatos", contatosRepositorio.findTop10ByOrderByIdDesc());
-        mv.addObject("listaEstados", UF.values()); 
+        mv.addObject("listaEstados", UF.values());
+        
+        // --- NOVO: Envia os grupos para o modal de relatório funcionar na Home ---
+        mv.addObject("listaGrupos", grupoRepositorio.findAll()); 
+        // ------------------------------------------------------------------------
         
         return mv;
     }
@@ -28,11 +37,10 @@ public class PrincipalControle {
     public ModelAndView perfil() {
         ModelAndView mv = new ModelAndView("administrativo/perfil");
         
-        // Simulando dados do usuário logado (pois ainda não temos tabela de Usuários)
         mv.addObject("nomeUsuario", "Admin do Sistema");
         mv.addObject("emailUsuario", "admin@input.tecnologia.com");
         mv.addObject("funcaoUsuario", "Administrador Master");
         
         return mv;
     }
-    }
+}

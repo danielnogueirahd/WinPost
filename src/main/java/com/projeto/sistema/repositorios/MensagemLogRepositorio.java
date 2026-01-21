@@ -18,29 +18,31 @@ public interface MensagemLogRepositorio extends JpaRepository<MensagemLog, Long>
     
     // ATUALIZADO: Adicionado filtro por PASTA
     @Query("SELECT m FROM MensagemLog m WHERE " +
-           "(:pasta IS NULL OR m.pasta = :pasta) AND " + // <--- Filtro de Pasta
+           "(:pasta IS NULL OR m.pasta = :pasta) AND " + 
            "(:temAnexo IS NULL OR (:temAnexo = true AND m.nomesAnexos IS NOT NULL AND m.nomesAnexos != '')) AND " +
            "(:grupo IS NULL OR lower(m.nomeGrupoDestino) LIKE lower(concat('%', :grupo, '%'))) AND " +
            "(:dataInicio IS NULL OR m.dataEnvio >= :dataInicio) AND " +
            "(:dataFim IS NULL OR m.dataEnvio <= :dataFim)")
     Page<MensagemLog> filtrarMensagens(
-            @Param("pasta") String pasta, // <--- Novo parâmetro
+            @Param("pasta") String pasta, 
             @Param("temAnexo") Boolean temAnexo,
             @Param("grupo") String grupo,
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable);
             
-    // Contadores para o menu lateral (Opcional, mas útil)
+    // Contadores para o menu lateral
     long countByPasta(String pasta);
     
     long countByLidaFalse();
     
-   // Busca as 5 mensagens mais recentes que NÃO foram lidas
+    // Busca as 5 mensagens mais recentes que NÃO foram lidas
     List<MensagemLog> findTop5ByLidaFalseOrderByDataEnvioDesc();
     
- 
-    // NOVO: Busca mensagens enviadas dentro de um intervalo de datas (Ex: 01/01 a 31/01)
+    // Busca mensagens enviadas dentro de um intervalo de datas
     List<MensagemLog> findByDataEnvioBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
+
+    // --- [NOVO] O MÉTODO QUE ESTAVA FALTANDO PARA O AGENDADOR FUNCIONAR ---
+    // Busca mensagens com status específico (ex: "AGENDADO") e data anterior a agora
+    List<MensagemLog> findByStatusAndDataEnvioBefore(String status, LocalDateTime dataEnvio);
 }
-    

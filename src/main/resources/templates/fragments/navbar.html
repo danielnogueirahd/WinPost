@@ -105,7 +105,7 @@
 					<li class="nav-item dropdown"><a
 						class="nav-link dropdown-toggle" href="#" id="dropContatos"
 						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro'} ? 'active'">
+						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">
 							Contatos </a>
 						<ul class="dropdown-menu shadow border-0 mt-2"
 							aria-labelledby="dropContatos">
@@ -118,27 +118,29 @@
 							<li><a class="dropdown-item py-2 fw-bold text-primary"
 								href="/cadastroContatos"><i
 									class="fa-solid fa-user-plus me-2"></i>Novo Contato</a></li>
+							<li><a class="dropdown-item py-2 fw-bold text-primary"
+								href="/grupos/cadastro"><i class="fa-solid fa-plus me-2"></i>Novo
+									Grupo</a></li>
 						</ul></li>
 				</ul>
 
 				<div class="d-flex align-items-center gap-3">
 
-					<a href="#" class="text-white text-decoration-none position-relative me-2"
-					   data-bs-toggle="modal" data-bs-target="#modalLembretes" title="Lembretes Futuros"> 
-					   <i class="fa-regular fa-calendar-days fs-5"></i> 
-					   
-					   <span th:if="${qtdLembretes > 0}"
-							 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white shadow-sm"
-							 style="font-size: 0.65rem;"> 
-							 <span th:text="${qtdLembretes}">0</span>
-					   </span>
-					</a>
-
 					<a href="#"
+						class="text-white text-decoration-none position-relative me-2"
+						data-bs-toggle="modal" data-bs-target="#modalLembretes"
+						title="Lembretes Futuros"> <i
+						class="fa-regular fa-calendar-days fs-5"></i> <span
+						th:if="${qtdLembretes > 0}"
+						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white shadow-sm"
+						style="font-size: 0.65rem;"> <span
+							th:text="${qtdLembretes}">0</span>
+					</span>
+					</a> <a href="#"
 						class="text-white text-decoration-none position-relative"
-						data-bs-toggle="modal" data-bs-target="#modalNotificacoes" title="Notificações"> <i
-						class="fa-regular fa-bell fs-5"></i> <span
-						th:if="${notificacoesNaoLidas > 0}"
+						data-bs-toggle="modal" data-bs-target="#modalNotificacoes"
+						title="Notificações"> <i class="fa-regular fa-bell fs-5"></i>
+						<span th:if="${notificacoesNaoLidas > 0}"
 						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white shadow-sm"
 						style="font-size: 0.65rem;"> <span
 							th:text="${notificacoesNaoLidas}">0</span>
@@ -151,8 +153,7 @@
 					<div class="dropdown">
 						<a href="#"
 							class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-							data-bs-toggle="dropdown">
-							 <span
+							data-bs-toggle="dropdown"> <span
 							class="d-none d-lg-block small fw-bold">Admin</span>
 						</a>
 						<ul
@@ -176,51 +177,62 @@
 		</div>
 	</nav>
 
-	<div class="modal fade" id="modalLembretes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
-		<div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
+	<div class="modal fade" id="modalLembretes" tabindex="-1"
+		aria-hidden="true" data-bs-backdrop="false">
+		<div
+			class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
 			<div class="modal-content shadow-lg border-0">
 
-				<div class="modal-header bg-warning text-dark py-2 border-bottom-0 rounded-top">
+				<div
+					class="modal-header bg-warning text-dark py-2 border-bottom-0 rounded-top">
 					<h6 class="modal-title fw-bold small">
 						<i class="fa-solid fa-clock me-2"></i>Lembretes Futuros
 					</h6>
-					<button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close btn-sm"
+						data-bs-dismiss="modal"></button>
 				</div>
 
 				<div class="modal-body p-0">
 					<div class="list-group list-group-flush">
 
-						<div th:if="${#lists.isEmpty(listaLembretes)}" class="text-center py-5">
-							<i class="fa-regular fa-calendar-check fs-2 text-muted opacity-25 mb-2"></i>
+						<div th:if="${#lists.isEmpty(listaLembretes)}"
+							class="text-center py-5">
+							<i
+								class="fa-regular fa-calendar-check fs-2 text-muted opacity-25 mb-2"></i>
 							<p class="text-muted small fw-bold mb-0">Tudo em dia!</p>
-							<span class="text-muted small" style="font-size: 0.7rem;">Nenhum evento para amanhã.</span>
+							<span class="text-muted small" style="font-size: 0.7rem;">Nenhum
+								evento para amanhã.</span>
 						</div>
 
-						<a th:each="lembrete : ${listaLembretes}" 
-						   th:href="@{/editarContatos/{id}(id=${lembrete.idReferencia})}"
-						   class="list-group-item list-group-item-action p-3 notificacao-item"
-						   style="border-left-color: #ffc107 !important;"> <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+						<a th:each="lembrete : ${listaLembretes}"
+							th:href="@{/editarContatos/{id}(id=${lembrete.idReferencia})}"
+							class="list-group-item list-group-item-action p-3 notificacao-item"
+							style="border-left-color: #ffc107 !important;">
+							<div
+								class="d-flex w-100 justify-content-between align-items-center mb-1">
 								<strong class="text-dark small" style="font-size: 0.85rem;"
-										th:text="${lembrete.titulo}">Título</strong> 
-								<span class="badge bg-light text-secondary border">Amanhã</span>
+									th:text="${lembrete.titulo}">Título</strong> <span
+									class="badge bg-light text-secondary border">Amanhã</span>
 							</div>
-							
-							<p class="mb-1 text-muted small" th:text="${lembrete.descricao}">Descrição...</p> 
-							
+
+							<p class="mb-1 text-muted small" th:text="${lembrete.descricao}">Descrição...</p>
+
 							<div class="mt-2" th:if="${lembrete.tipo == 'NIVER'}">
-								 <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2">
+								<span
+									class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2">
 									<i class="fa-solid fa-gift me-1"></i> Preparar E-mail
-								 </span>
+								</span>
 							</div>
 						</a>
 
 					</div>
 				</div>
 
-				<div class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
-					<a href="/agenda" class="btn btn-link btn-sm text-decoration-none fw-bold text-secondary">
-						Ver agenda completa
-					</a>
+				<div
+					class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
+					<a href="/agenda"
+						class="btn btn-link btn-sm text-decoration-none fw-bold text-secondary">
+						Ver agenda completa </a>
 				</div>
 			</div>
 		</div>

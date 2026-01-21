@@ -1,6 +1,7 @@
 package com.projeto.sistema.controle;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -187,7 +188,9 @@ public class GrupoControle {
     public ModelAndView dispararAcao(@RequestParam("grupoId") Long grupoId,
                                      @RequestParam("assunto") String assunto,
                                      @RequestParam("mensagem") String mensagem,
-                                     @RequestParam(value = "anexos", required = false) MultipartFile[] anexos, // Recebe arquivos
+                                     @RequestParam(value = "dataAgendamento", required = false) 
+                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataAgendamento, // NOVO PARÂMETRO
+                                     @RequestParam(value = "anexos", required = false) MultipartFile[] anexos,
                                      RedirectAttributes attributes) {
         try {
             Optional<Grupo> grupoOpt = grupoRepositorio.findById(grupoId);
@@ -197,10 +200,14 @@ public class GrupoControle {
                 if (grupo.getContatos().isEmpty()) {
                     attributes.addFlashAttribute("mensagemErro", "O grupo está vazio.");
                 } else {
-                    // Chama o novo método que envia e loga
-                    emailService.enviarDisparo(grupo, assunto, mensagem, anexos);
+                    // Chama o serviço passando a data (pode ser nula)
+                    emailService.enviarDisparo(grupo, assunto, mensagem, anexos, dataAgendamento);
                     
-                    attributes.addFlashAttribute("mensagemSucesso", "Envio iniciado em segundo plano para " + grupo.getNome());
+                    if (dataAgendamento != null) {
+                        attributes.addFlashAttribute("mensagemSucesso", "Envio agendado para " + grupo.getNome());
+                    } else {
+                        attributes.addFlashAttribute("mensagemSucesso", "Envio iniciado para " + grupo.getNome());
+                    }
                 }
             }
         } catch (Exception e) {
