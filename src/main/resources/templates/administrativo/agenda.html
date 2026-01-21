@@ -30,10 +30,9 @@
 					<p class="text-muted small mb-0">Eventos e disparos do mês.</p>
 				</div>
 
-				<button class="btn btn-primary shadow-sm fw-bold"
-					onclick="alert('Funcionalidade futura: Modal de Agendamento')">
-					<i class="fa-solid fa-plus me-2"></i>Novo Evento
-				</button>
+				<button class="btn btn-primary shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalNovoEvento">
+    <i class="fa-solid fa-plus me-2"></i>Novo Evento
+</button>
 			</div>
 
 			<div class="card card-modern shadow-sm border-0">
@@ -83,34 +82,32 @@
 						<div class="calendar-day day-empty"></div>
 					</th:block>
 
-					<th:block th:each="dia : ${#numbers.sequence(1, totalDiasMes)}">
+					<th:block th:each="evento : ${listaEventos}">
+						<div th:if="${evento.data.dayOfMonth == dia}"
+							th:class="'event-badge ' + ${evento.cor}"
+							th:title="${evento.titulo}">
 
-						<div class="calendar-day cursor-pointer" 
-                             th:classappend="${dia == #temporals.createNow().dayOfMonth and mesExibicao == #temporals.createNow().monthValue and anoExibicao == #temporals.createNow().year} ? 'day-today'"
-							th:onclick="'verDetalhesDia(' + ${dia} + ', ' + ${mesExibicao} + ', ' + ${anoExibicao} + ')'"
-							style="cursor: pointer;">
-							<span class="day-number" th:text="${dia}">1</span>
-
-							<th:block th:each="evento : ${listaEventos}">
-								<div th:if="${evento.data.dayOfMonth == dia}"
-									th:class="'event-badge ' + ${evento.cor}"
-									th:title="${evento.titulo}">
-
-									<i th:if="${evento.tipo == 'NIVER'}"
-										class="fa-solid fa-cake-candles me-2"></i> <i
-										th:if="${evento.tipo == 'ENVIO'}"
-										class="fa-solid fa-paper-plane me-2"></i> <i
-										th:if="${evento.tipo == 'FERIADO'}"
-										class="fa-regular fa-calendar-check me-2"></i> <span
-										th:text="${evento.titulo}">Título do Evento</span>
-								</div>
-							</th:block>
-
+							<i th:if="${evento.tipo == 'NIVER'}"
+								class="fa-solid fa-cake-candles me-2"></i> <i
+								th:if="${evento.tipo == 'ENVIO'}"
+								class="fa-solid fa-paper-plane me-2"></i> <i
+								th:if="${evento.tipo == 'FERIADO'}"
+								class="fa-regular fa-calendar-check me-2"></i> <i
+								th:if="${evento.tipo == 'TAREFA'}"
+								class="fa-solid fa-list-check me-2"></i> <i
+								th:if="${evento.tipo == 'REUNIAO'}"
+								class="fa-solid fa-users me-2"></i> <i
+								th:if="${evento.tipo == 'IMPORTANTE'}"
+								class="fa-solid fa-triangle-exclamation me-2"></i> <span
+								th:text="${evento.titulo}">Título</span>
 						</div>
 					</th:block>
 
 				</div>
+				</th:block>
+
 			</div>
+		</div>
 
 		</div>
 	</main>
@@ -148,11 +145,69 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" id="modalNovoEvento" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold"><i class="fa-regular fa-calendar-plus me-2"></i>Novo Agendamento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <form action="/agenda/salvar" method="post" th:object="${novoLembrete}">
+                <div class="modal-body">
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">TÍTULO</label>
+                        <input type="text" class="form-control" name="titulo" placeholder="Ex: Ligar para cliente..." required>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">TIPO</label>
+                            <select class="form-select" name="tipo">
+                                <option value="TAREFA">Tarefa (Azul)</option>
+                                <option value="REUNIAO">Reunião (Roxo)</option>
+                                <option value="IMPORTANTE">Importante (Vermelho)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">DATA E HORA</label>
+                            <input type="datetime-local" class="form-control" name="dataHora" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">VINCULAR CONTATO (OPCIONAL)</label>
+                        <select class="form-select" name="contato">
+                            <option value="">-- Nenhum --</option>
+                            <option th:each="c : ${todosContatos}" 
+                                    th:value="${c.id}" 
+                                    th:text="${c.nome}"></option>
+                        </select>
+                        <div class="form-text small">Útil para clicar e ver o telefone depois.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">DESCRIÇÃO</label>
+                        <textarea class="form-control" name="descricao" rows="2" placeholder="Detalhes adicionais..."></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4">Salvar na Agenda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
 
-    	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script th:src="@{/js/agenda.js}"></script>
 </body>
 </html>

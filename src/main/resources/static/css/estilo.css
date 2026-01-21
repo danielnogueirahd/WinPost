@@ -668,3 +668,21 @@ body {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+/* Classes para novos eventos da agenda */
+.event-tarefa {
+    background-color: #cff4fc; /* Azul Ciano */
+    color: #055160;
+    border-left: 3px solid #0dcaf0;
+}
+
+.event-reuniao {
+    background-color: #e0cffc; /* Roxo */
+    color: #4c0bce;
+    border-left: 3px solid #6f42c1;
+}
+
+.event-importante {
+    background-color: #ffcccd; /* Vermelho claro */
+    color: #a00;
+    border-left: 3px solid #dc3545;
+}
