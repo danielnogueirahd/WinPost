@@ -80,6 +80,7 @@ public class MensagemControle {
     @ResponseBody
     public MensagemLog getDetalhes(@PathVariable Long id) {
         MensagemLog log = mensagemRepositorio.findById(id).orElse(new MensagemLog());
+        // Garante que marque como lida ao abrir os detalhes
         if (!log.isLida()) {
             log.setLida(true);
             mensagemRepositorio.save(log);
@@ -98,5 +99,19 @@ public class MensagemControle {
                 return ResponseEntity.ok(msg.isFavorito());
             })
             .orElse(ResponseEntity.notFound().build());
+    }
+
+    // --- MANTIDO E OTIMIZADO: Marcar como lida manualmente (botão X) ---
+    @PostMapping("/marcar-lida/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> marcarComoLida(@PathVariable Long id) {
+        return mensagemRepositorio.findById(id).map(msg -> {
+            // OTIMIZAÇÃO: Só salva se realmente ainda não estiver lida
+            if (!msg.isLida()) {
+                msg.setLida(true);
+                mensagemRepositorio.save(msg);
+            }
+            return ResponseEntity.ok().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

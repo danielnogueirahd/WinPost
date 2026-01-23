@@ -1,296 +1,233 @@
 <div th:fragment="navbar">
 
-	<style>
-/* --- NAVBAR CUSTOMIZADA (Azul Sólido) --- */
-.navbar-custom {
-	background-color: #0d6efd;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	padding: 0.5rem 1rem;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
+    <link rel="stylesheet" href="/css/navbar.css">
 
-.navbar-brand {
-	font-weight: 800;
-	font-size: 1.3rem;
-	letter-spacing: 0.5px;
-}
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+        <div class="container-fluid">
 
-.nav-link {
-	color: rgba(255, 255, 255, 0.9) !important;
-	font-weight: 500;
-	font-size: 0.95rem;
-	margin: 0 8px;
-	transition: all 0.2s;
-	position: relative;
-}
+            <a class="navbar-brand d-flex align-items-center me-4" href="/administrativo"> 
+                <img src="/img/logoInput.png" alt="Logo" height="32" class="me-2 bg-primary rounded px-2 shadow-sm">
+            </a>
 
-.nav-link:hover {
-	color: #ffffff !important;
-	transform: translateY(-1px);
-}
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-.nav-link.active {
-	color: #ffffff !important;
-	font-weight: 700;
-}
+            <div class="collapse navbar-collapse" id="navbarMain">
 
-/* Indicador sutil de página ativa */
-.nav-link.active::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	height: 3px;
-	background-color: white;
-	border-radius: 2px;
-}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/administrativo" th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/mensagens/enviadas" th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/agenda" th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropContatos" role="button" data-bs-toggle="dropdown" 
+                           th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Contatos</a>
+                        <ul class="dropdown-menu shadow border-0 mt-2" aria-labelledby="dropContatos">
+                            <li><a class="dropdown-item py-2" href="/listarContatos"><i class="fa-solid fa-list me-2 text-muted"></i>Listar Contatos</a></li>
+                            <li><a class="dropdown-item py-2" href="/grupos/gerenciar"><i class="fa-solid fa-layer-group me-2 text-muted"></i>Gerenciar Grupos</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 fw-bold text-primary" href="/cadastroContatos"><i class="fa-solid fa-user-plus me-2"></i>Novo Contato</a></li>
+                            <li><a class="dropdown-item py-2 fw-bold text-primary" href="/grupos/cadastro"><i class="fa-solid fa-plus me-2"></i>Novo Grupo</a></li>
+                        </ul>
+                    </li>
+                </ul>
 
-/* --- AJUSTE PROFISSIONAL DO MODAL (ESTILO NOTIFICAÇÃO) --- */
-.modal-notificacao-posicao {
-	margin-right: 15px; /* Distância da borda direita */
-	margin-top: 65px; /* Distância do topo (altura da navbar) */
-	margin-left: auto; /* Empurra para a direita */
-	max-width: 380px; /* Largura fixa elegante */
-}
+                <div class="d-flex align-items-center gap-3">
 
-/* Remove o fundo escuro padrão do modal para parecer um menu */
-.modal-backdrop.show {
-	opacity: 0; /* Torna invisível */
-	pointer-events: none; /* Permite clicar fora sem bugar */
-}
+                    <a href="#" class="text-white text-decoration-none position-relative me-2" data-bs-toggle="modal" data-bs-target="#modalLembretes" title="Lembretes Futuros"> 
+                        <i class="fa-regular fa-calendar-days fs-5"></i> 
+                        <span th:if="${qtdLembretes > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white shadow-sm" style="font-size: 0.65rem;"> 
+                            <span th:text="${qtdLembretes}">0</span>
+                        </span>
+                    </a> 
+                    
+                    <a href="#" class="text-white text-decoration-none position-relative" data-bs-toggle="modal" data-bs-target="#modalNotificacoes" title="Notificações"> 
+                        <i class="fa-regular fa-bell fs-5"></i>
+                        
+                        <span id="badgeGeral" th:if="${notificacoesNaoLidas > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white shadow-sm" style="font-size: 0.65rem;"> 
+                            <span id="contadorTexto" th:text="${notificacoesNaoLidas}">0</span>
+                        </span>
+                    </a>
 
-/* Estilo dos itens da lista */
-.notificacao-item {
-	border-left: 4px solid transparent;
-	transition: background-color 0.2s;
-}
+                    <div class="vr text-white opacity-50 d-none d-lg-block" style="height: 25px;"></div>
 
-.notificacao-item:hover {
-	background-color: #f8f9fa;
-	border-left-color: #0d6efd; /* Detalhe azul ao passar o mouse */
-}
-</style>
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"> 
+                            <span class="d-none d-lg-block small fw-bold">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3 p-2" style="width: 200px;">
+                            <li><h6 class="dropdown-header small text-uppercase">Minha Conta</h6></li>
+                            <li><a class="dropdown-item rounded" href="/perfil"><i class="fa-regular fa-user me-2 text-muted"></i>Perfil</a></li>
+                            <li><a class="dropdown-item rounded" href="#"><i class="fa-solid fa-gear me-2 text-muted"></i>Ajustes</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded text-danger fw-bold" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
 
-	<nav
-		class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
-		<div class="container-fluid">
+                </div>
+            </div>
+        </div>
+    </nav>
 
-			<a class="navbar-brand d-flex align-items-center me-4"
-				href="/administrativo"> <img src="/img/logoInput.png" alt="Logo"
-				height="32"
-				class="me-2 bg-primary
-             rounded px-2 shadow-sm">
-			</a>
-
-			<button class="navbar-toggler border-0" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarMain">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-
-			<div class="collapse navbar-collapse" id="navbarMain">
-
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-					<li class="nav-item"><a class="nav-link"
-						href="/administrativo"
-						th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
-					</li>
-					<li class="nav-item"><a class="nav-link"
-						href="/mensagens/enviadas"
-						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
-					</li>
-					<li class="nav-item"><a class="nav-link" href="/agenda"
-						th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
-					</li>
-					<li class="nav-item dropdown"><a
-						class="nav-link dropdown-toggle" href="#" id="dropContatos"
-						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">
-							Contatos </a>
-						<ul class="dropdown-menu shadow border-0 mt-2"
-							aria-labelledby="dropContatos">
-							<li><a class="dropdown-item py-2" href="/listarContatos"><i
-									class="fa-solid fa-list me-2 text-muted"></i>Listar Contatos</a></li>
-							<li><a class="dropdown-item py-2" href="/grupos/gerenciar"><i
-									class="fa-solid fa-layer-group me-2 text-muted"></i>Gerenciar
-									Grupos</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item py-2 fw-bold text-primary"
-								href="/cadastroContatos"><i
-									class="fa-solid fa-user-plus me-2"></i>Novo Contato</a></li>
-							<li><a class="dropdown-item py-2 fw-bold text-primary"
-								href="/grupos/cadastro"><i class="fa-solid fa-plus me-2"></i>Novo
-									Grupo</a></li>
-						</ul></li>
-				</ul>
-
-				<div class="d-flex align-items-center gap-3">
-
-					<a href="#"
-						class="text-white text-decoration-none position-relative me-2"
-						data-bs-toggle="modal" data-bs-target="#modalLembretes"
-						title="Lembretes Futuros"> <i
-						class="fa-regular fa-calendar-days fs-5"></i> <span
-						th:if="${qtdLembretes > 0}"
-						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white shadow-sm"
-						style="font-size: 0.65rem;"> <span
-							th:text="${qtdLembretes}">0</span>
-					</span>
-					</a> <a href="#"
-						class="text-white text-decoration-none position-relative"
-						data-bs-toggle="modal" data-bs-target="#modalNotificacoes"
-						title="Notificações"> <i class="fa-regular fa-bell fs-5"></i>
-						<span th:if="${notificacoesNaoLidas > 0}"
-						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white shadow-sm"
-						style="font-size: 0.65rem;"> <span
-							th:text="${notificacoesNaoLidas}">0</span>
-					</span>
-					</a>
-
-					<div class="vr text-white opacity-50 d-none d-lg-block"
-						style="height: 25px;"></div>
-
-					<div class="dropdown">
-						<a href="#"
-							class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-							data-bs-toggle="dropdown"> <span
-							class="d-none d-lg-block small fw-bold">Admin</span>
-						</a>
-						<ul
-							class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3 p-2"
-							style="width: 200px;">
-							<li><h6 class="dropdown-header small text-uppercase">Minha
-									Conta</h6></li>
-							<li><a class="dropdown-item rounded" href="/perfil"><i
-									class="fa-regular fa-user me-2 text-muted"></i>Perfil</a></li>
-							<li><a class="dropdown-item rounded" href="#"><i
-									class="fa-solid fa-gear me-2 text-muted"></i>Ajustes</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item rounded text-danger fw-bold"
-								href="/logout"><i
-									class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sair</a></li>
-						</ul>
-					</div>
-
-				</div>
-			</div>
-		</div>
-	</nav>
-
-	<div class="modal fade" id="modalLembretes" tabindex="-1"
-		aria-hidden="true" data-bs-backdrop="false">
-		<div
-			class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
+    <div class="modal fade" id="modalLembretes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+		<div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
 			<div class="modal-content shadow-lg border-0">
-
-				<div
-					class="modal-header bg-warning text-dark py-2 border-bottom-0 rounded-top">
-					<h6 class="modal-title fw-bold small">
-						<i class="fa-solid fa-clock me-2"></i>Lembretes Futuros
-					</h6>
-					<button type="button" class="btn-close btn-sm"
-						data-bs-dismiss="modal"></button>
+				<div class="modal-header bg-warning text-dark py-2 border-bottom-0 rounded-top">
+					<h6 class="modal-title fw-bold small"><i class="fa-solid fa-clock me-2"></i>Lembretes Futuros</h6>
+					<button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
 				</div>
-
 				<div class="modal-body p-0">
 					<div class="list-group list-group-flush">
-
-						<div th:if="${#lists.isEmpty(listaLembretes)}"
-							class="text-center py-5">
-							<i
-								class="fa-regular fa-calendar-check fs-2 text-muted opacity-25 mb-2"></i>
+						<div th:if="${#lists.isEmpty(listaLembretes)}" class="text-center py-5">
+							<i class="fa-regular fa-calendar-check fs-2 text-muted opacity-25 mb-2"></i>
 							<p class="text-muted small fw-bold mb-0">Tudo em dia!</p>
-							<span class="text-muted small" style="font-size: 0.7rem;">Nenhum
-								evento para amanhã.</span>
 						</div>
-
-						<a th:each="lembrete : ${listaLembretes}"
-							th:href="@{/editarContatos/{id}(id=${lembrete.idReferencia})}"
-							class="list-group-item list-group-item-action p-3 notificacao-item"
-							style="border-left-color: #ffc107 !important;">
-							<div
-								class="d-flex w-100 justify-content-between align-items-center mb-1">
-								<strong class="text-dark small" style="font-size: 0.85rem;"
-									th:text="${lembrete.titulo}">Título</strong> <span
-									class="badge bg-light text-secondary border">Amanhã</span>
+						
+						<a th:each="lembrete : ${listaLembretes}" 
+						   th:href="${lembrete.tipo == 'NIVER'} ? @{/editarContatos/{id}(id=${lembrete.idReferencia})} : @{/agenda(mes=${lembrete.dataEvento.monthValue}, ano=${lembrete.dataEvento.year})}"
+						   class="list-group-item list-group-item-action p-3 notificacao-item" style="border-left-color: #ffc107 !important;">
+							
+							<div class="d-flex w-100 justify-content-between align-items-center mb-1">
+								<strong class="text-dark small" style="font-size: 0.85rem;" th:text="${lembrete.titulo}">Título</strong> 
+                                <span class="badge bg-light text-secondary border">Amanhã</span>
 							</div>
-
 							<p class="mb-1 text-muted small" th:text="${lembrete.descricao}">Descrição...</p>
-
+							
 							<div class="mt-2" th:if="${lembrete.tipo == 'NIVER'}">
-								<span
-									class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2">
-									<i class="fa-solid fa-gift me-1"></i> Preparar E-mail
+								<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2">
+									<i class="fa-solid fa-gift me-1"></i> Ver Contato
 								</span>
 							</div>
 						</a>
-
 					</div>
 				</div>
-
-				<div
-					class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
-					<a href="/agenda"
-						class="btn btn-link btn-sm text-decoration-none fw-bold text-secondary">
-						Ver agenda completa </a>
+				<div class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
+					<a href="/agenda" class="btn btn-link btn-sm text-decoration-none fw-bold text-secondary">Ver agenda completa</a>
 				</div>
 			</div>
 		</div>
 	</div>
+    <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+        <div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
+            <div class="modal-content shadow-lg border-0">
 
-	<div class="modal fade" id="modalNotificacoes" tabindex="-1"
-		aria-hidden="true" data-bs-backdrop="false">
-		<div
-			class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
-			<div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-primary text-white py-2 border-bottom-0 rounded-top">
+                    <h6 class="modal-title fw-bold small"><i class="fa-solid fa-bell me-2"></i>Notificações Recentes</h6>
+                    <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal"></button>
+                </div>
 
-				<div
-					class="modal-header bg-primary text-white py-2 border-bottom-0 rounded-top">
-					<h6 class="modal-title fw-bold small">
-						<i class="fa-solid fa-bell me-2"></i>Notificações Recentes
-					</h6>
-					<button type="button" class="btn-close btn-close-white btn-sm"
-						data-bs-dismiss="modal"></button>
-				</div>
+                <div class="modal-body p-0">
+                    <div class="list-group list-group-flush" id="listaNotificacoesContainer">
 
-				<div class="modal-body p-0">
-					<div class="list-group list-group-flush">
+                        <div th:if="${#lists.isEmpty(listaNotificacoes)}" class="text-center py-5">
+                            <i class="fa-regular fa-folder-open fs-2 text-muted opacity-25 mb-2"></i>
+                            <p class="text-muted small fw-bold mb-0">Sem novidades</p>
+                        </div>
+                        
+                        <div id="msgSemNotificacaoJS" class="text-center py-5 d-none">
+                            <i class="fa-regular fa-folder-open fs-2 text-muted opacity-25 mb-2"></i>
+                            <p class="text-muted small fw-bold mb-0">Sem novidades</p>
+                        </div>
 
-						<div th:if="${#lists.isEmpty(listaNotificacoes)}"
-							class="text-center py-5">
-							<i
-								class="fa-regular fa-folder-open fs-2 text-muted opacity-25 mb-2"></i>
-							<p class="text-muted small fw-bold mb-0">Sem novidades</p>
-						</div>
+                        <div th:each="msg : ${listaNotificacoes}" class="list-group-item p-3 notificacao-item position-relative" th:id="'notificacao-' + ${msg.id}">
+                            
+                            <button type="button" class="btn-close position-absolute top-0 end-0 m-2 shadow-none" 
+                                    aria-label="Close" 
+                                    style="font-size: 0.65rem; z-index: 10;"
+                                    th:onclick="'marcarEFechar(' + ${msg.id} + ', event)'" 
+                                    title="Marcar como lida e remover"></button>
 
-						<a th:each="msg : ${listaNotificacoes}" href="/mensagens/enviadas"
-							class="list-group-item list-group-item-action p-3 notificacao-item">
-							<div
-								class="d-flex w-100 justify-content-between align-items-center mb-1">
-								<strong class="text-primary small" style="font-size: 0.85rem;"
-									th:text="${msg.assunto}">Assunto</strong> <small
-									class="text-muted" style="font-size: 0.7rem;"
-									th:text="${#temporals.format(msg.dataEnvio, 'HH:mm')}">10:00</small>
-							</div>
-							<p class="mb-1 text-dark small fw-bold"
-								th:text="${msg.nomeGrupoDestino}">Grupo</p> <small
-							class="text-muted text-truncate d-block"
-							style="max-width: 300px;"
-							th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 50)}">
-								Resumo... </small>
-						</a>
+                            <a th:href="@{/mensagens/enviadas}" 
+                               th:onclick="'lerENavegar(' + ${msg.id} + ', this.href, event)'"
+                               class="text-decoration-none text-reset d-block pe-3">
+                                <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                    <strong class="text-primary small" style="font-size: 0.85rem;" th:text="${msg.assunto}">Assunto</strong> 
+                                    <small class="text-muted" style="font-size: 0.7rem;" th:text="${#temporals.format(msg.dataEnvio, 'HH:mm')}">10:00</small>
+                                </div>
+                                <p class="mb-1 text-dark small fw-bold" th:text="${msg.nomeGrupoDestino}">Grupo</p> 
+                                <small class="text-muted text-truncate d-block" style="max-width: 300px;" th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 50)}">Resumo...</small>
+                            </a>
+                        </div>
 
-					</div>
-				</div>
+                    </div>
+                </div>
 
-				<div
-					class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
-					<a href="/mensagens/enviadas"
-						class="btn btn-link btn-sm text-decoration-none fw-bold text-primary">
-						Ver todas as mensagens </a>
-				</div>
-			</div>
-		</div>
-	</div>
+                <div class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
+                    <a href="/mensagens/enviadas" class="btn btn-link btn-sm text-decoration-none fw-bold text-primary">Ver todas as mensagens</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Função chamada ao clicar no "X"
+        function marcarEFechar(id, event) {
+            if(event) event.stopPropagation(); // Não abre o link
+
+            fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
+            .then(response => {
+                if(response.ok) {
+                    removerItemVisualmente(id);
+                    atualizarContadorBadge();
+                }
+            })
+            .catch(console.error);
+        }
+
+        // 2. Função chamada ao clicar na mensagem para ler
+        function lerENavegar(id, url, event) {
+            if(event) event.preventDefault(); // Espera o fetch antes de ir
+
+            fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
+            .then(() => {
+                // Atualiza visualmente (opcional, pois vai mudar de página)
+                atualizarContadorBadge();
+                window.location.href = url; // Segue para a página
+            })
+            .catch(() => {
+                window.location.href = url; // Vai mesmo com erro
+            });
+        }
+
+        // Remove o item da lista com animação
+        function removerItemVisualmente(id) {
+            const elemento = document.getElementById('notificacao-' + id);
+            if (elemento) {
+                elemento.style.opacity = '0';
+                elemento.style.transform = 'translateX(50px)';
+                setTimeout(() => {
+                    elemento.remove();
+                    verificarListaVazia();
+                }, 300);
+            }
+        }
+
+        // Atualiza o número vermelho no sino
+        function atualizarContadorBadge() {
+            const badge = document.getElementById('badgeGeral');
+            const contador = document.getElementById('contadorTexto');
+
+            if(badge && contador) {
+                let valorAtual = parseInt(contador.innerText);
+                let novoValor = valorAtual - 1;
+
+                if (novoValor <= 0) {
+                    badge.style.display = 'none'; // Some o badge se for 0
+                } else {
+                    contador.innerText = novoValor;
+                }
+            }
+        }
+
+        // Se apagar tudo, mostra "Sem novidades"
+        function verificarListaVazia() {
+            const container = document.getElementById('listaNotificacoesContainer');
+            const itens = container.querySelectorAll('[id^="notificacao-"]');
+            if (itens.length === 0) {
+                const msgVazia = document.getElementById('msgSemNotificacaoJS');
+                if(msgVazia) msgVazia.classList.remove('d-none');
+            }
+        }
+    </script>
 
 </div>

@@ -8,8 +8,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 
 </head>
@@ -23,11 +21,6 @@
 
         <div class="container py-4 mb-5">
 
-            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
-                <i class="fa-solid fa-check-circle me-2"></i> <span th:text="${mensagemSucesso}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-
             <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
                 <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${mensagemErro}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -38,20 +31,17 @@
                     <h2 class="text-dark mb-0 fw-bold">Gerenciar Campanhas</h2>
                     <p class="text-muted small mb-0">Visualize, edite ou exclua seus grupos de contatos.</p>
                 </div>
-
                 <div class="d-flex gap-2 align-items-center">
-                    <form action="/grupos/gerenciar" method="get" class="d-flex me-2">
+                     <form action="/grupos/gerenciar" method="get" class="d-flex me-2">
                         <div class="input-group shadow-sm">
-                            <input type="text" class="form-control border-end-0" name="pesquisa" th:value="${termoPesquisa}" placeholder="Pesquisar grupo..." aria-label="Pesquisar" style="border-top-left-radius: 20px; border-bottom-left-radius: 20px;">
+                            <input type="text" class="form-control border-end-0" name="pesquisa" th:value="${termoPesquisa}" placeholder="Pesquisar grupo..." style="border-top-left-radius: 20px; border-bottom-left-radius: 20px;">
                             <button class="btn btn-white border border-start-0 bg-white text-primary" type="submit" style="border-top-right-radius: 20px; border-bottom-right-radius: 20px;">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </button>
                         </div>
-                        <a th:if="${termoPesquisa}" href="/grupos/gerenciar" class="btn btn-light text-danger ms-2 rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Limpar Filtro">
-                            <i class="fa-solid fa-xmark"></i>
-                        </a>
+                        <a th:if="${termoPesquisa}" href="/grupos/gerenciar" class="btn btn-light text-danger ms-2 rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Limpar Filtro"><i class="fa-solid fa-xmark"></i></a>
                     </form>
-                    <a href="/mensagens/enviadas" class="btn btn-light text-secondary border shadow-sm rounded-pill px-3 fw-bold d-none d-md-inline-flex align-items-center" title="Ver Histórico de Envios">
+                    <a href="/mensagens/enviadas" class="btn btn-light text-secondary border shadow-sm rounded-pill px-3 fw-bold d-none d-md-inline-flex align-items-center">
                         <i class="fa-solid fa-clock-rotate-left me-2"></i> Mensagens
                     </a>
                     <a href="/grupos/cadastro" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center">
@@ -85,9 +75,7 @@
                                             <th class="ps-4 text-uppercase text-secondary small py-3">Grupo</th>
                                             <th class="text-uppercase text-secondary small py-3">Descrição</th>
                                             <th class="text-center text-uppercase text-secondary small py-3">Membros</th>
-                                            <th class="text-center text-uppercase text-primary small py-3 fw-bold" style="letter-spacing: 1px;">
-                                                <i class="fa-solid fa-rocket me-1"></i> Enviar
-                                            </th>
+                                            <th class="text-center text-uppercase text-primary small py-3 fw-bold"><i class="fa-solid fa-rocket me-1"></i> Enviar</th>
                                             <th class="text-end pe-4 text-uppercase text-secondary small py-3">Opções</th>
                                         </tr>
                                     </thead>
@@ -99,14 +87,13 @@
                                                         <i class="fa-solid fa-users"></i>
                                                     </div>
                                                     <div>
-                                                        <h6 class="mb-0 fw-bold text-dark" th:text="${grupo.nome}">Nome do Grupo</h6>
+                                                        <h6 class="mb-0 fw-bold text-dark" th:text="${grupo.nome}">Nome</h6>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center text-muted" style="max-width: 280px;">
-                                                    <span class="d-inline-block text-truncate" th:if="${grupo.descricao != null and !grupo.descricao.isEmpty()}" th:text="${grupo.descricao}" title="${grupo.descricao}"> Descrição... </span>
-                                                    <span class="fst-italic opacity-50 small" th:if="${grupo.descricao == null or grupo.descricao.isEmpty()}"> Sem descrição </span>
+                                                    <span class="d-inline-block text-truncate" th:text="${grupo.descricao}"></span>
                                                 </div>
                                             </td>
                                             <td class="text-center">
@@ -115,27 +102,24 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-success btn-sm px-4 fw-bold shadow-sm rounded-pill d-inline-flex align-items-center" th:data-id="${grupo.id}" th:data-nome="${grupo.nome}" onclick="prepararDisparo(this)" data-bs-toggle="modal" data-bs-target="#modalDisparo" title="disparar mensagem para este grupo">
+                                                <button type="button" class="btn btn-success btn-sm px-4 fw-bold shadow-sm rounded-pill" th:data-id="${grupo.id}" th:data-nome="${grupo.nome}" onclick="prepararDisparo(this)" data-bs-toggle="modal" data-bs-target="#modalDisparo">
                                                     <i class="fa-regular fa-paper-plane me-2"></i>
                                                 </button>
                                             </td>
+                                            
                                             <td class="text-end pe-4">
                                                 <div class="btn-group">
-                                                    <a th:href="@{/grupos/editar/{id}(id=${grupo.id})}" class="btn btn-sm btn-link text-secondary text-decoration-none opacity-75 hover-effect" title="Editar Grupo">
+                                                    <a th:href="@{/grupos/editar/{id}(id=${grupo.id})}" class="btn btn-sm btn-link text-secondary text-decoration-none hover-effect" title="Editar">
                                                         <i class="fa-solid fa-pen-to-square"></i>
                                                     </a>
-                                                    <a th:href="@{/grupos/excluir/{id}(id=${grupo.id})}" class="btn btn-sm btn-link text-danger text-decoration-none opacity-75 hover-effect" onclick="return confirm('Tem certeza que deseja excluir este grupo inteiro?');" title="Excluir Grupo">
+                                                    
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-link text-danger text-decoration-none hover-effect" 
+                                                            th:data-url="@{/grupos/excluir/{id}(id=${grupo.id})}"
+                                                            onclick="confirmarExclusao(this.getAttribute('data-url'))" 
+                                                            title="Excluir Grupo">
                                                         <i class="fa-solid fa-trash-can"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(listaGrupos)}">
-                                            <td colspan="5" class="text-center py-5">
-                                                <div class="d-flex flex-column align-items-center justify-content-center text-muted opacity-50">
-                                                    <i class="fa-solid fa-folder-open display-4 mb-3"></i>
-                                                    <h5 class="fw-light">Nenhum grupo encontrado</h5>
-                                                    <p class="small mb-0">Crie um novo grupo para começar suas campanhas.</p>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -149,92 +133,29 @@
         </div>
     </main>
 
-    <div class="modal fade" id="modalDisparo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div th:replace="~{fragments/modals :: modalNovaMensagem}"></div> <div th:replace="~{fragments/modals :: modalExclusao}"></div> <div class="modal fade" id="modalDisparo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content shadow-lg" style="border-radius: 8px; border: none;">
-
                 <div class="modal-header bg-light py-2 px-3 border-bottom-0 d-flex justify-content-between align-items-center">
                     <h6 class="modal-title fw-bold small text-secondary">Nova mensagem</h6>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="fa-solid fa-minus"></i></button>
-                        <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="fa-solid fa-expand"></i></button>
-                        <button type="button" class="btn btn-sm btn-link text-muted p-0" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
+                    <button type="button" class="btn btn-sm btn-link text-muted p-0" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-
                 <form action="/grupos/disparar" method="post" enctype="multipart/form-data" class="d-flex flex-column h-100" id="formDisparo">
                     <input type="hidden" name="grupoId" id="inputGrupoId">
                     <input type="hidden" name="dataAgendamento" id="hiddenDataAgendamento">
-
                     <div class="modal-body p-0 d-flex flex-column">
                         <div class="px-3 py-2 border-bottom">
-                            <div class="d-flex align-items-center">
-                                <span class="text-muted small me-2">Para</span> 
-                                <span id="nomeGrupoDisplay" class="badge bg-light text-dark border rounded-pill px-3">...</span>
-                            </div>
+                            <span class="text-muted small me-2">Para</span> <span id="nomeGrupoDisplay" class="badge bg-light text-dark border rounded-pill px-3">...</span>
                         </div>
                         <div class="px-3 py-2 border-bottom">
                             <input type="text" class="form-control border-0 shadow-none p-0 fw-bold" name="assunto" placeholder="Assunto" required>
                         </div>
-                        <div class="flex-grow-1">
-                            <textarea id="summernote" name="mensagem"></textarea>
-                        </div>
-                        <input type="file" id="inputAnexos" name="anexos" multiple style="display: none;">
+                        <div class="flex-grow-1"><textarea id="summernote" name="mensagem"></textarea></div>
                     </div>
-
                     <div class="modal-footer justify-content-between px-3 py-2 border-top-0">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="btn-group dropup">
-                                <button type="button" onclick="enviarImediato()" class="btn btn-primary rounded-pill px-4 fw-bold">Enviar</button>
-                                
-                                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split rounded-pill rounded-start-0 ps-1 pe-2" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="visually-hidden">Toggle Dropdown</span>
-                                </button>
-                                
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalAgendamento">Programar envio</a></li>
-                                </ul>
-                            </div>
-
-                            <div class="d-flex gap-3 text-secondary fs-5 align-items-center">
-                                <i class="fa-solid fa-font cursor-pointer" style="cursor: pointer;"></i>
-                                <i class="fa-solid fa-paperclip cursor-pointer hover-effect" onclick="document.getElementById('inputAnexos').click()" style="cursor: pointer;"></i>
-                                <i class="fa-regular fa-face-smile cursor-pointer hover-effect" style="cursor: pointer;"></i>
-                                <i class="fa-brands fa-google-drive cursor-pointer hover-effect" style="cursor: pointer;"></i>
-                                <i class="fa-regular fa-image cursor-pointer hover-effect" style="cursor: pointer;"></i>
-                                <i class="fa-solid fa-lock cursor-pointer hover-effect" style="cursor: pointer;"></i>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-light text-secondary border-0" data-bs-dismiss="modal" title="Descartar rascunho">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
+                        <button type="button" onclick="enviarImediato()" class="btn btn-primary rounded-pill px-4 fw-bold">Enviar</button>
                     </div>
-
-                    <div id="listaAnexos" class="px-3 pb-2 small text-muted"></div>
                 </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalAgendamento" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-white border-bottom-0 pb-0">
-                    <h6 class="modal-title fw-bold text-primary">
-                        <i class="fa-regular fa-clock me-2"></i>Programar Envio
-                    </h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="small text-muted mb-2">Escolha a data e hora para o disparo:</p>
-                    <input type="datetime-local" id="inputDataHoraAgendamento" class="form-control fw-bold text-center">
-                </div>
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-primary w-100 rounded-pill fw-bold" onclick="confirmarAgendamento()">
-                        Confirmar Agendamento
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -244,88 +165,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
-            // Inicializa o Summernote
             $('#summernote').summernote({
                 placeholder : 'Digite sua mensagem aqui...',
                 tabsize : 2,
-                height : 300,
-                toolbar : [
-                        [ 'style', [ 'style' ] ],
-                        [ 'font', [ 'bold', 'underline', 'clear' ] ],
-                        [ 'color', [ 'color' ] ],
-                        [ 'para', [ 'ul', 'ol', 'paragraph' ] ],
-                        [ 'table', [ 'table' ] ],
-                        [ 'insert', [ 'link', 'picture' ] ],
-                        [ 'view', [ 'fullscreen', 'codeview', 'help' ] ] ],
+                height : 250,
+                toolbar : [ [ 'style', [ 'style' ] ], [ 'font', [ 'bold', 'underline' ] ], [ 'para', [ 'ul', 'ol' ] ] ],
                 disableResizeEditor : true
-            });
-
-            // Mostra os nomes dos arquivos ao selecionar
-            $('#inputAnexos').change(function() {
-                var files = $(this)[0].files;
-                var nomes = "";
-                for (var i = 0; i < files.length; i++) {
-                    nomes += '<span class="badge bg-light text-dark border me-1"><i class="fa-solid fa-paperclip me-1"></i>' + files[i].name + '</span>';
-                }
-                $('#listaAnexos').html(nomes);
             });
         });
 
-        // Função para passar os dados para o modal
+        // 1. Função que abre o modal e seta o link de exclusão
+        function confirmarExclusao(url) {
+            var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
+            document.getElementById('btnConfirmarExclusao').setAttribute('href', url);
+            modal.show();
+        }
+
+        // Outras funções existentes
         function prepararDisparo(botao) {
             var id = botao.getAttribute('data-id');
             var nome = botao.getAttribute('data-nome');
-
             document.getElementById('inputGrupoId').value = id;
             document.getElementById('nomeGrupoDisplay').innerText = nome;
         }
-
-        // --- FUNÇÕES DE ENVIO E AGENDAMENTO (Adicionado) ---
-
         function enviarImediato() {
-            // Garante que o campo de data está vazio para envio imediato
             document.getElementById('hiddenDataAgendamento').value = "";
             document.getElementById('formDisparo').submit();
         }
-
-        function confirmarAgendamento() {
-            var dataEscolhida = document.getElementById('inputDataHoraAgendamento').value;
-            
-            if (!dataEscolhida) {
-                alert("Por favor, selecione uma data e hora.");
-                return;
-            }
-
-            // Pega a data do modal pequeno e coloca no form do modal grande
-            document.getElementById('hiddenDataAgendamento').value = dataEscolhida;
-            
-            // Submete o formulário principal
-            document.getElementById('formDisparo').submit();
-        }
-
-        // Função do menu lateral
-        function toggleMenu(menuId, iconId) {
-            var menu = document.getElementById(menuId);
-            var icon = document.getElementById(iconId);
-            if (menu) {
-                if (menu.classList.contains('d-none')) {
-                    menu.classList.remove('d-none');
-                    if (icon) {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-up');
-                    }
-                } else {
-                    menu.classList.add('d-none');
-                    if (icon) {
-                        icon.classList.remove('fa-chevron-up');
-                        icon.classList.add('fa-chevron-down');
-                    }
-                }
-            }
-        }
     </script>
+
+    <script th:if="${mensagemSucesso}">
+        Swal.fire({
+            title: 'Excluído!',
+            text: '[[${mensagemSucesso}]]', // Pega o texto do Controller
+            icon: 'success',
+            confirmButtonColor: '#0d6efd',
+            confirmButtonText: 'OK',
+            timer: 3000,
+            timerProgressBar: true
+        });
+    </script>
+
 </body>
 </html>

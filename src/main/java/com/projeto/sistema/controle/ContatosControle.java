@@ -60,9 +60,14 @@ public class ContatosControle {
     @GetMapping("/editarContatos/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
         Optional<Contatos> contatos = contatosRepositorio.findById(id);
+        
+        // Proteção contra erro 500 (No value present)
+        if (contatos.isEmpty()) {
+            return new ModelAndView("redirect:/listarContatos");
+        }
+        
         return cadastrar(contatos.get());
     }
-
     @GetMapping("/removerContatos/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
         Optional<Contatos> contato = contatosRepositorio.findById(id);

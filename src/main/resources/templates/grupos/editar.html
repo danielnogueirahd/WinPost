@@ -5,33 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Editar Grupo | WinPost</title>
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link
-	href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-	rel="stylesheet" />
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 <link rel="stylesheet" href="/css/estilo.css">
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
-	
 
 	<main class="flex-grow-1">
 		<div style="margin-top: 80px;"></div>
 
 		<div class="container py-4 mb-5">
 
-			<div th:if="${mensagemSucesso}"
-				class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
-				<i class="fa-solid fa-check-circle me-2"></i> <span
-					th:text="${mensagemSucesso}"></span>
+            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
+				<i class="fa-solid fa-check-circle me-2"></i> <span th:text="${mensagemSucesso}"></span>
 				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 			</div>
 
@@ -48,13 +39,11 @@
 						<input type="hidden" th:field="*{id}">
 
 						<div class="card card-modern mb-4">
-							<div class="card-header fw-bold text-primary">Dados do
-								Grupo</div>
+							<div class="card-header fw-bold text-primary">Dados do Grupo</div>
 							<div class="card-body">
 								<div class="mb-3">
 									<label class="form-label small fw-bold text-muted">NOME</label>
-									<input type="text" class="form-control" th:field="*{nome}"
-										required>
+									<input type="text" class="form-control" th:field="*{nome}" required>
 								</div>
 								<div class="mb-3">
 									<label class="form-label small fw-bold text-muted">DESCRIÇÃO</label>
@@ -66,71 +55,53 @@
 										<i class="fa-solid fa-check me-2"></i>Salvar Alterações
 									</button>
 
-									<a th:href="@{/grupos/excluir/{id}(id=*{id})}"
-										class="btn btn-outline-danger btn-sm"
-										onclick="return confirm('ATENÇÃO: Isso apagará o grupo permanentemente. Os contatos não serão excluídos, apenas desvinculados. Continuar?');">
+                                    <button type="button" 
+                                            class="btn btn-outline-danger btn-sm"
+                                            th:data-url="@{/grupos/excluir/{id}(id=*{id})}"
+                                            onclick="confirmarExclusao(this.getAttribute('data-url'))">
 										<i class="fa-solid fa-trash-can me-2"></i>Excluir este Grupo
-									</a>
+									</button>
 								</div>
 
 							</div>
 						</div>
 
-						<div class="card card-modern border-success border-2">
+                        <div class="card card-modern border-success border-2">
 							<div class="card-header fw-bold text-success bg-white">
 								<i class="fa-solid fa-user-plus me-2"></i>Inserir Membros
 							</div>
 							<div class="card-body">
-								<p class="small text-muted mb-2">Selecione contatos para
-									adicionar a este grupo:</p>
+								<p class="small text-muted mb-2">Selecione contatos para adicionar:</p>
 								<div class="mb-3">
-									<select class="form-select select2-multiple"
-										name="novosMembros" multiple="multiple">
-										<option th:each="c : ${todosContatos}" th:value="${c.id}"
-											th:text="${c.nome + ' (' + c.email + ')'}"></option>
+									<select class="form-select select2-multiple" name="novosMembros" multiple="multiple">
+										<option th:each="c : ${todosContatos}" th:value="${c.id}" th:text="${c.nome + ' (' + c.email + ')'}"></option>
 									</select>
 								</div>
-								<button type="submit"
-									class="btn btn-outline-success w-100 btn-sm fw-bold">
-									Adicionar Selecionados</button>
+								<button type="submit" class="btn btn-outline-success w-100 btn-sm fw-bold">Adicionar Selecionados</button>
 							</div>
 						</div>
 					</form>
 				</div>
 
-				<div class="col-lg-8">
+                <div class="col-lg-8">
 					<div class="card card-modern h-100">
-						<div
-							class="card-header bg-white d-flex justify-content-between align-items-center">
-							<span class="fw-bold text-dark">Membros Atuais (<span
-								th:text="${#lists.size(grupo.contatos)}">0</span>)
-							</span>
-						</div>
+                        <div class="card-header bg-white"><span class="fw-bold text-dark">Membros Atuais</span></div>
 						<div class="card-body p-0">
 							<div class="table-responsive">
 								<table class="table table-hover align-middle mb-0">
 									<thead class="bg-light">
-										<tr>
-											<th class="ps-4">Nome</th>
-											<th>Email</th>
-											<th class="text-end pe-4">Ação</th>
-										</tr>
+										<tr><th class="ps-4">Nome</th><th>Email</th><th class="text-end pe-4">Ação</th></tr>
 									</thead>
 									<tbody>
 										<tr th:each="membro : ${grupo.contatos}">
 											<td class="ps-4 fw-bold" th:text="${membro.nome}">Nome</td>
 											<td class="small text-muted" th:text="${membro.email}">Email</td>
-											<td class="text-end pe-4"><a
-												th:href="@{/grupos/removerMembro/{grupoId}/{contatoId}(grupoId=${grupo.id}, contatoId=${membro.id})}"
+											<td class="text-end pe-4">
+                                                <a th:href="@{/grupos/removerMembro/{grupoId}/{contatoId}(grupoId=${grupo.id}, contatoId=${membro.id})}"
 												class="btn btn-sm btn-light text-danger border hover-danger"
-												onclick="return confirm('Remover este usuário do grupo?');"
-												title="Remover Membro"> <i
-													class="fa-solid fa-user-minus"></i>
-											</a></td>
-										</tr>
-										<tr th:if="${#lists.isEmpty(grupo.contatos)}">
-											<td colspan="3" class="text-center py-4 text-muted small">Este
-												grupo ainda não tem membros.</td>
+												onclick="return confirm('Remover este usuário do grupo?');"> 
+                                                <i class="fa-solid fa-user-minus"></i></a>
+                                            </td>
 										</tr>
 									</tbody>
 								</table>
@@ -142,14 +113,14 @@
 		</div>
 	</main>
 
+    <div th:replace="~{fragments/modals :: modalExclusao}"></div>
+
 	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
 
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 	<script>
         $(document).ready(function() {
@@ -161,19 +132,22 @@
             });
         });
 
-        function toggleMenu(menuId, iconId) {
-            var menu = document.getElementById(menuId);
-            var icon = document.getElementById(iconId);
-            if (menu) {
-                if (menu.classList.contains('d-none')) {
-                    menu.classList.remove('d-none');
-                    if(icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
-                } else {
-                    menu.classList.add('d-none');
-                    if(icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
-                }
-            }
+        // Função do Modal
+        function confirmarExclusao(url) {
+            var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
+            document.getElementById('btnConfirmarExclusao').setAttribute('href', url);
+            modal.show();
         }
     </script>
+
+    <script th:if="${mensagemSucesso}">
+        Swal.fire({
+            title: 'Sucesso!',
+            text: '[[${mensagemSucesso}]]',
+            icon: 'success',
+            confirmButtonColor: '#0d6efd',
+            timer: 3000
+        });
+    </script>
 </body>
-</html>
+</html>s
