@@ -76,7 +76,7 @@ function verDetalhesDia(dia, mes, ano) {
                 } else if (item.tipo === 'ENVIO') {
                     icone = 'fa-paper-plane';
                     cor = 'text-primary';
-                    acao = '<button class="btn btn-sm btn-outline-primary ms-auto"><i class="fa-solid fa-eye"></i></button>';
+                   acao = '<button class="btn btn-sm btn-outline-primary ms-auto" onclick="verMensagem(' + item.idRef + ')"><i class="fa-solid fa-eye"></i></button>';
                 } else if (item.tipo === 'FERIADO') {
                     icone = 'fa-calendar-check';
                     cor = 'text-danger';
@@ -103,4 +103,34 @@ function verDetalhesDia(dia, mes, ano) {
             $('#listaDetalhes').html(html);
         }
     });
+	function verMensagem(id) {
+	           // Fecha o modal de detalhes do dia para não ficar um em cima do outro (opcional)
+	           // var modalDetalhes = bootstrap.Modal.getInstance(document.getElementById('modalDetalhesDia'));
+	           // if(modalDetalhes) modalDetalhes.hide();
+
+	           // Mostra loading
+	           $('#modalConteudo').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>');
+	           
+	           var modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
+	           modal.show();
+
+	           // Busca dados no Backend
+	           $.get("/mensagens/detalhes/" + id, function(data) {
+	               $('#modalAssunto').text(data.assunto);
+	               $('#modalGrupo').text(data.nomeGrupoDestino);
+	               $('#modalData').text(new Date(data.dataEnvio).toLocaleString('pt-BR'));
+	               
+	               // Anexos
+	               if(data.nomesAnexos) {
+	                   $('#modalAnexos').text(data.nomesAnexos);
+	                   $('#areaAnexosModal').removeClass('d-none');
+	               } else {
+	                   $('#areaAnexosModal').addClass('d-none');
+	               }
+	               
+	               var conteudoLimpo = data.conteudo; 
+	               $('#modalConteudo').html(conteudoLimpo);
+	               $('#modalConteudo img').addClass('img-fluid rounded'); 
+	           });
+	       }
 }
