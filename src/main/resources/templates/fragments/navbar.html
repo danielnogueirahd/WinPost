@@ -2,10 +2,11 @@
 
     <link rel="stylesheet" href="/css/navbar.css">
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top" style="z-index: 1040;">
         <div class="container-fluid">
 
-            <a class="navbar-brand d-flex align-items-center me-4" href="/administrativo"> 
+            
+            <a class="navbar-brand d-flex align-items-center me-auto me-lg-4" href="/administrativo"> 
                 <img src="/img/logoInput.png" alt="Logo" height="32" class="me-2 bg-primary rounded px-2 shadow-sm">
             </a>
 
@@ -19,6 +20,7 @@
                     <li class="nav-item"><a class="nav-link" href="/administrativo" th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/mensagens/enviadas" th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a></li>
                     <li class="nav-item"><a class="nav-link" href="/agenda" th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a></li>
+                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropContatos" role="button" data-bs-toggle="dropdown" 
                            th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Contatos</a>
@@ -32,28 +34,31 @@
                     </li>
                 </ul>
 
-                <div class="d-flex align-items-center gap-3">
-
-                    <a href="#" class="text-white text-decoration-none position-relative me-2" data-bs-toggle="modal" data-bs-target="#modalLembretes" title="Lembretes Futuros"> 
-                        <i class="fa-regular fa-calendar-days fs-5"></i> 
-                        <span th:if="${qtdLembretes > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white shadow-sm" style="font-size: 0.65rem;"> 
-                            <span th:text="${qtdLembretes}">0</span>
-                        </span>
-                    </a> 
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 mt-3 mt-lg-0">
                     
-                    <a href="#" class="text-white text-decoration-none position-relative" data-bs-toggle="modal" data-bs-target="#modalNotificacoes" title="Notificações"> 
-                        <i class="fa-regular fa-bell fs-5"></i>
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="#" class="text-white text-decoration-none position-relative" data-bs-toggle="modal" data-bs-target="#modalLembretes" title="Lembretes Futuros"> 
+                            <i class="fa-regular fa-calendar-days fs-5"></i> 
+                            <span th:if="${qtdLembretes > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white shadow-sm" style="font-size: 0.65rem;"> 
+                                <span th:text="${qtdLembretes}">0</span>
+                            </span>
+                        </a> 
                         
-                        <span id="badgeGeral" th:if="${notificacoesNaoLidas > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white shadow-sm" style="font-size: 0.65rem;"> 
-                            <span id="contadorTexto" th:text="${notificacoesNaoLidas}">0</span>
-                        </span>
-                    </a>
+                        <a href="#" class="text-white text-decoration-none position-relative" data-bs-toggle="modal" data-bs-target="#modalNotificacoes" title="Notificações"> 
+                            <i class="fa-regular fa-bell fs-5"></i>
+                            <span id="badgeGeral" th:if="${notificacoesNaoLidas > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white shadow-sm" style="font-size: 0.65rem;"> 
+                                <span id="contadorTexto" th:text="${notificacoesNaoLidas}">0</span>
+                            </span>
+                        </a>
+                    </div>
 
                     <div class="vr text-white opacity-50 d-none d-lg-block" style="height: 25px;"></div>
-
-                    <div class="dropdown">
+                    <hr class="text-white d-lg-none my-1"> <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"> 
-                            <span class="d-none d-lg-block small fw-bold">Admin</span>
+                            <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-2 d-lg-none" style="width: 30px; height: 30px;">
+                                <i class="fa-solid fa-user small"></i>
+                            </div>
+                            <span class="small fw-bold">Admin</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3 p-2" style="width: 200px;">
                             <li><h6 class="dropdown-header small text-uppercase">Minha Conta</h6></li>
@@ -70,7 +75,7 @@
     </nav>
 
     <div class="modal fade" id="modalLembretes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
-		<div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
+        <div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
 			<div class="modal-content shadow-lg border-0">
 				<div class="modal-header bg-warning text-dark py-2 border-bottom-0 rounded-top">
 					<h6 class="modal-title fw-bold small"><i class="fa-solid fa-clock me-2"></i>Lembretes Futuros</h6>
@@ -106,7 +111,8 @@
 				</div>
 			</div>
 		</div>
-	</div>
+    </div>
+
     <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
             <div class="modal-content shadow-lg border-0">
@@ -158,9 +164,10 @@
             </div>
         </div>
     </div>
-
+    
     <script>
-        // 1. Função chamada ao clicar no "X"
+        // ... Mantenha suas funções JS existentes ...
+         // 1. Função chamada ao clicar no "X"
         function marcarEFechar(id, event) {
             if(event) event.stopPropagation(); // Não abre o link
 
@@ -229,5 +236,4 @@
             }
         }
     </script>
-
 </div>

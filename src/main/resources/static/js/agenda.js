@@ -72,7 +72,7 @@ function verDetalhesDia(dia, mes, ano) {
                 if (item.tipo === 'NIVER') {
                     icone = 'fa-cake-candles';
                     cor = 'text-success';
-                    acao = '<a href="/editarContatos/' + item.idRef + '" class="btn btn-sm btn-outline-success ms-auto"><i class="fa-solid fa-envelope"></i></a>';
+                    
                 } else if (item.tipo === 'ENVIO') {
                     icone = 'fa-paper-plane';
                     cor = 'text-primary';
