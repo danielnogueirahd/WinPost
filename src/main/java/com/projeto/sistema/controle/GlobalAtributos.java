@@ -15,7 +15,8 @@ import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.LembreteDTO;
 import com.projeto.sistema.modelos.MensagemLog;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
-import com.projeto.sistema.repositorios.LembreteRepositorio; // Importante
+import com.projeto.sistema.repositorios.GrupoRepositorio; // <--- 1. Import Adicionado
+import com.projeto.sistema.repositorios.LembreteRepositorio;
 import com.projeto.sistema.repositorios.MensagemLogRepositorio;
 
 @ControllerAdvice
@@ -28,7 +29,17 @@ public class GlobalAtributos {
     private ContatosRepositorio contatosRepositorio;
 
     @Autowired
-    private LembreteRepositorio lembreteRepositorio; // <--- Injeção do repositório de lembretes
+    private LembreteRepositorio lembreteRepositorio;
+    
+    @Autowired
+    private GrupoRepositorio grupoRepositorio; // <--- 2. Injeção Adicionada
+
+    // --- Parte Nova: Carrega os Grupos Globalmente para o Modal ---
+    @ModelAttribute("listaGruposGlobal")
+    public List<?> carregarGruposGlobais() {
+        return grupoRepositorio.findAll();
+    }
+    // -------------------------------------------------------------
 
     @ModelAttribute("notificacoesNaoLidas")
     public long carregarContador() {
@@ -59,7 +70,7 @@ public class GlobalAtributos {
                 "Não esqueça de parabenizar " + c.getNome(),
                 "NIVER",
                 amanha,
-                c.getId() // Linka para o cadastro do contato
+                c.getId()
             ));
         }
 
@@ -70,14 +81,12 @@ public class GlobalAtributos {
         List<Lembrete> tarefasAmanha = lembreteRepositorio.findByDataHoraBetween(inicioDia, fimDia);
 
         for (Lembrete l : tarefasAmanha) {
-            // Se o lembrete tem um contato vinculado, usamos o ID dele para o link funcionar
-            // Se não tiver, passamos 0 (o link vai quebrar ou ir para erro, mas o item aparece)
             Long idReferencia = (l.getContato() != null) ? l.getContato().getId() : 0L;
 
             lembretes.add(new LembreteDTO(
                 l.getTitulo(),
                 l.getDescricao() != null ? l.getDescricao() : "Sem descrição",
-                l.getTipo(), // TAREFA, REUNIAO, IMPORTANTE
+                l.getTipo(),
                 amanha,
                 idReferencia
             ));
@@ -90,4 +99,5 @@ public class GlobalAtributos {
     public int contarLembretes() {
         return carregarLembretesFuturos().size();
     }
+    
 }

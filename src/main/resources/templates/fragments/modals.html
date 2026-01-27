@@ -2,186 +2,193 @@
 <html xmlns:th="https://thymeleaf.org">
 
 <div th:fragment="modalNovaMensagem">
-	<div class="modal fade" id="modalNovaMensagem" tabindex="-1"
-		aria-hidden="true" data-bs-backdrop="static">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content shadow-lg border-0">
+    <div class="modal fade" id="modalNovaMensagem" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg border-0">
 
-				<div class="modal-header bg-primary text-white">
-					<h5 class="modal-title fw-bold">
-						<i class="fa-regular fa-paper-plane me-2"></i>Nova Campanha
-					</h5>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal"></button>
-				</div>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fa-regular fa-paper-plane me-2"></i>Nova Campanha
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
 
-				<form action="/grupos/disparar" method="post"
-					enctype="multipart/form-data">
-					<div class="modal-body">
-						<div class="mb-3">
-							<label class="form-label small fw-bold text-secondary">PARA
-								O GRUPO</label> <select class="form-select" name="grupoId" required>
-								<option value="" selected disabled>Selecione um
-									grupo...</option>
-								<th:block th:if="${listaGruposGlobal != null}">
-									<option th:each="g : ${listaGruposGlobal}" th:value="${g.id}"
-										th:text="${g.nome} + ' (' + ${#lists.size(g.contatos)} + ' membros)'">
-									</option>
-								</th:block>
-							</select>
-						</div>
-						<div class="mb-3">
-							<label class="form-label small fw-bold text-secondary">ASSUNTO</label>
-							<input type="text" class="form-control fw-bold" name="assunto"
-								placeholder="Ex: Oferta Imperdível" required>
-						</div>
-						<div class="mb-3">
-							<label class="form-label small fw-bold text-secondary">MENSAGEM</label>
-							<textarea class="form-control" name="mensagem" rows="6"
-								placeholder="Digite sua mensagem aqui..."></textarea>
-							<div class="form-text small">
-								<i class="fa-solid fa-circle-info me-1"></i> Você pode usar tags
-								HTML básicas.
-							</div>
-						</div>
-						<div class="mb-3">
-							<label class="form-label small fw-bold text-secondary">ANEXOS</label>
-							<input type="file" class="form-control" name="anexos" multiple>
-						</div>
-					</div>
-					<div class="modal-footer bg-light">
-						<button type="button"
-							class="btn btn-link text-secondary text-decoration-none"
-							data-bs-dismiss="modal">Cancelar</button>
-						<button type="submit"
-							class="btn btn-primary fw-bold px-4 rounded-pill">
-							<i class="fa-solid fa-rocket me-2"></i> Enviar Agora
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                <form action="/grupos/disparar" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        
+                        <div class="row">
+                            <div class="col-md-7 mb-3">
+                                <label class="form-label small fw-bold text-secondary">PARA O GRUPO</label> 
+                                <select class="form-select" name="grupoId" required>
+                                    <option value="" selected disabled>Selecione um grupo...</option>
+                                    <th:block th:if="${listaGruposGlobal != null}">
+                                        <option th:each="g : ${listaGruposGlobal}" th:value="${g.id}"
+                                            th:text="${g.nome} + ' (' + ${#lists.size(g.contatos)} + ' membros)'">
+                                        </option>
+                                    </th:block>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label small fw-bold text-secondary">
+                                    <i class="fa-regular fa-clock me-1"></i>AGENDAR ENVIO (Opcional)
+                                </label>
+                                <input type="datetime-local" class="form-control" name="dataEnvio">
+                                <div class="form-text small text-end">Deixe vazio para enviar agora.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">ASSUNTO</label>
+                            <input type="text" class="form-control fw-bold" name="assunto" placeholder="Ex: Oferta Imperdível" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">MENSAGEM</label>
+                            <textarea id="summernoteMensagem" class="form-control" name="mensagem" rows="6"></textarea>
+                            <div class="form-text small">
+                                <i class="fa-solid fa-circle-info me-1"></i> Você pode colar imagens diretamente aqui ou usar o botão de imagem.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">
+                                <i class="fa-solid fa-paperclip me-1"></i>ANEXAR DOCUMENTOS
+                            </label>
+                            <input type="file" class="form-control" name="anexos" multiple>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary fw-bold px-4 rounded-pill">
+                            <i class="fa-solid fa-rocket me-2"></i> Confirmar Envio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div th:fragment="modalRelatorio">
-	<div class="modal fade" id="modalRelatorio" tabindex="-1"
-		aria-labelledby="modalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header bg-primary text-white">
-					<h5 class="modal-title" id="modalLabel">
-						<i class="fa-solid fa-filter me-2"></i>Filtrar Relatório
-					</h5>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<form action="/relatorio/pdf" method="get" target="_blank">
-					<div class="modal-body">
-						<div class="alert alert-light border shadow-sm small mb-3">Deixe
-							em branco para todos os registros.</div>
+    <div class="modal fade" id="modalRelatorio" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalLabel">
+                        <i class="fa-solid fa-filter me-2"></i>Filtrar Relatório
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/relatorio/pdf" method="get" target="_blank">
+                    <div class="modal-body">
+                        <div class="alert alert-light border shadow-sm small mb-3">Deixe em branco para todos os registros.</div>
 
-						<div class="mb-3">
-							<label for="filtroNome"
-								class="form-label fw-bold small text-secondary">NOME</label> <input
-								type="text" class="form-control" name="nome" id="filtroNome">
-						</div>
+                        <div class="mb-3">
+                            <label for="filtroNome" class="form-label fw-bold small text-secondary">NOME</label> 
+                            <input type="text" class="form-control" name="nome" id="filtroNome">
+                        </div>
 
-						<div class="row g-2 mb-3">
-							<div class="col-md-8">
-								<label for="filtroCidade"
-									class="form-label fw-bold small text-secondary">CIDADE</label>
-								<input type="text" class="form-control" name="cidade"
-									id="filtroCidade">
-							</div>
-							<div class="col-md-4">
-								<label for="filtroEstado"
-									class="form-label fw-bold small text-secondary">UF</label> <select
-									class="form-select" name="estado" id="filtroEstado">
-									<option value="">Todas</option>
-									<th:block th:if="${listaEstados != null}">
-										<option th:each="uf : ${listaEstados}" th:value="${uf.name()}"
-											th:text="${uf.descricao} ?: ${uf.name()}"></option>
-									</th:block>
-								</select>
-							</div>
-						</div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-8">
+                                <label for="filtroCidade" class="form-label fw-bold small text-secondary">CIDADE</label>
+                                <input type="text" class="form-control" name="cidade" id="filtroCidade">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="filtroEstado" class="form-label fw-bold small text-secondary">UF</label> 
+                                <select class="form-select" name="estado" id="filtroEstado">
+                                    <option value="">Todas</option>
+                                    <th:block th:if="${listaEstados != null}">
+                                        <option th:each="uf : ${listaEstados}" th:value="${uf.name()}" th:text="${uf.descricao} ?: ${uf.name()}"></option>
+                                    </th:block>
+                                </select>
+                            </div>
+                        </div>
 
-						<div class="mb-3">
-							<label for="filtroGrupo"
-								class="form-label fw-bold small text-secondary">GRUPO</label> <select
-								class="form-select" name="grupoId" id="filtroGrupo">
-								<option value="">Todos os Grupos</option>
-								<th:block th:if="${listaGrupos != null}">
-									<option th:each="g : ${listaGrupos}" th:value="${g.id}"
-										th:text="${g.nome}"></option>
-								</th:block>
-							</select>
-						</div>
+                        <div class="mb-3">
+                            <label for="filtroGrupo" class="form-label fw-bold small text-secondary">GRUPO</label> 
+                            <select class="form-select" name="grupoId" id="filtroGrupo">
+                                <option value="">Todos os Grupos</option>
+                                <th:block th:if="${listaGrupos != null}">
+                                    <option th:each="g : ${listaGrupos}" th:value="${g.id}" th:text="${g.nome}"></option>
+                                </th:block>
+                            </select>
+                        </div>
 
-						<hr class="text-muted">
-						<p class="small fw-bold text-secondary mb-2">PERÍODO (Data
-							Cadastro/Nascimento)</p>
-						<div class="row g-2">
-							<div class="col-6">
-								<label class="form-label small text-muted">De:</label><input
-									type="date" class="form-control" name="dataInicio">
-							</div>
-							<div class="col-6">
-								<label class="form-label small text-muted">Até:</label><input
-									type="date" class="form-control" name="dataFim">
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary"
-							data-bs-dismiss="modal">Fechar</button>
-						<button type="submit" class="btn btn-success fw-bold">
-							<i class="fa-solid fa-file-pdf me-2"></i> Gerar PDF
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div th:fragment="modalNovaMensagem">
-	<div class="modal fade" id="modalNovaMensagem" tabindex="-1"
-		aria-hidden="true" data-bs-backdrop="static"></div>
-</div>
-
-<div th:fragment="modalRelatorio">
-	<div class="modal fade" id="modalRelatorio" tabindex="-1"
-		aria-labelledby="modalLabel" aria-hidden="true"></div>
+                        <hr class="text-muted">
+                        <p class="small fw-bold text-secondary mb-2">PERÍODO</p>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label small text-muted">De:</label>
+                                <input type="date" class="form-control" name="dataInicio">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small text-muted">Até:</label>
+                                <input type="date" class="form-control" name="dataFim">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-success fw-bold">
+                            <i class="fa-solid fa-file-pdf me-2"></i> Gerar PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div th:fragment="modalExclusao">
-	<div class="modal fade" id="modalConfirmarExclusao" tabindex="-1"
-		aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content border-0 shadow-lg">
-				<div class="modal-header bg-danger text-white border-0">
-					<h5 class="modal-title fw-bold">
-						<i class="fa-solid fa-triangle-exclamation me-2"></i>Tem certeza?
-					</h5>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal"></button>
-				</div>
-				<div class="modal-body text-center py-4">
-					<p class="mb-0 text-secondary fs-5">Você está prestes a excluir
-						este grupo.</p>
-					<p class="text-muted small">Esta ação não poderá ser desfeita.</p>
-				</div>
-				<div class="modal-footer bg-light border-0 justify-content-center">
-					<button type="button" class="btn btn-secondary px-4 fw-bold"
-						data-bs-dismiss="modal">Cancelar</button>
-					<a href="#" id="btnConfirmarExclusao"
-						class="btn btn-danger px-4 fw-bold">Sim, Excluir</a>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white border-0">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>Tem certeza?
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <p class="mb-0 text-secondary fs-5">Você está prestes a excluir este item.</p>
+                    <p class="text-muted small">Esta ação não poderá ser desfeita.</p>
+                </div>
+                <div class="modal-footer bg-light border-0 justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                    <a href="#" id="btnConfirmarExclusao" class="btn btn-danger px-4 fw-bold">Sim, Excluir</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        // Inicializa o Summernote quando o modal de Nova Mensagem abrir
+        $('#modalNovaMensagem').on('shown.bs.modal', function() {
+            // Se já estiver inicializado, não recria para evitar bugs
+            if ($('#summernoteMensagem').next('.note-editor').length > 0) {
+                return; 
+            }
+            
+            $('#summernoteMensagem').summernote({
+                height: 250,
+                lang: 'pt-BR',
+                placeholder: 'Escreva sua mensagem aqui...',
+                dialogsInBody: true, // ESSENCIAL: Permite que popups de imagem/link apareçam sobre o modal
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video', 'hr']], // Botões de imagem e link garantidos aqui
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ]
+            });
+        });
+    });
+</script>
 
 </html>

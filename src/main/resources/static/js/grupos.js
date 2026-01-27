@@ -1,7 +1,55 @@
 $(document).ready(function() {
 
+    // ==========================================================================
+    // 1. CONFIGURAÇÃO DO SELECT2 (SELEÇÃO DE MEMBROS)
+    // ==========================================================================
 
-    // Inicialização do DataTables
+    // Função para formatar como a opção aparece na LISTA (Dropdown aberto)
+    function formatarContatoOpcao(state) {
+        if (!state.id) { return state.text; }
+
+        // Pega os dados que colocamos no HTML (th:data-nome, etc)
+        var nome = $(state.element).data('nome') || state.text;
+        var email = $(state.element).data('email') || '';
+        var inicial = nome.charAt(0).toUpperCase();
+
+        var $state = $(
+            '<div class="select2-item-contato">' +
+                '<div class="avatar-mini">' + inicial + '</div>' +
+                '<div>' +
+                    '<div class="fw-bold text-dark" style="font-size: 0.95rem;">' + nome + '</div>' +
+                    '<div class="text-muted small" style="font-size: 0.8rem;">' + email + '</div>' +
+                '</div>' +
+            '</div>'
+        );
+        return $state;
+    }
+
+    // Função para formatar como a opção aparece SELECIONADA (No input fechado)
+    function formatarContatoSelecao(state) {
+        if (!state.id) { return state.text; }
+        var nome = $(state.element).data('nome') || state.text;
+        
+        // Na seleção, mostramos apenas o nome para economizar espaço
+        return $('<span><i class="fa-solid fa-user me-1 text-muted small"></i> ' + nome + '</span>');
+    }
+
+    // Inicialização do Select2 com as funções customizadas
+    $('.select2-multiple').select2({
+        theme: 'bootstrap-5',
+        placeholder: "Pesquise por nome ou email...",
+        allowClear: true,
+        width: '100%',
+        templateResult: formatarContatoOpcao,      // Usa o layout rico na lista
+        templateSelection: formatarContatoSelecao,  // Usa o layout simples na seleção
+        escapeMarkup: function(m) { return m; }     // Permite HTML dentro das opções
+    });
+
+
+    // ==========================================================================
+    // 2. CONFIGURAÇÃO DO DATATABLES (TABELA DE GRUPOS)
+    // ==========================================================================
+
     var table = $('#tabelaSelecao').DataTable({
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json',
@@ -14,14 +62,10 @@ $(document).ready(function() {
         columnDefs: [{ orderable: false, targets: 0 }]
     });
 
-
-
     // Estilização do campo de busca gerado dinamicamente
     $('.dataTables_filter input').addClass('form-control ps-3').css('border-radius', '8px');
 
-
-
-    // Função de atualização visual
+    // Função de atualização visual da tabela
     function atualizarInterface() {
         var selecionados = 0;
         table.rows().nodes().to$().each(function() {
@@ -42,9 +86,7 @@ $(document).ready(function() {
         else $('#contadorSelecao').addClass('text-muted').removeClass('text-primary');
     }
 
-
-
-    // Eventos
+    // Eventos da Tabela
     $('#tabelaSelecao').on('change', '.check-item', function() {
         atualizarInterface();
         if (!$(this).is(':checked')) $('#checkAll').prop('checked', false);
@@ -63,11 +105,15 @@ $(document).ready(function() {
         $('input[type="checkbox"]', rows).prop('checked', isChecked);
         atualizarInterface();
     });
-});
+
+}); // Fim do $(document).ready
 
 
+// ==========================================================================
+// 3. FUNÇÕES GLOBAIS (FORA DO DOCUMENT READY)
+// ==========================================================================
 
-// FUNÇÃO GLOBAL DO SIDEBAR
+// Função do Sidebar
 window.toggleMenu = function(menuId, iconId) {
     var menu = document.getElementById(menuId);
     var icon = document.getElementById(iconId);
@@ -82,15 +128,14 @@ window.toggleMenu = function(menuId, iconId) {
     }
 };
 
-
-// Agora sim, definimos a prepararFiltro no escopo global
+// Função para preparar filtros (se usada em outras telas)
 function prepararFiltro() {
-    // Pega o valor digitado no formulário de cadastro
     var nomeDigitado = document.getElementById('inputNome').value;
     var descDigitada = document.getElementById('inputDescricao').value;
 
-    // Joga para os campos hidden do formulário de filtro
-    document.getElementById('hiddenNome').value = nomeDigitado;
-    document.getElementById('hiddenDescricao').value = descDigitada;
-
+    if(document.getElementById('hiddenNome')) 
+        document.getElementById('hiddenNome').value = nomeDigitado;
+    
+    if(document.getElementById('hiddenDescricao'))
+        document.getElementById('hiddenDescricao').value = descDigitada;
 };
