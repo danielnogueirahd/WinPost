@@ -10,6 +10,23 @@
 <link rel="stylesheet" href="/css/estilo.css">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 
+<style>
+    /* Ajuste para os chips de anexo ficarem bonitos */
+    .chip-anexo {
+        font-size: 0.85rem;
+        background-color: #f1f3f4;
+        border: 1px solid #dadce0;
+        border-radius: 16px;
+        padding: 4px 12px;
+        display: inline-flex;
+        align-items: center;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        color: #3c4043;
+    }
+    .chip-anexo i { margin-right: 6px; color: #ea4335; } /* Ícone PDF vermelho */
+</style>
+
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
@@ -23,6 +40,11 @@
 
             <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
                 <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${mensagemErro}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
+                <i class="fa-solid fa-check-circle me-2"></i> <span th:text="${mensagemSucesso}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
@@ -133,16 +155,22 @@
         </div>
     </main>
 
-    <div th:replace="~{fragments/modals :: modalNovaMensagem}"></div> <div th:replace="~{fragments/modals :: modalExclusao}"></div> <div class="modal fade" id="modalDisparo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div th:replace="~{fragments/modals :: modalNovaMensagem}"></div> 
+    <div th:replace="~{fragments/modals :: modalExclusao}"></div> 
+
+    <div class="modal fade" id="modalDisparo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content shadow-lg" style="border-radius: 8px; border: none;">
+                
                 <div class="modal-header bg-light py-2 px-3 border-bottom-0 d-flex justify-content-between align-items-center">
                     <h6 class="modal-title fw-bold small text-secondary">Nova mensagem</h6>
                     <button type="button" class="btn btn-sm btn-link text-muted p-0" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
                 </div>
+
                 <form action="/grupos/disparar" method="post" enctype="multipart/form-data" class="d-flex flex-column h-100" id="formDisparo">
                     <input type="hidden" name="grupoId" id="inputGrupoId">
                     <input type="hidden" name="dataAgendamento" id="hiddenDataAgendamento">
+                    
                     <div class="modal-body p-0 d-flex flex-column">
                         <div class="px-3 py-2 border-bottom">
                             <span class="text-muted small me-2">Para</span> <span id="nomeGrupoDisplay" class="badge bg-light text-dark border rounded-pill px-3">...</span>
@@ -150,9 +178,25 @@
                         <div class="px-3 py-2 border-bottom">
                             <input type="text" class="form-control border-0 shadow-none p-0 fw-bold" name="assunto" placeholder="Assunto" required>
                         </div>
-                        <div class="flex-grow-1"><textarea id="summernote" name="mensagem"></textarea></div>
+
+                        <div id="listaAnexosVisual" class="px-3 pt-2 d-none">
+                            </div>
+
+                        <div class="flex-grow-1">
+                            <textarea id="summernote" name="mensagem"></textarea>
+                        </div>
                     </div>
+                    
                     <div class="modal-footer justify-content-between px-3 py-2 border-top-0">
+                        <div>
+                            <button type="button" class="btn btn-light rounded-circle text-secondary" 
+                                    onclick="document.getElementById('inputAnexosReal').click()" 
+                                    title="Anexar arquivos">
+                                <i class="fa-solid fa-paperclip fa-lg"></i>
+                            </button>
+                            <input type="file" id="inputAnexosReal" name="anexos" multiple style="display: none;" onchange="mostrarAnexos()">
+                        </div>
+
                         <button type="button" onclick="enviarImediato()" class="btn btn-primary rounded-pill px-4 fw-bold">Enviar</button>
                     </div>
                 </form>
@@ -178,35 +222,62 @@
             });
         });
 
-        // 1. Função que abre o modal e seta o link de exclusão
+        // Função de Exclusão
         function confirmarExclusao(url) {
             var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
             document.getElementById('btnConfirmarExclusao').setAttribute('href', url);
             modal.show();
         }
 
-        // Outras funções existentes
+        // Prepara Modal de Disparo
         function prepararDisparo(botao) {
             var id = botao.getAttribute('data-id');
             var nome = botao.getAttribute('data-nome');
             document.getElementById('inputGrupoId').value = id;
             document.getElementById('nomeGrupoDisplay').innerText = nome;
+            
+            // Limpa anexos anteriores se reabrir o modal
+            document.getElementById('inputAnexosReal').value = "";
+            document.getElementById('listaAnexosVisual').innerHTML = "";
+            document.getElementById('listaAnexosVisual').classList.add('d-none');
         }
+
+        // Função Visual de Anexos
+        function mostrarAnexos() {
+            var input = document.getElementById('inputAnexosReal');
+            var container = document.getElementById('listaAnexosVisual');
+            
+            container.innerHTML = ""; // Limpa visual
+            
+            if(input.files.length > 0) {
+                container.classList.remove('d-none');
+                
+                for(var i=0; i<input.files.length; i++) {
+                    var nome = input.files[i].name;
+                    // Cria o Chip HTML
+                    var chip = document.createElement('div');
+                    chip.className = 'chip-anexo';
+                    chip.innerHTML = '<i class="fa-solid fa-file-pdf"></i> ' + nome; // Ícone genérico
+                    container.appendChild(chip);
+                }
+            } else {
+                container.classList.add('d-none');
+            }
+        }
+
         function enviarImediato() {
             document.getElementById('hiddenDataAgendamento').value = "";
             document.getElementById('formDisparo').submit();
         }
     </script>
-
+    
     <script th:if="${mensagemSucesso}">
         Swal.fire({
-            title: 'Excluído!',
-            text: '[[${mensagemSucesso}]]', // Pega o texto do Controller
+            title: 'Sucesso!',
+            text: '[[${mensagemSucesso}]]',
             icon: 'success',
             confirmButtonColor: '#0d6efd',
-            confirmButtonText: 'OK',
-            timer: 3000,
-            timerProgressBar: true
+            timer: 3000
         });
     </script>
 

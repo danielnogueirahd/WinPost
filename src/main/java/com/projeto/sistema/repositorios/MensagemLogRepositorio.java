@@ -12,37 +12,51 @@ import org.springframework.data.repository.query.Param;
 import com.projeto.sistema.modelos.MensagemLog;
 
 public interface MensagemLogRepositorio extends JpaRepository<MensagemLog, Long> {
-	
+    
     // Mantido para compatibilidade
     List<MensagemLog> findAllByOrderByDataEnvioDesc();
     
-    // ATUALIZADO: Adicionado filtro por PASTA
+    // --- QUERY PRINCIPAL ATUALIZADA (COM IMPORTANTE) ---
+    // Agora aceita 'favorito', 'importante' e faz a busca inteligente
     @Query("SELECT m FROM MensagemLog m WHERE " +
            "(:pasta IS NULL OR m.pasta = :pasta) AND " + 
+           "(:favorito IS NULL OR m.favorito = :favorito) AND " +
+           "(:importante IS NULL OR m.importante = :importante) AND " + // <--- NOVO
            "(:temAnexo IS NULL OR (:temAnexo = true AND m.nomesAnexos IS NOT NULL AND m.nomesAnexos != '')) AND " +
-           "(:grupo IS NULL OR lower(m.nomeGrupoDestino) LIKE lower(concat('%', :grupo, '%'))) AND " +
+           "(:termo IS NULL OR (lower(m.nomeGrupoDestino) LIKE lower(concat('%', :termo, '%')) OR lower(m.assunto) LIKE lower(concat('%', :termo, '%')))) AND " +
            "(:dataInicio IS NULL OR m.dataEnvio >= :dataInicio) AND " +
            "(:dataFim IS NULL OR m.dataEnvio <= :dataFim)")
     Page<MensagemLog> filtrarMensagens(
             @Param("pasta") String pasta, 
+            @Param("favorito") Boolean favorito,
+            @Param("importante") Boolean importante, // <--- NOVO PARÂMETRO
             @Param("temAnexo") Boolean temAnexo,
-            @Param("grupo") String grupo,
+            @Param("termo") String termo,        
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable);
             
-    // Contadores para o menu lateral
+    // --- CONTADORES PARA O MENU ---
+    
+    // Conta total de mensagens em uma pasta (ex: Total de Enviadas, Lixeira)
     long countByPasta(String pasta);
     
-    long countByLidaFalse();
+    // Conta mensagens NÃO LIDAS na pasta (Badge vermelho da Entrada)
+    long countByPastaAndLidaFalse(String pasta);
     
-    // Busca as 5 mensagens mais recentes que NÃO foram lidas
+    // Conta quantos favoritos existem no total
+    long countByFavoritoTrue();
+    
+    // Conta quantos marcados como IMPORTANTE existem
+    long countByImportanteTrue(); // <--- NOVO MÉTODO
+    
+    // --- MÉTODOS AUXILIARES ---
+    
+    long countByLidaFalse(); 
+    
     List<MensagemLog> findTop5ByLidaFalseOrderByDataEnvioDesc();
     
-    // Busca mensagens enviadas dentro de um intervalo de datas
     List<MensagemLog> findByDataEnvioBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
 
-    // --- [NOVO] O MÉTODO QUE ESTAVA FALTANDO PARA O AGENDADOR FUNCIONAR ---
-    // Busca mensagens com status específico (ex: "AGENDADO") e data anterior a agora
     List<MensagemLog> findByStatusAndDataEnvioBefore(String status, LocalDateTime dataEnvio);
 }

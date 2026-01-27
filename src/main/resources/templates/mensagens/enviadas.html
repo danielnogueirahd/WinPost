@@ -3,392 +3,351 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Caixa de Saída | WinPost</title>
-
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>Caixa de Mensagens | WinPost</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
 
 <style>
-/* Estilos específicos para o Menu Lateral de E-mail */
-.email-sidebar-btn {
-	text-align: left;
-	padding: 10px 20px;
-	font-weight: 600;
-	border-radius: 30px; /* Arredondado igual Gmail */
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-	transition: all 0.2s;
-}
+    body { background-color: #f6f8fc; }
+    
+    /* Ícones e Ações */
+    .action-icon { cursor: pointer; color: #ccc; transition: transform 0.2s, color 0.2s; padding: 5px; }
+    .action-icon:hover { transform: scale(1.2); }
+    .star-active { color: #f4b400; }
+    .flag-active { color: #0b57d0; }
+    
+    /* Menu Lateral */
+    .nav-link-custom.active { background-color: #d3e3fd; color: #001d35; font-weight: 700; border-radius: 0 24px 24px 0; }
+    .nav-link-custom { color: #444746; font-weight: 500; padding: 10px 16px; border-radius: 0 24px 24px 0; display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;}
+    .nav-link-custom:hover { background-color: #e1e5ea; }
+    .menu-badge { font-size: 0.75rem; font-weight: 600; }
+    
+    /* Tabela */
+    .table-hover tbody tr:hover { background-color: #f2f6fc; }
+    .row-clickable { cursor: pointer; }
+    
+    /* Chip de Anexo na Lista */
+    .badge-attachment { background-color: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; font-weight: 400; font-size: 0.75rem; }
 
-.email-sidebar-btn:hover {
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-	transform: translateY(-1px);
-}
-
-.folder-list {
-	list-style: none;
-	padding-left: 0;
-	margin-top: 15px;
-}
-
-.folder-item {
-	display: flex;
-	align-items: center;
-	padding: 8px 12px 8px 24px; /* Recuo à esquerda */
-	border-radius: 0 20px 20px 0; /* Arredondado só na direita */
-	color: #5f6368;
-	text-decoration: none;
-	font-size: 0.95rem;
-	font-weight: 500;
-	margin-bottom: 2px;
-	cursor: pointer;
-	transition: background-color 0.1s;
-}
-
-.folder-item:hover {
-	background-color: #f1f3f4;
-	color: #202124;
-}
-
-.folder-item.active {
-	background-color: #e8f0fe; /* Azul claro da imagem */
-	color: #1967d2; /* Azul escuro */
-	font-weight: 700;
-}
-
-.folder-item i {
-	width: 20px;
-	margin-right: 12px;
-	text-align: center;
-}
-
-.folder-section-title {
-	font-size: 0.8rem;
-	text-transform: uppercase;
-	color: #5f6368;
-	font-weight: 700;
-	margin: 20px 0 10px 24px;
-}
-
-/* Ajuste para esconder o menu lateral em telas muito pequenas */
-@media ( max-width : 992px) {
-	.email-sidebar-col {
-		display: none;
-	}
-}
+    /* Chip de Download no Modal */
+    .attachment-chip {
+        display: inline-flex;
+        align-items: center;
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.2s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .attachment-chip:hover {
+        background-color: #f8f9fa;
+        border-color: #0d6efd;
+        color: #0d6efd;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
-	<div th:replace="~{fragments/navbar :: navbar}"></div>
-	
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-	<main class="flex-grow-1">
-		<div style="margin-top: 80px;"></div>
+    <main class="flex-grow-1">
+        <div style="margin-top: 80px;"></div>
 
-		<div class="container-fluid px-4 mb-5">
-
-			<div class="row">
-				<div class="col-lg-2 email-sidebar-col pe-0">
-
-					<div class="mb-4 pt-2 ps-2">
-						<a href="/grupos/gerenciar"
-							class="btn btn-white email-sidebar-btn bg-white text-primary">
-							<i class="fa-solid fa-pen me-2"></i> Nova mensagem
-						</a>
-					</div>
-
-					<ul class="folder-list">
-						<li><a href="/mensagens/caixa/ENTRADA" class="folder-item"
-							th:classappend="${pastaAtiva == 'ENTRADA'} ? 'active' : ''">
-								<i class="fa-solid fa-inbox"></i> Entrada
-						</a></li>
-
-						<li><a href="/mensagens/caixa/ENVIADAS" class="folder-item"
-							th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'active' : ''">
-								<i class="fa-solid fa-paper-plane"></i> Enviadas
-						</a></li>
-
-		
-
-						<li><a href="#" class="folder-item"> <i
-								class="fa-solid fa-trash-can"></i> Lixeira
-						</a></li>
-					</ul>
-
-					<div class="folder-section-title">Outros</div>
-					<ul class="folder-list">
-						<li><a href="#" class="folder-item"> <i
-								class="fa-solid fa-magnifying-glass"></i> Buscas
-						</a></li>
-						<li><a href="#" class="folder-item"> <i
-								class="fa-solid fa-tag"></i> Marcadores
-						</a></li>
-					</ul>
-
-				</div>
-
-				<div class="col-lg-10 ps-lg-4">
-
-					<div
-						class="d-flex justify-content-between align-items-center toolbar-container mb-2">
-						<div class="d-flex gap-2">
-							<button class="btn btn-filter d-flex align-items-center gap-2">
-								<span>Qualquer período</span> <i
-									class="fa-solid fa-caret-down text-muted small"></i>
-							</button>
-
-							<a
-								th:href="@{/mensagens/enviadas(comAnexo=${filtroAnexo == null ? true : null})}"
-								class="btn btn-filter"
-								th:classappend="${filtroAnexo} ? 'active' : ''"> <span>Com
-									anexo</span>
-							</a>
-
-							<button class="btn btn-filter d-flex align-items-center gap-2">
-								<span>Para</span> <i
-									class="fa-solid fa-caret-down text-muted small"></i>
-							</button>
-
-							<a href="#"
-								class="btn btn-link text-decoration-none text-primary fw-bold small pt-2">Pesquisa
-								avançada</a>
-						</div>
-
-						<div class="d-flex align-items-center text-muted small">
-							<span class="me-3"> Página <span
-								th:text="${paginaAtual + 1}">1</span> de <span
-								th:text="${totalPaginas}">1</span>
-							</span> <a th:if="${paginaAtual > 0}"
-								th:href="@{/mensagens/enviadas(page=${paginaAtual - 1}, comAnexo=${filtroAnexo})}"
-								class="btn btn-icon btn-sm text-muted"> <i
-								class="fa-solid fa-chevron-left"></i>
-							</a>
-							<button th:unless="${paginaAtual > 0}"
-								class="btn btn-icon btn-sm text-muted" disabled>
-								<i class="fa-solid fa-chevron-left opacity-25"></i>
-							</button>
-
-							<a th:if="${paginaAtual < totalPaginas - 1}"
-								th:href="@{/mensagens/enviadas(page=${paginaAtual + 1}, comAnexo=${filtroAnexo})}"
-								class="btn btn-icon btn-sm text-muted"> <i
-								class="fa-solid fa-chevron-right"></i>
-							</a>
-							<button th:unless="${paginaAtual < totalPaginas - 1}"
-								class="btn btn-icon btn-sm text-muted" disabled>
-								<i class="fa-solid fa-chevron-right opacity-25"></i>
-							</button>
-						</div>
-					</div>
-
-					<div class="inbox-card">
-						<div class="d-flex align-items-center px-3 py-2 border-bottom">
-							<div class="me-3">
-								<input type="checkbox" class="form-check-input" id="checkAll">
-							</div>
-							<button class="btn btn-sm text-secondary" title="Atualizar"
-								onclick="location.reload()">
-								<i class="fa-solid fa-rotate-right"></i>
-							</button>
-							<button class="btn btn-sm text-secondary ms-2"
-								title="Mais opções">
-								<i class="fa-solid fa-ellipsis-vertical"></i>
-							</button>
-						</div>
-
-						<div class="table-responsive">
-							<table class="table table-inbox align-middle"
-								id="tabelaMensagens">
-								<tbody>
-									<tr th:each="msg : ${listaMensagens}"
-										th:id="'linha-' + ${msg.id}"
-										th:classappend="${!msg.lida} ? 'row-unread' : 'row-read'"
-										th:onclick="'verMensagem(' + ${msg.id} + ')'">
-
-										<td style="width: 40px;" onclick="event.stopPropagation()">
-											<input type="checkbox" class="form-check-input">
-										</td>
-
-										<td style="width: 40px;" onclick="event.stopPropagation()">
-											<i class="fa-star star-check"
-											th:classappend="${msg.favorito} ? 'fa-solid active' : 'fa-regular'"
-											th:onclick="'toggleFavorito(' + ${msg.id} + ', this)'"></i>
-										</td>
-
-										<td class="email-sender"><span th:if="${!msg.lida}"
-											class="text-dark">Para: <span
-												th:text="${msg.nomeGrupoDestino}">Grupo</span></span> <span
-											th:if="${msg.lida}">Para: <span
-												th:text="${msg.nomeGrupoDestino}">Grupo</span></span></td>
-
-										<td>
-											<div class="email-content-wrapper">
-												<span class="email-subject" th:text="${msg.assunto}">Assunto
-													Principal</span> <span class="text-muted mx-1">-</span> <span
-													class="email-snippet"
-													th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 60)}">
-													Resumo do conteúdo... </span> <span th:if="${msg.temAnexo}"
-													class="attachment-chip" title="Arquivo PDF"> <i
-													class="fa-solid fa-file-pdf"></i> anexo.pdf
-												</span> <span
-													th:if="${msg.temAnexo and msg.nomesAnexos.contains('.zip')}"
-													class="attachment-chip zip" title="Outros arquivos">
-													<i class="fa-solid fa-file-zipper"></i> +arquivos
-												</span>
-											</div>
-										</td>
-
-										<td class="email-date"><span
-											th:text="${#temporals.format(msg.dataEnvio, 'dd MMM')}">16
-												jan.</span></td>
-									</tr>
-
-									<tr th:if="${#lists.isEmpty(listaMensagens)}">
-										<td colspan="5" class="text-center py-5 text-muted">
-											<div class="py-4">
-												<i
-													class="fa-regular fa-folder-open display-4 mb-3 opacity-25"></i>
-												<p>Nenhuma mensagem enviada.</p>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-				</div>
-			</div>
-			<div class="position-fixed bottom-0 end-0 p-4 d-lg-none"
-				style="z-index: 100;">
-				<a href="/grupos/gerenciar"
-					class="btn btn-primary rounded-pill shadow-lg d-flex align-items-center gap-2 px-4 py-3 fw-bold"
-					style="border-radius: 16px !important; font-family: 'Google Sans', sans-serif;">
-					<i class="fa-solid fa-pen"></i> <span class="d-none d-md-inline">Escrever</span>
-				</a>
-			</div>
-
-		</div>
-	</main>
-
-	<div class="modal fade" id="modalLeitura" tabindex="-1">
-		<div
-			class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content border-0 shadow-lg"
-				style="border-radius: 12px;">
-				<div class="modal-header border-bottom-0 pb-0">
-					<h5 class="modal-title fw-bold" id="modalAssunto">Assunto</h5>
-					<div class="d-flex gap-2">
-						<button type="button" class="btn btn-sm btn-light rounded-circle"
-							title="Imprimir">
-							<i class="fa-solid fa-print"></i>
-						</button>
-						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-					</div>
-				</div>
-				<div class="modal-body">
-					<div class="d-flex align-items-center mb-4">
-						<div
-							class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 fs-5"
-							style="width: 40px; height: 40px;">
-							<i class="fa-solid fa-user"></i>
-						</div>
-						<div>
-							<div class="d-flex align-items-center gap-2">
-								<span class="fw-bold text-dark">Você</span> <span
-									class="text-muted small">&lt;admin@winpost.com&gt;</span>
-							</div>
-							<div class="text-muted small">
-								para <span id="modalGrupo" class="text-dark fw-bold">Grupo</span>
-							</div>
-						</div>
-						<div class="ms-auto text-muted small" id="modalData">Data</div>
-					</div>
-
-					<div class="p-3 bg-light rounded-3 mb-3 border">
-						<div id="modalConteudo" style="font-family: sans-serif;"></div>
-					</div>
-
-					<div id="areaAnexosModal" class="d-none mt-3 border-top pt-3">
-						<h6 class="small fw-bold text-muted mb-2">
-							<i class="fa-solid fa-paperclip me-1"></i>Anexos
-						</h6>
-						<div class="d-flex gap-2">
-							<span class="attachment-chip"><i class="fa-solid fa-file"></i>
-								<span id="modalAnexos"></span></span>
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer border-top-0 pt-0">
-					<button type="button" class="btn btn-secondary rounded-pill px-4"
-						data-bs-dismiss="modal">Fechar</button>
-					<button type="button" class="btn btn-primary rounded-pill px-4">Reutilizar</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
-
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
-	<script>
-        function verMensagem(id) {
-            // Loading
-            $('#modalConteudo').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>');
-            var modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
-            modal.show();
-
-            // Atualiza visual da linha para LIDO
-            var linha = $('#linha-' + id);
-            linha.removeClass('row-unread').addClass('row-read');
-
-            // Busca dados
-            $.get("/mensagens/detalhes/" + id, function(data) {
-                $('#modalAssunto').text(data.assunto);
-                $('#modalGrupo').text(data.nomeGrupoDestino);
-                $('#modalData').text(new Date(data.dataEnvio).toLocaleString('pt-BR'));
+        <div class="container-fluid px-0 px-lg-4 mb-5">
+            <div class="row g-0 g-lg-4">
                 
-                // Anexos
-                if(data.nomesAnexos) {
-                    $('#modalAnexos').text(data.nomesAnexos);
-                    $('#areaAnexosModal').removeClass('d-none');
-                } else {
-                    $('#areaAnexosModal').addClass('d-none');
-                }
-                
-                var conteudoLimpo = data.conteudo; 
-                $('#modalConteudo').html(conteudoLimpo);
-                $('#modalConteudo img').addClass('img-fluid rounded'); 
+                <div class="col-lg-3 col-xl-2 d-none d-lg-block pt-2">
+                    <div class="d-grid pe-4 mb-4">
+                        <a href="/grupos/gerenciar" class="btn btn-primary rounded-4 fw-bold py-3" style="background-color: #c2e7ff; color: #001d35; border: none;">
+                            <i class="fa-solid fa-pen me-2"></i>Escrever
+                        </a>
+                    </div>
+                    
+                    <nav class="nav flex-column pe-2">
+                        <a href="/mensagens/caixa/ENTRADA" class="nav-link-custom" th:classappend="${pastaAtiva == 'ENTRADA'} ? 'active'">
+                            <div class="d-flex align-items-center"><i class="fa-solid fa-inbox me-3"></i> Entrada</div>
+                            <span class="menu-badge" th:if="${cntEntrada > 0}" th:text="${cntEntrada}"></span>
+                        </a>
+                        <a href="/mensagens/caixa/ENVIADAS" class="nav-link-custom" th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'active'">
+                            <div class="d-flex align-items-center"><i class="fa-regular fa-paper-plane me-3"></i> Enviadas</div>
+                            <span class="menu-badge" th:if="${cntEnviadas > 0}" th:text="${cntEnviadas}"></span>
+                        </a>
+                        <a href="/mensagens/caixa/FAVORITOS" class="nav-link-custom" th:classappend="${pastaAtiva == 'FAVORITOS'} ? 'active'">
+                            <div class="d-flex align-items-center"><i class="fa-regular fa-star me-3"></i> Favoritos</div>
+                            <span class="menu-badge" th:if="${cntFavoritos > 0}" th:text="${cntFavoritos}"></span>
+                        </a>
+                        <a href="/mensagens/caixa/IMPORTANTE" class="nav-link-custom" th:classappend="${pastaAtiva == 'IMPORTANTE'} ? 'active'">
+                            <div class="d-flex align-items-center"><i class="fa-solid fa-bookmark me-3"></i> Importante</div>
+                            <span class="menu-badge" th:if="${cntImportante > 0}" th:text="${cntImportante}"></span>
+                        </a>
+                        <a href="/mensagens/caixa/LIXEIRA" class="nav-link-custom" th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'active'">
+                            <div class="d-flex align-items-center"><i class="fa-regular fa-trash-can me-3"></i> Lixeira</div>
+                            <span class="menu-badge" th:if="${cntLixeira > 0}" th:text="${cntLixeira}"></span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="col-lg-9 col-xl-10">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-3 px-lg-0">
+                        <h4 class="fw-bold text-dark mb-0 text-capitalize">
+                            <i th:if="${pastaAtiva == 'LIXEIRA'}" class="fa-regular fa-trash-can me-2 text-danger"></i>
+                            <span th:text="${pastaAtiva == 'ENVIADAS' ? 'Enviadas' : (pastaAtiva == 'LIXEIRA' ? 'Lixeira' : pastaAtiva)}">Caixa</span>
+                        </h4>
+                        
+                        <div th:if="${pastaAtiva == 'LIXEIRA'}" class="ms-auto me-3">
+                            <small class="text-danger fw-bold"><i class="fa-solid fa-circle-info me-1"></i>30 dias para exclusão automática</small>
+                        </div>
+
+                        <div class="input-group" style="max-width: 300px;">
+                            <span class="input-group-text bg-white border-0 rounded-start-pill ps-3"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                            <input type="text" class="form-control border-0 rounded-end-pill shadow-sm" placeholder="Pesquisar...">
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <tbody>
+                                    <tr th:each="msg : ${listaMensagens}" class="row-clickable" th:onclick="'verMensagem(' + ${msg.id} + ')'">
+                                        
+                                        <td class="ps-4" style="width: 80px;" onclick="event.stopPropagation()">
+                                            <div class="d-flex gap-2" th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'opacity-25' : ''">
+                                                <i class="fa-star action-icon" 
+                                                   th:classappend="${msg.favorito} ? 'fa-solid star-active' : 'fa-regular'"
+                                                   th:onclick="${pastaAtiva != 'LIXEIRA'} ? 'toggleAction(' + ${msg.id} + ', \'favoritar\', this, \'star\')' : ''"></i>
+                                                
+                                                <i class="fa-bookmark action-icon"
+                                                   th:classappend="${msg.importante} ? 'fa-solid flag-active' : 'fa-regular'"
+                                                   th:onclick="${pastaAtiva != 'LIXEIRA'} ? 'toggleAction(' + ${msg.id} + ', \'importante\', this, \'flag\')' : ''"></i>
+                                            </div>
+                                        </td>
+
+                                        <td style="width: 20%;">
+                                            <span class="fw-bold text-dark" th:text="${msg.nomeGrupoDestino}">Grupo</span>
+                                        </td>
+
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 500px;">
+                                                <span class="fw-bold text-dark" th:text="${msg.assunto}">Assunto</span>
+                                                <span th:if="${msg.nomesAnexos != null && msg.nomesAnexos != ''}" class="badge badge-attachment ms-2">
+                                                    <i class="fa-solid fa-paperclip me-1"></i> anexo
+                                                </span>
+                                                <span class="text-muted small ms-2" th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 60)}">Conteúdo...</span>
+                                            </div>
+                                        </td>
+
+                                        <td style="width: 100px;" class="text-end pe-3" onclick="event.stopPropagation()">
+                                            <button th:if="${pastaAtiva != 'LIXEIRA'}" 
+                                                    class="btn btn-light btn-sm rounded-circle text-muted hover-danger" 
+                                                    th:onclick="'abrirModalLixeira(' + ${msg.id} + ')'" title="Mover para Lixeira">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </button>
+
+                                            <div th:if="${pastaAtiva == 'LIXEIRA'}" class="d-flex justify-content-end gap-2">
+                                                <button class="btn btn-light btn-sm rounded-circle text-success" 
+                                                        th:onclick="'restaurarMensagem(' + ${msg.id} + ')'" title="Restaurar">
+                                                    <i class="fa-solid fa-trash-arrow-up"></i>
+                                                </button>
+                                                <button class="btn btn-light btn-sm rounded-circle text-danger" 
+                                                        th:onclick="'abrirModalExclusaoDefinitiva(' + ${msg.id} + ')'" title="Excluir Definitivamente">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+
+                                        <td class="pe-4 text-end" style="width: 100px;">
+                                            <span class="small fw-bold text-muted" th:text="${#temporals.format(msg.dataEnvio, 'dd MMM')}">Data</span>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr th:if="${#lists.isEmpty(listaMensagens)}">
+                                        <td colspan="5" class="text-center py-5 text-muted">
+                                            <p th:text="${pastaAtiva == 'LIXEIRA'} ? 'Lixeira vazia.' : 'Nenhuma mensagem.'">Vazio</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="modalLeitura" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-content-custom shadow-lg">
+            
+            <div class="modal-header-custom d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-initial me-3 shadow-sm" id="modalAvatar">W</div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark" id="modalAssunto">Assunto da Mensagem</h5>
+                        <small class="text-muted"><i class="fa-regular fa-calendar-check me-1"></i> <span id="modalData">27/01/2026</span></small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 border-0" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div class="modal-body p-4 bg-light bg-opacity-50">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="small text-uppercase text-muted fw-bold mb-1">Enviado para</label>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-white text-primary border rounded-pill px-3 py-2 shadow-sm">
+                                <i class="fa-solid fa-users me-2"></i> <span id="modalGrupo">Grupo de Teste</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="message-container shadow-sm mb-4" id="modalConteudo">
+                    </div>
+
+                <div id="areaAnexosModal" class="d-none">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-paperclip me-2 text-primary"></i>Arquivos em anexo</h6>
+                    <div id="listaAnexosDownload" class="d-flex flex-wrap gap-3">
+                        </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 p-3 bg-light">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar Visualização</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="modal fade" id="modalLixeira" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center">
+                <div class="modal-body p-4">
+                    <div class="mb-3 text-dark bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="fa-regular fa-trash-can fa-2x"></i></div>
+                    <h5 class="fw-bold mb-3">Mover para a Lixeira?</h5>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Não</button>
+                        <button type="button" class="btn btn-warning rounded-pill px-3 fw-bold" id="btnConfirmarLixeira">Sim</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="modalExclusaoDefinitiva" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg rounded-4 text-center">
+                <div class="modal-body p-4">
+                    <div class="mb-3 text-danger bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="fa-solid fa-triangle-exclamation fa-2x"></i></div>
+                    <h5 class="fw-bold text-danger mb-1">Excluir Definitivamente?</h5>
+                    <p class="small text-muted mb-3">Irreversível.</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger rounded-pill px-3 fw-bold" id="btnConfirmarExclusaoDefinitiva">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let idSelecionado = null;
+        
+        function abrirModalLixeira(id) { idSelecionado = id; new bootstrap.Modal(document.getElementById('modalLixeira')).show(); }
+        
+        document.getElementById('btnConfirmarLixeira').addEventListener('click', () => { 
+            if(idSelecionado) $.post('/mensagens/lixeira/' + idSelecionado, () => location.reload()); 
+        });
+        
+        function restaurarMensagem(id) { $.post('/mensagens/restaurar/' + id, () => location.reload()); }
+        
+        function abrirModalExclusaoDefinitiva(id) { 
+            idSelecionado = id; 
+            new bootstrap.Modal(document.getElementById('modalExclusaoDefinitiva')).show(); 
+        }
+        
+        document.getElementById('btnConfirmarExclusaoDefinitiva').addEventListener('click', () => { 
+            if(idSelecionado) { 
+                $.ajax({ url: '/mensagens/excluir/' + idSelecionado, type: 'DELETE', success: () => location.reload() }); 
+            } 
+        });
+        
+        function toggleAction(id, action, element, type) {
+            $.post('/mensagens/' + action + '/' + id, function(state) {
+                if(type === 'star') $(element).toggleClass('fa-solid star-active fa-regular');
+                if(type === 'flag') $(element).toggleClass('fa-solid flag-active fa-regular');
             });
         }
 
-        // --- FUNÇÃO FAVORITAR (Estrela) ---
-        function toggleFavorito(id, elementoIcone) {
-            // Impede que o clique abra o modal de leitura
-            event.stopPropagation(); 
+        function verMensagem(id) {
+            const modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
+            
+            $.get("/mensagens/detalhes/" + id, function(data) {
+                // Preenche os textos
+                $('#modalAssunto').text(data.assunto);
+                $('#modalConteudo').html(data.conteudo);
+                $('#modalGrupo').text(data.nomeGrupoDestino);
+                $('#modalStatus').text(data.status || 'ENVIADO');
+                
+                // Letra inicial do Avatar
+                $('#modalAvatar').text(data.nomeGrupoDestino.charAt(0).toUpperCase());
 
-            // Chama o backend
-            fetch('/mensagens/favoritar/' + id, { method: 'POST' })
-                .then(response => response.json())
-                .then(isFavorito => {
-                    // Atualiza o ícone visualmente
-                    if (isFavorito) {
-                        elementoIcone.classList.remove('fa-regular');
-                        elementoIcone.classList.add('fa-solid', 'active');
-                    } else {
-                        elementoIcone.classList.remove('fa-solid', 'active');
-                        elementoIcone.classList.add('fa-regular');
-                    }
-                })
-                .catch(err => console.error("Erro ao favoritar:", err));
+                // Data formatada (Ex: 27 de Jan às 14:00)
+                const dt = new Date(data.dataEnvio);
+                const dataFormatada = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' às ' + 
+                                      dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                $('#modalData').text(dataFormatada);
+
+                // Lógica de Anexos
+                const areaAnexos = $('#areaAnexosModal');
+                const listaAnexos = $('#listaAnexosDownload');
+                listaAnexos.empty(); 
+
+                if (data.nomesAnexos && data.nomesAnexos.trim() !== '') {
+                    areaAnexos.removeClass('d-none');
+                    const arquivos = data.nomesAnexos.split(',');
+                    
+                    arquivos.forEach(arquivo => {
+                        const nomeFisico = arquivo.trim();
+                        if(!nomeFisico) return;
+                        
+                        const nomeExibicao = nomeFisico.includes('_') ? nomeFisico.substring(nomeFisico.indexOf('_') + 1) : nomeFisico;
+                        
+                        // Determina o ícone baseado na extensão
+                        let icon = 'fa-file-lines';
+                        if(nomeExibicao.toLowerCase().endsWith('.pdf')) icon = 'fa-file-pdf text-danger';
+                        if(nomeExibicao.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) icon = 'fa-file-image text-success';
+
+                        const cardHtml = `
+                            <a href="/uploads/${nomeFisico}" download="${nomeExibicao}" target="_blank" class="attachment-card shadow-sm">
+                                <div class="me-3 fs-4"><i class="fa-solid ${icon}"></i></div>
+                                <div class="text-truncate" style="max-width: 180px;">
+                                    <div class="text-dark fw-bold small text-truncate">${nomeExibicao}</div>
+                                    <div class="text-muted tiny" style="font-size: 0.7rem;">Download</div>
+                                </div>
+                            </a>`;
+                        
+                        listaAnexos.append(cardHtml);
+                    });
+                } else {
+                    areaAnexos.addClass('d-none');
+                }
+                
+                modal.show();
+            });
         }
     </script>
 </body>

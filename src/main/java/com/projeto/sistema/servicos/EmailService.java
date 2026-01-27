@@ -1,15 +1,22 @@
 package com.projeto.sistema.servicos;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.projeto.sistema.modelos.Contatos;
@@ -30,9 +37,11 @@ public class EmailService {
     private MensagemLogRepositorio logRepositorio;
     
     @Autowired
-    private GrupoRepositorio grupoRepositorio; // Necessário para buscar o grupo no agendamento
+    private GrupoRepositorio grupoRepositorio;
 
-    // @Async permite que o sistema libere o usuário enquanto envia em segundo plano
+    // ALTERAÇÃO IMPORTANTE: Pasta na raiz do projeto para acesso público via WebConfig
+    private final String PASTA_UPLOAD = "uploads/";
+
     @Async 
     public void enviarDisparo(Grupo grupo, String assunto, String conteudoHtml, MultipartFile[] anexos, LocalDateTime dataAgendamento) {
         
@@ -43,54 +52,72 @@ public class EmailService {
         log.setNomeGrupoDestino(grupo.getNome());
         log.setTotalDestinatarios(grupo.getContatos().size());
         
-        // Salva os nomes dos anexos (apenas para registro, não persistimos o arquivo físico no banco)
-        if(anexos != null && anexos.length > 0) {
-            String nomes = "";
-            for(MultipartFile f : anexos) { 
-                if(!f.isEmpty()) nomes += f.getOriginalFilename() + ", "; 
+        // 2. SALVAR ARQUIVOS NO DISCO E NO LOG
+        StringBuilder nomesArquivosSalvos = new StringBuilder();
+
+        if (anexos != null && anexos.length > 0) {
+            try {
+                // Cria a pasta na raiz se não existir
+                Files.createDirectories(Paths.get(PASTA_UPLOAD));
+
+                for (MultipartFile arquivo : anexos) { 
+                    if (!arquivo.isEmpty()) {
+                        String nomeOriginal = StringUtils.cleanPath(arquivo.getOriginalFilename());
+                        // Gera nome físico único (Timestamp + Nome)
+                        String nomeFisico = System.currentTimeMillis() + "_" + nomeOriginal;
+                        
+                        // Salva no Disco (na pasta uploads/ da raiz)
+                        Path caminho = Paths.get(PASTA_UPLOAD + nomeFisico);
+                        Files.copy(arquivo.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
+
+                        // Adiciona na lista para o banco
+                        if (nomesArquivosSalvos.length() > 0) {
+                            nomesArquivosSalvos.append(",");
+                        }
+                        nomesArquivosSalvos.append(nomeFisico); 
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Erro ao salvar anexos no disco: " + e.getMessage());
             }
-            log.setNomesAnexos(nomes);
         }
+        
+        log.setNomesAnexos(nomesArquivosSalvos.toString());
 
         // --- LÓGICA DE AGENDAMENTO ---
         if (dataAgendamento != null) {
             log.setDataEnvio(dataAgendamento);
             log.setStatus("AGENDADO");
             logRepositorio.save(log);
-            return; // Interrompe aqui, não envia agora!
+            return; // Interrompe aqui. O @Scheduled pegará depois.
         }
-        // -----------------------------
 
-        // Se não for agendado, configura para envio imediato
+        // Se envio imediato
         log.setDataEnvio(LocalDateTime.now());
         log.setStatus("ENVIANDO...");
         log = logRepositorio.save(log);
 
-        // Chama o método que faz o envio real
         realizarEnvio(grupo, assunto, conteudoHtml, anexos, log);
     }
 
-    // Método que verifica o banco a cada 1 minuto (60000ms)
+    // Robô que verifica agendamentos a cada minuto
     @Scheduled(fixedRate = 60000)
     public void verificarEnviosAgendados() {
-        // Busca mensagens com status AGENDADO e data já passada (ou igual a agora)
         List<MensagemLog> agendados = logRepositorio.findByStatusAndDataEnvioBefore("AGENDADO", LocalDateTime.now());
         
         for (MensagemLog msg : agendados) {
             System.out.println("Processando agendamento ID: " + msg.getId());
             
-            // Tenta encontrar o grupo pelo nome salvo no log
-            // Nota: O ideal seria salvar o ID do grupo no Log, mas vamos usar o nome conforme sua estrutura atual
             List<Grupo> gruposEncontrados = grupoRepositorio.findByNomeContainingIgnoreCase(msg.getNomeGrupoDestino());
             
             if (!gruposEncontrados.isEmpty()) {
-                Grupo grupo = gruposEncontrados.get(0); // Pega o primeiro encontrado
+                Grupo grupo = gruposEncontrados.get(0);
                 
-                // Atualiza status
                 msg.setStatus("ENVIANDO (Agendado)...");
                 logRepositorio.save(msg);
                 
-                // Realiza o envio (Nota: Anexos físicos são perdidos no agendamento nesta versão simples)
+                // Passamos null nos anexos, pois o método realizarEnvio buscará do disco
                 realizarEnvio(grupo, msg.getAssunto(), msg.getConteudo(), null, msg);
                 
             } else {
@@ -100,8 +127,7 @@ public class EmailService {
         }
     }
 
-    // Método privado para evitar duplicação de código
-    private void realizarEnvio(Grupo grupo, String assunto, String conteudoHtml, MultipartFile[] anexos, MensagemLog log) {
+    private void realizarEnvio(Grupo grupo, String assunto, String conteudoHtml, MultipartFile[] anexosMemoria, MensagemLog log) {
         int enviados = 0;
         int erros = 0;
 
@@ -119,11 +145,31 @@ public class EmailService {
                     String corpoFinal = conteudoHtml.replace("{nome}", contato.getNome());
                     helper.setText(corpoFinal, true);
 
-                    // Anexos (só funcionam no envio imediato nesta versão)
-                    if (anexos != null) {
-                        for (MultipartFile arquivo : anexos) {
+                    // --- LÓGICA HÍBRIDA DE ANEXOS ---
+                    
+                    // CENÁRIO 1: Envio Imediato (Usa os arquivos da memória RAM se disponíveis)
+                    if (anexosMemoria != null) {
+                        for (MultipartFile arquivo : anexosMemoria) {
                             if (!arquivo.isEmpty()) {
                                 helper.addAttachment(arquivo.getOriginalFilename(), arquivo);
+                            }
+                        }
+                    } 
+                    // CENÁRIO 2: Envio Agendado OU Imediato (Busca do disco se não vier da memória)
+                    // Isso garante que se o envio imediato falhar e tentar de novo, ele acha o arquivo
+                    if (log.getNomesAnexos() != null && !log.getNomesAnexos().isEmpty()) {
+                        // Só tenta buscar do disco se não já tiver anexado via memória (evita duplicidade)
+                        if (anexosMemoria == null || anexosMemoria.length == 0) {
+                            String[] nomesArquivos = log.getNomesAnexos().split(",");
+                            
+                            for (String nomeFisico : nomesArquivos) {
+                                File arquivoFisico = new File(PASTA_UPLOAD + nomeFisico.trim());
+                                if (arquivoFisico.exists()) {
+                                    FileSystemResource fileResource = new FileSystemResource(arquivoFisico);
+                                    // Tenta extrair o nome original (remove o timestamp)
+                                    String nomeOriginal = nomeFisico.contains("_") ? nomeFisico.substring(nomeFisico.indexOf("_") + 1) : nomeFisico;
+                                    helper.addAttachment(nomeOriginal, fileResource);
+                                }
                             }
                         }
                     }

@@ -25,7 +25,7 @@ public class MensagemLog implements Serializable {
 
     private String assunto;
 
-    // CORREÇÃO 1: "VARCHAR(MAX)" é o ideal para SQL Server (TEXT é antigo)
+    // Para SQL Server, VARCHAR(MAX) é melhor que TEXT
     @Column(columnDefinition = "VARCHAR(MAX)") 
     private String conteudo;
 
@@ -40,19 +40,21 @@ public class MensagemLog implements Serializable {
 
     
     @Column(length = 50) 
-    private String pasta = "ENVIADAS";
-    // --------------------------------------------------------
-
+    private String pasta = "ENVIADAS"; // Padrão: ENVIADAS
+    
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataEnvio;
 
-    // CORREÇÃO 2: Campo organizado e com regra de não-nulo
     @Column(nullable = false)
     private boolean lida = false;
     
     @Column(columnDefinition = "BIT DEFAULT 0", nullable = false) 
     private boolean favorito = false;
+    
+    // --- NOVO CAMPO: IMPORTANTE (Flag Azul) ---
+    @Column(columnDefinition = "BIT DEFAULT 0", nullable = false)
+    private boolean importante = false;
 
     // --- Construtores ---
     public MensagemLog() {
@@ -103,14 +105,12 @@ public class MensagemLog implements Serializable {
         this.status = status;
     }
     
-    // --- Getters e Setters da Pasta ---
     public String getPasta() {
         return pasta;
     }
     public void setPasta(String pasta) {
         this.pasta = pasta;
     }
-    // ----------------------------------
 
     public LocalDateTime getDataEnvio() {
         return dataEnvio;
@@ -119,7 +119,7 @@ public class MensagemLog implements Serializable {
         this.dataEnvio = dataEnvio;
     }
     
-    // Método auxiliar para saber se tem anexo
+    // Método auxiliar para saber se tem anexo na View (Thymeleaf)
     public boolean isTemAnexo() {
         return nomesAnexos != null && !nomesAnexos.isEmpty();
     }
@@ -130,11 +130,19 @@ public class MensagemLog implements Serializable {
     public void setLida(boolean lida) {
         this.lida = lida;
     }
+    
     public boolean isFavorito() {
         return favorito;
     }
-
     public void setFavorito(boolean favorito) {
         this.favorito = favorito;
+    }
+    
+    // Getters e Setters para Importante
+    public boolean isImportante() {
+        return importante;
+    }
+    public void setImportante(boolean importante) {
+        this.importante = importante;
     }
 }
