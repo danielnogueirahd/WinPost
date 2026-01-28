@@ -1,5 +1,7 @@
 package com.projeto.sistema.controle;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.projeto.sistema.modelos.MensagemLog;
+import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.MensagemLogRepositorio;
+import com.projeto.sistema.servicos.EmailService;
 
 @Controller
 @RequestMapping("/mensagens")
@@ -23,6 +27,12 @@ public class MensagemControle {
 
     @Autowired
     private MensagemLogRepositorio mensagemRepositorio;
+    
+    @Autowired
+    private GrupoRepositorio grupoRepositorio;
+
+    @Autowired
+    private EmailService emailService;
 
     // Redirecionamento padrão
     @GetMapping("/enviadas")
@@ -42,75 +52,45 @@ public class MensagemControle {
         ModelAndView mv = new ModelAndView("mensagens/enviadas");
         String pastaNormalizada = pastaUrl.toUpperCase();
         
-        // Paginação
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by("dataEnvio").descending());
-        
-        // Filtros de Data
         LocalDateTime inicio = (data != null) ? data.atStartOfDay() : null;
         LocalDateTime fim = (data != null) ? data.atTime(LocalTime.MAX) : null;
 
-        // --- LÓGICA DE ROTEAMENTO INTELIGENTE ---
         String filtroPastaBanco = null;
         Boolean filtroFavorito = null;
         Boolean filtroImportante = null;
 
         switch (pastaNormalizada) {
-            case "FAVORITOS":
-                // Pasta virtual: Ignora a pasta física e busca onde favorito = true
-                filtroFavorito = true;
-                break;
-            case "IMPORTANTE":
-                // Pasta virtual: Busca onde importante = true
-                filtroImportante = true;
-                break;
-            case "LIXEIRA":
-                // Pasta física: Busca itens marcados como LIXEIRA
-                filtroPastaBanco = "LIXEIRA";
-                break;
-            case "TODAS":
-                // Admin mode: vê tudo sem filtro
-                break;
-            default:
-                // Comportamento padrão: busca pela coluna 'pasta' (ENVIADAS, ENTRADA)
-                filtroPastaBanco = pastaNormalizada;
-                break;
+            case "FAVORITOS": filtroFavorito = true; break;
+            case "IMPORTANTE": filtroImportante = true; break;
+            case "LIXEIRA": filtroPastaBanco = "LIXEIRA"; break;
+            case "TODAS": break;
+            default: filtroPastaBanco = pastaNormalizada; break;
         }
 
-        // Busca no banco usando a Query atualizada (agora com o parametro 'importante')
         Page<MensagemLog> paginaMensagens = mensagemRepositorio.filtrarMensagens(
-            filtroPastaBanco, 
-            filtroFavorito, 
-            filtroImportante, // <--- Novo parâmetro
-            comAnexo, 
-            busca, 
-            inicio, 
-            fim, 
-            pageRequest
+            filtroPastaBanco, filtroFavorito, filtroImportante, comAnexo, busca, inicio, fim, pageRequest
         );
         
-        // --- PREENCHENDO A TELA ---
         mv.addObject("listaMensagens", paginaMensagens.getContent());
         mv.addObject("paginaAtual", page);
         mv.addObject("totalPaginas", paginaMensagens.getTotalPages());
         mv.addObject("totalItens", paginaMensagens.getTotalElements());
         
-        // Mantém filtros visuais
         mv.addObject("filtroAnexo", comAnexo);
         mv.addObject("termoBusca", busca);
         mv.addObject("filtroData", data);
         mv.addObject("pastaAtiva", pastaNormalizada);
         
-        // --- CONTADORES PARA O MENU LATERAL ---
         mv.addObject("cntEntrada", mensagemRepositorio.countByPastaAndLidaFalse("ENTRADA"));
         mv.addObject("cntEnviadas", mensagemRepositorio.countByPasta("ENVIADAS"));
         mv.addObject("cntFavoritos", mensagemRepositorio.countByFavoritoTrue());
-        mv.addObject("cntImportante", mensagemRepositorio.countByImportanteTrue()); // Novo
-        mv.addObject("cntLixeira", mensagemRepositorio.countByPasta("LIXEIRA"));   // Novo
+        mv.addObject("cntImportante", mensagemRepositorio.countByImportanteTrue());
+        mv.addObject("cntLixeira", mensagemRepositorio.countByPasta("LIXEIRA"));
         
         return mv;
     }
     
-    // --- DETALHES (Modal) ---
     @GetMapping("/detalhes/{id}")
     @ResponseBody
     public MensagemLog getDetalhes(@PathVariable Long id) {
@@ -122,65 +102,97 @@ public class MensagemControle {
         return log;
     }
 
-    // --- AÇÃO: FAVORITAR (Estrela) ---
     @PostMapping("/favoritar/{id}")
     @ResponseBody
     public ResponseEntity<Boolean> toggleFavorito(@PathVariable Long id) {
-        return mensagemRepositorio.findById(id)
-            .map(msg -> {
-                msg.setFavorito(!msg.isFavorito());
-                mensagemRepositorio.save(msg);
-                return ResponseEntity.ok(msg.isFavorito());
-            })
-            .orElse(ResponseEntity.notFound().build());
+        return mensagemRepositorio.findById(id).map(msg -> {
+            msg.setFavorito(!msg.isFavorito());
+            mensagemRepositorio.save(msg);
+            return ResponseEntity.ok(msg.isFavorito());
+        }).orElse(ResponseEntity.notFound().build());
     }
 
-    // --- AÇÃO: IMPORTANTE (Flag) ---
     @PostMapping("/importante/{id}")
     @ResponseBody
     public ResponseEntity<Boolean> toggleImportante(@PathVariable Long id) {
-        return mensagemRepositorio.findById(id)
-            .map(msg -> {
-                msg.setImportante(!msg.isImportante());
-                mensagemRepositorio.save(msg);
-                return ResponseEntity.ok(msg.isImportante());
-            })
-            .orElse(ResponseEntity.notFound().build());
+        return mensagemRepositorio.findById(id).map(msg -> {
+            msg.setImportante(!msg.isImportante());
+            mensagemRepositorio.save(msg);
+            return ResponseEntity.ok(msg.isImportante());
+        }).orElse(ResponseEntity.notFound().build());
     }
 
-    // --- AÇÃO: LIXEIRA (Mover para o lixo) ---
     @PostMapping("/lixeira/{id}")
     @ResponseBody
     public ResponseEntity<Void> moverParaLixeira(@PathVariable Long id) {
         return mensagemRepositorio.findById(id).map(msg -> {
-            msg.setPasta("LIXEIRA"); // Apenas muda o status da pasta, não deleta do banco
+            msg.setPasta("LIXEIRA");
             mensagemRepositorio.save(msg);
             return ResponseEntity.ok().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }
- // ... (Mantenha o código anterior)
 
-    // --- AÇÃO: RESTAURAR (Tira da Lixeira) ---
     @PostMapping("/restaurar/{id}")
     @ResponseBody
     public ResponseEntity<Void> restaurarMensagem(@PathVariable Long id) {
         return mensagemRepositorio.findById(id).map(msg -> {
-            msg.setPasta("ENVIADAS"); // Volta para o status normal
+            msg.setPasta("ENVIADAS");
             mensagemRepositorio.save(msg);
             return ResponseEntity.ok().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // --- AÇÃO: EXCLUIR DEFINITIVAMENTE (Perigo) ---
-    @DeleteMapping("/excluir/{id}") // Note que usamos DeleteMapping, mas o jQuery vai chamar via AJAX
+    @DeleteMapping("/excluir/{id}")
     @ResponseBody
     public ResponseEntity<Void> excluirPermanente(@PathVariable Long id) {
         if(mensagemRepositorio.existsById(id)) {
-            mensagemRepositorio.deleteById(id); // Apaga do banco para sempre
+            mensagemRepositorio.deleteById(id);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }
-
     
+    // --- MÉTODOS NOVOS (QUE ESTAVAM FALTANDO) ---
+
+    @PostMapping("/salvarModelo")
+    public String salvarModelo(@RequestParam("categoria") String categoria,
+                               @RequestParam("assunto") String assunto,
+                               @RequestParam("conteudo") String conteudo) {
+        MensagemLog modelo = new MensagemLog();
+        modelo.setPasta("ENTRADA");
+        modelo.setNomeGrupoDestino(categoria.toUpperCase());
+        modelo.setAssunto(assunto);
+        modelo.setConteudo(conteudo);
+        modelo.setDataEnvio(LocalDateTime.now());
+        modelo.setLida(true); 
+        mensagemRepositorio.save(modelo);
+        return "redirect:/mensagens/caixa/ENTRADA";
+    }
+
+    @GetMapping("/preparar-envio/{id}")
+    public ModelAndView prepararEnvio(@PathVariable Long id) {
+        ModelAndView mv = new ModelAndView("mensagens/preparar");
+        MensagemLog modelo = mensagemRepositorio.findById(id).orElseThrow();
+        mv.addObject("modelo", modelo);
+        mv.addObject("listaGrupos", grupoRepositorio.findAll()); 
+        return mv;
+    }
+
+    @PostMapping("/enviar-individual")
+    public String enviarIndividual(@RequestParam("email") String email, 
+                                   @RequestParam("assunto") String assunto, 
+                                   @RequestParam("conteudo") String conteudo) {
+        emailService.enviarEmailSimples(email, assunto, conteudo);
+        return "redirect:/mensagens/caixa/ENVIADAS";
+    }
+
+    @PostMapping("/agendar-modelo")
+    public String agendarModelo(@RequestParam("assunto") String assunto, 
+                                @RequestParam("conteudo") String conteudo) {
+        String tituloCodificado = assunto;
+        try {
+            tituloCodificado = URLEncoder.encode(assunto, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) { e.printStackTrace(); }
+        return "redirect:/administrativo/agenda?acao=novoEvento&titulo=" + tituloCodificado;
+    }
 }

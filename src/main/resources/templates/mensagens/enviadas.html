@@ -10,47 +10,19 @@
 
 <style>
     body { background-color: #f6f8fc; }
-    
-    /* Ícones e Ações */
     .action-icon { cursor: pointer; color: #ccc; transition: transform 0.2s, color 0.2s; padding: 5px; }
     .action-icon:hover { transform: scale(1.2); }
     .star-active { color: #f4b400; }
     .flag-active { color: #0b57d0; }
-    
-    /* Menu Lateral */
     .nav-link-custom.active { background-color: #d3e3fd; color: #001d35; font-weight: 700; border-radius: 0 24px 24px 0; }
     .nav-link-custom { color: #444746; font-weight: 500; padding: 10px 16px; border-radius: 0 24px 24px 0; display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;}
     .nav-link-custom:hover { background-color: #e1e5ea; }
     .menu-badge { font-size: 0.75rem; font-weight: 600; }
-    
-    /* Tabela */
     .table-hover tbody tr:hover { background-color: #f2f6fc; }
     .row-clickable { cursor: pointer; }
-    
-    /* Chip de Anexo na Lista */
     .badge-attachment { background-color: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; font-weight: 400; font-size: 0.75rem; }
-
-    /* Chip de Download no Modal */
-    .attachment-chip {
-        display: inline-flex;
-        align-items: center;
-        background-color: #fff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 8px 12px;
-        margin-right: 10px;
-        margin-bottom: 10px;
-        text-decoration: none;
-        color: #333;
-        transition: all 0.2s;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .attachment-chip:hover {
-        background-color: #f8f9fa;
-        border-color: #0d6efd;
-        color: #0d6efd;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+    .attachment-chip { display: inline-flex; align-items: center; background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px 12px; margin-right: 10px; margin-bottom: 10px; text-decoration: none; color: #333; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .attachment-chip:hover { background-color: #f8f9fa; border-color: #0d6efd; color: #0d6efd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 </style>
 </head>
 
@@ -73,7 +45,7 @@
                     
                     <nav class="nav flex-column pe-2">
                         <a href="/mensagens/caixa/ENTRADA" class="nav-link-custom" th:classappend="${pastaAtiva == 'ENTRADA'} ? 'active'">
-                            <div class="d-flex align-items-center"><i class="fa-solid fa-inbox me-3"></i> Entrada</div>
+                            <div class="d-flex align-items-center"><i class="fa-solid fa-folder-open me-3"></i> Modelos</div>
                             <span class="menu-badge" th:if="${cntEntrada > 0}" th:text="${cntEntrada}"></span>
                         </a>
                         <a href="/mensagens/caixa/ENVIADAS" class="nav-link-custom" th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'active'">
@@ -98,9 +70,18 @@
                 <div class="col-lg-9 col-xl-10">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-3 px-lg-0">
                         <h4 class="fw-bold text-dark mb-0 text-capitalize">
-                            <i th:if="${pastaAtiva == 'LIXEIRA'}" class="fa-regular fa-trash-can me-2 text-danger"></i>
-                            <span th:text="${pastaAtiva == 'ENVIADAS' ? 'Enviadas' : (pastaAtiva == 'LIXEIRA' ? 'Lixeira' : pastaAtiva)}">Caixa</span>
+                            <span th:if="${pastaAtiva == 'ENTRADA'}"><i class="fa-solid fa-swatchbook me-2 text-primary"></i>Meus Modelos</span>
+                            <span th:unless="${pastaAtiva == 'ENTRADA'}">
+                                <i th:if="${pastaAtiva == 'LIXEIRA'}" class="fa-regular fa-trash-can me-2 text-danger"></i>
+                                <span th:text="${pastaAtiva == 'ENVIADAS' ? 'Enviadas' : (pastaAtiva == 'LIXEIRA' ? 'Lixeira' : pastaAtiva)}">Caixa</span>
+                            </span>
                         </h4>
+                        
+                        <div th:if="${pastaAtiva == 'ENTRADA'}" class="ms-3 me-auto">
+                            <button class="btn btn-sm btn-outline-primary rounded-pill fw-bold" onclick="abrirModalCriacao()">
+                                <i class="fa-solid fa-plus me-1"></i> Criar Novo
+                            </button>
+                        </div>
                         
                         <div th:if="${pastaAtiva == 'LIXEIRA'}" class="ms-auto me-3">
                             <small class="text-danger fw-bold"><i class="fa-solid fa-circle-info me-1"></i>30 dias para exclusão automática</small>
@@ -131,7 +112,10 @@
                                         </td>
 
                                         <td style="width: 20%;">
-                                            <span class="fw-bold text-dark" th:text="${msg.nomeGrupoDestino}">Grupo</span>
+                                            <span th:if="${pastaAtiva == 'ENTRADA'}" class="badge bg-light text-secondary border">
+                                                <i class="fa-solid fa-tag me-1"></i> <span th:text="${msg.nomeGrupoDestino}">Categoria</span>
+                                            </span>
+                                            <span th:unless="${pastaAtiva == 'ENTRADA'}" class="fw-bold text-dark" th:text="${msg.nomeGrupoDestino}">Grupo</span>
                                         </td>
 
                                         <td>
@@ -144,7 +128,16 @@
                                             </div>
                                         </td>
 
-                                        <td style="width: 100px;" class="text-end pe-3" onclick="event.stopPropagation()">
+                                        <td style="width: 140px;" class="text-end pe-3" onclick="event.stopPropagation()">
+                                            
+                                            <button th:if="${pastaAtiva == 'ENTRADA'}" 
+                                                    class="btn btn-primary btn-sm rounded-pill px-3 fw-bold me-2 shadow-sm"
+                                                    onclick="usarModelo(this)" 
+                                                    th:data-id="${msg.id}"
+                                                    title="Usar este modelo">
+                                                Usar <i class="fa-solid fa-arrow-right ms-1"></i>
+                                            </button>
+
                                             <button th:if="${pastaAtiva != 'LIXEIRA'}" 
                                                     class="btn btn-light btn-sm rounded-circle text-muted hover-danger" 
                                                     th:onclick="'abrirModalLixeira(' + ${msg.id} + ')'" title="Mover para Lixeira">
@@ -182,58 +175,71 @@
         </div>
     </main>
 
-    <div class="modal fade" id="modalLeitura" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content modal-content-custom shadow-lg">
-            
-            <div class="modal-header-custom d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <div class="avatar-initial me-3 shadow-sm" id="modalAvatar">W</div>
-                    <div>
-                        <h5 class="fw-bold mb-0 text-dark" id="modalAssunto">Assunto da Mensagem</h5>
-                        <small class="text-muted"><i class="fa-regular fa-calendar-check me-1"></i> <span id="modalData">27/01/2026</span></small>
-                    </div>
+    <div class="modal fade" id="modalNovoModelo" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold">Novo Modelo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 border-0" onclick="window.print()"><i class="fa-solid fa-print"></i></button>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-            </div>
-
-            <div class="modal-body p-4 bg-light bg-opacity-50">
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="small text-uppercase text-muted fw-bold mb-1">Enviado para</label>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-white text-primary border rounded-pill px-3 py-2 shadow-sm">
-                                <i class="fa-solid fa-users me-2"></i> <span id="modalGrupo">Grupo de Teste</span>
-                            </span>
+                <form action="/mensagens/salvarModelo" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Categoria (Ex: Boas Vindas)</label>
+                            <input type="text" name="categoria" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Assunto</label>
+                            <input type="text" name="assunto" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Conteúdo</label>
+                            <textarea class="form-control" name="conteudo" rows="6" placeholder="Escreva aqui..."></textarea>
                         </div>
                     </div>
-                    
-                </div>
-
-                <div class="message-container shadow-sm mb-4" id="modalConteudo">
+                    <div class="modal-footer bg-light">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Salvar Modelo</button>
                     </div>
-
-                <div id="areaAnexosModal" class="d-none">
-                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-paperclip me-2 text-primary"></i>Arquivos em anexo</h6>
-                    <div id="listaAnexosDownload" class="d-flex flex-wrap gap-3">
-                        </div>
-                </div>
-            </div>
-
-            <div class="modal-footer border-0 p-3 bg-light">
-                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar Visualização</button>
+                </form>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="modal fade" id="modalLeitura" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content modal-content-custom shadow-lg">
+                <div class="modal-header-custom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-initial me-3 shadow-sm" id="modalAvatar">W</div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark" id="modalAssunto">Assunto</h5>
+                            <small class="text-muted"><i class="fa-regular fa-calendar-check me-1"></i> <span id="modalData"></span></small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 bg-light bg-opacity-50">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="small text-uppercase text-muted fw-bold mb-1">Grupo/Categoria</label>
+                            <div><span class="badge bg-white text-primary border rounded-pill px-3 py-2 shadow-sm"><i class="fa-solid fa-users me-2"></i> <span id="modalGrupo"></span></span></div>
+                        </div>
+                    </div>
+                    <div class="message-container shadow-sm mb-4" id="modalConteudo"></div>
+                    <div id="areaAnexosModal" class="d-none">
+                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-paperclip me-2 text-primary"></i>Anexos</h6>
+                        <div id="listaAnexosDownload" class="d-flex flex-wrap gap-3"></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-light"><button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button></div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modalLixeira" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg rounded-4 text-center">
                 <div class="modal-body p-4">
-                    <div class="mb-3 text-dark bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="fa-regular fa-trash-can fa-2x"></i></div>
                     <h5 class="fw-bold mb-3">Mover para a Lixeira?</h5>
                     <div class="d-flex gap-2 justify-content-center">
                         <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Não</button>
@@ -248,9 +254,7 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg rounded-4 text-center">
                 <div class="modal-body p-4">
-                    <div class="mb-3 text-danger bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="fa-solid fa-triangle-exclamation fa-2x"></i></div>
                     <h5 class="fw-bold text-danger mb-1">Excluir Definitivamente?</h5>
-                    <p class="small text-muted mb-3">Irreversível.</p>
                     <div class="d-flex gap-2 justify-content-center">
                         <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
                         <button type="button" class="btn btn-danger rounded-pill px-3 fw-bold" id="btnConfirmarExclusaoDefinitiva">Excluir</button>
@@ -264,26 +268,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        let idSelecionado = null;
-        
-        function abrirModalLixeira(id) { idSelecionado = id; new bootstrap.Modal(document.getElementById('modalLixeira')).show(); }
-        
-        document.getElementById('btnConfirmarLixeira').addEventListener('click', () => { 
-            if(idSelecionado) $.post('/mensagens/lixeira/' + idSelecionado, () => location.reload()); 
-        });
-        
-        function restaurarMensagem(id) { $.post('/mensagens/restaurar/' + id, () => location.reload()); }
-        
-        function abrirModalExclusaoDefinitiva(id) { 
-            idSelecionado = id; 
-            new bootstrap.Modal(document.getElementById('modalExclusaoDefinitiva')).show(); 
+        // --- FUNÇÕES REINTEGRADAS ---
+        function usarModelo(btn) {
+            let id = $(btn).data('id');
+            // Redireciona para a tela de preparo
+            window.location.href = '/mensagens/preparar-envio/' + id;
         }
-        
-        document.getElementById('btnConfirmarExclusaoDefinitiva').addEventListener('click', () => { 
-            if(idSelecionado) { 
-                $.ajax({ url: '/mensagens/excluir/' + idSelecionado, type: 'DELETE', success: () => location.reload() }); 
-            } 
-        });
+
+        function abrirModalCriacao() {
+            new bootstrap.Modal(document.getElementById('modalNovoModelo')).show();
+        }
+
+        // Funções Padrão (Leitura, Lixeira, etc)
+        let idSelecionado = null;
+        function abrirModalLixeira(id) { idSelecionado = id; new bootstrap.Modal(document.getElementById('modalLixeira')).show(); }
+        document.getElementById('btnConfirmarLixeira').addEventListener('click', () => { if(idSelecionado) $.post('/mensagens/lixeira/' + idSelecionado, () => location.reload()); });
+        function restaurarMensagem(id) { $.post('/mensagens/restaurar/' + id, () => location.reload()); }
+        function abrirModalExclusaoDefinitiva(id) { idSelecionado = id; new bootstrap.Modal(document.getElementById('modalExclusaoDefinitiva')).show(); }
+        document.getElementById('btnConfirmarExclusaoDefinitiva').addEventListener('click', () => { if(idSelecionado) $.ajax({ url: '/mensagens/excluir/' + idSelecionado, type: 'DELETE', success: () => location.reload() }); });
         
         function toggleAction(id, action, element, type) {
             $.post('/mensagens/' + action + '/' + id, function(state) {
@@ -293,60 +295,18 @@
         }
 
         function verMensagem(id) {
-            const modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
-            
             $.get("/mensagens/detalhes/" + id, function(data) {
-                // Preenche os textos
                 $('#modalAssunto').text(data.assunto);
                 $('#modalConteudo').html(data.conteudo);
                 $('#modalGrupo').text(data.nomeGrupoDestino);
-                $('#modalStatus').text(data.status || 'ENVIADO');
-                
-                // Letra inicial do Avatar
-                $('#modalAvatar').text(data.nomeGrupoDestino.charAt(0).toUpperCase());
-
-                // Data formatada (Ex: 27 de Jan às 14:00)
+                $('#modalAvatar').text(data.nomeGrupoDestino ? data.nomeGrupoDestino.charAt(0).toUpperCase() : 'W');
                 const dt = new Date(data.dataEnvio);
-                const dataFormatada = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' às ' + 
-                                      dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                $('#modalData').text(dataFormatada);
-
-                // Lógica de Anexos
-                const areaAnexos = $('#areaAnexosModal');
-                const listaAnexos = $('#listaAnexosDownload');
-                listaAnexos.empty(); 
-
-                if (data.nomesAnexos && data.nomesAnexos.trim() !== '') {
-                    areaAnexos.removeClass('d-none');
-                    const arquivos = data.nomesAnexos.split(',');
-                    
-                    arquivos.forEach(arquivo => {
-                        const nomeFisico = arquivo.trim();
-                        if(!nomeFisico) return;
-                        
-                        const nomeExibicao = nomeFisico.includes('_') ? nomeFisico.substring(nomeFisico.indexOf('_') + 1) : nomeFisico;
-                        
-                        // Determina o ícone baseado na extensão
-                        let icon = 'fa-file-lines';
-                        if(nomeExibicao.toLowerCase().endsWith('.pdf')) icon = 'fa-file-pdf text-danger';
-                        if(nomeExibicao.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) icon = 'fa-file-image text-success';
-
-                        const cardHtml = `
-                            <a href="/uploads/${nomeFisico}" download="${nomeExibicao}" target="_blank" class="attachment-card shadow-sm">
-                                <div class="me-3 fs-4"><i class="fa-solid ${icon}"></i></div>
-                                <div class="text-truncate" style="max-width: 180px;">
-                                    <div class="text-dark fw-bold small text-truncate">${nomeExibicao}</div>
-                                    <div class="text-muted tiny" style="font-size: 0.7rem;">Download</div>
-                                </div>
-                            </a>`;
-                        
-                        listaAnexos.append(cardHtml);
-                    });
-                } else {
-                    areaAnexos.addClass('d-none');
-                }
+                $('#modalData').text(dt.toLocaleDateString());
                 
-                modal.show();
+                // Limpa anexos para evitar duplicação visual
+                $('#areaAnexosModal').addClass('d-none'); 
+                
+                new bootstrap.Modal(document.getElementById('modalLeitura')).show();
             });
         }
     </script>

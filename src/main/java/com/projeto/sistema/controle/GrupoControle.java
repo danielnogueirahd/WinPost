@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.Grupo;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
@@ -35,13 +33,13 @@ public class GrupoControle {
 
     @Autowired
     private GrupoService grupoService;
-  
+    
     @Autowired
     private ContatosRepositorio contatosRepositorio;
     
     @Autowired
     private GrupoRepositorio grupoRepositorio;
-
+    
     @Autowired
     private EmailService emailService;
     

@@ -185,5 +185,26 @@ public class EmailService {
 
         log.setStatus(erros == 0 ? "SUCESSO" : "PARCIAL (" + erros + " erros)");
         logRepositorio.save(log);
+    
+    }
+    
+ // --- NOVO MÉTODO: Envio Individual ---
+    @Async
+    public void enviarEmailSimples(String para, String assunto, String conteudo) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
+            
+            helper.setFrom("nao-responda@winpost.com");
+            helper.setTo(para);
+            helper.setSubject(assunto);
+            helper.setText(conteudo, true);
+            
+            mailSender.send(message);
+            System.out.println("Email individual enviado com sucesso para: " + para);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erro ao enviar email individual: " + e.getMessage());
+        }
     }
 }

@@ -76,7 +76,8 @@ function verDetalhesDia(dia, mes, ano) {
                 } else if (item.tipo === 'ENVIO') {
                     icone = 'fa-paper-plane';
                     cor = 'text-primary';
-                   acao = '<button class="btn btn-sm btn-outline-primary ms-auto" onclick="verMensagem(' + item.idRef + ')"><i class="fa-solid fa-eye"></i></button>';
+					
+					acao = '<a href="/mensagens/caixa/ENVIADAS?abrirId=' + item.idRef + '" class="btn btn-sm btn-outline-primary ms-auto"><i class="fa-solid fa-eye"></i></a>';
                 } else if (item.tipo === 'FERIADO') {
                     icone = 'fa-calendar-check';
                     cor = 'text-danger';
@@ -133,4 +134,30 @@ function verDetalhesDia(dia, mes, ano) {
 	               $('#modalConteudo img').addClass('img-fluid rounded'); 
 	           });
 	       }
+		   // --- Lógica para abrir modal vindo de outras telas ---
+		   document.addEventListener('DOMContentLoaded', function() {
+		       const params = new URLSearchParams(window.location.search);
+		       
+		       // Verifica se veio com ordem de "novoEvento"
+		       if (params.get('acao') === 'novoEvento') {
+		           const titulo = params.get('titulo');
+		           
+		           // Abre o modal de cadastro (ajuste o ID se seu modal tiver outro nome)
+		           // Supondo que você use o Bootstrap Modal:
+		           var modalElement = document.getElementById('modalNovoEvento'); // Verifique o ID no seu HTML da agenda
+		           if (modalElement) {
+		               var modal = new bootstrap.Modal(modalElement);
+		               modal.show();
+		               
+		               // Preenche o campo de título se existir
+		               var inputTitulo = document.getElementById('inputTituloEvento'); // Verifique o ID do input
+		               if (inputTitulo) {
+		                   inputTitulo.value = titulo;
+		               }
+		               
+		               // Limpa a URL para não reabrir ao atualizar a página
+		               window.history.replaceState({}, document.title, window.location.pathname);
+		           }
+		       }
+		   });
 }

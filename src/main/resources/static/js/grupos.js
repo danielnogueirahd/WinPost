@@ -139,3 +139,25 @@ function prepararFiltro() {
     if(document.getElementById('hiddenDescricao'))
         document.getElementById('hiddenDescricao').value = descDigitada;
 };
+// ... (código existente do Select2 e Datatables) ...
+
+    // --- NOVA LÓGICA: Carregar Template Automaticamente ---
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('acao') === 'usarTemplate') {
+        let idTemplate = params.get('id');
+        
+        // Busca o conteúdo do modelo via AJAX
+        $.get('/mensagens/detalhes/' + idTemplate, function(data) {
+            // Abre o Modal de Disparo
+            var modalDisparo = new bootstrap.Modal(document.getElementById('modalDisparo'));
+            modalDisparo.show();
+            
+            // Preenche os campos
+            $('input[name="assunto"]').val(data.assunto);
+            $('#summernote').summernote('code', data.conteudo);
+            
+            // Limpa a URL para não reabrir ao atualizar a página
+            window.history.replaceState({}, document.title, window.location.pathname);
+        });
+    }
+// Fim do $(document).ready
