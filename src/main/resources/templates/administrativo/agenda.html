@@ -42,13 +42,17 @@
 					class="calendar-header d-flex justify-content-between align-items-center flex-wrap gap-3">
 					<div class="btn-group shadow-sm">
 						<a
-							th:href="@{/agenda(mes=${mesExibicao == 1 ? 12 : mesExibicao - 1}, ano=${mesExibicao == 1 ? anoExibicao - 1 : anoExibicao})}"
+							th:href="@{/administrativo/agenda(mes=${mesExibicao == 1 ? 12 : mesExibicao - 1}, ano=${mesExibicao == 1 ? anoExibicao - 1 : anoExibicao})}"
 							class="btn btn-outline-secondary btn-sm px-3"> <i
 							class="fa-solid fa-chevron-left"></i>
-						</a> <a href="/agenda"
+						</a> 
+						
+						<a href="/administrativo/agenda"
 							class="btn btn-outline-secondary btn-sm fw-bold px-3">Mês
-							</a> <a
-							th:href="@{/agenda(mes=${mesExibicao == 12 ? 1 : mesExibicao + 1}, ano=${mesExibicao == 12 ? anoExibicao + 1 : anoExibicao})}"
+						</a> 
+						
+						<a
+							th:href="@{/administrativo/agenda(mes=${mesExibicao == 12 ? 1 : mesExibicao + 1}, ano=${mesExibicao == 12 ? anoExibicao + 1 : anoExibicao})}"
 							class="btn btn-outline-secondary btn-sm px-3"> <i
 							class="fa-solid fa-chevron-right"></i>
 						</a>
@@ -168,7 +172,7 @@
 						data-bs-dismiss="modal"></button>
 				</div>
 
-				<form action="/agenda/salvar" method="post"
+				<form action="/administrativo/agenda/salvar" method="post"
 					th:object="${novoLembrete}">
 					<div class="modal-body">
 

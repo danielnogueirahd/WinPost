@@ -33,8 +33,12 @@
                                 <input type="hidden" name="assunto" id="hiddenAssuntoGrupo">
                                 <input type="hidden" name="conteudo" id="hiddenConteudoGrupo">
                                 <select name="idGrupo" class="form-select mb-2">
-                                    <option th:each="g : ${listaGrupos}" th:value="${g.id}" th:text="${g.nome}"></option>
-                                </select>
+    <option th:each="g : ${listaGrupos}" 
+            th:value="${g.id}" 
+            th:text="${g.nome}"
+            th:selected="${idGrupoSelecionado != null and g.id == idGrupoSelecionado}">
+    </option>
+</select>
                                 <button type="button" class="btn btn-primary w-100" onclick="submeterGrupo()">Disparar Agora</button>
                             </form>
                         </div>

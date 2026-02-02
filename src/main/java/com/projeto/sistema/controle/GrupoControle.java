@@ -236,4 +236,33 @@ public class GrupoControle {
             attributes.addFlashAttribute("mensagemErro", "Erro ao processar envio: " + e.getMessage());
         }
         return new ModelAndView("redirect:/grupos/gerenciar");
-    }}
+    }
+
+//9. DISPARO DIRETO (Adicionado para funcionar com a tela 'preparar.html')
+@PostMapping("/disparar-direto")
+public ModelAndView dispararDireto(@RequestParam("idGrupo") Long idGrupo,
+                                   @RequestParam("assunto") String assunto,
+                                   @RequestParam("conteudo") String conteudo,
+                                   RedirectAttributes attributes) {
+    try {
+        Optional<Grupo> grupoOpt = grupoRepositorio.findById(idGrupo);
+        
+        if (grupoOpt.isPresent()) {
+            Grupo grupo = grupoOpt.get();
+            
+            // Reutiliza o emailService.enviarDisparo existente.
+            // Passamos 'null' para anexos e dataAgendamento pois essa tela não os possui.
+            emailService.enviarDisparo(grupo, assunto, conteudo, null, null);
+            
+            attributes.addFlashAttribute("mensagemSucesso", "Disparo realizado com sucesso para o grupo " + grupo.getNome());
+        } else {
+            attributes.addFlashAttribute("mensagemErro", "Grupo selecionado não encontrado.");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        attributes.addFlashAttribute("mensagemErro", "Erro ao processar o envio: " + e.getMessage());
+    }
+    
+    // Redireciona para a caixa de enviadas para confirmar o envio
+    return new ModelAndView("redirect:/mensagens/caixa/ENVIADAS");
+}}

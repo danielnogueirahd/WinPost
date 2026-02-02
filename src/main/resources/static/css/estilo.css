@@ -717,8 +717,9 @@ body {
     color: #0d6efd;
 }
 
-/*13
-/* Estilo Premium para o Modal */
+/* ==========================================================================
+   13. CUSTOMIZAÇÃO MODAIS & ANEXOS
+   ========================================================================== */
 .modal-content-custom { border-radius: 1.2rem; border: none; overflow: hidden; }
 .modal-header-custom { background: #f8f9fa; border-bottom: 1px solid #eee; padding: 1.5rem; }
 .message-container { 
@@ -752,15 +753,107 @@ body {
     font-weight: bold; font-size: 1.2rem;
 }
 
-/* Ajuste do container da opção */
 .select2-item-contato {
     display: flex;
     align-items: center;
     line-height: 1.2;
 }
 
+/* ==========================================================================
+   14. NAVEGAÇÃO & LAYOUT DE MENSAGENS (RESPONSIVO)
+   ========================================================================== */
 
+/* Ajuste de Topo (Navbar fixa) */
+.main-content-area { margin-top: 80px; }
+@media (max-width: 991px) {
+    .main-content-area { margin-top: 70px; }
+}
 
+/* Botões de Ação na Tabela (Estrela/Flag) */
+.action-icon { cursor: pointer; color: #ccc; transition: transform 0.2s, color 0.2s; padding: 5px; }
+.action-icon:hover { transform: scale(1.2); }
+.star-active { color: #f4b400; }
+.flag-active { color: #0b57d0; }
 
+/* Link de Navegação Lateral (Desktop) */
+.nav-link-custom { 
+    color: #444746; 
+    font-weight: 500; 
+    padding: 10px 24px 10px 20px; 
+    border-radius: 0 24px 24px 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.nav-link-custom:hover { background-color: #e1e5ea; color: #1f1f1f; }
+.nav-link-custom.active { background-color: #d3e3fd; color: #001d35; font-weight: 700; }
 
+.menu-badge { font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 10px; }
+.nav-link-custom.active .menu-badge { background: rgba(255,255,255,0.4); }
 
+/* Botão Escrever (Compose) */
+.btn-compose {
+    background-color: #c2e7ff; 
+    color: #001d35; 
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-compose:hover {
+    background-color: #b3d7ef;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+/* Navegação Mobile (Horizontal com Scroll) */
+.mobile-nav-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; /* Suavidade no iOS */
+    padding-bottom: 5px;
+}
+
+.mobile-nav-container::-webkit-scrollbar {
+    height: 4px;
+}
+.mobile-nav-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.mobile-nav-link {
+    display: inline-block;
+    padding: 8px 16px;
+    margin-right: 8px;
+    border-radius: 20px;
+    background-color: #fff;
+    color: #555;
+    border: 1px solid #e0e0e0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.mobile-nav-link.active {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+}
+.mobile-nav-link i { margin-right: 6px; }
+
+/* Truncamento Responsivo do Assunto */
+.assunto-responsivo {
+    max-width: 180px; /* Celular */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+@media (min-width: 768px) {
+    .assunto-responsivo {
+        max-width: 500px; /* Tablet/PC */
+    }
+}
+
+/* Badge Anexo (correção) */
+.badge-attachment { background-color: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; font-weight: 400; font-size: 0.75rem; }

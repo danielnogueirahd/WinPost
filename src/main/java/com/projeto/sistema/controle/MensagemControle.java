@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -179,11 +180,30 @@ public class MensagemControle {
     }
 
     @PostMapping("/enviar-individual")
-    public String enviarIndividual(@RequestParam("email") String email, 
-                                   @RequestParam("assunto") String assunto, 
-                                   @RequestParam("conteudo") String conteudo) {
-        emailService.enviarEmailSimples(email, assunto, conteudo);
-        return "redirect:/mensagens/caixa/ENVIADAS";
+    public ModelAndView enviarIndividual(@RequestParam("email") String email, 
+                                         @RequestParam("assunto") String assunto, 
+                                         @RequestParam("conteudo") String conteudo,
+                                         RedirectAttributes attributes) {
+        try {
+            // Validação básica
+            if (email == null || email.trim().isEmpty()) {
+                throw new IllegalArgumentException("O e-mail do destinatário não foi informado.");
+            }
+
+            // Chama o serviço
+            emailService.enviarEmailSimples(email, assunto, conteudo);
+            
+            // Feedback de Sucesso
+            attributes.addFlashAttribute("mensagemSucesso", "Mensagem enviada com sucesso para: " + email);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Feedback de Erro (evita a tela branca 'Whitelabel Error Page')
+            attributes.addFlashAttribute("mensagemErro", "Falha ao enviar mensagem: " + e.getMessage());
+        }
+        
+        // Redireciona para a caixa de enviadas
+        return new ModelAndView("redirect:/mensagens/caixa/ENVIADAS");
     }
 
     @PostMapping("/agendar-modelo")
@@ -194,5 +214,26 @@ public class MensagemControle {
             tituloCodificado = URLEncoder.encode(assunto, StandardCharsets.UTF_8.toString());
         } catch (Exception e) { e.printStackTrace(); }
         return "redirect:/administrativo/agenda?acao=novoEvento&titulo=" + tituloCodificado;
+    }
+    
+ // ... outros imports e métodos ...
+
+    // NOVO MÉTODO: Inicia o envio a partir da tela de Grupos
+    @GetMapping("/preparar-grupo/{idGrupo}")
+    public ModelAndView prepararEnvioGrupo(@PathVariable Long idGrupo) {
+        ModelAndView mv = new ModelAndView("mensagens/preparar");
+        
+        // Cria um modelo vazio para o formulário não quebrar
+        MensagemLog modeloVazio = new MensagemLog();
+        modeloVazio.setAssunto("");
+        modeloVazio.setConteudo("");
+        
+        mv.addObject("modelo", modeloVazio);
+        mv.addObject("listaGrupos", grupoRepositorio.findAll());
+        
+        // Passamos o ID do grupo para o HTML selecionar automaticamente
+        mv.addObject("idGrupoSelecionado", idGrupo); 
+        
+        return mv;
     }
 }

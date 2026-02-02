@@ -8,25 +8,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-
-<style>
-    /* Ajuste para os chips de anexo ficarem bonitos */
-    .chip-anexo {
-        font-size: 0.85rem;
-        background-color: #f1f3f4;
-        border: 1px solid #dadce0;
-        border-radius: 16px;
-        padding: 4px 12px;
-        display: inline-flex;
-        align-items: center;
-        margin-right: 8px;
-        margin-bottom: 8px;
-        color: #3c4043;
-    }
-    .chip-anexo i { margin-right: 6px; color: #ea4335; } /* Ícone PDF vermelho */
-</style>
-
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
@@ -42,7 +23,7 @@
                 <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${mensagemErro}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-            
+
             <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
                 <i class="fa-solid fa-check-circle me-2"></i> <span th:text="${mensagemSucesso}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -54,7 +35,7 @@
                     <p class="text-muted small mb-0">Visualize, edite ou exclua seus grupos de contatos.</p>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
-                     <form action="/grupos/gerenciar" method="get" class="d-flex me-2">
+                    <form action="/grupos/gerenciar" method="get" class="d-flex me-2">
                         <div class="input-group shadow-sm">
                             <input type="text" class="form-control border-end-0" name="pesquisa" th:value="${termoPesquisa}" placeholder="Pesquisar grupo..." style="border-top-left-radius: 20px; border-bottom-left-radius: 20px;">
                             <button class="btn btn-white border border-start-0 bg-white text-primary" type="submit" style="border-top-right-radius: 20px; border-bottom-right-radius: 20px;">
@@ -65,7 +46,7 @@
                     </form>
                     <a href="/mensagens/enviadas" class="btn btn-light text-secondary border shadow-sm rounded-pill px-3 fw-bold d-none d-md-inline-flex align-items-center">
                         <i class="fa-solid fa-clock-rotate-left me-2"></i> Mensagens
-                    </a>
+                    </a> 
                     <a href="/grupos/cadastro" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center">
                         <i class="fa-solid fa-plus me-2"></i> <span class="d-none d-sm-inline">Novo Grupo</span>
                     </a>
@@ -118,28 +99,31 @@
                                                     <span class="d-inline-block text-truncate" th:text="${grupo.descricao}"></span>
                                                 </div>
                                             </td>
+                                            
                                             <td class="text-center">
                                                 <div class="d-inline-flex align-items-center bg-light text-secondary border px-3 py-1 rounded-pill">
                                                     <span class="fw-bold small" th:text="${#lists.size(grupo.contatos)}">0</span>
                                                 </div>
                                             </td>
+
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-success btn-sm px-4 fw-bold shadow-sm rounded-pill" th:data-id="${grupo.id}" th:data-nome="${grupo.nome}" onclick="prepararDisparo(this)" data-bs-toggle="modal" data-bs-target="#modalDisparo">
-                                                    <i class="fa-regular fa-paper-plane me-2"></i>
-                                                </button>
+                                                <a th:href="@{/mensagens/preparar-grupo/{id}(id=${grupo.id})}"
+                                                   class="btn btn-success btn-sm px-4 fw-bold shadow-sm rounded-pill"
+                                                   title="Preparar Envio"> 
+                                                   <i class="fa-regular fa-paper-plane me-2"></i>
+                                                </a>
                                             </td>
-                                            
+
                                             <td class="text-end pe-4">
                                                 <div class="btn-group">
                                                     <a th:href="@{/grupos/editar/{id}(id=${grupo.id})}" class="btn btn-sm btn-link text-secondary text-decoration-none hover-effect" title="Editar">
                                                         <i class="fa-solid fa-pen-to-square"></i>
                                                     </a>
-                                                    
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-link text-danger text-decoration-none hover-effect" 
-                                                            th:data-url="@{/grupos/excluir/{id}(id=${grupo.id})}"
-                                                            onclick="confirmarExclusao(this.getAttribute('data-url'))" 
-                                                            title="Excluir Grupo">
+
+                                                    <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none hover-effect"
+                                                        th:data-url="@{/grupos/excluir/{id}(id=${grupo.id})}"
+                                                        onclick="confirmarExclusao(this.getAttribute('data-url'))"
+                                                        title="Excluir Grupo">
                                                         <i class="fa-solid fa-trash-can"></i>
                                                     </button>
                                                 </div>
@@ -155,122 +139,26 @@
         </div>
     </main>
 
-    <div th:replace="~{fragments/modals :: modalNovaMensagem}"></div> 
-    <div th:replace="~{fragments/modals :: modalExclusao}"></div> 
-
-    <div class="modal fade" id="modalDisparo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content shadow-lg" style="border-radius: 8px; border: none;">
-                
-                <div class="modal-header bg-light py-2 px-3 border-bottom-0 d-flex justify-content-between align-items-center">
-                    <h6 class="modal-title fw-bold small text-secondary">Nova mensagem</h6>
-                    <button type="button" class="btn btn-sm btn-link text-muted p-0" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-
-                <form action="/grupos/disparar" method="post" enctype="multipart/form-data" class="d-flex flex-column h-100" id="formDisparo">
-                    <input type="hidden" name="grupoId" id="inputGrupoId">
-                    <input type="hidden" name="dataAgendamento" id="hiddenDataAgendamento">
-                    
-                    <div class="modal-body p-0 d-flex flex-column">
-                        <div class="px-3 py-2 border-bottom">
-                            <span class="text-muted small me-2">Para</span> <span id="nomeGrupoDisplay" class="badge bg-light text-dark border rounded-pill px-3">...</span>
-                        </div>
-                        <div class="px-3 py-2 border-bottom">
-                            <input type="text" class="form-control border-0 shadow-none p-0 fw-bold" name="assunto" placeholder="Assunto" required>
-                        </div>
-
-                        <div id="listaAnexosVisual" class="px-3 pt-2 d-none">
-                            </div>
-
-                        <div class="flex-grow-1">
-                            <textarea id="summernote" name="mensagem"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="modal-footer justify-content-between px-3 py-2 border-top-0">
-                        <div>
-                            <button type="button" class="btn btn-light rounded-circle text-secondary" 
-                                    onclick="document.getElementById('inputAnexosReal').click()" 
-                                    title="Anexar arquivos">
-                                <i class="fa-solid fa-paperclip fa-lg"></i>
-                            </button>
-                            <input type="file" id="inputAnexosReal" name="anexos" multiple style="display: none;" onchange="mostrarAnexos()">
-                        </div>
-
-                        <button type="button" onclick="enviarImediato()" class="btn btn-primary rounded-pill px-4 fw-bold">Enviar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <div th:replace="~{fragments/modals :: modalNovaMensagem}"></div>
+    <div th:replace="~{fragments/modals :: modalExclusao}"></div>
 
     <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function() {
-            $('#summernote').summernote({
-                placeholder : 'Digite sua mensagem aqui...',
-                tabsize : 2,
-                height : 250,
-                toolbar : [ [ 'style', [ 'style' ] ], [ 'font', [ 'bold', 'underline' ] ], [ 'para', [ 'ul', 'ol' ] ] ],
-                disableResizeEditor : true
-            });
-        });
-
         // Função de Exclusão
         function confirmarExclusao(url) {
             var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
             document.getElementById('btnConfirmarExclusao').setAttribute('href', url);
             modal.show();
         }
-
-        // Prepara Modal de Disparo
-        function prepararDisparo(botao) {
-            var id = botao.getAttribute('data-id');
-            var nome = botao.getAttribute('data-nome');
-            document.getElementById('inputGrupoId').value = id;
-            document.getElementById('nomeGrupoDisplay').innerText = nome;
-            
-            // Limpa anexos anteriores se reabrir o modal
-            document.getElementById('inputAnexosReal').value = "";
-            document.getElementById('listaAnexosVisual').innerHTML = "";
-            document.getElementById('listaAnexosVisual').classList.add('d-none');
-        }
-
-        // Função Visual de Anexos
-        function mostrarAnexos() {
-            var input = document.getElementById('inputAnexosReal');
-            var container = document.getElementById('listaAnexosVisual');
-            
-            container.innerHTML = ""; // Limpa visual
-            
-            if(input.files.length > 0) {
-                container.classList.remove('d-none');
-                
-                for(var i=0; i<input.files.length; i++) {
-                    var nome = input.files[i].name;
-                    // Cria o Chip HTML
-                    var chip = document.createElement('div');
-                    chip.className = 'chip-anexo';
-                    chip.innerHTML = '<i class="fa-solid fa-file-pdf"></i> ' + nome; // Ícone genérico
-                    container.appendChild(chip);
-                }
-            } else {
-                container.classList.add('d-none');
-            }
-        }
-
-        function enviarImediato() {
-            document.getElementById('hiddenDataAgendamento').value = "";
-            document.getElementById('formDisparo').submit();
-        }
+        
+        // Removi os scripts do Summernote e do envio antigo, pois não usamos mais nesta tela.
     </script>
-    
+
     <script th:if="${mensagemSucesso}">
         Swal.fire({
             title: 'Sucesso!',

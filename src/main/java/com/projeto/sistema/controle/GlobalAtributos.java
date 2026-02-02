@@ -13,17 +13,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.LembreteDTO;
-import com.projeto.sistema.modelos.MensagemLog;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
-import com.projeto.sistema.repositorios.GrupoRepositorio; // <--- 1. Import Adicionado
+import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
-import com.projeto.sistema.repositorios.MensagemLogRepositorio;
 
 @ControllerAdvice
 public class GlobalAtributos {
 
-    @Autowired
-    private MensagemLogRepositorio mensagemRepositorio;
+    // Dependência de MensagemLogRepositorio removida
 
     @Autowired
     private ContatosRepositorio contatosRepositorio;
@@ -32,25 +29,17 @@ public class GlobalAtributos {
     private LembreteRepositorio lembreteRepositorio;
     
     @Autowired
-    private GrupoRepositorio grupoRepositorio; // <--- 2. Injeção Adicionada
+    private GrupoRepositorio grupoRepositorio;
 
-    // --- Parte Nova: Carrega os Grupos Globalmente para o Modal ---
+    // --- Carrega os Grupos Globalmente para o Modal ---
     @ModelAttribute("listaGruposGlobal")
     public List<?> carregarGruposGlobais() {
         return grupoRepositorio.findAll();
     }
     // -------------------------------------------------------------
 
-    @ModelAttribute("notificacoesNaoLidas")
-    public long carregarContador() {
-        return mensagemRepositorio.countByLidaFalse();
-    }
+    // Métodos de notificação (carregarContador e carregarLista) removidos
 
-    @ModelAttribute("listaNotificacoes")
-    public List<MensagemLog> carregarLista() {
-        return mensagemRepositorio.findTop5ByLidaFalseOrderByDataEnvioDesc();
-    }
-    
     @ModelAttribute("listaLembretes")
     public List<LembreteDTO> carregarLembretesFuturos() {
         List<LembreteDTO> lembretes = new ArrayList<>();

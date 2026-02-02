@@ -27,15 +27,12 @@
 	box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
 	color: #224abe;
 }
-
-
 </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
-	
 
 	<main class="flex-grow-1">
 		<div style="margin-top: 80px;"></div>
@@ -179,8 +176,8 @@
 								<table class="table align-middle w-100" id="tabelaSelecao">
 									<thead class="bg-light rounded-3">
 										<tr>
-											<th class="text-center rounded-start" width="40"><input
-												type="checkbox" class="form-check-input" id="checkAll">
+											<th class="text-center rounded-start" width="40">
+												<input type="checkbox" class="form-check-input" id="checkAll">
 											</th>
 											<th>Contato</th>
 											<th>Email</th>
@@ -190,9 +187,11 @@
 									<tbody>
 										<tr th:each="c : ${listaContatos}"
 											class="cursor-pointer row-contato">
-											<td class="text-center"><input type="checkbox"
-												class="form-check-input check-item" name="idsContatos"
-												th:value="${c.id}" form="formGrupo"></td>
+											<td class="text-center">
+												<input type="checkbox" 
+													class="form-check-input check-item"
+													th:value="${c.id}">
+											</td>
 											<td>
 												<div class="d-flex align-items-center">
 													<div
@@ -232,6 +231,7 @@
 	<script
 		src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 	<script src="/js/grupos.js"></script>
+	
 
 </body>
 </html>
