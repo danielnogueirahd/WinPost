@@ -26,37 +26,25 @@
                 </div>
 
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="p-3 border rounded-3 bg-white h-100">
                             <h6 class="fw-bold"><i class="fa-solid fa-users me-2 text-primary"></i>Enviar para Grupo</h6>
                             <form action="/grupos/disparar-direto" method="post" id="formGrupo">
                                 <input type="hidden" name="assunto" id="hiddenAssuntoGrupo">
                                 <input type="hidden" name="conteudo" id="hiddenConteudoGrupo">
                                 <select name="idGrupo" class="form-select mb-2">
-    <option th:each="g : ${listaGrupos}" 
-            th:value="${g.id}" 
-            th:text="${g.nome}"
-            th:selected="${idGrupoSelecionado != null and g.id == idGrupoSelecionado}">
-    </option>
-</select>
+                                    <option th:each="g : ${listaGrupos}" 
+                                            th:value="${g.id}" 
+                                            th:text="${g.nome}"
+                                            th:selected="${idGrupoSelecionado != null and g.id == idGrupoSelecionado}">
+                                    </option>
+                                </select>
                                 <button type="button" class="btn btn-primary w-100" onclick="submeterGrupo()">Disparar Agora</button>
                             </form>
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="p-3 border rounded-3 bg-white h-100">
-                            <h6 class="fw-bold"><i class="fa-solid fa-user me-2 text-success"></i>Contato Único</h6>
-                            <form action="/mensagens/enviar-individual" method="post" id="formIndividual">
-                                <input type="hidden" name="assunto" id="hiddenAssuntoIndividual">
-                                <input type="hidden" name="conteudo" id="hiddenConteudoIndividual">
-                                <input type="email" name="email" class="form-control mb-2" placeholder="email@exemplo.com" required>
-                                <button type="button" class="btn btn-success w-100" onclick="submeterIndividual()">Enviar Individual</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="p-3 border rounded-3 bg-white h-100">
                             <h6 class="fw-bold"><i class="fa-solid fa-calendar-days me-2 text-warning"></i>Agenda</h6>
                             <p class="small text-muted">Criar um lembrete com este texto.</p>
@@ -85,9 +73,15 @@
             $('#hiddenConteudo' + sulfixo).val($('#summernote').summernote('code'));
         }
 
-        function submeterGrupo() { prepararDados('Grupo'); $('#formGrupo').submit(); }
-        function submeterIndividual() { prepararDados('Individual'); $('#formIndividual').submit(); }
-        function submeterAgenda() { prepararDados('Agenda'); $('#formAgenda').submit(); }
+        function submeterGrupo() { 
+            prepararDados('Grupo'); 
+            $('#formGrupo').submit(); 
+        }
+
+        function submeterAgenda() { 
+            prepararDados('Agenda'); 
+            $('#formAgenda').submit(); 
+        }
     </script>
 </body>
 </html>

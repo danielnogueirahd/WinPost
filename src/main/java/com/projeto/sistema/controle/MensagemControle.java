@@ -179,32 +179,7 @@ public class MensagemControle {
         return mv;
     }
 
-    @PostMapping("/enviar-individual")
-    public ModelAndView enviarIndividual(@RequestParam("email") String email, 
-                                         @RequestParam("assunto") String assunto, 
-                                         @RequestParam("conteudo") String conteudo,
-                                         RedirectAttributes attributes) {
-        try {
-            // Validação básica
-            if (email == null || email.trim().isEmpty()) {
-                throw new IllegalArgumentException("O e-mail do destinatário não foi informado.");
-            }
-
-            // Chama o serviço
-            emailService.enviarEmailSimples(email, assunto, conteudo);
-            
-            // Feedback de Sucesso
-            attributes.addFlashAttribute("mensagemSucesso", "Mensagem enviada com sucesso para: " + email);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Feedback de Erro (evita a tela branca 'Whitelabel Error Page')
-            attributes.addFlashAttribute("mensagemErro", "Falha ao enviar mensagem: " + e.getMessage());
-        }
-        
-        // Redireciona para a caixa de enviadas
-        return new ModelAndView("redirect:/mensagens/caixa/ENVIADAS");
-    }
+    
 
     @PostMapping("/agendar-modelo")
     public String agendarModelo(@RequestParam("assunto") String assunto, 
