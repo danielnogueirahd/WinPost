@@ -7,8 +7,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
-
-
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -105,10 +103,10 @@
                                 <small class="text-danger fw-bold"><i class="fa-solid fa-circle-info me-1"></i>30 dias p/ exclusão</small>
                             </div>
 
-                            <div class="input-group" style="width: 100%; max-width: 300px;">
+                            <form th:action="@{'/mensagens/caixa/' + ${pastaAtiva}}" method="get" class="input-group" style="width: 100%; max-width: 300px;">
                                 <span class="input-group-text bg-white border-0 rounded-start-pill ps-3"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                                <input type="text" class="form-control border-0 rounded-end-pill shadow-sm" placeholder="Pesquisar...">
-                            </div>
+                                <input type="text" name="busca" class="form-control border-0 rounded-end-pill shadow-sm" placeholder="Pesquisar..." th:value="${termoBusca}">
+                            </form>
                         </div>
                     </div>
 
@@ -195,7 +193,32 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                        
+                        <div class="card-footer bg-white border-0 py-3" th:if="${totalPaginas > 1}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    Página <span th:text="${paginaAtual + 1}">1</span> de <span th:text="${totalPaginas}">10</span>
+                                </small>
+                                
+                                <nav aria-label="Navegação de páginas">
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item" th:classappend="${paginaAtual == 0} ? 'disabled'">
+                                            <a class="page-link rounded-start-pill border-0 bg-light text-dark" 
+                                               th:href="@{'/mensagens/caixa/' + ${pastaAtiva}(page=${paginaAtual - 1}, busca=${termoBusca}, comAnexo=${filtroAnexo}, data=${filtroData})}">
+                                                <i class="fa-solid fa-chevron-left"></i> Anterior
+                                            </a>
+                                        </li>
+                                        <li class="page-item" th:classappend="${paginaAtual >= totalPaginas - 1} ? 'disabled'">
+                                            <a class="page-link rounded-end-pill border-0 bg-light text-dark ms-1" 
+                                               th:href="@{'/mensagens/caixa/' + ${pastaAtiva}(page=${paginaAtual + 1}, busca=${termoBusca}, comAnexo=${filtroAnexo}, data=${filtroData})}">
+                                                Próximo <i class="fa-solid fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -304,11 +327,29 @@
         }
 
         let idSelecionado = null;
-        function abrirModalLixeira(id) { idSelecionado = id; new bootstrap.Modal(document.getElementById('modalLixeira')).show(); }
-        document.getElementById('btnConfirmarLixeira').addEventListener('click', () => { if(idSelecionado) $.post('/mensagens/lixeira/' + idSelecionado, () => location.reload()); });
-        function restaurarMensagem(id) { $.post('/mensagens/restaurar/' + id, () => location.reload()); }
-        function abrirModalExclusaoDefinitiva(id) { idSelecionado = id; new bootstrap.Modal(document.getElementById('modalExclusaoDefinitiva')).show(); }
-        document.getElementById('btnConfirmarExclusaoDefinitiva').addEventListener('click', () => { if(idSelecionado) $.ajax({ url: '/mensagens/excluir/' + idSelecionado, type: 'DELETE', success: () => location.reload() }); });
+        function abrirModalLixeira(id) { 
+            idSelecionado = id; 
+            new bootstrap.Modal(document.getElementById('modalLixeira')).show(); 
+        }
+        
+        // Listener para confirmar envio para lixeira
+        document.getElementById('btnConfirmarLixeira').addEventListener('click', () => { 
+            if(idSelecionado) $.post('/mensagens/lixeira/' + idSelecionado, () => location.reload()); 
+        });
+
+        function restaurarMensagem(id) { 
+            $.post('/mensagens/restaurar/' + id, () => location.reload()); 
+        }
+
+        function abrirModalExclusaoDefinitiva(id) { 
+            idSelecionado = id; 
+            new bootstrap.Modal(document.getElementById('modalExclusaoDefinitiva')).show(); 
+        }
+        
+        // Listener para confirmar exclusão definitiva
+        document.getElementById('btnConfirmarExclusaoDefinitiva').addEventListener('click', () => { 
+            if(idSelecionado) $.ajax({ url: '/mensagens/excluir/' + idSelecionado, type: 'DELETE', success: () => location.reload() }); 
+        });
         
         function toggleAction(id, action, element, type) {
             $.post('/mensagens/' + action + '/' + id, function(state) {
@@ -323,8 +364,10 @@
                 $('#modalConteudo').html(data.conteudo);
                 $('#modalGrupo').text(data.nomeGrupoDestino);
                 $('#modalAvatar').text(data.nomeGrupoDestino ? data.nomeGrupoDestino.charAt(0).toUpperCase() : 'W');
-                const dt = new Date(data.dataEnvio);
-                $('#modalData').text(dt.toLocaleDateString());
+                if (data.dataEnvio) {
+                    const dt = new Date(data.dataEnvio);
+                    $('#modalData').text(dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString());
+                }
                 
                 $('#areaAnexosModal').addClass('d-none'); 
                 

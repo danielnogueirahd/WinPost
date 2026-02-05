@@ -5,7 +5,6 @@
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top" style="z-index: 1040;">
         <div class="container-fluid">
 
-            
             <a class="navbar-brand d-flex align-items-center me-auto me-lg-4" href="/administrativo"> 
                 <img src="/img/logoInput.png" alt="Logo" height="32" class="me-2 bg-primary rounded px-2 shadow-sm">
             </a>
@@ -45,16 +44,12 @@
                             </span>
                         </a> 
                         
-                        <a href="#" class="text-white text-decoration-none position-relative" data-bs-toggle="modal" data-bs-target="#modalNotificacoes" title="Notificações"> 
-                            <i class="fa-regular fa-bell fs-5"></i>
-                            <span id="badgeGeral" th:if="${notificacoesNaoLidas > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white shadow-sm" style="font-size: 0.65rem;"> 
-                                <span id="contadorTexto" th:text="${notificacoesNaoLidas}">0</span>
-                            </span>
-                        </a>
-                    </div>
+                        </div>
 
                     <div class="vr text-white opacity-50 d-none d-lg-block" style="height: 25px;"></div>
-                    <hr class="text-white d-lg-none my-1"> <div class="dropdown">
+                    <hr class="text-white d-lg-none my-1"> 
+                    
+                    <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"> 
                             <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-2 d-lg-none" style="width: 30px; height: 30px;">
                                 <i class="fa-solid fa-user small"></i>
@@ -114,58 +109,6 @@
 		</div>
     </div>
 
-    <div class="modal fade" id="modalNotificacoes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
-        <div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
-            <div class="modal-content shadow-lg border-0">
-
-                <div class="modal-header bg-primary text-white py-2 border-bottom-0 rounded-top">
-                    <h6 class="modal-title fw-bold small"><i class="fa-solid fa-bell me-2"></i>Notificações Recentes</h6>
-                    <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body p-0">
-                    <div class="list-group list-group-flush" id="listaNotificacoesContainer">
-
-                        <div th:if="${#lists.isEmpty(listaNotificacoes)}" class="text-center py-5">
-                            <i class="fa-regular fa-folder-open fs-2 text-muted opacity-25 mb-2"></i>
-                            <p class="text-muted small fw-bold mb-0">Sem novidades</p>
-                        </div>
-                        
-                        <div id="msgSemNotificacaoJS" class="text-center py-5 d-none">
-                            <i class="fa-regular fa-folder-open fs-2 text-muted opacity-25 mb-2"></i>
-                            <p class="text-muted small fw-bold mb-0">Sem novidades</p>
-                        </div>
-
-                        <div th:each="msg : ${listaNotificacoes}" class="list-group-item p-3 notificacao-item position-relative" th:id="'notificacao-' + ${msg.id}">
-                            
-                            <button type="button" class="btn-close position-absolute top-0 end-0 m-2 shadow-none" 
-                                    aria-label="Close" 
-                                    style="font-size: 0.65rem; z-index: 10;"
-                                    th:onclick="'marcarEFechar(' + ${msg.id} + ', event)'" 
-                                    title="Marcar como lida e remover"></button>
-
-                            <a th:href="@{/mensagens/enviadas}" 
-                               th:onclick="'lerENavegar(' + ${msg.id} + ', this.href, event)'"
-                               class="text-decoration-none text-reset d-block pe-3">
-                                <div class="d-flex w-100 justify-content-between align-items-center mb-1">
-                                    <strong class="text-primary small" style="font-size: 0.85rem;" th:text="${msg.assunto}">Assunto</strong> 
-                                    <small class="text-muted" style="font-size: 0.7rem;" th:text="${#temporals.format(msg.dataEnvio, 'HH:mm')}">10:00</small>
-                                </div>
-                                <p class="mb-1 text-dark small fw-bold" th:text="${msg.nomeGrupoDestino}">Grupo</p> 
-                                <small class="text-muted text-truncate d-block" style="max-width: 300px;" th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 50)}">Resumo...</small>
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
-                    <a href="/mensagens/enviadas" class="btn btn-link btn-sm text-decoration-none fw-bold text-primary">Ver todas as mensagens</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <script>
         // ... Mantenha suas funções JS existentes ...
          // 1. Função chamada ao clicar no "X"
