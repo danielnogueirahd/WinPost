@@ -857,3 +857,159 @@ body {
 
 /* Badge Anexo (correção) */
 .badge-attachment { background-color: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; font-weight: 400; font-size: 0.75rem; }
+
+
+
+
+
+/* =========================================
+   RENOVAÇÃO VISUAL - WINPOST
+========================================= */
+
+/* =========================================
+   ESTILO MINIMALISTA & CONFORTÁVEL
+========================================= */
+
+body {
+    color: #444; /* Texto ligeiramente mais suave que o preto */
+}
+
+/* --- Cards Limpos --- */
+.card-pro {
+    border: 1px solid #eef0f2; /* Borda sutil em vez de sombra pesada */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #f0f2f5 !important;
+    padding: 1.2rem 1.5rem !important; /* Padding reduzido */
+}
+
+.card-body {
+    padding: 1.5rem !important;
+}
+
+/* --- Inputs e Labels Minimalistas --- */
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.4rem;
+}
+
+.form-control, .form-select {
+    border: 1px solid #dee2e6; /* Borda padrão mais leve */
+    padding: 0.5rem 0.85rem; /* Padding padrão confortável */
+    border-radius: 8px;
+    font-size: 0.95rem;
+    box-shadow: none !important; /* Remove sombras de inputs */
+    transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: var(--bs-primary);
+}
+
+/* Input groups (datas) mais limpos */
+.input-group-text {
+    background-color: #fff; /* Fundo branco */
+    border: 1px solid #dee2e6;
+    border-right: none;
+    color: #adb5bd;
+}
+.input-group .form-control {
+    border-left: none;
+}
+
+/* --- Botões Refinados --- */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 0.5rem 1rem; /* Tamanho padrão */
+    box-shadow: none !important; /* Sem sombras pesadas nos botões */
+    transition: all 0.2s;
+}
+
+.btn-primary {
+     /* Se quiser uma cor primária mais suave, ajuste aqui. Ex: #5c7cfa */
+}
+
+.btn-outline-secondary {
+    border-color: #dee2e6;
+    color: #6c757d;
+}
+.btn-outline-secondary:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+    border-color: #cdd4da;
+}
+
+
+/* --- Tabela Minimalista --- */
+.table-responsive {
+    border: 1px solid #f0f2f5;
+    border-radius: 10px;
+}
+
+#tabelaSelecao thead th {
+    background-color: #fcfdfe; /* Fundo quase branco */
+    color: #8898aa;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #eef2f7;
+    padding: 0.8rem 0.5rem; /* Mais compacto */
+}
+
+#tabelaSelecao tbody td {
+    padding: 0.6rem 0.5rem; /* Altura da linha reduzida */
+    vertical-align: middle;
+    color: #525f7f;
+    border-bottom: 1px solid #f5f7f9;
+}
+
+/* Avatar Menor */
+.avatar-small {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f2f5;
+    color: var(--bs-primary);
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Linha Selecionada Suave */
+#tabelaSelecao tbody tr.bg-primary.bg-opacity-10 {
+    background-color: rgba(var(--bs-primary-rgb), 0.04) !important; /* Muito sutil */
+}
+
+/* Checkbox mais discreto */
+.form-check-input {
+    width: 1.1em;
+    height: 1.1em;
+    border-color: #dce3eb;
+    cursor: pointer;
+}
+
+/* Toolbar Limpa */
+.table-toolbar-area {
+    padding-bottom: 1rem;
+}
+
+/* Badges (Local) mais leves */
+.badge-light-pro {
+    background-color: #fff;
+    border: 1px solid #eef2f7;
+    color: #6c757d;
+    font-weight: normal;
+    padding: 0.4em 0.8em;
+}

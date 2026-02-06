@@ -46,6 +46,13 @@
 
         <div class="container py-4 mb-5">
             
+            <div th:if="${mensagem}" th:classappend="${'alert-' + tipoMensagem}" class="alert alert-dismissible fade show" role="alert">
+                <i th:if="${tipoMensagem == 'success'}" class="fa-solid fa-check-circle me-2"></i>
+                <i th:if="${tipoMensagem == 'danger'}" class="fa-solid fa-triangle-exclamation me-2"></i>
+                <span th:text="${mensagem}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <div class="row justify-content-center mb-4">
                 <div class="col-lg-10">
                     <div class="d-flex justify-content-between align-items-center">
@@ -78,11 +85,11 @@
                                     <span class="visually-hidden">Online</span>
                                 </span>
                             </div>
-                            <h5 class="fw-bold mb-1" th:text="${nomeUsuario}">Usuário</h5>
-                            <p class="text-muted small mb-3" th:text="${funcaoUsuario}">Função</p>
+                            <h5 class="fw-bold mb-1" th:text="${usuario.nome}">Usuário</h5>
+                            <p class="text-muted small mb-3" th:text="${usuario.cargo}">Função</p>
                             
                             <div class="d-grid gap-2 w-100">
-                                <button class="btn btn-outline-primary btn-sm rounded-pill"><i class="fa-solid fa-camera me-2"></i>Alterar Foto</button>
+                                <button class="btn btn-outline-primary btn-sm rounded-pill" disabled><i class="fa-solid fa-camera me-2"></i>Alterar Foto</button>
                             </div>
 
                             <hr class="w-100 my-4 text-muted opacity-25">
@@ -93,7 +100,7 @@
                                     <span class="badge bg-success bg-opacity-10 text-white px-3 py-2 rounded-pill">
                                         <i class="fa-solid fa-check-circle me-1"></i> Ativo
                                     </span>
-                                    <small class="text-muted">Desde 2025</small>
+                                    <small class="text-muted">WinPost 1.0</small>
                                 </div>
                             </div>
                         </div>
@@ -110,32 +117,32 @@
                             <h6 class="mb-0 fw-bold text-dark">Informações Pessoais</h6>
                         </div>
                         <div class="card-body pt-0">
-                            <form>
+                            <form th:action="@{/perfil/salvar}" method="post">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label-modern">Nome Completo</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-user text-muted"></i></span>
-                                            <input type="text" class="form-control border-start-0 ps-0" th:value="${nomeUsuario}">
+                                            <input type="text" name="nome" class="form-control border-start-0 ps-0" th:value="${usuario.nome}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label-modern">E-mail</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
-                                            <input type="email" class="form-control border-start-0 ps-0" th:value="${emailUsuario}">
+                                            <input type="email" name="email" class="form-control border-start-0 ps-0" th:value="${usuario.email}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label-modern">Telefone</label>
-                                        <input type="text" class="form-control" value="(11) 99999-9999">
+                                        <input type="text" class="form-control" value="(11) 99999-9999" disabled title="Em breve">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label-modern">Cargo / Departamento</label>
-                                        <input type="text" class="form-control" th:value="${funcaoUsuario}" readonly>
+                                        <input type="text" class="form-control" th:value="${usuario.cargo}" readonly>
                                     </div>
                                     <div class="col-12 text-end mt-4">
-                                        <button type="button" class="btn btn-primary btn-modern" onclick="alert('Salvo (simulação)!')">
+                                        <button type="submit" class="btn btn-primary btn-modern">
                                             <i class="fa-regular fa-floppy-disk me-2"></i> Salvar Alterações
                                         </button>
                                     </div>
@@ -152,18 +159,18 @@
                             <h6 class="mb-0 fw-bold text-dark">Segurança & Senha</h6>
                         </div>
                         <div class="card-body pt-0">
-                            <form>
+                            <form th:action="@{/perfil/senha}" method="post">
                                 <div class="row g-3 align-items-end">
                                     <div class="col-md-4">
                                         <label class="form-label-modern">Senha Atual</label>
-                                        <input type="password" class="form-control" placeholder="••••••">
+                                        <input type="password" name="senhaAtual" class="form-control" placeholder="••••••" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label-modern">Nova Senha</label>
-                                        <input type="password" class="form-control" placeholder="Nova senha">
+                                        <input type="password" name="novaSenha" class="form-control" placeholder="Nova senha" required>
                                     </div>
                                     <div class="col-md-4">
-                                        <button type="button" class="btn btn-outline-danger w-100 btn-modern" onclick="alert('Senha alterada (simulação)!')">
+                                        <button type="submit" class="btn btn-outline-danger w-100 btn-modern">
                                             Alterar Senha
                                         </button>
                                     </div>
@@ -181,7 +188,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Script simples para o toggle do menu (igual das outras páginas)
         function toggleMenu(menuId, iconId) {
             var menu = document.getElementById(menuId);
             var icon = document.getElementById(iconId);
