@@ -138,3 +138,54 @@
     background-color: #f8f9fa;
     border-left-color: #0d6efd; /* Detalhe azul ao passar o mouse */
 }
+
+
+/* --- Modal Moderno Agenda --- */
+
+/* Estilo dos Cards de Seleção (Radio Buttons) */
+.type-card {
+    border: 1px solid #eef0f2;
+    transition: all 0.2s ease-in-out;
+    background-color: #fff;
+    opacity: 0.7; /* Levemente apagado quando não selecionado */
+}
+
+.type-card:hover {
+    transform: translateY(-2px);
+    opacity: 1;
+    background-color: #f8f9fa;
+}
+
+/* Indicador de Check (ícone no canto) */
+.check-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Quando o Radio Button está CHECADO */
+.btn-check:checked + .type-card {
+    background-color: #fff;
+    border-color: currentColor; /* Pega a cor do texto (primary/info/danger) */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    opacity: 1;
+    border-width: 2px;
+}
+
+.btn-check:checked + .type-card .check-indicator {
+    opacity: 1;
+}
+
+/* Cores específicas para borda quando ativo */
+#tipoTarefa:checked + .type-card { border-color: #0dcaf0; }
+#tipoReuniao:checked + .type-card { border-color: #0d6efd; }
+#tipoImportante:checked + .type-card { border-color: #dc3545; }
+
+/* Input Título Estilizado */
+#inputTitulo:focus {
+    border-bottom: 2px solid #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.02) !important;
+}

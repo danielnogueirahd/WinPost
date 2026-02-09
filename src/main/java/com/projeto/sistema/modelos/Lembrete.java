@@ -1,6 +1,9 @@
 package com.projeto.sistema.modelos;
 
 import java.time.LocalDateTime;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +26,7 @@ public class Lembrete {
     private String descricao;
 
     @Column(name = "data_hora")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
     private LocalDateTime dataHora;
 
     // Valores esperados: "TAREFA", "REUNIAO", "IMPORTANTE"

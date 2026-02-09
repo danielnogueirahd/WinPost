@@ -1013,3 +1013,61 @@ body {
     font-weight: normal;
     padding: 0.4em 0.8em;
 }
+/* Quando um card personalizado é checado */
+.btn-check:checked + .type-card[style*="--cor-personalizada"] {
+    border-color: var(--cor-personalizada) !important;
+}
+/* Scroll horizontal suave para muitos tipos */
+#areaSelecaoTipos::-webkit-scrollbar {
+    height: 6px;
+}
+#areaSelecaoTipos::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 10px;
+}
+
+  /* Estilo dos Cards de Seleção */
+    .type-card {
+        border: 1px solid #eef0f2;
+        transition: all 0.2s ease-in-out;
+        background-color: #fff;
+        opacity: 0.7;
+    }
+    .type-card:hover {
+        transform: translateY(-2px);
+        opacity: 1;
+        background-color: #f8f9fa;
+    }
+    .check-indicator {
+        position: absolute;
+        top: 10px; right: 10px;
+        font-size: 1.2rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .btn-check:checked + .type-card {
+        background-color: #fff;
+        border-color: currentColor;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        opacity: 1;
+        border-width: 2px;
+    }
+    .btn-check:checked + .type-card .check-indicator {
+        opacity: 1;
+    }
+    /* Cores Específicas Padrão */
+    #tipoTarefa:checked + .type-card { border-color: #0dcaf0; }
+    #tipoReuniao:checked + .type-card { border-color: #0d6efd; }
+    
+    /* Tipos Personalizados */
+    .btn-check:checked + .type-card[style*="--cor-personalizada"] {
+        border-color: var(--cor-personalizada) !important;
+    }
+
+    /* Scroll Horizontal */
+    #areaSelecaoTipos::-webkit-scrollbar { height: 6px; }
+    #areaSelecaoTipos::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 10px; }
+    
+    /* Animação Fade */
+    .fade-in { animation: fadeIn 0.3s ease-in-out; } 
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }

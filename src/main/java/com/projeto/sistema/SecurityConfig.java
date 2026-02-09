@@ -16,31 +16,33 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                // Libera recursos estáticos e a página de login
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/login").permitAll()
+                // Libera estáticos e login
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/uploads/**", "/login").permitAll()
+                // Garante que a API de tipos possa ser acessada (precisa estar logado)
+                .requestMatchers("/api/**").authenticated()
                 .anyRequest().authenticated()
             )
             .formLogin(login -> login
-                .loginPage("/login") // Define onde está a tela de login
-                .defaultSuccessUrl("/administrativo", true)
+                .loginPage("/login")
+                .defaultSuccessUrl("/administrativo/agenda", true) // Sugestão: ir direto para agenda ou home
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )
-            .csrf(csrf -> csrf.disable());
+            // --- AQUI ESTÁ A MUDANÇA ---
+            // Mantemos a segurança CSRF ativa para o site, mas IGNORAMOS para a API
+            // Isso permite que o Javascript (AJAX) faça POST sem dar erro 403
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/**")
+            );
 
         return http.build();
     }
 
-    // Define que a criptografia das senhas será feita com BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // OBSERVAÇÃO: Não precisa configurar o 'userDetailsService' aqui.
-    // O Spring Security vai encontrar automaticamente a classe 
-    // 'ImplementsUserDetailsService' que criamos (anotada com @Service).
 }
