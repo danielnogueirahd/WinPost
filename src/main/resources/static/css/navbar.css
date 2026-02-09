@@ -12,36 +12,88 @@
     letter-spacing: 0.5px;
 }
 
-/* Links da Navbar */
+/* --- LINKS DA NAVBAR (Estilo Minimalista) --- */
 .nav-link {
     color: rgba(255, 255, 255, 0.9) !important;
     font-weight: 500;
     font-size: 0.95rem;
-    margin: 0 8px;
-    transition: all 0.2s;
+    margin: 0 10px; /* Um pouco mais de espaço lateral */
+    padding: 0.5rem 0; /* Padding vertical equilibrado */
     position: relative;
+    display: flex; /* Para alinhar a seta corretamente */
+    align-items: center;
+    gap: 5px; /* Espaço entre texto e seta */
+    transition: color 0.3s ease;
 }
 
 .nav-link:hover {
     color: #ffffff !important;
-    transform: translateY(-1px);
 }
 
+/* --- A LINHA MINIMALISTA (Animação do Centro) --- */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; /* Descola um pouquinho do texto */
+    left: 50%; /* Começa no meio exato */
+    transform: translateX(-50%); /* Garante a centralização */
+    width: 0%; /* Começa invisível */
+    height: 2px; /* Mais fina (Minimalista) */
+    border-radius: 2px;
+    
+    /* Cor: Azul Ciano Claro (contraste suave com o fundo azul) */
+    background-color: #cffafe; 
+    
+    /* Animação suave */
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ao passar o mouse, expande do centro */
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* --- ITEM ATIVO (Agenda/Home) --- */
 .nav-link.active {
     color: #ffffff !important;
     font-weight: 700;
 }
 
-/* Indicador (linha branca) abaixo do link ativo */
+/* O item ativo mantém a linha visível */
 .nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
     width: 100%;
-    height: 3px;
-    background-color: white;
-    border-radius: 2px;
+    background-color: #ffffff; /* Linha branca no ativo */
+}
+
+/* --- SETA DO DROPDOWN (Contatos) --- */
+/* Remove a seta padrão feia do Bootstrap */
+.dropdown-toggle::after {
+    display: none !important; 
+}
+
+/* Cria nossa própria seta usando CSS puro */
+.dropdown-toggle::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid rgba(255,255,255,0.7);
+    border-bottom: 2px solid rgba(255,255,255,0.7);
+    transform: rotate(45deg); /* Forma de V apontando pra baixo */
+    margin-left: 4px;
+    transition: transform 0.3s ease, border-color 0.3s;
+    order: 2; /* Garante que fique depois do texto */
+}
+
+/* Quando passa o mouse, a seta fica branca forte */
+.dropdown-toggle:hover::before {
+    border-color: #ffffff;
+}
+
+/* --- ROTAÇÃO DA SETA --- */
+/* Quando o menu abre (o Bootstrap adiciona a classe .show), a seta gira */
+.dropdown-toggle.show::before {
+    transform: rotate(225deg) translate(-2px, -2px); /* Gira para cima */
 }
 
 /* Botão de Ação "Escrever" (opcional) */

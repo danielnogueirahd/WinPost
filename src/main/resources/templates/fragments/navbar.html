@@ -5,6 +5,10 @@
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top" style="z-index: 1040;">
         <div class="container-fluid">
 
+            <a href="javascript:history.back()" class="text-white me-3 d-flex align-items-center text-decoration-none" title="Voltar" style="opacity: 0.8; transition: opacity 0.2s;">
+                <i class="fa-solid fa-chevron-left fs-5"></i>
+            </a>
+
             <a class="navbar-brand d-flex align-items-center me-auto me-lg-4" href="/administrativo"> 
                 <img src="/img/logoInput.png" alt="Logo" height="32" class="me-2 bg-primary rounded px-2 shadow-sm">
             </a>
@@ -15,11 +19,16 @@
 
             <div class="collapse navbar-collapse" id="navbarMain">
 
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="/administrativo" th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/mensagens/enviadas" th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a></li>
-                    
-                    <li class="nav-item"><a class="nav-link" href="/administrativo/agenda" th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a></li>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/administrativo" th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mensagens/enviadas" th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/administrativo/agenda" th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
+                    </li>
                     
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropContatos" role="button" data-bs-toggle="dropdown" 
@@ -34,7 +43,7 @@
                     </li>
                 </ul>
 
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 mt-3 mt-lg-0">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 mt-3 mt-lg-0 ms-lg-auto">
                     
                     <div class="d-flex align-items-center gap-3">
                         <a href="#" class="text-white text-decoration-none position-relative" data-bs-toggle="modal" data-bs-target="#modalLembretes" title="Lembretes Futuros"> 
@@ -43,8 +52,7 @@
                                 <span th:text="${qtdLembretes}">0</span>
                             </span>
                         </a> 
-                        
-                        </div>
+                    </div>
 
                     <div class="vr text-white opacity-50 d-none d-lg-block" style="height: 25px;"></div>
                     <hr class="text-white d-lg-none my-1"> 
@@ -65,10 +73,7 @@
                         </ul>
                     </div>
 
-                </div>
-            </div>
-        </div>
-    </nav>
+                </div> </div> </div> </nav>
 
     <div class="modal fade" id="modalLembretes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
@@ -110,11 +115,8 @@
     </div>
 
     <script>
-        // ... Mantenha suas funções JS existentes ...
-         // 1. Função chamada ao clicar no "X"
         function marcarEFechar(id, event) {
-            if(event) event.stopPropagation(); // Não abre o link
-
+            if(event) event.stopPropagation(); 
             fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
             .then(response => {
                 if(response.ok) {
@@ -125,22 +127,18 @@
             .catch(console.error);
         }
 
-        // 2. Função chamada ao clicar na mensagem para ler
         function lerENavegar(id, url, event) {
-            if(event) event.preventDefault(); // Espera o fetch antes de ir
-
+            if(event) event.preventDefault(); 
             fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
             .then(() => {
-                // Atualiza visualmente (opcional, pois vai mudar de página)
                 atualizarContadorBadge();
-                window.location.href = url; // Segue para a página
+                window.location.href = url; 
             })
             .catch(() => {
-                window.location.href = url; // Vai mesmo com erro
+                window.location.href = url; 
             });
         }
 
-        // Remove o item da lista com animação
         function removerItemVisualmente(id) {
             const elemento = document.getElementById('notificacao-' + id);
             if (elemento) {
@@ -153,7 +151,6 @@
             }
         }
 
-        // Atualiza o número vermelho no sino
         function atualizarContadorBadge() {
             const badge = document.getElementById('badgeGeral');
             const contador = document.getElementById('contadorTexto');
@@ -161,18 +158,17 @@
             if(badge && contador) {
                 let valorAtual = parseInt(contador.innerText);
                 let novoValor = valorAtual - 1;
-
                 if (novoValor <= 0) {
-                    badge.style.display = 'none'; // Some o badge se for 0
+                    badge.style.display = 'none'; 
                 } else {
                     contador.innerText = novoValor;
                 }
             }
         }
 
-        // Se apagar tudo, mostra "Sem novidades"
         function verificarListaVazia() {
             const container = document.getElementById('listaNotificacoesContainer');
+            if(!container) return; // Segurança caso o container não exista na tela
             const itens = container.querySelectorAll('[id^="notificacao-"]');
             if (itens.length === 0) {
                 const msgVazia = document.getElementById('msgSemNotificacaoJS');
