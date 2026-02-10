@@ -54,4 +54,39 @@ public class RelatorioControle {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
     }
+    
+ // ... (Método do relatório normal acima)
+
+    // NOVO MÉTODO: Geração de Etiquetas
+    @GetMapping("/relatorio/etiquetas")
+    public ResponseEntity<InputStreamResource> etiquetasContatosPdf(
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "cidade", required = false) String cidade,
+            @RequestParam(value = "estado", required = false) String estado,
+            @RequestParam(value = "grupoId", required = false) Long grupoId,
+            @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+        
+        // 1. Limpeza dos filtros (igual ao relatório)
+        if (nome != null && nome.isEmpty()) nome = null;
+        if (cidade != null && cidade.isEmpty()) cidade = null;
+        if (estado != null && estado.isEmpty()) estado = null;
+
+        // 2. Busca os contatos usando o MESMO filtro do relatório
+        // Isso é ótimo, pois garante que se você filtrou na tela, a etiqueta sai igual.
+        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId, dataInicio, dataFim);
+        
+        // 3. Chama o novo serviço de etiquetas
+        ByteArrayInputStream bis = relatorioService.gerarEtiquetas(contatos);
+
+        // 4. Configura o download do PDF
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=etiquetas_contatos.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
     }

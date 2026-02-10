@@ -12,8 +12,21 @@
     <link rel="stylesheet" href="/css/estilo.css">
 
     <style>
-        .table-small-font { font-size: 0.9rem; }
-        .table-header-nowrap th { white-space: nowrap; }
+        /* ESTILO EXTRA PARA TABELA COMPACTA */
+        .table-compact td, .table-compact th {
+            padding: 0.6rem 0.5rem; /* Menos espaçamento vertical */
+            vertical-align: middle;
+        }
+        .text-small { font-size: 0.85rem; }
+        .text-xsmall { font-size: 0.75rem; }
+        
+        /* Quebra de linha suave para endereços longos */
+        .endereco-cell {
+            min-width: 250px;
+            max-width: 350px;
+            white-space: normal;
+            line-height: 1.2;
+        }
     </style>
 </head>
 
@@ -29,69 +42,100 @@
             <div class="d-flex align-items-center ps-3 border-start border-4 border-primary">
                 <div>
                     <h2 class="fw-bold text-dark mb-0 h3">Contatos</h2>
-                    <p class="text-muted mb-0 small">Gerenciamento e manutenção da base.</p>
+                    <p class="text-muted mb-0 small">Gerenciamento inteligente da base.</p>
                 </div>
             </div>
 
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-light text-primary border shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRelatorio" title="Gerar Relatório PDF">
+                <button type="button" class="btn btn-light text-primary border shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRelatorio">
                     <i class="fa-solid fa-file-pdf"></i> <span class="d-none d-md-inline ms-1">Relatório</span>
                 </button>
-
                 <a href="/cadastroContatos" class="btn btn-primary fw-bold shadow-sm">
                     <i class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo</span>
                 </a>
             </div>
         </div>
 
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body p-3">
+                <form method="GET" action="/listarContatos">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-secondary"><i class="fas fa-search"></i></span>
+                                <input type="text" name="nome" class="form-control border-start-0 ps-0 shadow-none" placeholder="Buscar por nome..." th:value="${param.nome}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-secondary"><i class="fa-solid fa-location-dot"></i></span>
+                                <input type="text" name="cidade" class="form-control border-start-0 ps-0 shadow-none" placeholder="Cidade..." th:value="${param.cidade}">
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">Pesquisar</button>
+                            <button type="submit" class="btn btn-outline-secondary fw-bold shadow-sm" formtarget="_blank" formaction="/relatorio/etiquetas">
+                                <i class="fas fa-tags me-1"></i> Etiquetas
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle table-small-font table-header-nowrap" id="tabela">
-                        <thead class="bg-light">
+            <div class="card-body p-0"> <div class="table-responsive">
+                    <table class="table table-hover table-compact mb-0" id="tabela">
+                        <thead class="bg-light text-secondary">
                             <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th>Telefone</th>
-                                <th>CEP</th>
-                                <th>Rua</th>
-                                <th>Nº</th>
-                                <th>Bairro</th>
-                                <th>Cidade/UF</th>
-                                <th>Compl.</th>
-                                <th>Data</th>
-                                <th class="text-end">Ações</th>
+                                <th style="width: 5%;">ID</th>
+                                <th style="width: 25%;">Nome / Cadastro</th>
+                                <th style="width: 25%;">Contato</th>
+                                <th style="width: 35%;" class="d-none d-lg-table-cell">Endereço Completo</th>
+                                <th style="width: 10%;" class="text-end">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="contato : ${listaContatos}">
-                                <td class="fw-bold text-muted" th:text="${contato.id}"></td>
-                                <td class="fw-bold text-dark text-nowrap" th:text="${contato.nome}"></td>
-                                <td class="text-muted small" th:text="${contato.email}"></td>
-                                <td class="text-nowrap" th:text="${contato.telefone}"></td>
-                                <td class="text-nowrap small" th:text="${contato.cep}"></td>
-                                <td class="text-nowrap small" th:text="${contato.rua}"></td>
-                                <td class="text-center small" th:text="${contato.numero}"></td>
-                                <td class="text-nowrap small" th:text="${contato.bairro}"></td>
-                                <td>
-                                    <span class="badge bg-light text-primary border border-primary border-opacity-25 shadow-sm rounded-pill px-3 py-1">
-                                        <i class="fa-solid fa-location-dot me-1 small"></i> 
-                                        <span th:text="${contato.cidade}"></span> 
-                                        <span class="small text-secondary" th:text="'/' + ${contato.estado}"></span>
-                                    </span>
-                                </td>
-                                <td class="text-muted small text-truncate" style="max-width: 100px;" th:text="${contato.complemento}"></td>
-                                <td class="small text-nowrap" th:text="${contato.dataCadastro != null ? #temporals.format(contato.dataCadastro, 'dd/MM/yyyy') : '-'}"></td>
+                                <td class="fw-bold text-muted small" th:text="${contato.id}"></td>
 
-                                <td class="text-end text-nowrap">
+                                <td>
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 200px;" th:text="${contato.nome}"></div>
+                                    <div class="text-xsmall text-muted mt-1">
+                                        <i class="far fa-calendar ms-1"></i> 
+                                        <span th:text="${contato.dataCadastro != null ? #temporals.format(contato.dataCadastro, 'dd/MM/yyyy') : '-'}"></span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div th:if="${contato.email}" class="text-dark small mb-1 text-truncate" style="max-width: 220px;">
+                                        <i class="far fa-envelope me-1 text-primary small"></i> <span th:text="${contato.email}"></span>
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="fas fa-phone me-1 text-success small"></i> <span th:text="${contato.telefone}"></span>
+                                    </div>
+                                </td>
+
+                                <td class="d-none d-lg-table-cell endereco-cell">
+                                    <div class="text-dark small mb-1">
+                                        <span class="fw-bold" th:text="${contato.rua}"></span>, 
+                                        <span th:text="${contato.numero}"></span>
+                                        <span th:if="${contato.complemento}" class="text-muted" th:text="'(' + ${contato.complemento} + ')'"></span>
+                                    </div>
+                                    <div class="text-xsmall text-muted">
+                                        <span th:text="${contato.bairro}"></span> • 
+                                        <span th:text="${contato.cidade}"></span>/
+                                        <span th:text="${contato.estado}"></span> • 
+                                        CEP: <span th:text="${contato.cep}"></span>
+                                    </div>
+                                </td>
+
+                                <td class="text-end">
                                     <div class="btn-group">
-                                        <a th:href="@{/editarContatos/{id}(id=${contato.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                        <a th:href="@{/editarContatos/{id}(id=${contato.id})}" class="btn btn-sm btn-outline-primary border-0" title="Editar">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </a> 
-                                        
-                                        <button type="button" 
-                                                class="btn btn-sm btn-outline-danger" 
+                                        <button type="button" class="btn btn-sm btn-outline-danger border-0" 
                                                 th:data-url="@{/removerContatos/{id}(id=${contato.id})}"
                                                 onclick="confirmarExclusao(this.getAttribute('data-url'))"
                                                 title="Excluir">
@@ -114,7 +158,7 @@
     </div>
 
     <div th:replace="~{fragments/modals :: modalRelatorio}"></div>
-
+    
     <div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -144,42 +188,22 @@
     <script>
         $(document).ready(function () {
             $('#tabela').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
-                },
-                columnDefs: [
-                    { orderable: false, targets: -1 } 
-                ]
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
+                columnDefs: [ { orderable: false, targets: -1 } ],
+                paging: true,
+                searching: false, // Desliga a busca do DataTable pq já temos a nossa busca personalizada
+                lengthChange: false, // Remove o seletor de "mostrar 10 registros" para limpar a tela
+                pageLength: 10
             });
         });
 
-        // Toggle do Menu
-        function toggleMenu(menuId, iconId) {
-            var menu = document.getElementById(menuId);
-            var icon = document.getElementById(iconId);
-            if (menu.classList.contains('d-none')) {
-                menu.classList.remove('d-none');
-                if (icon) {
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                }
-            } else {
-                menu.classList.add('d-none');
-                if (icon) {
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                }
-            }
-        }
-
-        // --- FUNÇÃO DO MODAL DE EXCLUSÃO ---
         function confirmarExclusao(url) {
             var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
             document.getElementById('btnConfirmarExclusao').setAttribute('href', url);
             modal.show();
         }
     </script>
-
+    
     <script th:if="${mensagemSucesso}">
         Swal.fire({
             title : 'Sucesso!',
@@ -191,6 +215,5 @@
             timerProgressBar : true
         });
     </script>
-    
 </body>
 </html>

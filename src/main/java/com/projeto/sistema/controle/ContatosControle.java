@@ -39,20 +39,20 @@ public class ContatosControle {
 
  
     @GetMapping("/listarContatos")
-    public ModelAndView listar(@RequestParam(value = "grupoId", required = false) Long grupoId) {
+    public ModelAndView listar(
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "cidade", required = false) String cidade,
+            @RequestParam(value = "grupoId", required = false) Long grupoId) {
         
         ModelAndView mv = new ModelAndView("contatos/lista");
 
-        // Lógica de Filtro Apenas por Grupo (padrão agenda)
-        if (grupoId != null) {
-            mv.addObject("listaContatos", contatosRepositorio.findByGrupoId(grupoId));
-            mv.addObject("grupoSelecionado", grupoId); 
-        } else {
-            mv.addObject("listaContatos", contatosRepositorio.findAll());
-        }
+        // AQUI ESTÁ A MUDANÇA: Usamos o método novo 'filtrarBusca'
+        // Ele vai buscar por nome E cidade E grupo, tudo junto.
+        mv.addObject("listaContatos", contatosRepositorio.filtrarBusca(nome, cidade, grupoId));
 
         mv.addObject("listaEstados", UF.values());
         mv.addObject("listaGrupos", grupoRepositorio.findAll());
+        mv.addObject("grupoSelecionado", grupoId); 
 
         return mv;
     }
