@@ -4,221 +4,373 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Caixa de Mensagens | WinPost</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
+
+<style>
+    /* AJUSTE DE LAYOUT GERAL */
+    body {
+        padding-top: 80px;
+        background-color: #f8f9fa;
+    }
+
+    /* HEADER DA PÁGINA */
+    .page-header-actions {
+        background: #ffffff;
+        padding: 1.25rem 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #eef2f5;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.02);
+        margin-bottom: 2rem;
+    }
+
+    /* BARRA DE PESQUISA MODERNA */
+    .search-modern .form-control {
+        background-color: #f1f3f5;
+        border: 1px solid transparent;
+        border-radius: 50px;
+        padding-left: 2.5rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+    
+    .search-modern .form-control:focus {
+        background-color: #ffffff;
+        border-color: #0d6efd;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+    }
+
+    .search-modern {
+        position: relative;
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .search-modern .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        z-index: 5;
+        pointer-events: none;
+    }
+
+    /* SIDEBAR STICKY */
+    .sidebar-sticky {
+        position: sticky;
+        top: 100px;
+        height: calc(100vh - 100px);
+        overflow-y: auto;
+    }
+
+    /* CARDS DE MODELO */
+    .card-modelo {
+        border: 1px solid #f0f2f5;
+        transition: all 0.2s ease;
+    }
+    .card-modelo:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+        border-color: #e0e4e8;
+    }
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* MODAL CLEAN */
+    .modal-header-clean {
+        background-color: #fff;
+        border-bottom: 1px solid #f0f2f5;
+        padding: 1.5rem;
+    }
+    .form-label-small {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Cursor Pointer para ícones de ação */
+    .action-icon {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .action-icon:hover {
+        transform: scale(1.2);
+    }
+
+    @media (max-width: 991.98px) {
+        body { padding-top: 100px; }
+        .sidebar-sticky { position: static; height: auto; }
+        .page-header-actions { flex-direction: column; align-items: stretch; }
+        .search-modern { max-width: 100%; }
+    }
+</style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    <main class="flex-grow-1 main-content-area">
+    <main class="flex-grow-1">
         
-        <div class="container-fluid px-2 px-lg-4 mb-5">
+        <div class="container-fluid px-3 px-lg-5 mb-5"> 
             
-            <div class="d-lg-none mb-3">
+            <div class="d-lg-none mb-4">
                 <div class="d-grid mb-3">
-                    <a href="/grupos/gerenciar" class="btn btn-primary rounded-pill shadow-sm py-2">
-                        <i class="fa-solid fa-pen me-2"></i>Escrever Nova Mensagem
+                    <a href="/grupos/gerenciar" class="btn btn-primary rounded-pill shadow-sm py-2 fw-bold">
+                        <i class="fa-solid fa-pen me-2"></i>Nova Mensagem
                     </a>
                 </div>
                 
-                <div class="mobile-nav-container">
-                    <a href="/mensagens/caixa/ENTRADA" class="mobile-nav-link" th:classappend="${pastaAtiva == 'ENTRADA'} ? 'active'">
-                        <i class="fa-solid fa-folder-open"></i>Modelos 
-                        <span class="ms-1" th:if="${cntEntrada > 0}" th:text="'(' + ${cntEntrada} + ')'"></span>
+                <div class="d-flex gap-2 overflow-auto pb-2 mobile-nav-scroll">
+                    <a href="/mensagens/caixa/ENTRADA" class="btn btn-sm rounded-pill fw-bold text-nowrap" 
+                       th:classappend="${pastaAtiva == 'ENTRADA'} ? 'btn-primary' : 'btn-white border bg-white'">
+                        <i class="fa-solid fa-folder-open me-1"></i> Modelos
                     </a>
-                    <a href="/mensagens/caixa/ENVIADAS" class="mobile-nav-link" th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'active'">
-                        <i class="fa-regular fa-paper-plane"></i>Enviadas
-                        <span class="ms-1" th:if="${cntEnviadas > 0}" th:text="'(' + ${cntEnviadas} + ')'"></span>
+                    <a href="/mensagens/caixa/ENVIADAS" class="btn btn-sm rounded-pill fw-bold text-nowrap" 
+                       th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'btn-success text-white' : 'btn-white border bg-white'">
+                        <i class="fa-regular fa-paper-plane me-1"></i> Enviadas
                     </a>
-                    <a href="/mensagens/caixa/FAVORITOS" class="mobile-nav-link" th:classappend="${pastaAtiva == 'FAVORITOS'} ? 'active'">
-                        <i class="fa-regular fa-star"></i>Favoritos
-                        <span class="ms-1" th:if="${cntFavoritos > 0}" th:text="'(' + ${cntFavoritos} + ')'"></span>
-                    </a>
-                    <a href="/mensagens/caixa/IMPORTANTE" class="mobile-nav-link" th:classappend="${pastaAtiva == 'IMPORTANTE'} ? 'active'">
-                        <i class="fa-solid fa-bookmark"></i>Importante
-                        <span class="ms-1" th:if="${cntImportante > 0}" th:text="'(' + ${cntImportante} + ')'"></span>
-                    </a>
-                    <a href="/mensagens/caixa/LIXEIRA" class="mobile-nav-link" th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'active'">
-                        <i class="fa-regular fa-trash-can"></i>Lixeira
-                        <span class="ms-1" th:if="${cntLixeira > 0}" th:text="'(' + ${cntLixeira} + ')'"></span>
+                    <a href="/mensagens/caixa/LIXEIRA" class="btn btn-sm rounded-pill fw-bold text-nowrap" 
+                       th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'btn-danger text-white' : 'btn-white border bg-white'">
+                        <i class="fa-regular fa-trash-can me-1"></i> Lixeira
                     </a>
                 </div>
             </div>
 
-            <div class="row g-0 g-lg-4">
+            <div class="row g-4">
                 
-                <div class="col-lg-3 col-xl-2 d-none d-lg-block pt-2">
-                    <div class="d-grid pe-3 mb-4">
-                        <a href="/grupos/gerenciar" class="btn btn-compose rounded-4 fw-bold py-3 shadow-sm text-start ps-4">
-                            <i class="fa-solid fa-pen me-3"></i>Escrever
-                        </a>
+                <div class="col-lg-3 col-xl-2 d-none d-lg-block">
+                    <div class="sidebar-sticky">
+                        <div class="d-grid mb-4">
+                            <a href="/grupos/gerenciar" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">
+                                <i class="fa-solid fa-pen me-2"></i>Escrever
+                            </a>
+                        </div>
+                        
+                        <div class="list-group list-group-flush bg-transparent">
+                            <a href="/mensagens/caixa/ENTRADA" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+                               th:classappend="${pastaAtiva == 'ENTRADA'} ? 'bg-primary bg-opacity-10 text-primary' : 'text-secondary'">
+                                <i class="fa-solid fa-folder-open me-3"></i> Modelos
+                                <span class="badge bg-primary rounded-pill float-end" th:if="${cntEntrada > 0}" th:text="${cntEntrada}"></span>
+                            </a>
+                            <a href="/mensagens/caixa/ENVIADAS" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+                               th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'bg-success bg-opacity-10 text-success' : 'text-secondary'">
+                                <i class="fa-regular fa-paper-plane me-3"></i> Enviadas
+                                <span class="badge bg-success rounded-pill float-end" th:if="${cntEnviadas > 0}" th:text="${cntEnviadas}"></span>
+                            </a>
+                            <a href="/mensagens/caixa/FAVORITOS" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+                               th:classappend="${pastaAtiva == 'FAVORITOS'} ? 'bg-warning bg-opacity-10 text-warning' : 'text-secondary'">
+                                <i class="fa-regular fa-star me-3"></i> Favoritos
+                            </a>
+                            <a href="/mensagens/caixa/IMPORTANTE" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+                               th:classappend="${pastaAtiva == 'IMPORTANTE'} ? 'bg-info bg-opacity-10 text-info' : 'text-secondary'">
+                                <i class="fa-solid fa-bookmark me-3"></i> Importante
+                            </a>
+                            <a href="/mensagens/caixa/LIXEIRA" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mt-3 px-3 py-2 fw-bold"
+                               th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'bg-danger bg-opacity-10 text-danger' : 'text-secondary'">
+                                <i class="fa-regular fa-trash-can me-3"></i> Lixeira
+                                <span class="badge bg-danger rounded-pill float-end" th:if="${cntLixeira > 0}" th:text="${cntLixeira}"></span>
+                            </a>
+                        </div>
                     </div>
-                    
-                    <nav class="nav flex-column pe-2">
-                        <a href="/mensagens/caixa/ENTRADA" class="nav-link-custom" th:classappend="${pastaAtiva == 'ENTRADA'} ? 'active'">
-                            <div class="d-flex align-items-center"><i class="fa-solid fa-folder-open me-3" style="width: 20px;"></i> Modelos</div>
-                            <span class="menu-badge" th:if="${cntEntrada > 0}" th:text="${cntEntrada}"></span>
-                        </a>
-                        <a href="/mensagens/caixa/ENVIADAS" class="nav-link-custom" th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'active'">
-                            <div class="d-flex align-items-center"><i class="fa-regular fa-paper-plane me-3" style="width: 20px;"></i> Enviadas</div>
-                            <span class="menu-badge" th:if="${cntEnviadas > 0}" th:text="${cntEnviadas}"></span>
-                        </a>
-                        <a href="/mensagens/caixa/FAVORITOS" class="nav-link-custom" th:classappend="${pastaAtiva == 'FAVORITOS'} ? 'active'">
-                            <div class="d-flex align-items-center"><i class="fa-regular fa-star me-3" style="width: 20px;"></i> Favoritos</div>
-                            <span class="menu-badge" th:if="${cntFavoritos > 0}" th:text="${cntFavoritos}"></span>
-                        </a>
-                        <a href="/mensagens/caixa/IMPORTANTE" class="nav-link-custom" th:classappend="${pastaAtiva == 'IMPORTANTE'} ? 'active'">
-                            <div class="d-flex align-items-center"><i class="fa-solid fa-bookmark me-3" style="width: 20px;"></i> Importante</div>
-                            <span class="menu-badge" th:if="${cntImportante > 0}" th:text="${cntImportante}"></span>
-                        </a>
-                        <a href="/mensagens/caixa/LIXEIRA" class="nav-link-custom mt-3" th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'active'">
-                            <div class="d-flex align-items-center"><i class="fa-regular fa-trash-can me-3" style="width: 20px;"></i> Lixeira</div>
-                            <span class="menu-badge" th:if="${cntLixeira > 0}" th:text="${cntLixeira}"></span>
-                        </a>
-                    </nav>
                 </div>
 
                 <div class="col-lg-9 col-xl-10">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 px-1">
-                        <h4 class="fw-bold text-dark mb-3 mb-md-0 text-capitalize d-flex align-items-center">
-                            <span th:if="${pastaAtiva == 'ENTRADA'}"><i class="fa-solid fa-swatchbook me-2 text-primary"></i>Meus Modelos</span>
-                            <span th:unless="${pastaAtiva == 'ENTRADA'}">
-                                <i th:if="${pastaAtiva == 'LIXEIRA'}" class="fa-regular fa-trash-can me-2 text-danger"></i>
-                                <i th:if="${pastaAtiva == 'ENVIADAS'}" class="fa-regular fa-paper-plane me-2 text-success"></i>
-                                <span th:text="${pastaAtiva == 'ENVIADAS' ? 'Enviadas' : (pastaAtiva == 'LIXEIRA' ? 'Lixeira' : pastaAtiva)}">Caixa</span>
-                            </span>
-                        </h4>
-                        
-                        <div class="d-flex align-items-center gap-2">
-                            <div th:if="${pastaAtiva == 'ENTRADA'}" class="me-auto">
-                                <button class="btn btn-sm btn-outline-primary rounded-pill fw-bold" onclick="abrirModalCriacao()">
-                                    <i class="fa-solid fa-plus me-1"></i> Criar Novo
-                                </button>
+                    
+                    <div class="page-header-actions d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box me-3 p-2 bg-primary bg-opacity-10 rounded-circle d-none d-sm-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i th:if="${pastaAtiva == 'ENTRADA'}" class="fa-solid fa-swatchbook text-dark fs-5"></i>
+                                <i th:if="${pastaAtiva == 'ENVIADAS'}" class="fa-regular fa-paper-plane text-dark fs-5"></i>
+                                <i th:if="${pastaAtiva == 'LIXEIRA'}" class="fa-regular fa-trash-can text-dark fs-5"></i>
+                                <i th:if="${pastaAtiva == 'FAVORITOS'}" class="fa-solid fa-star text-dark fs-5"></i>
+                                <i th:if="${pastaAtiva == 'IMPORTANTE'}" class="fa-solid fa-bookmark text-dark fs-5"></i>
                             </div>
-
-                            <div th:if="${pastaAtiva == 'LIXEIRA'}" class="me-3 d-none d-md-block">
-                                <small class="text-danger fw-bold"><i class="fa-solid fa-circle-info me-1"></i>30 dias p/ exclusão</small>
+                            <div>
+                                <h4 class="fw-bold mb-0 text-dark">
+                                    <span th:if="${pastaAtiva == 'ENTRADA'}">Meus Modelos</span>
+                                    <span th:if="${pastaAtiva == 'ENVIADAS'}">Enviadas</span>
+                                    <span th:if="${pastaAtiva == 'LIXEIRA'}">Lixeira</span>
+                                    <span th:if="${pastaAtiva == 'FAVORITOS'}">Favoritos</span>
+                                    <span th:if="${pastaAtiva == 'IMPORTANTE'}">Importante</span>
+                                </h4>
+                                <small class="text-muted" th:if="${totalPaginas > 0}">
+                                    <span th:text="${totalItens}">0</span> registros encontrados
+                                </small>
                             </div>
+                        </div>
 
-                            <form th:action="@{'/mensagens/caixa/' + ${pastaAtiva}}" method="get" class="input-group" style="width: 100%; max-width: 300px;">
-                                <span class="input-group-text bg-white border-0 rounded-start-pill ps-3"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                                <input type="text" name="busca" class="form-control border-0 rounded-end-pill shadow-sm" placeholder="Pesquisar..." th:value="${termoBusca}">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end">
+                            <form th:action="@{'/mensagens/caixa/' + ${pastaAtiva}}" method="get" class="search-modern">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" name="busca" class="form-control" placeholder="Pesquisar..." th:value="${termoBusca}">
                             </form>
+
+                            <button th:if="${pastaAtiva == 'ENTRADA'}" 
+                                    class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-bold shadow-sm ms-2" 
+                                    onclick="abrirModalCriacao()">
+                                <i class="fa-solid fa-plus"></i>
+                                <span class="d-none d-md-inline">Novo</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="min-height: 400px;">
+                    <div th:if="${pastaAtiva == 'ENTRADA'}" class="row g-4">
+                        <div class="col-md-6 col-xl-4" th:each="msg : ${listaMensagens}">
+                            <div class="card h-100 card-modelo border-0 shadow-sm rounded-4">
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <span class="badge bg-primary bg-opacity-10 text-white rounded-pill px-3 py-2 small fw-bold">
+                                            <i class="fa-solid fa-tag me-1"></i> <span th:text="${msg.nomeGrupoDestino}">Categoria</span>
+                                        </span>
+                                        
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm rounded-circle text-muted" type="button" data-bs-toggle="dropdown">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                                                <li><a class="dropdown-item small" href="#" th:onclick="'toggleAction(' + ${msg.id} + ', \'favoritar\', this, \'star\')'"><i class="fa-regular fa-star me-2"></i>Favoritar</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item small text-danger" href="#" th:onclick="'abrirModalLixeira(' + ${msg.id} + ')'"><i class="fa-regular fa-trash-can me-2"></i>Mover para Lixeira</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="fw-bold text-dark mb-2 text-truncate" th:text="${msg.assunto}">Assunto</h5>
+                                    
+                                    <div class="text-muted small flex-grow-1 mb-4 line-clamp-3" th:text="${msg.conteudo.replaceAll('<[^>]*>', '')}">
+                                        Prévia do conteúdo...
+                                    </div>
+
+                                    <div class="mt-auto pt-3 border-top">
+                                        <button class="btn btn-outline-primary w-100 rounded-pill fw-bold" onclick="usarModelo(this)" th:data-id="${msg.id}">
+                                            <i class="fa-solid fa-pen-nib me-2"></i>Usar Modelo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12" th:if="${#lists.isEmpty(listaMensagens)}">
+                            <div class="text-center py-5 bg-white rounded-4 border border-dashed">
+                                <div class="mb-3">
+                                    <span class="bg-light p-4 rounded-circle d-inline-block text-muted">
+                                        <i class="fa-solid fa-layer-group fs-1 opacity-25"></i>
+                                    </span>
+                                </div>
+                                <h5 class="fw-bold text-dark">Nenhum modelo encontrado</h5>
+                                <p class="text-muted small mb-4">Crie modelos de mensagens para agilizar seus envios futuros.</p>
+                                <button class="btn btn-primary rounded-pill px-4 fw-bold" onclick="abrirModalCriacao()">
+                                    <i class="fa-solid fa-plus me-1"></i> Criar Primeiro Modelo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:unless="${pastaAtiva == 'ENTRADA'}" class="card border-0 shadow-sm rounded-4 overflow-hidden">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light text-secondary small text-uppercase">
+                                    <tr>
+                                        <th class="ps-4 py-3 border-0" style="width: 80px;"></th>
+                                        <th class="py-3 border-0 fw-bold" style="width: 20%;">Destino</th>
+                                        <th class="py-3 border-0 fw-bold">Assunto / Mensagem</th>
+                                        <th class="text-end pe-4 py-3 border-0 fw-bold" style="width: 20%;">Ações</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
-                                    <tr th:each="msg : ${listaMensagens}" class="row-clickable" th:onclick="'verMensagem(' + ${msg.id} + ')'">
+                                    <tr th:each="msg : ${listaMensagens}" class="cursor-pointer" th:onclick="'verMensagem(' + ${msg.id} + ')'">
                                         
-                                        <td class="ps-3 ps-md-4" style="width: 60px;" onclick="event.stopPropagation()">
-                                            <div class="d-flex gap-1 gap-md-2" th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'opacity-25' : ''">
-                                                <i class="fa-star action-icon" 
-                                                   th:classappend="${msg.favorito} ? 'fa-solid star-active' : 'fa-regular'"
-                                                   th:onclick="${pastaAtiva != 'LIXEIRA'} ? 'toggleAction(' + ${msg.id} + ', \'favoritar\', this, \'star\')' : ''"></i>
+                                        <td class="ps-4" onclick="event.stopPropagation()">
+                                            <div class="d-flex gap-2">
+                                                <i class="fa-star action-icon fs-6" 
+                                                   th:classappend="${msg.favorito} ? 'fa-solid text-warning' : 'fa-regular text-muted'"
+                                                   th:onclick="'toggleAction(' + ${msg.id} + ', \'favoritar\', this, \'star\')'"
+                                                   title="Favoritar"></i>
                                                 
-                                                <i class="fa-bookmark action-icon d-none d-md-inline"
-                                                   th:classappend="${msg.importante} ? 'fa-solid flag-active' : 'fa-regular'"
-                                                   th:onclick="${pastaAtiva != 'LIXEIRA'} ? 'toggleAction(' + ${msg.id} + ', \'importante\', this, \'flag\')' : ''"></i>
+                                                <i class="fa-bookmark action-icon fs-6"
+                                                   th:classappend="${msg.importante} ? 'fa-solid text-info' : 'fa-regular text-muted'"
+                                                   th:onclick="'toggleAction(' + ${msg.id} + ', \'importante\', this, \'flag\')'"
+                                                   title="Marcar como Importante"></i>
                                             </div>
-                                        </td>
-
-                                        <td style="width: 25%;" class="d-none d-md-table-cell">
-                                            <span th:if="${pastaAtiva == 'ENTRADA'}" class="badge bg-light text-secondary border">
-                                                <i class="fa-solid fa-tag me-1"></i> <span th:text="${msg.nomeGrupoDestino}">Categoria</span>
-                                            </span>
-                                            <span th:unless="${pastaAtiva == 'ENTRADA'}" class="fw-bold text-dark text-truncate d-block" style="max-width: 150px;" th:text="${msg.nomeGrupoDestino}">Grupo</span>
                                         </td>
 
                                         <td>
-                                            <div class="d-flex flex-column">
-                                                <small class="d-md-none text-muted fw-bold mb-1" th:text="${msg.nomeGrupoDestino}">Grupo</small>
+                                            <span class="fw-bold text-primary" th:text="${msg.nomeGrupoDestino}">Grupo</span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark text-truncate" style="max-width: 350px;" th:text="${msg.assunto}">Assunto</div>
+                                            <small class="text-muted text-truncate d-block" style="max-width: 350px;" th:text="${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 60)}">Conteúdo...</small>
+                                        </td>
+                                        
+                                        <td class="text-end pe-4" onclick="event.stopPropagation()">
+                                            <div class="d-flex justify-content-end align-items-center gap-3">
                                                 
-                                                <div class="text-truncate assunto-responsivo">
-                                                    <span class="fw-bold text-dark" th:text="${msg.assunto}">Assunto</span>
-                                                    <span th:if="${msg.nomesAnexos != null && msg.nomesAnexos != ''}" class="badge badge-attachment ms-1">
-                                                        <i class="fa-solid fa-paperclip"></i>
-                                                    </span>
-                                                    <span class="text-muted small ms-1 d-none d-sm-inline" th:text="' - ' + ${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 40)}">Conteúdo...</span>
+                                                <div class="text-end me-2">
+                                                    <div th:text="${#temporals.format(msg.dataEnvio, 'dd MMM')}" class="text-dark small fw-bold">Data</div>
+                                                    <div th:text="${#temporals.format(msg.dataEnvio, 'HH:mm')}" class="text-xs text-muted opacity-75">Hora</div>
+                                                </div>
+
+                                                <div th:if="${pastaAtiva != 'LIXEIRA'}">
+                                                    <button type="button" class="btn btn-light btn-sm rounded-circle text-muted hover-danger shadow-sm border" 
+                                                            th:onclick="'abrirModalLixeira(' + ${msg.id} + ')'" title="Mover para Lixeira">
+                                                        <i class="fa-regular fa-trash-can"></i>
+                                                    </button>
+                                                </div>
+
+                                                <div th:if="${pastaAtiva == 'LIXEIRA'}" class="d-flex gap-2">
+                                                    <button type="button" class="btn btn-light btn-sm rounded-circle text-success shadow-sm border" 
+                                                            th:onclick="'restaurarMensagem(' + ${msg.id} + ')'" title="Restaurar">
+                                                        <i class="fa-solid fa-trash-arrow-up"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-light btn-sm rounded-circle text-danger shadow-sm border" 
+                                                            th:onclick="'abrirModalExclusaoDefinitiva(' + ${msg.id} + ')'" title="Excluir Definitivamente">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </td>
-
-                                        <td style="width: 120px;" class="text-end pe-2 pe-md-3" onclick="event.stopPropagation()">
-                                            
-                                            <button th:if="${pastaAtiva == 'ENTRADA'}" 
-                                                    class="btn btn-primary btn-sm rounded-pill px-2 px-md-3 fw-bold me-1 shadow-sm"
-                                                    onclick="usarModelo(this)" 
-                                                    th:data-id="${msg.id}"
-                                                    title="Usar este modelo">
-                                                <span class="d-none d-md-inline">Usar</span> <i class="fa-solid fa-arrow-right"></i>
-                                            </button>
-
-                                            <button th:if="${pastaAtiva != 'LIXEIRA'}" 
-                                                    class="btn btn-light btn-sm rounded-circle text-muted hover-danger" 
-                                                    th:onclick="'abrirModalLixeira(' + ${msg.id} + ')'" title="Mover para Lixeira">
-                                                <i class="fa-regular fa-trash-can"></i>
-                                            </button>
-
-                                            <div th:if="${pastaAtiva == 'LIXEIRA'}" class="d-flex justify-content-end gap-2">
-                                                <button class="btn btn-light btn-sm rounded-circle text-success" 
-                                                        th:onclick="'restaurarMensagem(' + ${msg.id} + ')'" title="Restaurar">
-                                                    <i class="fa-solid fa-trash-arrow-up"></i>
-                                                </button>
-                                                <button class="btn btn-light btn-sm rounded-circle text-danger" 
-                                                        th:onclick="'abrirModalExclusaoDefinitiva(' + ${msg.id} + ')'" title="Excluir Definitivamente">
-                                                    <i class="fa-solid fa-xmark"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-
-                                        <td class="pe-4 text-end d-none d-md-table-cell" style="width: 100px;">
-                                            <span class="small fw-bold text-muted" th:text="${#temporals.format(msg.dataEnvio, 'dd MMM')}">Data</span>
-                                        </td>
                                     </tr>
-                                    
                                     <tr th:if="${#lists.isEmpty(listaMensagens)}">
-                                        <td colspan="5" class="text-center py-5 text-muted">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <i class="fa-regular fa-folder-open fs-1 mb-3 opacity-25"></i>
-                                                <p class="fw-bold mb-0" th:text="${pastaAtiva == 'LIXEIRA'} ? 'Lixeira vazia.' : 'Nenhuma mensagem encontrada.'">Vazio</p>
-                                            </div>
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="fa-regular fa-folder-open fs-2 mb-2 opacity-25 d-block"></i>
+                                            Nenhum registro encontrado.
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        
-                        <div class="card-footer bg-white border-0 py-3" th:if="${totalPaginas > 1}">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    Página <span th:text="${paginaAtual + 1}">1</span> de <span th:text="${totalPaginas}">10</span>
-                                </small>
-                                
-                                <nav aria-label="Navegação de páginas">
-                                    <ul class="pagination pagination-sm mb-0">
-                                        <li class="page-item" th:classappend="${paginaAtual == 0} ? 'disabled'">
-                                            <a class="page-link rounded-start-pill border-0 bg-light text-dark" 
-                                               th:href="@{'/mensagens/caixa/' + ${pastaAtiva}(page=${paginaAtual - 1}, busca=${termoBusca}, comAnexo=${filtroAnexo}, data=${filtroData})}">
-                                                <i class="fa-solid fa-chevron-left"></i> Anterior
-                                            </a>
-                                        </li>
-                                        <li class="page-item" th:classappend="${paginaAtual >= totalPaginas - 1} ? 'disabled'">
-                                            <a class="page-link rounded-end-pill border-0 bg-light text-dark ms-1" 
-                                               th:href="@{'/mensagens/caixa/' + ${pastaAtiva}(page=${paginaAtual + 1}, busca=${termoBusca}, comAnexo=${filtroAnexo}, data=${filtroData})}">
-                                                Próximo <i class="fa-solid fa-chevron-right"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
-                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex justify-content-center" th:if="${totalPaginas > 1}">
+                        <nav>
+                            <ul class="pagination pagination-sm shadow-sm">
+                                <li class="page-item" th:classappend="${paginaAtual == 0} ? 'disabled'">
+                                    <a class="page-link border-0 bg-white text-dark rounded-start-pill px-3" th:href="@{'/mensagens/caixa/' + ${pastaAtiva}(page=${paginaAtual - 1})}">
+                                        <i class="fa-solid fa-chevron-left me-1"></i> Anterior
+                                    </a>
+                                </li>
+                                <li class="page-item disabled px-2 d-flex align-items-center">
+                                    <span class="small text-muted" th:text="'Pág ' + (${paginaAtual} + 1) + ' de ' + ${totalPaginas}">1 de 1</span>
+                                </li>
+                                <li class="page-item" th:classappend="${paginaAtual >= totalPaginas - 1} ? 'disabled'">
+                                    <a class="page-link border-0 bg-white text-dark rounded-end-pill px-3" th:href="@{'/mensagens/caixa/' + ${pastaAtiva}(page=${paginaAtual + 1})}">
+                                        Próximo <i class="fa-solid fa-chevron-right ms-1"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -226,61 +378,55 @@
 
     <div class="modal fade" id="modalNovoModelo" tabindex="-1">
         <div class="modal-dialog modal-lg">
-            <div class="modal-content shadow-lg">
-                <div class="modal-header bg-light">
-                    <h5 class="modal-title fw-bold">Novo Modelo</h5>
+            <div class="modal-content shadow-lg border-0 rounded-4">
+                <div class="modal-header-clean">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-wand-magic-sparkles text-primary me-2"></i>Novo Modelo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/mensagens/salvarModelo" method="post">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Categoria (Ex: Boas Vindas)</label>
-                            <input type="text" name="categoria" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Assunto</label>
-                            <input type="text" name="assunto" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Conteúdo</label>
-                            <textarea class="form-control" name="conteudo" rows="6" placeholder="Escreva aqui..."></textarea>
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label-small">Categoria</label>
+                                <input type="text" name="categoria" class="form-control bg-light" placeholder="Ex: Promoção, Aviso..." required>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label-small">Assunto do E-mail</label>
+                                <input type="text" name="assunto" class="form-control bg-light" placeholder="Assunto que aparecerá para o cliente" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-small">Conteúdo da Mensagem</label>
+                                <textarea name="conteudo" class="form-control bg-light" rows="8" placeholder="Escreva o corpo da mensagem aqui..." required></textarea>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light">
-                        <button type="submit" class="btn btn-primary rounded-pill px-4">Salvar Modelo</button>
+                    <div class="modal-footer border-top-0 px-4 pb-4">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold text-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                            <i class="fa-solid fa-check me-2"></i>Salvar Modelo
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalLeitura" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalLeitura" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content modal-content-custom shadow-lg">
-                <div class="modal-header-custom d-flex align-items-center justify-content-between p-3 border-bottom">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style="width:40px; height:40px; font-weight:bold;" id="modalAvatar">W</div>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-dark" id="modalAssunto" style="font-size: 1.1rem;">Assunto</h5>
-                            <small class="text-muted"><i class="fa-regular fa-calendar-check me-1"></i> <span id="modalData"></span></small>
-                        </div>
-                    </div>
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold" id="modalAssunto">Assunto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-4 bg-light bg-opacity-25">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label class="small text-uppercase text-muted fw-bold mb-1">Grupo/Categoria</label>
-                            <div><span class="badge bg-white text-primary border rounded-pill px-3 py-2 shadow-sm"><i class="fa-solid fa-users me-2"></i> <span id="modalGrupo"></span></span></div>
-                        </div>
-                    </div>
-                    <div class="message-container bg-white p-3 rounded shadow-sm border mb-4" id="modalConteudo" style="min-height: 100px;"></div>
-                    <div id="areaAnexosModal" class="d-none">
-                        <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-paperclip me-2 text-primary"></i>Anexos</h6>
-                        <div id="listaAnexosDownload" class="d-flex flex-wrap gap-3"></div>
-                    </div>
+                <div class="px-4 pb-2 pt-1">
+                    <span class="badge bg-light text-dark border">Modelo Salvo</span>
                 </div>
-                <div class="modal-footer border-0 p-3 bg-light"><button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button></div>
+                <div class="modal-body p-4">
+                    <div class="bg-light rounded-3 p-4 border" id="modalConteudo" style="min-height: 150px;"></div>
+                </div>
+                <div class="modal-footer border-top-0 px-4 pb-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -289,21 +435,24 @@
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg rounded-4 text-center">
                 <div class="modal-body p-4">
-                    <h5 class="fw-bold mb-3">Mover para a Lixeira?</h5>
+                    <div class="mb-3 text-warning"><i class="fa-solid fa-triangle-exclamation fs-1"></i></div>
+                    <h6 class="fw-bold mb-3">Mover para a Lixeira?</h6>
                     <div class="d-flex gap-2 justify-content-center">
                         <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Não</button>
-                        <button type="button" class="btn btn-warning rounded-pill px-3 fw-bold" id="btnConfirmarLixeira">Sim</button>
+                        <button type="button" class="btn btn-warning rounded-pill px-3 fw-bold text-dark" id="btnConfirmarLixeira">Sim</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="modal fade" id="modalExclusaoDefinitiva" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg rounded-4 text-center">
                 <div class="modal-body p-4">
-                    <h5 class="fw-bold text-danger mb-1">Excluir Definitivamente?</h5>
+                    <div class="mb-3 text-danger"><i class="fa-solid fa-trash-can fs-1"></i></div>
+                    <h6 class="fw-bold text-danger mb-1">Excluir para sempre?</h6>
+                    <p class="small text-muted">Essa ação não pode ser desfeita.</p>
                     <div class="d-flex gap-2 justify-content-center">
                         <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
                         <button type="button" class="btn btn-danger rounded-pill px-3 fw-bold" id="btnConfirmarExclusaoDefinitiva">Excluir</button>
@@ -312,33 +461,61 @@
             </div>
         </div>
     </div>
-<div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-	
+    
     <script>
+        // --- FUNÇÕES GERAIS ---
         function usarModelo(btn) {
-            let id = $(btn).data('id');
-            window.location.href = '/mensagens/preparar-envio/' + id;
+            window.location.href = '/mensagens/preparar-envio/' + $(btn).data('id');
         }
-
         function abrirModalCriacao() {
             new bootstrap.Modal(document.getElementById('modalNovoModelo')).show();
         }
+        function verMensagem(id) {
+            $.get("/mensagens/detalhes/" + id, function(data) {
+                $('#modalAssunto').text(data.assunto);
+                $('#modalConteudo').html(data.conteudo);
+                new bootstrap.Modal(document.getElementById('modalLeitura')).show();
+            });
+        }
 
+        // [ALTERAÇÃO 3] FUNÇÃO PARA FAVORITAR/IMPORTANTE
+        function toggleAction(id, action, element, type) {
+            $.post('/mensagens/' + action + '/' + id, function() {
+                if (type === 'star') {
+                    $(element).toggleClass('fa-solid text-warning fa-regular text-muted');
+                } else if (type === 'flag') {
+                    $(element).toggleClass('fa-solid text-info fa-regular text-muted');
+                }
+            }).fail(function() {
+                alert("Erro ao atualizar status.");
+            });
+        }
+
+        // --- LÓGICA DE EXCLUSÃO ---
         let idSelecionado = null;
+
         function abrirModalLixeira(id) { 
             idSelecionado = id; 
             new bootstrap.Modal(document.getElementById('modalLixeira')).show(); 
         }
         
-        // Listener para confirmar envio para lixeira
         document.getElementById('btnConfirmarLixeira').addEventListener('click', () => { 
-            if(idSelecionado) $.post('/mensagens/lixeira/' + idSelecionado, () => location.reload()); 
+            if(idSelecionado) {
+                $.post('/mensagens/lixeira/' + idSelecionado, function() {
+                    location.reload(); 
+                }).fail(function() {
+                    alert("Erro ao mover para a lixeira.");
+                });
+            }
         });
 
         function restaurarMensagem(id) { 
-            $.post('/mensagens/restaurar/' + id, () => location.reload()); 
+            $.post('/mensagens/restaurar/' + id, function() {
+                location.reload(); 
+            });
         }
 
         function abrirModalExclusaoDefinitiva(id) { 
@@ -346,34 +523,21 @@
             new bootstrap.Modal(document.getElementById('modalExclusaoDefinitiva')).show(); 
         }
         
-        // Listener para confirmar exclusão definitiva
         document.getElementById('btnConfirmarExclusaoDefinitiva').addEventListener('click', () => { 
-            if(idSelecionado) $.ajax({ url: '/mensagens/excluir/' + idSelecionado, type: 'DELETE', success: () => location.reload() }); 
+            if(idSelecionado) {
+                $.ajax({
+                    url: '/mensagens/excluir/' + idSelecionado,
+                    type: 'DELETE',
+                    success: function() {
+                        location.reload();
+                    },
+                    error: function() {
+                        alert("Erro ao excluir mensagem.");
+                    }
+                });
+            }
         });
-        
-        function toggleAction(id, action, element, type) {
-            $.post('/mensagens/' + action + '/' + id, function(state) {
-                if(type === 'star') $(element).toggleClass('fa-solid star-active fa-regular');
-                if(type === 'flag') $(element).toggleClass('fa-solid flag-active fa-regular');
-            });
-        }
-
-        function verMensagem(id) {
-            $.get("/mensagens/detalhes/" + id, function(data) {
-                $('#modalAssunto').text(data.assunto);
-                $('#modalConteudo').html(data.conteudo);
-                $('#modalGrupo').text(data.nomeGrupoDestino);
-                $('#modalAvatar').text(data.nomeGrupoDestino ? data.nomeGrupoDestino.charAt(0).toUpperCase() : 'W');
-                if (data.dataEnvio) {
-                    const dt = new Date(data.dataEnvio);
-                    $('#modalData').text(dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString());
-                }
-                
-                $('#areaAnexosModal').addClass('d-none'); 
-                
-                new bootstrap.Modal(document.getElementById('modalLeitura')).show();
-            });
-        }
     </script>
+
 </body>
 </html>

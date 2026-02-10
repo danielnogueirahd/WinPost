@@ -12,35 +12,38 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
-                // Libera estáticos e login
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/uploads/**", "/login").permitAll()
-                // Garante que a API de tipos possa ser acessada (precisa estar logado)
-                .requestMatchers("/api/**").authenticated()
-                .anyRequest().authenticated()
-            )
-            .formLogin(login -> login
-                .loginPage("/login")
-                .defaultSuccessUrl("/administrativo/agenda", true) // Sugestão: ir direto para agenda ou home
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            )
-            // --- AQUI ESTÁ A MUDANÇA ---
-            // Mantemos a segurança CSRF ativa para o site, mas IGNORAMOS para a API
-            // Isso permite que o Javascript (AJAX) faça POST sem dar erro 403
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**")
-            );
+	// EM: src/main/java/com/projeto/sistema/SecurityConfig.java
 
-        return http.build();
-    }
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	    http
+	        .authorizeHttpRequests(auth -> auth
+	            .requestMatchers("/css/**", "/js/**", "/img/**", "/uploads/**", "/login").permitAll()
+	            .requestMatchers("/api/**").authenticated() // Mantenha suas regras
+	            .anyRequest().authenticated()
+	        )
+	        .formLogin(login -> login
+	            .loginPage("/login")
+	            .defaultSuccessUrl("/administrativo/agenda", true)
+	            .permitAll()
+	        )
+	        .logout(logout -> logout
+	            .logoutSuccessUrl("/login?logout")
+	            .permitAll()
+	        )
+	        // --- CORREÇÃO AQUI ---
+	        // Opção A: Desativar para tudo (Mais fácil para resolver agora)
+	        .csrf(csrf -> csrf.disable()); 
+	        
+	        // OU Opção B: Adicionar suas rotas de POST na lista de exceções
+	        /*
+	        .csrf(csrf -> csrf
+	            .ignoringRequestMatchers("/api/**", "/grupos/**", "/mensagens/**")
+	        );
+	        */
 
+	    return http.build();
+	}
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

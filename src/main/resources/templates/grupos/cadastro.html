@@ -70,7 +70,7 @@
     <div class="col-lg-5 mb-4 mb-lg-0">
         <div class="sticky-column" style="top: 90px; z-index: 10;">
 
-            <form action="/grupos/salvar" method="post" id="formGrupo" th:object="${grupo}">
+            <form th:action="@{/grupos/salvar}" method="post" id="formGrupo" th:object="${grupo}">
                 <div class="card card-pro h-100">
                     <div class="card-body">
                         
