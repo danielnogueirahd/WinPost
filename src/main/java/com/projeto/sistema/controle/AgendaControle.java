@@ -7,13 +7,14 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.GetMapping; // Usaremos GetMapping
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,11 +25,9 @@ import com.projeto.sistema.modelos.DetalheAgendaDTO;
 import com.projeto.sistema.modelos.EventoAgenda;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.MensagemLog;
-import com.projeto.sistema.modelos.TipoEvento; 
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
 import com.projeto.sistema.repositorios.MensagemLogRepositorio;
-import com.projeto.sistema.repositorios.TipoEventoRepositorio; // <--- SEU CÓDIGO NÃO TINHA ISSO
 
 @Controller
 public class AgendaControle {
@@ -41,9 +40,6 @@ public class AgendaControle {
 
     @Autowired
     private LembreteRepositorio lembreteRepositorio;
-    
-    @Autowired
-    private TipoEventoRepositorio tipoEventoRepositorio; // <--- NEM ISSO
 
     @GetMapping("/administrativo/agenda")
     public ModelAndView acessarAgenda(@RequestParam(required = false) Integer mes, 
@@ -63,15 +59,6 @@ public class AgendaControle {
         List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetween(inicioMes, fimMes);
         List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetween(inicioMes, fimMes);
         
-        // --- ADICIONE ISTO PARA CARREGAR OS TIPOS NO MODAL ---
-        List<TipoEvento> tiposPersonalizados = tipoEventoRepositorio.findAll();
-        mv.addObject("tiposPersonalizados", tiposPersonalizados); 
-        // -----------------------------------------------------
-        
-        // Cria mapa para verificar cores na listagem
-        Map<String, TipoEvento> mapaTipos = tiposPersonalizados.stream()
-            .collect(Collectors.toMap(TipoEvento::getNome, t -> t));
-
         List<EventoAgenda> eventos = new ArrayList<>();
         eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
 
@@ -89,7 +76,6 @@ public class AgendaControle {
             
             if ("REUNIAO".equalsIgnoreCase(l.getTipo())) corClasse = "event-reuniao";
             else if ("IMPORTANTE".equalsIgnoreCase(l.getTipo())) corClasse = "event-importante";
-            else if (mapaTipos.containsKey(l.getTipo())) corClasse = "event-tarefa"; // Mantém azul ou personaliza se quiser
             
             eventos.add(new EventoAgenda(l.getDataHora().toLocalDate(), l.getTipo(), l.getTitulo(), corClasse));
         }
@@ -116,34 +102,57 @@ public class AgendaControle {
         return "redirect:/administrativo/agenda";
     }
 
+    // --- CORREÇÃO AQUI: Mudamos para @GetMapping para evitar erro 403/405 ---
+    @GetMapping("/administrativo/agenda/remover/{id}") 
+    @ResponseBody
+    public ResponseEntity<?> removerEvento(@PathVariable Long id) {
+        try {
+            if (lembreteRepositorio.existsById(id)) {
+                lembreteRepositorio.deleteById(id);
+                return ResponseEntity.ok().body("Evento excluído com sucesso.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento não encontrado.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir: " + e.getMessage());
+        }
+    }
+    // ------------------------------------------------------------------------
+
     @GetMapping("/administrativo/agenda/detalhes")
     @ResponseBody 
     public List<DetalheAgendaDTO> obterDetalhesDia(
             @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         
         List<DetalheAgendaDTO> detalhes = new ArrayList<>();
-        // ... (lógica de detalhes igual ao anterior) ...
-        // Vou resumir aqui para caber, mantenha o seu método obterDetalhesDia se já estiver funcionando, 
-        // ou copie do passo anterior se precisar. O importante é o método acessarAgenda acima.
         
-        // (Replicando lógica básica para garantir compilação se copiar tudo)
+        // 1. Aniversários
         List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(data.getDayOfMonth(), data.getMonthValue());
-        for (Contatos c : nivers) detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
+        for (Contatos c : nivers) {
+            detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
+        }
         
+        // 2. Envios
         LocalDateTime inicio = data.atStartOfDay();
         LocalDateTime fim = data.atTime(LocalTime.MAX);
         List<MensagemLog> msgs = mensagemRepositorio.findByDataEnvioBetween(inicio, fim);
-        for (MensagemLog m : msgs) detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), "Grupo: " + m.getNomeGrupoDestino(), m.getId()));
+        for (MensagemLog m : msgs) {
+            detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), "Grupo: " + m.getNomeGrupoDestino(), m.getId()));
+        }
         
+        // 3. Lembretes (Tarefas)
         List<Lembrete> lembretesDia = lembreteRepositorio.findByDataHoraBetween(inicio, fim);
         for (Lembrete l : lembretesDia) {
             String subtitulo = (l.getContato() != null) ? "Com: " + l.getContato().getNome() : l.getDescricao();
             detalhes.add(new DetalheAgendaDTO(l.getTipo(), l.getTitulo(), subtitulo, l.getId()));
         }
         
+        // 4. Feriados
         List<EventoAgenda> feriados = getFeriadosDoMes(data.getMonthValue(), data.getYear());
         for (EventoAgenda f : feriados) {
-            if (f.getData().isEqual(data)) detalhes.add(new DetalheAgendaDTO("FERIADO", f.getTitulo(), "Feriado Nacional", null));
+            if (f.getData().isEqual(data)) {
+                detalhes.add(new DetalheAgendaDTO("FERIADO", f.getTitulo(), "Feriado Nacional", null));
+            }
         }
 
         return detalhes;
