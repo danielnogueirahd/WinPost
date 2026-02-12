@@ -9,110 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
 
-<style>
-    /* AJUSTE DE LAYOUT GERAL */
-    body {
-        padding-top: 80px;
-        background-color: #f8f9fa;
-    }
 
-    /* HEADER DA PÁGINA */
-    .page-header-actions {
-        background: #ffffff;
-        padding: 1.25rem 1.5rem;
-        border-radius: 16px;
-        border: 1px solid #eef2f5;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.02);
-        margin-bottom: 2rem;
-    }
-
-    /* BARRA DE PESQUISA MODERNA */
-    .search-modern .form-control {
-        background-color: #f1f3f5;
-        border: 1px solid transparent;
-        border-radius: 50px;
-        padding-left: 2.5rem;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-    }
-    
-    .search-modern .form-control:focus {
-        background-color: #ffffff;
-        border-color: #0d6efd;
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
-    }
-
-    .search-modern {
-        position: relative;
-        width: 100%;
-        max-width: 350px;
-    }
-
-    .search-modern .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #adb5bd;
-        z-index: 5;
-        pointer-events: none;
-    }
-
-    /* SIDEBAR STICKY */
-    .sidebar-sticky {
-        position: sticky;
-        top: 100px;
-        height: calc(100vh - 100px);
-        overflow-y: auto;
-    }
-
-    /* CARDS DE MODELO */
-    .card-modelo {
-        border: 1px solid #f0f2f5;
-        transition: all 0.2s ease;
-    }
-    .card-modelo:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
-        border-color: #e0e4e8;
-    }
-    .line-clamp-3 {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    /* MODAL CLEAN */
-    .modal-header-clean {
-        background-color: #fff;
-        border-bottom: 1px solid #f0f2f5;
-        padding: 1.5rem;
-    }
-    .form-label-small {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #6c757d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    /* Cursor Pointer para ícones de ação */
-    .action-icon {
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    .action-icon:hover {
-        transform: scale(1.2);
-    }
-
-    @media (max-width: 991.98px) {
-        body { padding-top: 100px; }
-        .sidebar-sticky { position: static; height: auto; }
-        .page-header-actions { flex-direction: column; align-items: stretch; }
-        .search-modern { max-width: 100%; }
-    }
-</style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -411,26 +308,61 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalLeitura" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-                    <h5 class="modal-title fw-bold" id="modalAssunto">Assunto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal fade" id="modalLeitura" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            
+            <div class="modal-header border-bottom-0 px-4 pt-4 pb-2 bg-white">
+                <div class="d-flex align-items-center gap-3 w-100">
+                    <h5 class="modal-title fw-bold text-dark flex-grow-1" id="modalAssunto">Carregando...</h5>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light btn-sm rounded-circle text-muted" onclick="imprimirMensagem()" title="Imprimir">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
+                        
+                        <button type="button" class="btn btn-light btn-sm rounded-circle text-danger" id="btnExcluirModal" title="Mover para Lixeira">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                 </div>
-                <div class="px-4 pb-2 pt-1">
-                    <span class="badge bg-light text-dark border">Modelo Salvo</span>
+            </div>
+
+            <div class="px-4 pb-3">
+                <div class="d-flex align-items-center mt-2">
+                    <div id="modalAvatar" class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle bg-primary text-white fw-bold me-3" 
+                         style="width: 48px; height: 48px; font-size: 1.2rem;">
+                        -
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-dark" id="modalGrupo">...</span>
+                            <small class="text-muted" id="modalData">...</small>
+                        </div>
+                        <div class="small text-secondary">
+                            Status: <span class="badge bg-light text-secondary border fw-normal">Enviada</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body p-4">
-                    <div class="bg-light rounded-3 p-4 border" id="modalConteudo" style="min-height: 150px;"></div>
+            </div>
+
+            <hr class="m-0 border-light">
+
+            <div class="modal-body p-4 bg-light bg-opacity-10">
+                <div class="bg-white p-4 rounded-3 border shadow-sm" style="min-height: 200px;">
+                    <div id="modalConteudo" class="message-content text-break">
+                        </div>
                 </div>
-                <div class="modal-footer border-top-0 px-4 pb-4">
-                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
-                </div>
+            </div>
+
+            <div class="modal-footer border-top-0 px-4 py-3 bg-white">
+                <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Fechar</button>
             </div>
         </div>
     </div>
-
+</div>
     <div class="modal fade" id="modalLixeira" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg rounded-4 text-center">
