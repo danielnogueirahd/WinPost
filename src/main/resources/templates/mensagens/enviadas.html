@@ -8,8 +8,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
-
-
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -54,30 +52,32 @@
                         </div>
                         
                         <div class="list-group list-group-flush bg-transparent">
-                            <a href="/mensagens/caixa/ENTRADA" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
-                               th:classappend="${pastaAtiva == 'ENTRADA'} ? 'bg-primary bg-opacity-10 text-primary' : 'text-secondary'">
-                                <i class="fa-solid fa-folder-open me-3"></i> Modelos
-                                <span class="badge bg-primary rounded-pill float-end" th:if="${cntEntrada > 0}" th:text="${cntEntrada}"></span>
-                            </a>
-                            <a href="/mensagens/caixa/ENVIADAS" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
-                               th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'bg-success bg-opacity-10 text-success' : 'text-secondary'">
-                                <i class="fa-regular fa-paper-plane me-3"></i> Enviadas
-                                <span class="badge bg-success rounded-pill float-end" th:if="${cntEnviadas > 0}" th:text="${cntEnviadas}"></span>
-                            </a>
-                            <a href="/mensagens/caixa/FAVORITOS" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
-                               th:classappend="${pastaAtiva == 'FAVORITOS'} ? 'bg-warning bg-opacity-10 text-warning' : 'text-secondary'">
-                                <i class="fa-regular fa-star me-3"></i> Favoritos
-                            </a>
-                            <a href="/mensagens/caixa/IMPORTANTE" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
-                               th:classappend="${pastaAtiva == 'IMPORTANTE'} ? 'bg-info bg-opacity-10 text-info' : 'text-secondary'">
-                                <i class="fa-solid fa-bookmark me-3"></i> Importante
-                            </a>
-                            <a href="/mensagens/caixa/LIXEIRA" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mt-3 px-3 py-2 fw-bold"
-                               th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'bg-danger bg-opacity-10 text-danger' : 'text-secondary'">
-                                <i class="fa-regular fa-trash-can me-3"></i> Lixeira
-                                <span class="badge bg-danger rounded-pill float-end" th:if="${cntLixeira > 0}" th:text="${cntLixeira}"></span>
-                            </a>
-                        </div>
+    <a href="/mensagens/caixa/ENTRADA" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+       th:classappend="${pastaAtiva == 'ENTRADA'} ? 'bg-primary bg-opacity-10 text-primary' : 'text-secondary'">
+        <i class="fa-solid fa-folder-open me-3"></i> Modelos
+        <span class="badge bg-primary rounded-pill float-end" th:if="${cntEntrada > 0}" th:text="${cntEntrada}"></span>
+    </a>
+
+    <a href="/mensagens/caixa/ENVIADAS" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+       th:classappend="${pastaAtiva == 'ENVIADAS'} ? 'bg-success bg-opacity-10 text-success' : 'text-secondary'">
+        <i class="fa-regular fa-paper-plane me-3"></i> Enviadas
+    </a>
+
+    <a href="/mensagens/caixa/FAVORITOS" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+       th:classappend="${pastaAtiva == 'FAVORITOS'} ? 'bg-warning bg-opacity-10 text-warning' : 'text-secondary'">
+        <i class="fa-regular fa-star me-3"></i> Favoritos
+    </a>
+
+    <a href="/mensagens/caixa/IMPORTANTE" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mb-1 px-3 py-2 fw-bold"
+       th:classappend="${pastaAtiva == 'IMPORTANTE'} ? 'bg-info bg-opacity-10 text-info' : 'text-secondary'">
+        <i class="fa-solid fa-bookmark me-3"></i> Importante
+    </a>
+
+    <a href="/mensagens/caixa/LIXEIRA" class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 mt-3 px-3 py-2 fw-bold"
+       th:classappend="${pastaAtiva == 'LIXEIRA'} ? 'bg-danger bg-opacity-10 text-danger' : 'text-secondary'">
+        <i class="fa-regular fa-trash-can me-3"></i> Lixeira
+    </a>
+</div>
                     </div>
                 </div>
 
@@ -309,60 +309,52 @@
     </div>
 
     <div class="modal fade" id="modalLeitura" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-            
-            <div class="modal-header border-bottom-0 px-4 pt-4 pb-2 bg-white">
-                <div class="d-flex align-items-center gap-3 w-100">
-                    <h5 class="modal-title fw-bold text-dark flex-grow-1" id="modalAssunto">Carregando...</h5>
-                    
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-light btn-sm rounded-circle text-muted" onclick="imprimirMensagem()" title="Imprimir">
-                            <i class="fa-solid fa-print"></i>
-                        </button>
-                        
-                        <button type="button" class="btn btn-light btn-sm rounded-circle text-danger" id="btnExcluirModal" title="Mover para Lixeira">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
-                        
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="px-4 pb-3">
-                <div class="d-flex align-items-center mt-2">
-                    <div id="modalAvatar" class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle bg-primary text-white fw-bold me-3" 
-                         style="width: 48px; height: 48px; font-size: 1.2rem;">
-                        -
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-dark" id="modalGrupo">...</span>
-                            <small class="text-muted" id="modalData">...</small>
-                        </div>
-                        <div class="small text-secondary">
-                            Status: <span class="badge bg-light text-secondary border fw-normal">Enviada</span>
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-bottom-0 px-4 pt-4 pb-2 bg-white">
+                    <div class="d-flex align-items-center gap-3 w-100">
+                        <h5 class="modal-title fw-bold text-dark flex-grow-1" id="modalAssunto">Carregando...</h5>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-light btn-sm rounded-circle text-muted" onclick="imprimirMensagem()" title="Imprimir">
+                                <i class="fa-solid fa-print"></i>
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm rounded-circle text-danger" id="btnExcluirModal" title="Mover para Lixeira">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <hr class="m-0 border-light">
-
-            <div class="modal-body p-4 bg-light bg-opacity-10">
-                <div class="bg-white p-4 rounded-3 border shadow-sm" style="min-height: 200px;">
-                    <div id="modalConteudo" class="message-content text-break">
+                <div class="px-4 pb-3">
+                    <div class="d-flex align-items-center mt-2">
+                        <div id="modalAvatar" class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle bg-primary text-white fw-bold me-3" 
+                             style="width: 48px; height: 48px; font-size: 1.2rem;">
+                            -
                         </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-dark" id="modalGrupo">...</span>
+                                <small class="text-muted" id="modalData">...</small>
+                            </div>
+                            <div class="small text-secondary">
+                                Status: <span class="badge bg-light text-secondary border fw-normal">Enviada</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="modal-footer border-top-0 px-4 py-3 bg-white">
-                <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Fechar</button>
+                <hr class="m-0 border-light">
+                <div class="modal-body p-4 bg-light bg-opacity-10">
+                    <div class="bg-white p-4 rounded-3 border shadow-sm" style="min-height: 200px;">
+                        <div id="modalConteudo" class="message-content text-break"></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 px-4 py-3 bg-white">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Fechar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
     <div class="modal fade" id="modalLixeira" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-lg rounded-4 text-center">
@@ -397,79 +389,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        // --- FUNÇÕES GERAIS ---
-        function usarModelo(btn) {
-            window.location.href = '/mensagens/preparar-envio/' + $(btn).data('id');
-        }
-        function abrirModalCriacao() {
-            new bootstrap.Modal(document.getElementById('modalNovoModelo')).show();
-        }
-        function verMensagem(id) {
-            $.get("/mensagens/detalhes/" + id, function(data) {
-                $('#modalAssunto').text(data.assunto);
-                $('#modalConteudo').html(data.conteudo);
-                new bootstrap.Modal(document.getElementById('modalLeitura')).show();
-            });
-        }
-
-        // [ALTERAÇÃO 3] FUNÇÃO PARA FAVORITAR/IMPORTANTE
-        function toggleAction(id, action, element, type) {
-            $.post('/mensagens/' + action + '/' + id, function() {
-                if (type === 'star') {
-                    $(element).toggleClass('fa-solid text-warning fa-regular text-muted');
-                } else if (type === 'flag') {
-                    $(element).toggleClass('fa-solid text-info fa-regular text-muted');
-                }
-            }).fail(function() {
-                alert("Erro ao atualizar status.");
-            });
-        }
-
-        // --- LÓGICA DE EXCLUSÃO ---
-        let idSelecionado = null;
-
-        function abrirModalLixeira(id) { 
-            idSelecionado = id; 
-            new bootstrap.Modal(document.getElementById('modalLixeira')).show(); 
-        }
-        
-        document.getElementById('btnConfirmarLixeira').addEventListener('click', () => { 
-            if(idSelecionado) {
-                $.post('/mensagens/lixeira/' + idSelecionado, function() {
-                    location.reload(); 
-                }).fail(function() {
-                    alert("Erro ao mover para a lixeira.");
-                });
-            }
-        });
-
-        function restaurarMensagem(id) { 
-            $.post('/mensagens/restaurar/' + id, function() {
-                location.reload(); 
-            });
-        }
-
-        function abrirModalExclusaoDefinitiva(id) { 
-            idSelecionado = id; 
-            new bootstrap.Modal(document.getElementById('modalExclusaoDefinitiva')).show(); 
-        }
-        
-        document.getElementById('btnConfirmarExclusaoDefinitiva').addEventListener('click', () => { 
-            if(idSelecionado) {
-                $.ajax({
-                    url: '/mensagens/excluir/' + idSelecionado,
-                    type: 'DELETE',
-                    success: function() {
-                        location.reload();
-                    },
-                    error: function() {
-                        alert("Erro ao excluir mensagem.");
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="/js/enviadas.js"></script>
 
 </body>
 </html>
