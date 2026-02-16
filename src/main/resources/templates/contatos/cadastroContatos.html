@@ -20,7 +20,7 @@
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
 	<main class="flex-grow-1">
 
-		<div style="margin-top: 80px;"></div>
+
 
 		<div class="container py-4 mb-5">
 
@@ -29,7 +29,7 @@
 					<div class="d-flex align-items-center mb-4">
 						<div
 							class="d-flex align-items-center ps-3 border-start border-4 border-primary">
-							
+
 
 							<div>
 								<h2 class="fw-bold text-dark mb-0 h3">Novo Cadastro</h2>
@@ -42,12 +42,12 @@
 									</ol>
 								</nav>
 							</div>
-							
+
 						</div>
 					</div>
 				</div>
 			</div>
-			
+
 
 			<form action="/salvarContato" th:object="${contato}" method="post">
 
@@ -112,8 +112,9 @@
 
 									<div class="col-md-3">
 										<label for="dataNascimento" class="form-label-modern">Data
-											de Nascimento</label> <input type="date" class="form-control"
+											de Nascimento</label> <input type="text" class="form-control"
 											id="dataNascimento" th:field="*{dataNascimento}"
+											placeholder="DD/MM" maxlength="5"
 											onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}">
 									</div>
 								</div>
@@ -154,12 +155,12 @@
 									<div class="col-md-2">
 										<label for="numero" class="form-label-modern">Número *</label>
 										<input type="number" class="form-control" id="numero"
-											th:field="*{numero}"
+											th:field="*{numero}" max="999999"
+											oninput="if(this.value.length > 6) this.value = this.value.slice(0, 6);"
 											th:classappend="${#fields.hasErrors('numero')} ? 'is-invalid'">
 										<div class="invalid-feedback"
 											th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
 									</div>
-
 									<div class="col-md-6">
 										<label for="complemento" class="form-label-modern">Complemento</label>
 										<input type="text" class="form-control" id="complemento"
@@ -244,24 +245,43 @@
 	<script th:src="@{/js/viacep.js}"></script>
 
 	<script>
-        function toggleMenu(menuId, iconId) {
-            var menu = document.getElementById(menuId);
-            var icon = document.getElementById(iconId);
+		document.addEventListener("DOMContentLoaded", function() {
+			// Lógica para Data de Nascimento (Mínimo 13 anos)
+			const inputData = document.getElementById('dataNascimento');
+			const hoje = new Date();
 
-            if (menu.classList.contains('d-none')) {
-                menu.classList.remove('d-none');
-                if (icon) {
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                }
-            } else {
-                menu.classList.add('d-none');
-                if (icon) {
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                }
-            }
-        }
-    </script>
+			// Calcula a data máxima permitida (Hoje - 13 anos)
+			const dataMinimaPermitida = new Date(hoje.getFullYear() - 13, hoje
+					.getMonth(), hoje.getDate());
+
+			// Formata para o padrão do input date (YYYY-MM-DD)
+			const ano = dataMinimaPermitida.getFullYear();
+			const mes = String(dataMinimaPermitida.getMonth() + 1).padStart(2,
+					'0');
+			const dia = String(dataMinimaPermitida.getDate()).padStart(2, '0');
+			const dataFormatada = `${ano}-${mes}-${dia}`;
+
+			// Aplica a restrição no calendário
+			inputData.setAttribute('max', dataFormatada);
+		});
+		function toggleMenu(menuId, iconId) {
+			var menu = document.getElementById(menuId);
+			var icon = document.getElementById(iconId);
+
+			if (menu.classList.contains('d-none')) {
+				menu.classList.remove('d-none');
+				if (icon) {
+					icon.classList.remove('fa-chevron-down');
+					icon.classList.add('fa-chevron-up');
+				}
+			} else {
+				menu.classList.add('d-none');
+				if (icon) {
+					icon.classList.remove('fa-chevron-up');
+					icon.classList.add('fa-chevron-down');
+				}
+			}
+		}
+	</script>
 </body>
 </html>

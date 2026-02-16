@@ -20,8 +20,6 @@ import com.projeto.sistema.repositorios.LembreteRepositorio;
 @ControllerAdvice
 public class GlobalAtributos {
 
-    // Dependência de MensagemLogRepositorio removida
-
     @Autowired
     private ContatosRepositorio contatosRepositorio;
 
@@ -38,8 +36,6 @@ public class GlobalAtributos {
     }
     // -------------------------------------------------------------
 
-    // Métodos de notificação (carregarContador e carregarLista) removidos
-
     @ModelAttribute("listaLembretes")
     public List<LembreteDTO> carregarLembretesFuturos() {
         List<LembreteDTO> lembretes = new ArrayList<>();
@@ -47,11 +43,9 @@ public class GlobalAtributos {
         // Data alvo: AMANHÃ
         LocalDate amanha = LocalDate.now().plusDays(1);
         
-        // --- 1. Busca Aniversariantes de Amanhã ---
-        List<Contatos> aniversariantesAmanha = contatosRepositorio.findByDiaEMesAniversario(
-            amanha.getDayOfMonth(), 
-            amanha.getMonthValue()
-        );
+        // --- 1. Busca Aniversariantes de Amanhã (AJUSTADO PARA O NOVO FORMATO DD/MM) ---
+        String diaMesAmanha = String.format("%02d/%02d", amanha.getDayOfMonth(), amanha.getMonthValue());
+        List<Contatos> aniversariantesAmanha = contatosRepositorio.findByDiaEMesAniversario(diaMesAmanha);
 
         for (Contatos c : aniversariantesAmanha) {
             lembretes.add(new LembreteDTO(

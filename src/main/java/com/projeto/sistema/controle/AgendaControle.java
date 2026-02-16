@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping; // Usaremos GetMapping
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,16 +55,27 @@ public class AgendaControle {
         LocalDateTime inicioMes = anoMes.atDay(1).atStartOfDay();
         LocalDateTime fimMes = anoMes.atEndOfMonth().atTime(LocalTime.MAX);
 
-        List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesAtual);
+        // FORMATAÇÃO DO MÊS PARA BUSCA EM TEXTO (Ex: "/08")
+        String mesFormatadoBanco = String.format("/%02d", mesAtual);
+        List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco);
+        
         List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetween(inicioMes, fimMes);
         List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetween(inicioMes, fimMes);
         
         List<EventoAgenda> eventos = new ArrayList<>();
         eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
 
+        // EXTRAÇÃO DO DIA DO TEXTO "DD/MM" PARA O CALENDÁRIO
         for (Contatos c : aniversariantes) {
-            LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, c.getDataNascimento().getDayOfMonth());
-            eventos.add(new EventoAgenda(dataNiver, "NIVER", c.getNome(), "event-niver"));
+            if (c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
+                try {
+                    int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
+                    LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, diaNiver);
+                    eventos.add(new EventoAgenda(dataNiver, "NIVER", c.getNome(), "event-niver"));
+                } catch (NumberFormatException e) {
+                    // Ignora contatos com formato inválido para não quebrar a tela
+                }
+            }
         }
 
         for (MensagemLog log : envios) {
@@ -126,8 +137,10 @@ public class AgendaControle {
         
         List<DetalheAgendaDTO> detalhes = new ArrayList<>();
         
-        // 1. Aniversários
-        List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(data.getDayOfMonth(), data.getMonthValue());
+        // 1. Aniversários - AJUSTADO PARA USAR STRING "DD/MM"
+        String diaMesFormatado = String.format("%02d/%02d", data.getDayOfMonth(), data.getMonthValue());
+        List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(diaMesFormatado);
+        
         for (Contatos c : nivers) {
             detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
         }
@@ -169,4 +182,4 @@ public class AgendaControle {
         }
         return feriados;
     }
-}
+    }

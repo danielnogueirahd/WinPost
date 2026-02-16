@@ -2,6 +2,7 @@ package com.projeto.sistema.controle;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class GrupoControle {
     @Autowired
     private EmailService emailService;
     
-    // 1. TELA DE CADASTRO (Com filtros de data)
+    // 1. TELA DE CADASTRO (Com filtros de data ADAPTADO PARA DD/MM)
     @GetMapping("/cadastro")
     public ModelAndView cadastrar(Grupo grupo,
                                   @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
@@ -57,7 +58,34 @@ public class GrupoControle {
         mv.addObject("dataFim", dataFim);
 
         if (dataInicio != null && dataFim != null) {
-            mv.addObject("listaContatos", contatosRepositorio.findByAniversarioNoPeriodo(dataInicio, dataFim));
+            // Como a data no banco é texto "DD/MM", buscamos todos e filtramos no Java
+            List<Contatos> todos = contatosRepositorio.findAll();
+            List<Contatos> filtrados = new ArrayList<>();
+            
+            // Usamos um ano bissexto (ex: 2024) como base apenas para o Java conseguir comparar os dias e meses com segurança
+            LocalDate inicioBase = LocalDate.of(2024, dataInicio.getMonthValue(), dataInicio.getDayOfMonth());
+            LocalDate fimBase = LocalDate.of(2024, dataFim.getMonthValue(), dataFim.getDayOfMonth());
+            boolean viraAno = inicioBase.isAfter(fimBase); // Ex: de Dezembro a Janeiro
+
+            for(Contatos c : todos) {
+                if(c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
+                    try {
+                        int dia = Integer.parseInt(c.getDataNascimento().substring(0, 2));
+                        int mes = Integer.parseInt(c.getDataNascimento().substring(3, 5));
+                        LocalDate niver = LocalDate.of(2024, mes, dia);
+                        
+                        if(viraAno) {
+                            if(!niver.isBefore(inicioBase) || !niver.isAfter(fimBase)) filtrados.add(c);
+                        } else {
+                            if(!niver.isBefore(inicioBase) && !niver.isAfter(fimBase)) filtrados.add(c);
+                        }
+                    } catch(Exception e) {
+                        // Ignora contatos que tenham o formato de data inválido
+                    }
+                }
+            }
+            
+            mv.addObject("listaContatos", filtrados);
             mv.addObject("filtrado", true); 
         } else {
             mv.addObject("listaContatos", contatosRepositorio.findAll());
@@ -179,7 +207,7 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
    
- // 8. DISPARAR AÇÃO (E-MAIL EM MASSA COM ANEXO E UPLOAD FÍSICO)
+    // 8. DISPARAR AÇÃO (E-MAIL EM MASSA COM ANEXO E UPLOAD FÍSICO)
     @PostMapping("/disparar")
     public ModelAndView dispararAcao(@RequestParam("grupoId") Long grupoId,
                                      @RequestParam("assunto") String assunto,
@@ -197,19 +225,13 @@ public class GrupoControle {
                     attributes.addFlashAttribute("mensagemErro", "O grupo está vazio. Adicione contatos antes de enviar.");
                 } else {
                     
-                    // --- 1. SALVAR ARQUIVOS NO DISCO (Para o Download Funcionar) ---
-                    // Isso garante que o arquivo exista fisicamente em /uploads/
                     if (anexos != null && anexos.length > 0) {
                         String pastaUpload = "src/main/resources/static/uploads/";
-                        Files.createDirectories(Paths.get(pastaUpload)); // Cria a pasta se não existir
+                        Files.createDirectories(Paths.get(pastaUpload));
 
                         for (MultipartFile arquivo : anexos) {
                             if (!arquivo.isEmpty()) {
-                                // Limpa o nome e adiciona Timestamp para evitar duplicidade
                                 String nomeOriginal = StringUtils.cleanPath(arquivo.getOriginalFilename());
-                                // Importante: O Serviço de Email deve usar ESTE MESMO padrão de nome ao salvar no banco
-                                // Se o EmailService gerar outro nome, o link de download quebrará.
-                                // Idealmente, você passaria os nomes salvos para o serviço, mas vamos manter a assinatura.
                                 String nomeArquivoSalvo = System.currentTimeMillis() + "_" + nomeOriginal;
                                 
                                 Path caminho = Paths.get(pastaUpload + nomeArquivoSalvo);
@@ -218,8 +240,6 @@ public class GrupoControle {
                         }
                     }
 
-                    // --- 2. CHAMAR O SERVIÇO DE E-MAIL ---
-                    // O serviço vai processar o envio e salvar o Log no banco
                     emailService.enviarDisparo(grupo, assunto, mensagem, anexos, dataAgendamento);
                     
                     if (dataAgendamento != null) {
@@ -238,31 +258,27 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-//9. DISPARO DIRETO (Adicionado para funcionar com a tela 'preparar.html')
-@PostMapping("/disparar-direto")
-public ModelAndView dispararDireto(@RequestParam("idGrupo") Long idGrupo,
-                                   @RequestParam("assunto") String assunto,
-                                   @RequestParam("conteudo") String conteudo,
-                                   RedirectAttributes attributes) {
-    try {
-        Optional<Grupo> grupoOpt = grupoRepositorio.findById(idGrupo);
-        
-        if (grupoOpt.isPresent()) {
-            Grupo grupo = grupoOpt.get();
+    // 9. DISPARO DIRETO
+    @PostMapping("/disparar-direto")
+    public ModelAndView dispararDireto(@RequestParam("idGrupo") Long idGrupo,
+                                       @RequestParam("assunto") String assunto,
+                                       @RequestParam("conteudo") String conteudo,
+                                       RedirectAttributes attributes) {
+        try {
+            Optional<Grupo> grupoOpt = grupoRepositorio.findById(idGrupo);
             
-            // Reutiliza o emailService.enviarDisparo existente.
-            // Passamos 'null' para anexos e dataAgendamento pois essa tela não os possui.
-            emailService.enviarDisparo(grupo, assunto, conteudo, null, null);
-            
-            attributes.addFlashAttribute("mensagemSucesso", "Disparo realizado com sucesso para o grupo " + grupo.getNome());
-        } else {
-            attributes.addFlashAttribute("mensagemErro", "Grupo selecionado não encontrado.");
+            if (grupoOpt.isPresent()) {
+                Grupo grupo = grupoOpt.get();
+                emailService.enviarDisparo(grupo, assunto, conteudo, null, null);
+                attributes.addFlashAttribute("mensagemSucesso", "Disparo realizado com sucesso para o grupo " + grupo.getNome());
+            } else {
+                attributes.addFlashAttribute("mensagemErro", "Grupo selecionado não encontrado.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            attributes.addFlashAttribute("mensagemErro", "Erro ao processar o envio: " + e.getMessage());
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        attributes.addFlashAttribute("mensagemErro", "Erro ao processar o envio: " + e.getMessage());
+        
+        return new ModelAndView("redirect:/mensagens/caixa/ENVIADAS");
     }
-    
-    // Redireciona para a caixa de enviadas para confirmar o envio
-    return new ModelAndView("redirect:/mensagens/caixa/ENVIADAS");
-}}
+}

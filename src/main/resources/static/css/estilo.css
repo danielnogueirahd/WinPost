@@ -2,6 +2,8 @@
    1. GLOBAIS & RESET
    ========================================================================== */
 body {
+	
+	padding-top: 65px;
     background: linear-gradient(180deg, #F0F8FF 0%, #ffffff 100%) no-repeat fixed !important;
     background-attachment: fixed;
     min-height: 100vh;

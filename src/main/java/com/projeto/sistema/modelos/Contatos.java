@@ -1,6 +1,9 @@
 package com.projeto.sistema.modelos;
 
 import java.io.Serializable;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 import java.util.ArrayList; // Importante para inicializar a lista
 import java.util.List;
@@ -57,8 +60,10 @@ public class Contatos implements Serializable {
     private String rua;
 
     @NotNull(message = "O número é obrigatório")
+    @Min(value = 1, message = "O número deve ser positivo") // Opcional: evita números negativos
+    @Max(value = 999999, message = "O número deve ter no máximo 6 dígitos") // Reforça a regra do HTML
     private Integer numero;
-
+    
     @Column(length = 100)
     @NotBlank(message = "O bairro é obrigatório")
     @Size(max = 100, message = "O bairro deve ter no máximo 100 caracteres")
@@ -76,8 +81,9 @@ public class Contatos implements Serializable {
 
 
     
-    @Column(name = "data_nascimento")
-    private LocalDate dataNascimento;
+    @Column(name = "data_nascimento", length = 5)
+    @jakarta.validation.constraints.Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])$", message = "A data deve estar no formato DD/MM")
+    private String dataNascimento;
     
     @CreatedDate
     @Column(name = "data_cadastro", nullable = false, updatable = false)
@@ -181,14 +187,13 @@ public class Contatos implements Serializable {
         this.complemento = complemento;
     }
 
-    public LocalDate getDataNascimento() {
+    public String getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(LocalDate dataNascimento) {
+    public void setDataNascimento(String dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
-    
     public LocalDate getDataCadastro() {
         return dataCadastro;
     }
