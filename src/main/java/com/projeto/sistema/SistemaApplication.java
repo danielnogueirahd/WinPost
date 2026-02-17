@@ -7,11 +7,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.boot.builder.SpringApplicationBuilder; // Import necessário
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing; // 1. IMPORT DA AUDITORIA ADICIONADO AQUI
 
 import com.projeto.sistema.modelos.Usuario;
 import com.projeto.sistema.repositorios.UsuarioRepositorio;
 
 @SpringBootApplication
+@EnableJpaAuditing // 2. ANOTAÇÃO DE AUDITORIA ADICIONADA AQUI
 public class SistemaApplication extends SpringBootServletInitializer { // 1. Estender a classe
 
     // 2. Sobrescrever o método configure

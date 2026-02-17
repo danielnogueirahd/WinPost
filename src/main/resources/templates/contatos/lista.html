@@ -102,9 +102,9 @@
                                 <td>
                                     <div class="fw-bold text-dark text-truncate" style="max-width: 200px;" th:text="${contato.nome}"></div>
                                     <div class="text-xsmall text-muted mt-1">
-                                        <i class="far fa-calendar ms-1"></i> 
-                                        <span th:text="${contato.dataCadastro != null ? #temporals.format(contato.dataCadastro, 'dd/MM/yyyy') : '-'}"></span>
-                                    </div>
+    <i class="far fa-calendar ms-1"></i> Nasc:
+    <span th:text="${contato.dataNascimento != null and !contato.dataNascimento.isEmpty() ? contato.dataNascimento : '-'}"></span>
+</div>
                                 </td>
 
                                 <td>
@@ -178,7 +178,7 @@
         </div>
     </div>
 
-    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

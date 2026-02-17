@@ -29,32 +29,25 @@ public class RelatorioControle {
     private RelatorioService relatorioService;
 
     // =========================================================================
-    // MÉTODO AUXILIAR PARA FILTRAR AS DATAS "DD/MM" DIRETAMENTE NO JAVA
+    // MÉTODO CORRIGIDO: FILTRA PELA DATA DE CADASTRO (DATA COMPLETA)
     // =========================================================================
-    private List<Contatos> filtrarPorData(List<Contatos> contatos, LocalDate dataInicio, LocalDate dataFim) {
-        if (dataInicio == null || dataFim == null) {
+    private List<Contatos> filtrarPorPeriodoCadastro(List<Contatos> contatos, LocalDate dataInicio, LocalDate dataFim) {
+        if (dataInicio == null && dataFim == null) {
             return contatos; // Se não tem filtro de data preenchido na tela, devolve a lista original
         }
 
         List<Contatos> filtrados = new ArrayList<>();
-        LocalDate inicioBase = LocalDate.of(2024, dataInicio.getMonthValue(), dataInicio.getDayOfMonth());
-        LocalDate fimBase = LocalDate.of(2024, dataFim.getMonthValue(), dataFim.getDayOfMonth());
-        boolean viraAno = inicioBase.isAfter(fimBase);
 
         for(Contatos c : contatos) {
-            if(c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
-                try {
-                    int dia = Integer.parseInt(c.getDataNascimento().substring(0, 2));
-                    int mes = Integer.parseInt(c.getDataNascimento().substring(3, 5));
-                    LocalDate niver = LocalDate.of(2024, mes, dia);
-                    
-                    if(viraAno) {
-                        if(!niver.isBefore(inicioBase) || !niver.isAfter(fimBase)) filtrados.add(c);
-                    } else {
-                        if(!niver.isBefore(inicioBase) && !niver.isAfter(fimBase)) filtrados.add(c);
-                    }
-                } catch(Exception e) {
-                    // Ignora contatos que tenham o formato de data em branco ou inválido
+            LocalDate cadastro = c.getDataCadastro();
+            
+            if (cadastro != null) {
+                // Verifica se a data de cadastro está dentro do intervalo
+                boolean validoInicio = (dataInicio == null) || !cadastro.isBefore(dataInicio);
+                boolean validoFim = (dataFim == null) || !cadastro.isAfter(dataFim);
+
+                if (validoInicio && validoFim) {
+                    filtrados.add(c);
                 }
             }
         }
@@ -79,8 +72,8 @@ public class RelatorioControle {
         // 1. Busca no banco usando os parâmetros de texto (nome, cidade, estado, grupoId)
         List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId);
         
-        // 2. Filtra pelo período das datas de aniversário via código Java
-        contatos = filtrarPorData(contatos, dataInicio, dataFim);
+        // 2. Filtra pelo período de CADASTRO
+        contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);
         
         ByteArrayInputStream bis = relatorioService.gerarRelatorioContatos(contatos);
 
@@ -112,8 +105,8 @@ public class RelatorioControle {
         // 2. Busca os contatos usando o MESMO filtro do banco
         List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId);
         
-        // 3. Aplica o MESMO filtro de data "DD/MM" do Java
-        contatos = filtrarPorData(contatos, dataInicio, dataFim);
+        // 3. Aplica o filtro de CADASTRO
+        contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);
         
         // 4. Chama o novo serviço de etiquetas
         ByteArrayInputStream bis = relatorioService.gerarEtiquetas(contatos);
