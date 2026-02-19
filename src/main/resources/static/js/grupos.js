@@ -102,13 +102,29 @@ $(document).ready(function() {
         // Atualiza checkbox mestre sem disparar eventos
         $('#checkAll').prop('checked', paginaCheia);
 
-        // Atualiza texto do botão grande
+        // --- ATUALIZAÇÃO DO VISUAL DO BOTÃO DE SELECIONAR TODOS ---
+        var btnAll = $('#btnToggleAll');
+        var iconeBtnAll = btnAll.find('i');
+        var txtBtnAll = $('#txtBtnAll');
+
         if (paginaCheia || (total > 0 && total === table.rows({ search: 'applied' }).count())) {
-            $('#txtBtnAll').text('Desmarcar Todos');
-            $('#btnToggleAll').removeClass('btn-outline-primary').addClass('btn-primary text-white');
+            // Estado: Desmarcar Todos (BOTÃO VERMELHO)
+            txtBtnAll.text('Desmarcar Todos');
+            
+            // Remove as classes claras e adiciona as classes vermelhas
+            btnAll.removeClass('btn-light border').addClass('btn-danger text-white border-danger');
+            
+            // Troca o ícone para um X branco
+            iconeBtnAll.removeClass('text-primary fa-check-double').addClass('text-white fa-xmark');
         } else {
-            $('#txtBtnAll').text('Selecionar Todos da Lista');
-            $('#btnToggleAll').addClass('btn-outline-primary').removeClass('btn-primary text-white');
+            // Estado: Selecionar Todos (BOTÃO CLARO PADRÃO)
+            txtBtnAll.text('Selecionar Todos');
+            
+            // Remove as classes vermelhas e volta para o botão claro original
+            btnAll.removeClass('btn-danger text-white border-danger').addClass('btn-light border');
+            
+            // Volta o ícone original azul
+            iconeBtnAll.removeClass('text-white fa-xmark').addClass('text-primary fa-check-double');
         }
     }
 
@@ -146,7 +162,14 @@ $(document).ready(function() {
         // Se clicar na linha (mas não no input), simulamos o clique no input
         if (e.target.type !== 'checkbox') {
             var checkbox = $(this).find('.check-item');
-            checkbox.trigger('click');
+            if (checkbox.length) {
+                 checkbox.prop('checked', !checkbox.prop('checked')); // Inverte o checked
+                 // Dispara manualmente a lógica que o clique direto faria
+                 var id = checkbox.val();
+                 if (checkbox.prop('checked')) idsSelecionados.add(id);
+                 else idsSelecionados.delete(id);
+                 atualizarVisual();
+            }
         }
     });
 

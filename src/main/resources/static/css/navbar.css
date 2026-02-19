@@ -1,9 +1,15 @@
-/* --- NAVBAR CUSTOMIZADA (Azul Sólido - Primary) --- */
+/* --- NAVBAR CUSTOMIZADA (Efeito Glassmorphism) --- */
 .navbar-custom {
-    background-color: #0d6efd !important; /* Azul Primary do Bootstrap (Forçado) */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Azul Primary com 95% de opacidade em vez de sólido */
+    background-color: rgba(13, 110, 253, 0.95) !important; 
+    /* Efeito de vidro desfocado no fundo (Apple style) */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    /* Sombra mais difusa e elegante */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
 }
 
 .navbar-brand {
@@ -17,12 +23,12 @@
     color: rgba(255, 255, 255, 0.9) !important;
     font-weight: 500;
     font-size: 0.95rem;
-    margin: 0 10px; /* Um pouco mais de espaço lateral */
-    padding: 0.5rem 0; /* Padding vertical equilibrado */
+    margin: 0 10px; 
+    padding: 0.5rem 0; 
     position: relative;
-    display: flex; /* Para alinhar a seta corretamente */
+    display: flex; 
     align-items: center;
-    gap: 5px; /* Espaço entre texto e seta */
+    gap: 5px; 
     transition: color 0.3s ease;
 }
 
@@ -34,44 +40,35 @@
 .nav-link::after {
     content: '';
     position: absolute;
-    bottom: 2px; /* Descola um pouquinho do texto */
-    left: 50%; /* Começa no meio exato */
-    transform: translateX(-50%); /* Garante a centralização */
-    width: 0%; /* Começa invisível */
-    height: 2px; /* Mais fina (Minimalista) */
+    bottom: 2px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    width: 0%; 
+    height: 2px; 
     border-radius: 2px;
-    
-    /* Cor: Azul Ciano Claro (contraste suave com o fundo azul) */
     background-color: #cffafe; 
-    
-    /* Animação suave */
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Ao passar o mouse, expande do centro */
 .nav-link:hover::after {
     width: 100%;
 }
 
-/* --- ITEM ATIVO (Agenda/Home) --- */
 .nav-link.active {
     color: #ffffff !important;
     font-weight: 700;
 }
 
-/* O item ativo mantém a linha visível */
 .nav-link.active::after {
     width: 100%;
-    background-color: #ffffff; /* Linha branca no ativo */
+    background-color: #ffffff; 
 }
 
 /* --- SETA DO DROPDOWN (Contatos) --- */
-/* Remove a seta padrão feia do Bootstrap */
 .dropdown-toggle::after {
     display: none !important; 
 }
 
-/* Cria nossa própria seta usando CSS puro */
 .dropdown-toggle::before {
     content: '';
     display: inline-block;
@@ -79,24 +76,41 @@
     height: 6px;
     border-right: 2px solid rgba(255,255,255,0.7);
     border-bottom: 2px solid rgba(255,255,255,0.7);
-    transform: rotate(45deg); /* Forma de V apontando pra baixo */
+    transform: rotate(45deg); 
     margin-left: 4px;
     transition: transform 0.3s ease, border-color 0.3s;
-    order: 2; /* Garante que fique depois do texto */
+    order: 2; 
 }
 
-/* Quando passa o mouse, a seta fica branca forte */
 .dropdown-toggle:hover::before {
     border-color: #ffffff;
 }
 
-/* --- ROTAÇÃO DA SETA --- */
-/* Quando o menu abre (o Bootstrap adiciona a classe .show), a seta gira */
 .dropdown-toggle.show::before {
-    transform: rotate(225deg) translate(-2px, -2px); /* Gira para cima */
+    transform: rotate(225deg) translate(-2px, -2px); 
 }
 
-/* Botão de Ação "Escrever" (opcional) */
+/* --- ANIMAÇÃO DE ENTRADA DOS MENUS DROPDOWN --- */
+.dropdown-menu {
+    border-radius: 12px; /* Cantos mais arredondados */
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    animation: fadeInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top center;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* --- BOTÃO DE AÇÃO "ESCREVER" --- */
 .btn-light-action {
     background-color: #ffffff;
     color: #0d6efd;
@@ -108,84 +122,79 @@
 
 .btn-light-action:hover {
     background-color: #f8f9fa;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* --- MODAL NOTIFICAÇÃO (Posicionamento e Estilo) --- */
 .modal-notificacao-posicao {
-    margin-right: 15px; /* Distância da borda direita */
-    margin-top: 65px; /* Distância do topo */
-    margin-left: auto; /* Empurra para a direita */
-    max-width: 380px; /* Largura fixa */
+    margin-right: 15px; 
+    margin-top: 75px; /* Ajustei um pouco para baixo para compensar a sombra da navbar */
+    margin-left: auto; 
+    max-width: 380px; 
 }
 
-/* Remove o fundo escuro padrão do modal */
 .modal-backdrop.show {
     opacity: 0; 
     pointer-events: none; 
 }
 
-/* Estilo dos itens da lista de notificação */
 .notificacao-item {
     border-left: 4px solid transparent;
-    /* Adicionada transição suave para quando o item for removido */
-    transition: background-color 0.2s, opacity 0.3s, transform 0.3s;
+    transition: background-color 0.2s, opacity 0.3s, transform 0.3s, border-color 0.2s;
     cursor: pointer;
 }
 
 .notificacao-item:hover {
     background-color: #f8f9fa;
-    border-left-color: #0d6efd; /* Detalhe azul ao passar o mouse */
+    border-left-color: #0d6efd; 
 }
 
-
-/* --- Modal Moderno Agenda --- */
-
-/* Estilo dos Cards de Seleção (Radio Buttons) */
+/* --- MODAL MODERNO AGENDA --- */
 .type-card {
     border: 1px solid #eef0f2;
     transition: all 0.2s ease-in-out;
     background-color: #fff;
-    opacity: 0.7; /* Levemente apagado quando não selecionado */
+    opacity: 0.6; /* Deixei um pouco mais transparente para dar mais destaque ao selecionado */
 }
 
 .type-card:hover {
     transform: translateY(-2px);
-    opacity: 1;
+    opacity: 0.9;
     background-color: #f8f9fa;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
 }
 
-/* Indicador de Check (ícone no canto) */
 .check-indicator {
     position: absolute;
     top: 10px;
     right: 10px;
     font-size: 1.2rem;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transform: scale(0.5); /* Animação de "pop" no ícone de check */
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Quando o Radio Button está CHECADO */
 .btn-check:checked + .type-card {
     background-color: #fff;
-    border-color: currentColor; /* Pega a cor do texto (primary/info/danger) */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    border-color: currentColor; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
     opacity: 1;
     border-width: 2px;
+    transform: translateY(-2px); /* Mantém levantado quando selecionado */
 }
 
 .btn-check:checked + .type-card .check-indicator {
     opacity: 1;
+    transform: scale(1);
 }
 
-/* Cores específicas para borda quando ativo */
 #tipoTarefa:checked + .type-card { border-color: #0dcaf0; }
 #tipoReuniao:checked + .type-card { border-color: #0d6efd; }
 #tipoImportante:checked + .type-card { border-color: #dc3545; }
 
-/* Input Título Estilizado */
 #inputTitulo:focus {
     border-bottom: 2px solid #0d6efd !important;
-    background-color: rgba(13, 110, 253, 0.02) !important;
+    background-color: rgba(13, 110, 253, 0.03) !important;
+    box-shadow: none !important; /* Remove aquela sombra feia padrão do bootstrap no foco */
 }

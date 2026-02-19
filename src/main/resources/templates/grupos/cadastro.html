@@ -1,244 +1,224 @@
 <!DOCTYPE html>
 <html xmlns:th="https://thymeleaf.org">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Novo Grupo | WinPost</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Novo Grupo | WinPost</title>
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet"
-	href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
-<link rel="stylesheet" href="/css/estilo.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="/css/estilo.css">
 
-<style>
-.btn-white-pro {
-	background-color: #fff;
-	border: 1px solid #e3e6f0;
-	color: #4e73df; /* Ajuste para sua cor primária */
-	transition: all 0.2s;
-}
-
-.btn-white-pro:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
-	color: #224abe;
-}
-</style>
+    <style>
+        /* Estilos específicos para refinar esta tela */
+        .icon-square {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        .table-hover-custom tbody tr:hover {
+            background-color: #f8f9fa !important;
+            transform: scale(1.002);
+            transition: all 0.2s ease;
+        }
+        .form-floating > label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .filter-box {
+            background-color: #f8f9fa;
+            border: 1px solid #eef0f2;
+            border-radius: 12px;
+        }
+        .sticky-form {
+            position: sticky;
+            top: 100px;
+            z-index: 10;
+        }
+    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-	<div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-	<main class="flex-grow-1">
-		
+    <main class="flex-grow-1">
+        <div class="container py-4 mb-5">
 
-		<div class="container py-4 mb-5">
+            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4 d-flex align-items-center">
+                <i class="fa-solid fa-check-circle fs-4 me-3"></i> 
+                <span th:text="${mensagemSucesso}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4 d-flex align-items-center">
+                <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i> 
+                <span th:text="${mensagemErro}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
 
-			<div th:if="${mensagemSucesso}"
-				class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
-				<i class="fa-solid fa-check-circle me-2"></i> <span
-					th:text="${mensagemSucesso}"></span>
-				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-			</div>
-			<div th:if="${mensagemErro}"
-				class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
-				<i class="fa-solid fa-triangle-exclamation me-2"></i> <span
-					th:text="${mensagemErro}"></span>
-				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-			</div>
-
-			<div class="d-flex justify-content-between align-items-center mb-4 page-header">
-                <div class="border-start border-4 border-primary ps-3">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-1">Cadastros</h6>
-                    <h2 class="text-dark mb-0 fw-bold">Novo Grupo</h2>
+            <div class="d-flex justify-content-between align-items-center mb-4 page-header bg-white p-3 rounded-3 shadow-sm border border-light">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 text-dark icon-square me-3">
+                        <i class="fa-solid fa-layer-group fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-uppercase text-muted small fw-bold mb-0">Cadastros</h6>
+                        <h3 class="text-dark mb-0 fw-bold">Novo Grupo</h3>
+                    </div>
                 </div>
                 
-                <a href="/grupos/gerenciar"
-                    class="btn btn-light text-secondary border shadow-sm rounded-pill px-4 py-2 fw-bold text-decoration-none">
+                <a href="/grupos/gerenciar" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold shadow-sm transition-all">
                     <i class="fa-solid fa-list-check me-2"></i>Gerenciar Grupos
                 </a>
             </div>
-	
+    
+            <div class="row g-4">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="sticky-form">
+                        <form th:action="@{/grupos/salvar}" method="post" id="formGrupo" th:object="${grupo}">
+                            <div class="card card-pro h-100 shadow-sm border-0">
+                                <div class="card-body p-4">
+                                    
+                                    <h5 class="fw-bold mb-4 text-dark border-bottom pb-3">
+                                        Detalhes do Grupo
+                                    </h5>
 
-			<div class="row g-4">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control bg-light border-0" id="inputNome" th:field="*{nome}" placeholder="Nome do Grupo" required>
+                                        <label for="inputNome">Nome do Grupo <span class="text-danger">*</span></label>
+                                    </div>
 
-    <div class="col-lg-5 mb-4 mb-lg-0">
-        <div class="sticky-column" style="top: 90px; z-index: 10;">
+                                    <div class="form-floating mb-4">
+                                        <textarea class="form-control bg-light border-0" id="inputDescricao" th:field="*{descricao}" style="height: 120px" placeholder="Descrição"></textarea>
+                                        <label for="inputDescricao">Descrição (Opcional)</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer bg-white border-top p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded text-muted small">
+                                        <span><i class="fa-solid fa-user-check me-2 text-primary"></i>Contatos:</span>
+                                        <span id="contadorSelecao" class="fw-bold text-dark fs-6">0 selecionados</span>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+                                        <i class="fa-solid fa-floppy-disk me-2"></i>Salvar Grupo
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-            <form th:action="@{/grupos/salvar}" method="post" id="formGrupo" th:object="${grupo}">
-                <div class="card card-pro h-100">
-                    <div class="card-body">
+                <div class="col-lg-8">
+                    <div class="card card-pro h-100 shadow-sm border-0">
                         
-                        <div class="mb-4 pb-3 border-bottom">
-                            <h5 class="fw-bold mb-1 text-dark">
-                                <i class="fa-solid fa-layer-group text-primary me-2"></i>Novo Grupo
-                            </h5>
-                            <span class="text-muted small ps-4 ms-1">Defina os dados básicos.</span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="inputNome" class="form-label">
-                                Nome do Grupo <span class="text-danger">*</span>
-                            </label> 
-                            <input type="text" class="form-control" id="inputNome"
-                                th:field="*{nome}" placeholder="Ex: VIPs, Aniversariantes..."
-                                required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="inputDescricao" class="form-label">Descrição</label>
-                            <textarea class="form-control" id="inputDescricao"
-                                th:field="*{descricao}" rows="3"
-                                placeholder="Opcional: Detalhes sobre o grupo..."></textarea>
-                        </div>
-
-                        <div class="mt-4 d-flex flex-column gap-3">
-                            <button type="submit" class="btn btn-primary py-2">
-                                Salvar Grupo
-                            </button>
-
-                            <div class="text-center text-muted small border-top pt-3">
-                                <i class="fa-solid fa-user-group me-1"></i>
-                                <span id="contadorSelecao" class="fw-bold">0 contatos selecionados</span>
+                        <div class="card-header bg-white p-4 pb-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">Membros Disponíveis</h5>
+                                    <p class="text-muted small mb-0">Selecione quem fará parte deste grupo.</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
 
+                            <div class="filter-box p-3 mb-4">
+                                <form action="/grupos/cadastro" method="get" id="formFiltro" onsubmit="prepararFiltro()" class="row g-2 align-items-center">
+                                    <input type="hidden" name="nome" id="hiddenNome"> 
+                                    <input type="hidden" name="descricao" id="hiddenDescricao">
 
-    <div class="col-lg-7">
-        <div class="card card-pro h-100">
-            
-            <div class="card-header bg-white border-bottom-0 pb-0">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold mb-1">Membros</h5>
-                        <p class="text-muted small mb-0">
-                            <span th:if="${dataInicio != null or dataFim != null}" class="text-primary">
-                                <i class="fa-solid fa-filter me-1"></i> Filtrado por data.
-                            </span> 
-                            <span th:unless="${dataInicio != null or dataFim != null}">
-                                Selecione os participantes.
-                            </span>
-                        </p>
-                    </div>
-                </div>
+                                    <div class="col-md-auto">
+                                        <span class="text-muted small fw-bold text-uppercase ms-1"><i class="fa-solid fa-filter me-1"></i> Filtro:</span>
+                                    </div>
 
-                <div class="border-top border-bottom py-3 bg-light bg-opacity-10">
-                    <form action="/grupos/cadastro" method="get" id="formFiltro"
-                        onsubmit="prepararFiltro()"
-                        class="row g-2 align-items-end">
-
-                        <input type="hidden" name="nome" id="hiddenNome"> 
-                        <input type="hidden" name="descricao" id="hiddenDescricao">
-
-                        <div class="col-md-4 col-sm-6">
-                            <label class="form-label small mb-1 fw-normal">De:</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar text-muted"></i></span>
-                                <input type="date" class="form-control ps-2" name="dataInicio" th:value="${dataInicio}" aria-label="Data Início">
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 col-sm-6">
-                            <label class="form-label small mb-1 fw-normal">Até:</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text"><i class="fa-regular fa-calendar-check text-muted"></i></span>
-                                <input type="date" class="form-control ps-2" name="dataFim" th:value="${dataFim}" aria-label="Data Fim">
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-sm flex-fill" title="Aplicar Filtro">
-                                Filtrar
-                            </button>
-                            <a th:if="${dataInicio != null}" href="/grupos/cadastro" class="btn btn-outline-secondary btn-sm px-3" title="Limpar Filtros">
-                                <i class="fa-solid fa-xmark"></i>
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card-body pt-3">
-                
-                <div class="table-toolbar-area d-flex justify-content-between align-items-center">
-                    <span class="text-muted small fw-bold text-uppercase">
-                        Contatos Disponíveis
-                    </span>
-                    
-                    <button type="button" class="btn btn-outline-primary py-1 px-3 small" id="btnToggleAll" style="font-size: 0.9rem;">
-                        <i class="fa-solid fa-check-double me-1"></i> 
-                        <span id="txtBtnAll">Selecionar Todos</span>
-                    </button>
-                </div>
-
-                <div class="table-responsive border-0">
-                    <table class="table align-middle w-100 mb-0" id="tabelaSelecao">
-                        <thead>
-                            <tr>
-                                <th class="text-center py-2" style="width: 40px;">
-                                    <input type="checkbox" class="form-check-input" id="checkAll">
-                                </th>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th class="text-end pe-3">Local</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="c : ${listaContatos}" class="cursor-pointer row-contato">
-                                <td class="text-center">
-                                    <input type="checkbox" class="form-check-input check-item" th:value="${c.id}">
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-small me-3">
-                                            <span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
-                                        </div>
-                                        <div>
-                                            <span class="fw-bold text-dark d-block" style="font-size: 0.95rem;" th:text="${c.nome}">Nome</span>
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-calendar text-muted"></i></span>
+                                            <input type="date" class="form-control border-start-0 ps-0" name="dataInicio" th:value="${dataInicio}" aria-label="Data Início" placeholder="Data Inicial">
                                         </div>
                                     </div>
-                                </td>
-                                <td class="text-muted small" th:text="${c.email}">email</td>
-                                <td class="text-end pe-3">
-                                    <span class="badge rounded-pill badge-light-pro small" 
-                                          th:text="${c.cidade}">Local</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                                    <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-arrow-right text-muted"></i></span>
+                                            <input type="date" class="form-control border-start-0 ps-0" name="dataFim" th:value="${dataFim}" aria-label="Data Fim" placeholder="Data Final">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-auto ms-auto d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary btn-sm px-3 shadow-sm" title="Aplicar Filtro">
+                                            Filtrar
+                                        </button>
+                                        <a th:if="${dataInicio != null or dataFim != null}" href="/grupos/cadastro" class="btn btn-outline-danger btn-sm px-3" title="Limpar Filtros">
+                                            Limpar
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4 pt-0">
+                            
+                            <div class="d-flex justify-content-between align-items-end mb-3 border-bottom pb-2">
+                                <span class="text-muted small fw-bold text-uppercase">
+                                    Lista de Contatos
+                                </span>
+                                
+                                <button type="button" class="btn btn-light border shadow-sm py-1 px-3 small rounded-pill" id="btnToggleAll" style="font-size: 0.85rem;">
+                                    <i class="fa-solid fa-check-double text-primary me-1"></i> 
+                                    <span id="txtBtnAll" class="fw-bold">Selecionar Todos</span>
+                                </button>
+                            </div>
+
+                            <div class="table-responsive border-0">
+                                <table class="table table-hover-custom align-middle w-100 mb-0" id="tabelaSelecao">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="text-center py-3 rounded-start" style="width: 50px;">
+                                                <input type="checkbox" class="form-check-input" id="checkAll">
+                                            </th>
+                                            <th class="py-3">Contato</th>
+                                            <th class="py-3">Email</th>
+                                            <th class="text-end pe-4 py-3 rounded-end">Local</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="border-top-0">
+                                        <tr th:each="c : ${listaContatos}" class="cursor-pointer row-contato transition-all">
+                                            <td class="text-center">
+                                                <input type="checkbox" class="form-check-input check-item" th:value="${c.id}">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-small shadow-sm me-3 bg-primary text-white">
+    <span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
+</div>
+                                                    <div>
+                                                        <span class="fw-bold text-dark d-block" style="font-size: 0.95rem;" th:text="${c.nome}">Nome</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-muted small" th:text="${c.email}">email</td>
+                                            <td class="text-end pe-4">
+                                                <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill shadow-sm" 
+                                                      th:text="${c.cidade}">Local</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </div>      
         </div>
-    </div>
-</div>		</div>
-	</main>
+    </main>
 
-	
-
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script
-		src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-	<script
-		src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-	
-	<script th:src="@{/js/grupos.js}"></script>
-	
-	
-	
-	
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script th:src="@{/js/grupos.js}"></script>
 
 </body>
 </html>

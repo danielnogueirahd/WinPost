@@ -1,74 +1,208 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="https://thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - WinPost</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meu Perfil | WinPost</title>
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
 </head>
 
-<body class="login-body">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
-    <div class="login-container">
-        
-        <div class="login-image-section d-none d-md-block">
-            <img src="/img/winpost-login.png" alt="Fundo" class="login-bg-img">
-            
-            <div class="login-content-overlay">
-                <p class="text-uppercase small fw-bold mb-2">WINPOST</p>
-                <h2 class="mb-3 fw-bold">Bem vindo</h2>
-                <p class="small opacity-75">
-                    Gerencie seus contatos e relatórios em um único lugar.
-                </p>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="sidebarMenu" style="width: 280px;">
+        <div class="offcanvas-header sidebar-header">
+            <h5 class="offcanvas-title fw-bold text-white">
+                <i class="fa-solid fa-layer-group me-2"></i> Navegação
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                <a href="/administrativo" class="list-group-item list-group-item-action sidebar-item">
+                    <i class="fa-solid fa-house me-2"></i> Dashboard
+                </a>
+                <a href="/cadastroContatos" class="list-group-item list-group-item-action sidebar-item">
+                    <i class="fa-solid fa-user-plus me-2"></i> Cadastros
+                </a>
+                <a href="/listarContatos" class="list-group-item list-group-item-action sidebar-item">
+                    <i class="fa-solid fa-list me-2"></i> Consultas
+                </a>
+            </div>
+             <div class="mt-auto p-4 text-center text-muted small" style="opacity: 0.7;">
+                <hr>
+                <p class="mb-0">Sistema WinPost v1.0</p>
             </div>
         </div>
-
-        <div class="login-form-section">
-            <div class="form-wrapper">
-                <h3 class="mb-4 fw-bold text-dark">Login</h3>
-
-                <div th:if="${param.error}" class="alert alert-danger py-2 small text-center mb-3">
-                    Usuário ou senha inválidos.
-                </div>
-                <div th:if="${param.logout}" class="alert alert-info py-2 small text-center mb-3">
-                    Você saiu do sistema.
-                </div>
-
-                <form th:action="@{/login}" method="post">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">USUÁRIO</label>
-                        <input type="text" class="form-control" name="username" placeholder="Seu usuário" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">SENHA</label>
-                        <input type="password" class="form-control" name="password" placeholder="Sua senha" required>
-                    </div>
-                    
-                    <div class="form-check mb-2">
-                        <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
-                        <label class="form-check-label small text-muted" for="remember-me">Lembrar-me</label>
-                    </div>
-
-                    <button type="submit" class="btn btn-custom">ENTRAR</button>
-
-                    <div class="links-uteis">
-                        <a href="#">Esqueceu a senha?</a>
-                        <a href="#">Cadastre-se</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-
     </div>
 
+    <main class="flex-grow-1">
+        
+
+        <div class="container py-4 mb-5">
+            
+            <div th:if="${mensagem}" th:classappend="${'alert-' + tipoMensagem}" class="alert alert-dismissible fade show" role="alert">
+                <i th:if="${tipoMensagem == 'success'}" class="fa-solid fa-check-circle me-2"></i>
+                <i th:if="${tipoMensagem == 'danger'}" class="fa-solid fa-triangle-exclamation me-2"></i>
+                <span th:text="${mensagem}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-10">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
+                            <h3 class="fw-bold text-secondary mb-0">Meu Perfil</h3>
+                            <p class="text-muted small mb-0">Gerencie suas informações e preferências de segurança.</p>
+                        </div>
+                        <nav aria-label="breadcrumb" class="d-none d-md-block">
+                            <ol class="breadcrumb mb-0 small bg-white p-2 rounded shadow-sm">
+                                <li class="breadcrumb-item"><a href="/administrativo" class="text-decoration-none">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Perfil</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-3 mb-4">
+                    <div class="card card-modern h-100 text-center">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <div class="position-relative mb-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 120px; height: 120px; font-size: 3rem;">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                                <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle p-2" title="Online">
+                                    <span class="visually-hidden">Online</span>
+                                </span>
+                            </div>
+                            <h5 class="fw-bold mb-1" th:text="${usuario.nome}">Usuário</h5>
+                            <p class="text-muted small mb-3" th:text="${usuario.cargo}">Função</p>
+                            
+                            <div class="d-grid gap-2 w-100">
+                                <button class="btn btn-outline-primary btn-sm rounded-pill" disabled><i class="fa-solid fa-camera me-2"></i>Alterar Foto</button>
+                            </div>
+
+                            <hr class="w-100 my-4 text-muted opacity-25">
+
+                            <div class="w-100 text-start">
+                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Status da Conta</small>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <span class="badge bg-success bg-opacity-10 text-white px-3 py-2 rounded-pill">
+                                        <i class="fa-solid fa-check-circle me-1"></i> Ativo
+                                    </span>
+                                    <small class="text-muted">WinPost 1.0</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    
+                    <div class="card card-modern mb-4">
+                        <div class="card-header border-bottom-0 d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-white">
+                                <i class="fa-regular fa-address-card fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold text-dark">Informações Pessoais</h6>
+                        </div>
+                        <div class="card-body pt-0">
+                            <form th:action="@{/perfil/salvar}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Nome Completo</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-user text-muted"></i></span>
+                                            <input type="text" name="nome" class="form-control border-start-0 ps-0" th:value="${usuario.nome}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">E-mail</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
+                                            <input type="email" name="email" class="form-control border-start-0 ps-0" th:value="${usuario.email}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Telefone</label>
+                                        <input type="text" class="form-control" value="(11) 99999-9999" disabled title="Em breve">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Cargo / Departamento</label>
+                                        <input type="text" class="form-control" th:value="${usuario.cargo}" readonly>
+                                    </div>
+                                    <div class="col-12 text-end mt-4">
+                                        <button type="submit" class="btn btn-primary btn-modern">
+                                            <i class="fa-regular fa-floppy-disk me-2"></i> Salvar Alterações
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card card-modern border-danger border-opacity-25">
+                        <div class="card-header border-bottom-0 d-flex align-items-center">
+                             <div class="bg-danger bg-opacity-10 p-2 rounded me-3 text-white">
+                                <i class="fa-solid fa-shield-halved fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold text-dark">Segurança & Senha</h6>
+                        </div>
+                        <div class="card-body pt-0">
+                            <form th:action="@{/perfil/senha}" method="post">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="form-label-modern">Senha Atual</label>
+                                        <input type="password" name="senhaAtual" class="form-control" placeholder="••••••" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label-modern">Nova Senha</label>
+                                        <input type="password" name="novaSenha" class="form-control" placeholder="Nova senha" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-outline-danger w-100 btn-modern">
+                                            Alterar Senha
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleMenu(menuId, iconId) {
+            var menu = document.getElementById(menuId);
+            var icon = document.getElementById(iconId);
+            if (menu && icon) {
+                if (menu.classList.contains('d-none')) {
+                    menu.classList.remove('d-none');
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    menu.classList.add('d-none');
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            }
+        }
+    </script>
 </body>
 </html>
