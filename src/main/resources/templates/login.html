@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - WinPost</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - WinPost</title>
 
-    <link rel="icon" type="image/png" href="/img/logoInput.png">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/estilo.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet" href="/css/estilo.css">
 </head>
 
 <body class="login-body">
@@ -39,10 +42,10 @@
                     Você saiu do sistema.
                 </div>
 
-                <form th:action="@{/login}" method="post" onsubmit="this.querySelector('button[type=submit]').disabled = true; this.querySelector('button[type=submit]').innerHTML = '<i class=\'fa-solid fa-spinner fa-spin me-2\'></i>Entrando...';">
+                <form th:action="@{/login}" method="post">
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-muted">USUÁRIO</label>
-                        <input type="text" class="form-control" name="username" placeholder="Seu usuário" required autofocus>
+                        <input type="text" class="form-control" name="username" placeholder="Seu usuário" required>
                     </div>
                     
                     <div class="mb-3">

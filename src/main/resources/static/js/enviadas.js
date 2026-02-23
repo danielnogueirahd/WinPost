@@ -154,12 +154,17 @@ function abrirModalExclusaoDefinitiva(id) {
 }
 
 function toggleAction(id, action, element, type) {
+    // Envia a requisição para o backend
     $.post('/mensagens/' + action + '/' + id, function(state) {
         if(type === 'star') {
-            $(element).toggleClass('fa-solid star-active fa-regular');
+            // Alterna tanto o formato (solid/regular) quanto a cor (warning/muted)
+            $(element).toggleClass('fa-solid text-warning fa-regular text-muted');
         }
         if(type === 'flag') {
-            $(element).toggleClass('fa-solid flag-active fa-regular');
+            // Alterna o formato e a cor da bandeira (info/muted)
+            $(element).toggleClass('fa-solid text-info fa-regular text-muted');
         }
+    }).fail(function() {
+        console.error("Erro ao atualizar o status da mensagem.");
     });
 }
