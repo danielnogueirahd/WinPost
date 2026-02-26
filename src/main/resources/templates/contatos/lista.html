@@ -2,218 +2,290 @@
 <html xmlns:th="https://thymeleaf.org">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Contatos | WinPost</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista de Contatos | WinPost</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.6/css/dataTables.dataTables.css" />
-    <link rel="stylesheet" href="/css/estilo.css">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/2.3.6/css/dataTables.dataTables.css" />
+<link rel="stylesheet" href="/css/estilo.css">
 
-    <style>
-        /* ESTILO EXTRA PARA TABELA COMPACTA */
-        .table-compact td, .table-compact th {
-            padding: 0.6rem 0.5rem; /* Menos espaçamento vertical */
-            vertical-align: middle;
-        }
-        .text-small { font-size: 0.85rem; }
-        .text-xsmall { font-size: 0.75rem; }
-        
-        /* Quebra de linha suave para endereços longos */
-        .endereco-cell {
-            min-width: 250px;
-            max-width: 350px;
-            white-space: normal;
-            line-height: 1.2;
-        }
-    </style>
+<style>
+/* ESTILO EXTRA PARA TABELA COMPACTA */
+.table-compact td, .table-compact th {
+	padding: 0.6rem 0.5rem; /* Menos espaçamento vertical */
+	vertical-align: middle;
+}
+
+.text-small {
+	font-size: 0.85rem;
+}
+
+.text-xsmall {
+	font-size: 0.75rem;
+}
+
+/* Quebra de linha suave para endereços longos */
+.endereco-cell {
+	min-width: 250px;
+	max-width: 350px;
+	white-space: normal;
+	line-height: 1.2;
+}
+</style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-    <div th:replace="~{fragments/navbar :: navbar}"></div>
+	<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    
 
-    <div class="container-fluid px-4 mt-4 mb-5">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center ps-3 border-start border-4 border-primary">
-                <div>
-                    <h2 class="fw-bold text-dark mb-0 h3">Contatos</h2>
-                    <p class="text-muted mb-0 small">Gerenciamento inteligente da base.</p>
-                </div>
-            </div>
+	<div class="container-fluid px-4 mt-4 mb-5">
 
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-light text-primary border shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRelatorio">
-                    <i class="fa-solid fa-file-pdf"></i> <span class="d-none d-md-inline ms-1">Relatório</span>
-                </button>
-                <a href="/cadastroContatos" class="btn btn-primary fw-bold shadow-sm">
-                    <i class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo</span>
-                </a>
-            </div>
-        </div>
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div
+				class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+				<div>
+					<h2 class="fw-bold text-dark mb-0 h3">Contatos</h2>
+					<p class="text-muted mb-0 small">Gerenciamento inteligente da
+						base.</p>
+				</div>
+			</div>
 
-        <div class="card shadow-sm mb-4 border-0">
-            <div class="card-body p-3">
-                <form method="GET" action="/listarContatos">
-                    <div class="row g-2 align-items-center">
-                        <div class="col-md-5">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0 text-secondary"><i class="fas fa-search"></i></span>
-                                <input type="text" name="nome" class="form-control border-start-0 ps-0 shadow-none" placeholder="Buscar por nome..." th:value="${param.nome}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0 text-secondary"><i class="fa-solid fa-location-dot"></i></span>
-                                <input type="text" name="cidade" class="form-control border-start-0 ps-0 shadow-none" placeholder="Cidade..." th:value="${param.cidade}">
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">Pesquisar</button>
-                            <button type="submit" class="btn btn-outline-secondary fw-bold shadow-sm" formtarget="_blank" formaction="/relatorio/etiquetas">
-                                <i class="fas fa-tags me-1"></i> Etiquetas
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+			<div class="d-flex gap-2">
+				<button type="button"
+					class="btn btn-light text-primary border shadow-sm fw-bold"
+					data-bs-toggle="modal" data-bs-target="#modalRelatorio">
+					<i class="fa-solid fa-file-pdf"></i> <span
+						class="d-none d-md-inline ms-1">Relatório</span>
+				</button>
+				<a href="/cadastroContatos"
+					class="btn btn-primary fw-bold shadow-sm"> <i
+					class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo</span>
+				</a>
+			</div>
+		</div>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0"> <div class="table-responsive">
-                    <table class="table table-hover table-compact mb-0" id="tabela">
-                        <thead class="bg-light text-secondary">
-                            <tr>
-                                <th style="width: 5%;">ID</th>
-                                <th style="width: 25%;">Nome / Cadastro</th>
-                                <th style="width: 25%;">Contato</th>
-                                <th style="width: 35%;" class="d-none d-lg-table-cell">Endereço Completo</th>
-                                <th style="width: 10%;" class="text-end">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="contato : ${listaContatos}">
-                                <td class="fw-bold text-muted small" th:text="${contato.id}"></td>
+		<div class="card shadow-sm mb-4 border-0">
+			<div class="card-body p-3">
+				<form method="GET" action="/listarContatos">
+					<div class="row g-2 align-items-center">
+						<div class="col-md-5">
+							<div class="input-group">
+								<span
+									class="input-group-text bg-white border-end-0 text-secondary"><i
+									class="fas fa-search"></i></span> <input type="text" id="buscaRapida"
+									name="nome"
+									class="form-control border-start-0 ps-0 shadow-none"
+									placeholder="Buscar rápido por nome, e-mail..."
+									th:value="${param.nome}">
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="input-group">
+								<span
+									class="input-group-text bg-white border-end-0 text-secondary"><i
+									class="fa-solid fa-location-dot"></i></span> <input type="text"
+									id="buscaCidade" name="cidade"
+									class="form-control border-start-0 ps-0 shadow-none"
+									placeholder="Cidade,Estado,País..." th:value="${param.cidade}">
+							</div>
+						</div>
+						<div class="col-md-4 d-flex justify-content-end gap-2">
+							<button type="submit"
+								class="btn btn-primary px-4 fw-bold shadow-sm">Pesquisar</button>
+							<button type="submit"
+								class="btn btn-outline-secondary fw-bold shadow-sm"
+								formtarget="_blank" formaction="/relatorio/etiquetas">
+								<i class="fas fa-tags me-1"></i> Etiquetas
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 
-                                <td>
-                                    <div class="fw-bold text-dark text-truncate" style="max-width: 200px;" th:text="${contato.nome}"></div>
-                                    <div class="text-xsmall text-muted mt-1">
-    <i class="far fa-calendar ms-1"></i> Nasc:
-    <span th:text="${contato.dataNascimento != null and !contato.dataNascimento.isEmpty() ? contato.dataNascimento : '-'}"></span>
-</div>
-                                </td>
+		<div class="card shadow-sm border-0">
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-hover table-compact mb-0" id="tabela">
+						<thead class="bg-light text-secondary">
+							<tr>
+								<th style="width: 5%;">ID</th>
+								<th style="width: 25%;">Nome / Cadastro</th>
+								<th style="width: 25%;">Contato</th>
+								<th style="width: 35%;" class="d-none d-lg-table-cell">Endereço
+									Completo</th>
+								<th style="width: 10%;" class="text-end">Ações</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="contato : ${listaContatos}">
+								<td class="fw-bold text-muted small" th:text="${contato.id}"></td>
 
-                                <td>
-                                    <div th:if="${contato.email}" class="text-dark small mb-1 text-truncate" style="max-width: 220px;">
-                                        <i class="far fa-envelope me-1 text-primary small"></i> <span th:text="${contato.email}"></span>
-                                    </div>
-                                    <div class="small text-muted">
-                                        <i class="fas fa-phone me-1 text-success small"></i> <span th:text="${contato.telefone}"></span>
-                                    </div>
-                                </td>
+								<td>
+									<div class="fw-bold text-dark text-truncate"
+										style="max-width: 200px;" th:text="${contato.nome}"></div>
+									<div class="text-xsmall text-muted mt-1">
+										<i class="far fa-calendar ms-1"></i> Nasc: <span
+											th:text="${contato.dataNascimento != null and !contato.dataNascimento.isEmpty() ? contato.dataNascimento : '-'}"></span>
+									</div>
+								</td>
 
-                                <td class="d-none d-lg-table-cell endereco-cell">
-                                    <div class="text-dark small mb-1">
-                                        <span class="fw-bold" th:text="${contato.rua}"></span>, 
-                                        <span th:text="${contato.numero}"></span>
-                                        <span th:if="${contato.complemento}" class="text-muted" th:text="'(' + ${contato.complemento} + ')'"></span>
-                                    </div>
-                                    <div class="text-xsmall text-muted">
-                                        <span th:text="${contato.bairro}"></span> • 
-                                        <span th:text="${contato.cidade}"></span>/
-                                        <span th:text="${contato.estado}"></span> • 
-                                        CEP: <span th:text="${contato.cep}"></span>
-                                    </div>
-                                </td>
+								<td>
+									<div th:if="${contato.email}"
+										class="text-dark small mb-1 text-truncate"
+										style="max-width: 220px;">
+										<i class="far fa-envelope me-1 text-primary small"></i> <span
+											th:text="${contato.email}"></span>
+									</div>
+									<div class="small text-muted">
+										<i class="fas fa-phone me-1 text-success small"></i> <span
+											th:text="${contato.telefone}"></span>
+									</div>
+								</td>
 
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        <a th:href="@{/editarContatos/{id}(id=${contato.id})}" class="btn btn-sm btn-outline-primary border-0" title="Editar">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </a> 
-                                        <button type="button" class="btn btn-sm btn-outline-danger border-0" 
-                                                th:data-url="@{/removerContatos/{id}(id=${contato.id})}"
-                                                onclick="confirmarExclusao(this.getAttribute('data-url'))"
-                                                title="Excluir">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+								<td class="d-none d-lg-table-cell endereco-cell">
+									<div class="text-dark small mb-1">
+										<span class="fw-bold" th:text="${contato.rua}"></span>, <span
+											th:text="${contato.numero}"></span> <span
+											th:if="${contato.complemento}" class="text-muted"
+											th:text="'(' + ${contato.complemento} + ')'"></span>
+									</div>
+									<div class="text-xsmall text-muted">
+										<span th:text="${contato.bairro}"></span> • <span
+											th:text="${contato.cidade}"></span>/ <span
+											th:text="${contato.estado}"></span> • CEP: <span
+											th:text="${contato.cep}"></span>
+									</div>
+								</td>
 
-        <div class="mt-3">
-            <a href="/administrativo" class="text-decoration-none text-secondary small">
-                <i class="fa-solid fa-arrow-left me-1"></i> Voltar ao Dashboard
-            </a>
-        </div>
-    </div>
+								<td class="text-end">
+									<div class="btn-group">
+										<a th:href="@{/editarContatos/{id}(id=${contato.id})}"
+											class="btn btn-sm btn-outline-primary border-0"
+											title="Editar"> <i class="fa-solid fa-pen-to-square"></i>
+										</a>
+										<button type="button"
+											class="btn btn-sm btn-outline-danger border-0"
+											th:data-url="@{/removerContatos/{id}(id=${contato.id})}"
+											onclick="confirmarExclusao(this.getAttribute('data-url'))"
+											title="Excluir">
+											<i class="fa-regular fa-trash-can"></i>
+										</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 
-    <div th:replace="~{fragments/modals :: modalRelatorio}"></div>
-    
-    <div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-danger text-white border-0">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Tem certeza?</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center py-4">
-                    <p class="mb-0 text-secondary fs-5">Você está prestes a excluir este contato.</p>
-                    <p class="text-muted small">Esta ação removerá o registro permanentemente.</p>
-                </div>
-                <div class="modal-footer bg-light border-0 justify-content-center">
-                    <button type="button" class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
-                    <a href="#" id="btnConfirmarExclusao" class="btn btn-danger px-4 fw-bold">Sim, Excluir</a>
-                </div>
-            </div>
-        </div>
-    </div>
+		<div class="mt-3">
+			<a href="/administrativo"
+				class="text-decoration-none text-secondary small"> <i
+				class="fa-solid fa-arrow-left me-1"></i> Voltar ao Dashboard
+			</a>
+		</div>
+	</div>
 
-    
+	<div th:replace="~{fragments/modals :: modalRelatorio}"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/2.3.6/js/dataTables.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<div class="modal fade" id="modalConfirmarExclusao" tabindex="-1"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg">
+				<div class="modal-header bg-danger text-white border-0">
+					<h5 class="modal-title fw-bold">
+						<i class="fa-solid fa-triangle-exclamation me-2"></i>Tem certeza?
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body text-center py-4">
+					<p class="mb-0 text-secondary fs-5">Você está prestes a excluir
+						este contato.</p>
+					<p class="text-muted small">Esta ação removerá o registro
+						permanentemente.</p>
+				</div>
+				<div class="modal-footer bg-light border-0 justify-content-center">
+					<button type="button" class="btn btn-secondary px-4 fw-bold"
+						data-bs-dismiss="modal">Cancelar</button>
+					<a href="#" id="btnConfirmarExclusao"
+						class="btn btn-danger px-4 fw-bold">Sim, Excluir</a>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <script>
-        $(document).ready(function () {
-            $('#tabela').DataTable({
-                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
-                columnDefs: [ { orderable: false, targets: -1 } ],
-                paging: true,
-                searching: false, // Desliga a busca do DataTable pq já temos a nossa busca personalizada
-                lengthChange: false, // Remove o seletor de "mostrar 10 registros" para limpar a tela
-                pageLength: 10
-            });
-        });
 
-        function confirmarExclusao(url) {
-            var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
-            document.getElementById('btnConfirmarExclusao').setAttribute('href', url);
-            modal.show();
-        }
-    </script>
-    
-    <script th:if="${mensagemSucesso}">
-        Swal.fire({
-            title : 'Sucesso!',
-            text : '[[${mensagemSucesso}]]',
-            icon : 'success',
-            confirmButtonColor : '#0d6efd',
-            confirmButtonText : 'Continuar',
-            timer : 3000,
-            timerProgressBar : true
-        });
-    </script>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.datatables.net/2.3.6/js/dataTables.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script>
+		$(document)
+				.ready(
+						function() {
+							// 1. Guardamos a tabela numa variável
+							var table = $('#tabela')
+									.DataTable(
+											{
+												language : {
+													url : 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
+												},
+												columnDefs : [ {
+													orderable : false,
+													targets : -1
+												} ],
+												paging : true,
+												searching : true,
+												dom : 'lrtip',
+												lengthChange : false,
+												pageLength : 10
+											});
+
+							// 2. Evento para a Busca Rápida (Pesquisa global na tabela)
+							$('#buscaRapida').on('keyup', function() {
+								table.search(this.value).draw();
+							});
+
+							// 3. NOVO: Evento para a Busca por Cidade (Pesquisa APENAS na coluna 3 - Endereço)
+							$('#buscaCidade').on('keyup', function() {
+								table.column(3).search(this.value).draw();
+							});
+						});
+
+		function confirmarExclusao(url) {
+			var modal = new bootstrap.Modal(document
+					.getElementById('modalConfirmarExclusao'));
+			document.getElementById('btnConfirmarExclusao').setAttribute(
+					'href', url);
+			modal.show();
+		}
+	</script>
+
+	<script th:if="${mensagemSucesso}">
+		Swal.fire({
+			title : 'Sucesso!',
+			text : '[[${mensagemSucesso}]]',
+			icon : 'success',
+			confirmButtonColor : '#0d6efd',
+			confirmButtonText : 'Continuar',
+			timer : 3000,
+			timerProgressBar : true
+		});
+	</script>
 </body>
 </html>
