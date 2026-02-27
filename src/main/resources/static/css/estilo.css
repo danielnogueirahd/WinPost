@@ -1,16 +1,42 @@
 /* ==========================================================================
-   1. GLOBAIS & RESET
+   WINPOST - ARQUIVO DE ESTILOS MESTRE
+   ==========================================================================
+   ÍNDICE:
+   1.  Base & Reset (Body, Fontes)
+   2.  Utilitários & Scrollbar
+   3.  Componentes: Cards (Padrão, Pro, Tiles)
+   4.  Componentes: Botões & Ações
+   5.  Componentes: Formulários & Inputs
+   6.  Componentes: Tabelas (Geral, Gmail, Inbox)
+   7.  Componentes: Modals
+   8.  Página: Login
+   9.  Funcionalidade: Calendário & Agenda
+   10. Funcionalidade: Mensagens (Email View)
+   11. Plugins (Select2, Summernote)
+   12. Responsividade Global
+   ========================================================================== */
+
+/* ==========================================================================
+   1. BASE & RESET
    ========================================================================== */
 body {
-    padding-top: 65px;
+    padding-top: 80px; /* Ajuste moderno */
     background: linear-gradient(180deg, #F0F8FF 0%, #ffffff 100%) no-repeat fixed !important;
     background-attachment: fixed;
     min-height: 100vh;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #333;
+    color: #444; /* Cor de texto suavizada */
 }
 
-/* Scrollbar personalizada */
+a {
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+/* ==========================================================================
+   2. UTILITÁRIOS & SCROLLBAR
+   ========================================================================== */
+/* Scrollbar Global Padrão */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -26,14 +52,69 @@ body {
     background: #a8a8a8; 
 }
 
-/* ==========================================================================
-   2. COMPONENTES: CARDS
-   ========================================================================== */
-.card {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
-    border: none;
+/* Scrollbar Horizontal Fina (para áreas de seleção) */
+#areaSelecaoTipos::-webkit-scrollbar,
+.mobile-nav-container::-webkit-scrollbar {
+    height: 4px; /*/ Height para horizontal */
+}
+#areaSelecaoTipos::-webkit-scrollbar-thumb,
+.mobile-nav-container::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 10px;
 }
 
+/* Utilitários de Texto e Layout */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sticky-column {
+    position: sticky;
+    top: 90px;
+    z-index: 10;
+    height: fit-content;
+}
+
+.page-header h2 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.fade-in { animation: fadeIn 0.3s ease-in-out; } 
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Animação Flutuante */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* ==========================================================================
+   3. COMPONENTES: CARDS
+   ========================================================================== */
+/* Base Card */
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    border-radius: 10px;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #f0f2f5 !important;
+    padding: 1.2rem 1.5rem !important;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 1.5rem !important;
+}
+
+/* Card Moderno */
 .card-modern {
     background: #fff;
     border: 1px solid #f0f0f0;
@@ -42,42 +123,33 @@ body {
     overflow: hidden;
     transition: transform 0.2s ease;
 }
-
 .card-modern:hover {
     transform: translateY(-2px);
     box-shadow: 0 15px 35px rgba(0,0,0,0.08);
 }
 
-.card-modern .card-body {
-    padding: 2rem;
-}
-
-.card-header {
-    background-color: transparent;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    font-weight: bold;
-    padding-top: 15px;
-    padding-bottom: 15px;
-}
-
-.card-modern .card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #f8f9fa;
-    padding: 1.5rem 2rem 1rem;
-}
-
-/* Card Pro (usado em Grupos) */
+/* Card Pro (Usado em Grupos/Dash) */
 .card-pro {
-    border: none;
+    border: 1px solid #eef0f2;
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     background: #fff;
     transition: all 0.2s ease-in-out;
 }
-
 .card-pro:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Card Modelo (Templates) */
+.card-modelo {
+    border: 1px solid #f0f2f5;
+    transition: all 0.2s ease;
+}
+.card-modelo:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+    border-color: #e0e4e8;
 }
 
 /* KPIs */
@@ -86,66 +158,113 @@ body {
     border-radius: 10px;
     color: white;
 }
-
 .icon-kpi {
     font-size: 3rem;
     opacity: 0.3;
 }
 
 /* ==========================================================================
-   3. COMPONENTES: FORMULÁRIOS & INPUTS
+   4. COMPONENTES: BOTÕES & AÇÕES
    ========================================================================== */
-.form-control, 
-.form-select {
-    border-radius: 10px;
-    border: 1px solid #dee2e6;
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-    background-color: #fff;
-    transition: all 0.3s ease;
+/* Botão Base */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 0.5rem 1rem; 
+    box-shadow: none !important; 
+    transition: all 0.2s;
 }
 
-.input-group-text {
+/* Botão Moderno */
+.btn-modern {
     border-radius: 10px;
-    border: 1px solid #dee2e6;
-    padding: 0.75rem 1rem;
-    background-color: #fff;
+    padding: 0.6rem 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+    border: none;
+}
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+}
+.btn-primary.btn-modern { background-color: #0d6efd; }
+
+/* Botão Secundário Outline */
+.btn-outline-secondary {
+    border-color: #dee2e6;
     color: #6c757d;
 }
-
-/* Ajustes de bordas em input groups */
-.input-group > .form-control:not(:first-child), 
-.input-group > .form-select:not(:first-child),
-.input-group > .input-group-text:not(:first-child) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.input-group > .form-control:not(:last-child), 
-.input-group > .form-select:not(:last-child), 
-.input-group > .input-group-text:not(:last-child) {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.form-control:focus, 
-.form-select:focus {
-    background-color: #fff;
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
-}
-
-.form-control[readonly] {
+.btn-outline-secondary:hover {
     background-color: #f8f9fa;
-    border-color: #eee;
-    color: #6c757d;
+    color: #495057;
+    border-color: #cdd4da;
 }
 
+/* Botão Ação (Lista Lateral Dashboard) */
+.btn-action {
+    transition: all 0.25s ease;
+    border-color: #e9ecef !important;
+}
+.btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important;
+    background-color: #fff !important;
+    border-color: #dee2e6 !important;
+}
+.btn-action:hover .fa-chevron-right {
+    transform: translateX(3px);
+    transition: 0.2s;
+    opacity: 1 !important;
+}
+
+/* Botão Quadrado (Tiles) */
+.btn-tile {
+	transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+	background-color: #fff;
+	border: 1px solid #e9ecef !important;
+}
+.btn-tile:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+	border-color: transparent !important;
+}
+.btn-tile:hover .icon-box {
+	transform: scale(1.1);
+	transition: 0.3s;
+}
+
+/* Botão Escrever (Compose) */
+.btn-compose {
+    background-color: #c2e7ff; 
+    color: #001d35; 
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-compose:hover {
+    background-color: #b3d7ef;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+    transform: translateY(-1px);
+}
+
+/* Ícones de Ação (Estrela, Flag, Editar) */
+.action-icon {
+    cursor: pointer;
+    color: #ccc;
+    transition: transform 0.2s, color 0.2s;
+    padding: 5px;
+}
+.action-icon:hover { transform: scale(1.2); }
+.star-active { color: #f4b400; }
+.flag-active { color: #0b57d0; }
+
+/* ==========================================================================
+   5. COMPONENTES: FORMULÁRIOS & INPUTS
+   ========================================================================== */
 .form-label {
     font-size: 0.85rem;
-    font-weight: 500;
-    color: #555;
-    margin-bottom: 0.2rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.4rem;
 }
 
 .form-label-modern {
@@ -158,876 +277,94 @@ body {
     display: block;
 }
 
-/* Checkbox Customizado */
-.form-check-input {
-    cursor: pointer;
-    width: 1.2em;
-    height: 1.2em;
+.form-control, 
+.form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.95rem;
+    background-color: #fff;
+    box-shadow: none !important;
+    transition: all 0.2s ease-in-out;
 }
 
+.form-control:focus, 
+.form-select:focus {
+    background-color: #fff;
+    border-color: #0d6efd; 
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1) !important;
+}
+
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #eee;
+    color: #6c757d;
+}
+
+/* Input Groups (Datas) */
+.input-group-text {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    color: #adb5bd;
+}
+.input-group > .form-control:not(:first-child), 
+.input-group > .form-select:not(:first-child),
+.input-group > .input-group-text:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.input-group > .form-control:not(:last-child), 
+.input-group > .input-group-text:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Barra de Pesquisa Moderna */
+.search-modern {
+    position: relative;
+    width: 100%;
+    max-width: 350px;
+}
+.search-modern .form-control {
+    background-color: #f1f3f5;
+    border: 1px solid transparent;
+    border-radius: 50px;
+    padding-left: 2.5rem;
+}
+.search-modern .form-control:focus {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1) !important;
+}
+.search-modern .search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #adb5bd;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Checkboxes & Cards de Seleção */
+.form-check-input {
+    cursor: pointer;
+    width: 1.1em;
+    height: 1.1em;
+    border-color: #dce3eb;
+}
 .form-check-input:checked {
     background-color: #0d6efd;
     border-color: #0d6efd;
 }
 
-/* ==========================================================================
-   4. COMPONENTES: BOTÕES & ALERTS
-   ========================================================================== */
-.btn-modern {
-    border-radius: 10px;
-    padding: 0.6rem 1rem;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    border: none;
-}
-
-.btn-modern:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-}
-
-.btn-primary.btn-modern {
-    background-color: #0d6efd;
-}
-
-.alert-modern {
-    border-radius: 15px;
-    border: none;
-    background-color: #e7f1ff;
-    color: #084298;
-}
-
-/* ==========================================================================
-   5. PÁGINA: LOGIN
-   ========================================================================== */
-.login-body {
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 0;
-}
-
-.login-container {
-    background: white;
-    width: 100%;
-    max-width: 1100px; 
-    height: 650px;    
-    border-radius: 15px; 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    overflow: hidden;
-    display: flex;   
-    position: relative;
-}
-
-.login-image-section {
-    width: 50%;
-    height: 100%;
-    position: relative;
-    background-color: #000;
-    padding: 0; 
-}
-
-.login-bg-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    object-position: center;
-    opacity: 0.6; 
-}
-
-.login-content-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    justify-content: center; 
-    text-align: center;
-    color: white;
-    padding: 40px; 
-    z-index: 2;
-}
-
-.login-form-section {
-    width: 50%;
-    height: 100%;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    justify-content: center; 
-    padding: 40px;
-}
-
-.form-wrapper {
-    width: 100%;
-    max-width: 380px; 
-}
-
-.btn-custom {
-    background-color: #2b52c0;
-    color: white;
-    width: 100%;
-    padding: 12px; 
-    border-radius: 6px;
-    border: none;
-    font-weight: 600;
-    margin-top: 15px;
-    font-size: 1rem;
-}
-
-.btn-custom:hover { 
-    background-color: #1f3b8c; 
-    transform: translateY(-2px); 
-    box-shadow: 0 4px 10px rgba(43, 82, 192, 0.3); 
-}
-
-.links-uteis { 
-    margin-top: 25px; 
-    text-align: center; 
-    font-size: 0.9rem; 
-}
-
-.links-uteis a { 
-    text-decoration: none; 
-    color: #666; 
-    display: block; 
-    margin-bottom: 5px; 
-    transition: color 0.2s; 
-}
-
-.links-uteis a:hover { 
-    color: #2b52c0; 
-}
-
-/* Responsividade Login */
-@media (max-width: 992px) { 
-    .login-container { flex-direction: column; height: auto; max-width: 90%; }
-    .login-image-section, .login-form-section { width: 100%; height: auto; }
-    .login-image-section { height: 250px; } 
-    .login-form-section { padding: 50px 20px; }
-}
-
-@media (max-width: 768px) {
-    .login-container { flex-direction: column; min-height: auto; }
-}
-
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
-/* ==========================================================================
-   6. TABELAS & DATA TABLES
-   ========================================================================== */
-.table-small-font {
-    font-size: 0.9rem;
-}
-
-.table-header-nowrap th {
-    white-space: nowrap;
-}
-
-/* Estilo para Tabela de Seleção de Grupos */
-#tabelaSelecao thead th {
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.5px;
-    color: #8898aa;
-    border-bottom: 1px solid #eee;
-    padding: 12px;
-}
-
-#tabelaSelecao tbody td {
-    vertical-align: middle;
-    padding: 12px;
-    border-bottom: 1px solid #f9f9f9;
-}
-
-.row-selected {
-    background-color: #fff9e6 !important;
-}
-
-.row-selected td:first-child {
-    border-left: 3px solid #ffc107;
-}
-
-/* ==========================================================================
-   7. UTILITÁRIOS (Sticky Column)
-   ========================================================================== */
-.page-header h2 {
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
-
-.sticky-column {
-    position: sticky;
-    top: 90px;
-    z-index: 10;
-    height: fit-content;
-}
-
-/* ==========================================================================
-   8. EDITOR SUMMERNOTE
-   ========================================================================== */
-.note-editor.note-frame {
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.note-toolbar {
-    border-bottom: 1px solid #eee !important;
-    background: #fff !important;
-}
-
-.note-statusbar {
-    display: none !important;
-}
-
-.hover-effect:hover {
-    color: #333;
-    background-color: rgba(0,0,0,0.05);
-    border-radius: 4px;
-}
-
-/* ==========================================================================
-   9. ESTILO ESPECÍFICO: TABELA DE MENSAGENS (GMAIL STYLE)
-   ========================================================================== */
-#tabelaMensagens {
-    border-collapse: separate;
-    border-spacing: 0 8px;
-}
-
-.table-gmail thead { display: none; }
-
-/* ESTADO LIDO */
-.table-gmail tbody tr {
-    background: #f8f9fa;
-    box-shadow: none;
-    border: 1px solid #eee;
-    transition: all 0.2s ease;
-    border-radius: 8px;
-    cursor: pointer;
-    color: #6c757d;
-}
-
-/* ESTADO NÃO LIDO */
-.table-gmail tbody tr.row-unread {
-    background-color: #ffffff !important;
-    color: #212529 !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    border-left: 5px solid #0d6efd;
-    font-weight: 600;
-}
-
-.table-gmail tbody tr.row-unread td {
-    background-color: #ffffff !important;
-    color: #212529;
-}
-
-.table-gmail tbody tr:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    border-color: transparent;
-    z-index: 2;
-    position: relative;
-}
-
-.table-gmail tbody tr td {
-    border: none;
-    padding: 18px 20px;
-    vertical-align: middle;
-}
-
-.table-gmail tbody tr td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-.table-gmail tbody tr td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
-
-.table-gmail tbody tr.row-unread td:first-child {
-    border-radius: 4px 0 0 4px;
-}
-
-.badge-lido {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    font-weight: normal;
-    color: #adb5bd;
-    background: #f1f3f5;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.texto-grupo { font-size: 0.95rem; }
-.texto-assunto { font-size: 0.95rem; }
-
-.icon-status-wrapper { 
-    width: 35px; height: 35px; border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; 
-}
-.bg-status-success { background-color: #d1e7dd; color: #198754; }
-.bg-status-error { background-color: #f8d7da; color: #dc3545; }
-
-/* Modal Leitura Email */
-.modal-leitura-content { border: none; border-radius: 15px; overflow: hidden; }
-.email-header { background: linear-gradient(to right, #f8f9fa, #ffffff); padding: 20px 25px; border-bottom: 1px solid #eee; }
-.avatar-circle { width: 45px; height: 45px; background-color: #0d6efd; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
-.email-body-container { padding: 30px; background-color: #fff; min-height: 300px; font-family: 'Georgia', serif; line-height: 1.6; color: #333; }
-
-/* ==========================================================================
-   10. NOVO ESTILO: CAIXA DE SAÍDA (GMAIL CLEAN)
-   ========================================================================== */
-.toolbar-container {
-    padding: 10px 0;
-}
-
-.btn-filter {
-    background-color: #fff;
-    border: 1px solid #dadce0;
-    color: #3c4043;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border-radius: 8px;
-    padding: 5px 15px;
-    transition: all 0.2s;
-}
-.btn-filter:hover { background-color: #f1f3f4; color: #202124; }
-.btn-filter.active { background-color: #e8f0fe; color: #1967d2; border-color: transparent; }
-
-.inbox-card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    overflow: hidden;
-}
-
-.table-inbox { margin-bottom: 0; width: 100%; border-collapse: collapse; }
-
-.table-inbox tr {
-    border-bottom: 1px solid #f2f2f2;
-    cursor: pointer;
-    transition: box-shadow 0.2s, background-color 0.1s;
-}
-
-.table-inbox tr:hover {
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-    z-index: 10;
-    position: relative;
-    background-color: #fdfdfd;
-}
-
-.table-inbox td {
-    padding: 12px 15px;
-    vertical-align: middle;
-    border: none;
-    color: #202124;
-    font-size: 0.9rem;
-}
-
-.row-unread { background-color: #ffffff; font-weight: 700; }
-.row-unread .email-subject { color: #202124; font-weight: 700; }
-
-.row-read { background-color: #f8f9fa; font-weight: 400; }
-.row-read .email-subject { color: #5f6368; font-weight: 400; }
-
-.star-check { color: #dadce0; cursor: pointer; transition: color 0.2s; }
-.star-check:hover { color: #5f6368; }
-.star-check.active { color: #f4b400; }
-
-.email-sender {
-    width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.email-content-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    overflow: hidden;
-}
-
-.email-subject { white-space: nowrap; }
-.email-snippet { color: #5f6368; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; font-size: 0.9rem;}
-
-.email-date {
-    width: 100px;
-    text-align: right;
-    font-size: 0.8rem;
-    color: #5f6368;
-    font-weight: 500;
-}
-
-.attachment-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 12px;
-    border: 1px solid #dadce0;
-    background-color: #fff;
-    font-size: 0.75rem;
-    color: #3c4043;
-    font-weight: 500;
-    white-space: nowrap;
-    margin-left: 8px;
-}
-.attachment-chip i { margin-right: 4px; color: #ea4335; }
-.attachment-chip.zip i { color: #fbbc04; }
-
-/* ==========================================================================
-   11. CALENDÁRIO MODERNO
-   ========================================================================== */
-.calendar-header {
-    background-color: #fff;
-    border-radius: 12px 12px 0 0;
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background-color: #dee2e6;
-    gap: 1px;
-    border: 1px solid #dee2e6;
-}
-
-.calendar-day-header {
-    background-color: #f8f9fa;
-    color: #6c757d;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    text-align: center;
-    padding: 10px;
-}
-
-.calendar-day {
-    background-color: #fff;
-    min-height: 120px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    transition: background-color 0.2s;
-}
-
-.calendar-day:hover {
-    background-color: #fcfcfc;
-}
-
-.day-empty {
-    background-color: #f9f9f9;
-}
-
-.day-number {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.day-today .day-number {
-    background-color: #0d6efd;
-    color: white;
-}
-
-.event-badge {
-    display: flex;
-    align-items: center;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-decoration: none;
-    white-space: nowrap;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.1s;
-}
-
-.event-badge:hover {
-    transform: scale(1.02);
-    opacity: 0.9;
-    color: inherit;
-}
-
-.event-niver { background-color: #d1e7dd; color: #0f5132; border-left: 3px solid #198754; }
-.event-envio { background-color: #cfe2ff; color: #084298; border-left: 3px solid #0d6efd; }
-.event-feriado { background-color: #f8d7da; color: #842029; border-left: 3px solid #dc3545; }
-
-.event-badge span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Classes para novos eventos da agenda */
-.event-tarefa { background-color: #cff4fc; color: #055160; border-left: 3px solid #0dcaf0; }
-.event-reuniao { background-color: #e0cffc; color: #4c0bce; border-left: 3px solid #6f42c1; }
-.event-importante { background-color: #ffcccd; color: #a00; border-left: 3px solid #dc3545; }
-
-/* ==========================================================================
-   12. CUSTOMIZAÇÃO SELECT2 (AVATARS E LISTA)
-   ========================================================================== */
-.select2-container--bootstrap-5 .select2-dropdown .select2-results__option {
-    padding: 8px 12px;
-}
-
-/* Avatar simples com inicial */
-.avatar-mini {
-    width: 32px;
-    height: 32px;
-    background-color: #e9ecef;
-    color: #495057;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
-    margin-right: 10px;
-    text-transform: uppercase;
-    flex-shrink: 0; 
-}
-
-/* Quando o item está selecionado na lista */
-.select2-results__option--highlighted .avatar-mini {
-    background-color: #fff;
-    color: #0d6efd;
-}
-
-/* ==========================================================================
-   13. CUSTOMIZAÇÃO MODAIS & ANEXOS
-   ========================================================================== */
-.modal-content-custom { border-radius: 1.2rem; border: none; overflow: hidden; }
-.modal-header-custom { background: #f8f9fa; border-bottom: 1px solid #eee; padding: 1.5rem; }
-.message-container { 
-    background: #ffffff; 
-    border: 1px solid #eef0f2; 
-    border-radius: 12px; 
-    padding: 2rem; 
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-    min-height: 250px;
-    line-height: 1.7;
-    color: #3c4043;
-}
-.attachment-card {
-    background: #fff;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    padding: 10px 15px;
-    transition: all 0.2s;
-    text-decoration: none !important;
-    display: flex;
-    align-items: center;
-    width: fit-content;
-    min-width: 200px;
-}
-.attachment-card:hover { border-color: #0d6efd; background: #f8fbff; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-
-.avatar-initial {
-    width: 45px; height: 45px;
-    background: #0d6efd; color: white;
-    border-radius: 10px; display: flex;
-    align-items: center; justify-content: center;
-    font-weight: bold; font-size: 1.2rem;
-}
-
-.select2-item-contato {
-    display: flex;
-    align-items: center;
-    line-height: 1.2;
-}
-
-/* ==========================================================================
-   14. NAVEGAÇÃO & LAYOUT DE MENSAGENS (RESPONSIVO)
-   ========================================================================== */
-
-/* Ajuste de Topo (Navbar fixa) */
-.main-content-area { margin-top: 80px; }
-@media (max-width: 991px) {
-    .main-content-area { margin-top: 70px; }
-}
-
-/* Botões de Ação na Tabela (Estrela/Flag) */
-.action-icon { cursor: pointer; color: #ccc; transition: transform 0.2s, color 0.2s; padding: 5px; }
-.action-icon:hover { transform: scale(1.2); }
-.star-active { color: #f4b400; }
-.flag-active { color: #0b57d0; }
-
-/* Link de Navegação Lateral (Desktop) */
-.nav-link-custom { 
-    color: #444746; 
-    font-weight: 500; 
-    padding: 10px 24px 10px 20px; 
-    border-radius: 0 24px 24px 0; 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    margin-bottom: 4px;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-.nav-link-custom:hover { background-color: #e1e5ea; color: #1f1f1f; }
-.nav-link-custom.active { background-color: #d3e3fd; color: #001d35; font-weight: 700; }
-
-.menu-badge { font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 10px; }
-.nav-link-custom.active .menu-badge { background: rgba(255,255,255,0.4); }
-
-/* EFEITO HOVER - Botão Voltar Navbar (Adicionado Aqui) */
-.btn-voltar-nav {
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
-}
-.btn-voltar-nav:hover {
-    opacity: 1 !important;
-}
-
-/* Botão Escrever (Compose) */
-.btn-compose {
-    background-color: #c2e7ff; 
-    color: #001d35; 
-    border: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.btn-compose:hover {
-    background-color: #b3d7ef;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transform: translateY(-1px);
-}
-
-/* Navegação Mobile (Horizontal com Scroll) */
-.mobile-nav-container {
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch; 
-    padding-bottom: 5px;
-}
-
-.mobile-nav-container::-webkit-scrollbar {
-    height: 4px;
-}
-.mobile-nav-container::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-
-.mobile-nav-link {
-    display: inline-block;
-    padding: 8px 16px;
-    margin-right: 8px;
-    border-radius: 20px;
-    background-color: #fff;
-    color: #555;
-    border: 1px solid #e0e0e0;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-.mobile-nav-link.active {
-    background-color: #0d6efd;
-    color: #fff;
-    border-color: #0d6efd;
-}
-.mobile-nav-link i { margin-right: 6px; }
-
-/* Truncamento Responsivo do Assunto */
-.assunto-responsivo {
-    max-width: 180px; 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-@media (min-width: 768px) {
-    .assunto-responsivo {
-        max-width: 500px; 
-    }
-}
-
-/* Badge Anexo (correção) */
-.badge-attachment { background-color: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; font-weight: 400; font-size: 0.75rem; }
-
-/* =========================================
-   15. RENOVAÇÃO VISUAL - WINPOST
-========================================= */
-
-/* Estilo Minimalista & Confortável */
-body {
-    color: #444; 
-    padding-top: 80px;
-    background-color: #f8f9fa;
-}
-
-/* --- Cards Limpos --- */
-.card-pro {
-    border: 1px solid #eef0f2; 
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #f0f2f5 !important;
-    padding: 1.2rem 1.5rem !important; 
-}
-
-.card-body {
-    padding: 1.5rem !important;
-}
-
-/* --- Inputs e Labels Minimalistas --- */
-.form-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #6c757d;
-    margin-bottom: 0.4rem;
-}
-
-.form-control, .form-select {
-    border: 1px solid #dee2e6; 
-    padding: 0.5rem 0.85rem; 
-    border-radius: 8px;
-    font-size: 0.95rem;
-    box-shadow: none !important; 
-    transition: border-color 0.15s ease-in-out;
-}
-
-.form-control:focus {
-    border-color: var(--bs-primary);
-}
-
-/* Input groups (datas) mais limpos */
-.input-group-text {
-    background-color: #fff; 
-    border: 1px solid #dee2e6;
-    border-right: none;
-    color: #adb5bd;
-}
-.input-group .form-control {
-    border-left: none;
-}
-
-/* --- Botões Refinados --- */
-.btn {
-    border-radius: 8px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    padding: 0.5rem 1rem; 
-    box-shadow: none !important; 
-    transition: all 0.2s;
-}
-
-.btn-outline-secondary {
-    border-color: #dee2e6;
-    color: #6c757d;
-}
-.btn-outline-secondary:hover {
-    background-color: #f8f9fa;
-    color: #495057;
-    border-color: #cdd4da;
-}
-
-/* --- Tabela Minimalista --- */
-.table-responsive {
-    border: 1px solid #f0f2f5;
-    border-radius: 10px;
-}
-
-#tabelaSelecao thead th {
-    background-color: #fcfdfe; 
-    color: #8898aa;
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    border-bottom: 1px solid #eef2f7;
-    padding: 0.8rem 0.5rem; 
-}
-
-#tabelaSelecao tbody td {
-    padding: 0.6rem 0.5rem; 
-    vertical-align: middle;
-    color: #525f7f;
-    border-bottom: 1px solid #f5f7f9;
-}
-
-/* Avatar Menor */
-.avatar-small {
-    width: 32px;
-    height: 32px;
-    font-size: 0.9rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f2f5;
-    color: var(--bs-primary);
-    font-weight: bold;
-    flex-shrink: 0;
-}
-
-/* Linha Selecionada Suave */
-#tabelaSelecao tbody tr.bg-primary.bg-opacity-10 {
-    background-color: rgba(var(--bs-primary-rgb), 0.04) !important; 
-}
-
-/* Checkbox mais discreto */
-.form-check-input {
-    width: 1.1em;
-    height: 1.1em;
-    border-color: #dce3eb;
-    cursor: pointer;
-}
-
-/* Toolbar Limpa */
-.table-toolbar-area {
-    padding-bottom: 1rem;
-}
-
-/* Badges (Local) mais leves */
-.badge-light-pro {
-    background-color: #fff;
-    border: 1px solid #eef2f7;
-    color: #6c757d;
-    font-weight: normal;
-    padding: 0.4em 0.8em;
-}
-
-/* Quando um card personalizado é checado */
-.btn-check:checked + .type-card[style*="--cor-personalizada"] {
-    border-color: var(--cor-personalizada) !important;
-}
-
-/* Scroll horizontal suave para muitos tipos */
-#areaSelecaoTipos::-webkit-scrollbar {
-    height: 6px;
-}
-#areaSelecaoTipos::-webkit-scrollbar-thumb {
-    background: #e0e0e0;
-    border-radius: 10px;
-}
-
-/* Estilo dos Cards de Seleção */
 .type-card {
     border: 1px solid #eef0f2;
     transition: all 0.2s ease-in-out;
     background-color: #fff;
     opacity: 0.7;
+    position: relative;
 }
 .type-card:hover {
     transform: translateY(-2px);
@@ -1048,117 +385,403 @@ body {
     opacity: 1;
     border-width: 2px;
 }
-.btn-check:checked + .type-card .check-indicator {
-    opacity: 1;
-}
-
-/* Cores Específicas Padrão */
+.btn-check:checked + .type-card .check-indicator { opacity: 1; }
+/* Cores específicas type-card */
 #tipoTarefa:checked + .type-card { border-color: #0dcaf0; }
 #tipoReuniao:checked + .type-card { border-color: #0d6efd; }
-    
-/* Tipos Personalizados */
-.btn-check:checked + .type-card[style*="--cor-personalizada"] {
-    border-color: var(--cor-personalizada) !important;
-}
+.btn-check:checked + .type-card[style*="--cor-personalizada"] { border-color: var(--cor-personalizada) !important; }
 
-/* Animação Fade */
-.fade-in { animation: fadeIn 0.3s ease-in-out; } 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* HEADER DA PÁGINA */
-.page-header-actions {
-    background: #ffffff;
-    padding: 1.25rem 1.5rem;
-    border-radius: 16px;
-    border: 1px solid #eef2f5;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.02);
-    margin-bottom: 2rem;
-}
-
-/* BARRA DE PESQUISA MODERNA */
-.search-modern .form-control {
-    background-color: #f1f3f5;
-    border: 1px solid transparent;
-    border-radius: 50px;
-    padding-left: 2.5rem;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-}
-    
-.search-modern .form-control:focus {
-    background-color: #ffffff;
-    border-color: #0d6efd;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
-}
-
-.search-modern {
-    position: relative;
-    width: 100%;
-    max-width: 350px;
-}
-
-.search-modern .search-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #adb5bd;
-    z-index: 5;
-    pointer-events: none;
-}
-
-/* SIDEBAR STICKY */
-.sidebar-sticky {
-    position: sticky;
-    top: 100px;
-    height: calc(100vh - 100px);
-    overflow-y: auto;
-}
-
-/* CARDS DE MODELO */
-.card-modelo {
+/* ==========================================================================
+   6. COMPONENTES: TABELAS
+   ========================================================================== */
+.table-responsive {
     border: 1px solid #f0f2f5;
+    border-radius: 10px;
+}
+
+.table-small-font { font-size: 0.9rem; }
+.table-header-nowrap th { white-space: nowrap; }
+
+/* Tabela de Seleção (Grupos) */
+#tabelaSelecao thead th {
+    background-color: #fcfdfe; 
+    color: #8898aa;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #eef2f7;
+    padding: 0.8rem 0.5rem;
+}
+#tabelaSelecao tbody td {
+    padding: 0.6rem 0.5rem; 
+    vertical-align: middle;
+    color: #525f7f;
+    border-bottom: 1px solid #f5f7f9;
+}
+.row-selected { background-color: #fff9e6 !important; }
+.row-selected td:first-child { border-left: 3px solid #ffc107; }
+
+/* Tabela Estilo Gmail (Mensagens) */
+#tabelaMensagens {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+.table-gmail thead { display: none; }
+.table-gmail tbody tr {
+    background: #f8f9fa;
+    box-shadow: none;
+    border: 1px solid #eee;
     transition: all 0.2s ease;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #6c757d;
 }
-.card-modelo:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
-    border-color: #e0e4e8;
+.table-gmail tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border-color: transparent;
+    z-index: 2;
+    position: relative;
 }
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+.table-gmail tbody tr td {
+    border: none;
+    padding: 18px 20px;
+    vertical-align: middle;
+}
+.table-gmail tbody tr td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.table-gmail tbody tr td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+/* Estado Não Lido (Gmail Style) */
+.table-gmail tbody tr.row-unread {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-left: 5px solid #0d6efd;
+    font-weight: 600;
+}
+.table-gmail tbody tr.row-unread td { background-color: #ffffff !important; color: #212529; }
+.table-gmail tbody tr.row-unread td:first-child { border-radius: 4px 0 0 4px; }
+
+/* Caixa de Saída (Clean) */
+.inbox-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     overflow: hidden;
 }
-
-/* MODAL CLEAN */
-.modal-header-clean {
-    background-color: #fff;
-    border-bottom: 1px solid #f0f2f5;
-    padding: 1.5rem;
-}
-.form-label-small {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Cursor Pointer para ícones de ação */
-.action-icon {
+.table-inbox { margin-bottom: 0; width: 100%; border-collapse: collapse; }
+.table-inbox tr {
+    border-bottom: 1px solid #f2f2f2;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: box-shadow 0.2s, background-color 0.1s;
 }
-.action-icon:hover {
-    transform: scale(1.2);
+.table-inbox tr:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    z-index: 10;
+    position: relative;
+    background-color: #fdfdfd;
+}
+.table-inbox td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border: none;
+    color: #202124;
+    font-size: 0.9rem;
+}
+/* Estados Inbox Clean */
+.row-unread .email-subject { color: #202124; font-weight: 700; }
+.row-read { background-color: #f8f9fa; font-weight: 400; }
+.row-read .email-subject { color: #5f6368; font-weight: 400; }
+
+/* ==========================================================================
+   7. COMPONENTES: MODALS & ALERTS
+   ========================================================================== */
+.modal-content-custom { border-radius: 1.2rem; border: none; overflow: hidden; }
+.modal-header-custom { background: #f8f9fa; border-bottom: 1px solid #eee; padding: 1.5rem; }
+.modal-header-clean { background-color: #fff; border-bottom: 1px solid #f0f2f5; padding: 1.5rem; }
+
+.alert-modern {
+    border-radius: 15px;
+    border: none;
+    background-color: #e7f1ff;
+    color: #084298;
 }
 
-@media (max-width: 991.98px) {
+/* ==========================================================================
+   8. PÁGINA: LOGIN
+   ========================================================================== */
+.login-body {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+}
+.login-container {
+    background: white;
+    width: 100%;
+    max-width: 1100px; 
+    height: 650px;    
+    border-radius: 15px; 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;   
+    position: relative;
+}
+.login-image-section {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    background-color: #000;
+}
+.login-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    object-position: center;
+    opacity: 0.6; 
+}
+.login-content-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    color: white; padding: 40px; z-index: 2;
+}
+.login-form-section {
+    width: 50%;
+    height: 100%;
+    background-color: white;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; 
+    padding: 40px;
+}
+.form-wrapper { width: 100%; max-width: 380px; }
+.btn-custom {
+    background-color: #2b52c0;
+    color: white;
+    width: 100%;
+    padding: 12px; 
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    margin-top: 15px;
+    font-size: 1rem;
+}
+.btn-custom:hover { 
+    background-color: #1f3b8c; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 10px rgba(43, 82, 192, 0.3); 
+}
+
+/* ==========================================================================
+   9. CALENDÁRIO & AGENDA
+   ========================================================================== */
+.calendar-header {
+    background-color: #fff;
+    border-radius: 12px 12px 0 0;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: #dee2e6;
+    gap: 1px;
+    border: 1px solid #dee2e6;
+}
+.calendar-day-header {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    text-align: center;
+    padding: 10px;
+}
+.calendar-day {
+    background-color: #fff;
+    min-height: 120px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: background-color 0.2s;
+}
+.calendar-day:hover { background-color: #fcfcfc; }
+.day-empty { background-color: #f9f9f9; }
+.day-number {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+}
+.day-today .day-number { background-color: #0d6efd; color: white; }
+
+/* Eventos Badges */
+.event-badge {
+    display: flex; align-items: center;
+    padding: 4px 8px; border-radius: 6px;
+    font-size: 0.75rem; font-weight: 500;
+    text-decoration: none; white-space: nowrap;
+    overflow: hidden; cursor: pointer;
+    transition: transform 0.1s;
+}
+.event-badge:hover { transform: scale(1.02); opacity: 0.9; color: inherit; }
+
+/* Cores Eventos */
+.event-niver { background-color: #d1e7dd; color: #0f5132; border-left: 3px solid #198754; }
+.event-envio { background-color: #cfe2ff; color: #084298; border-left: 3px solid #0d6efd; }
+.event-feriado { background-color: #f8d7da; color: #842029; border-left: 3px solid #dc3545; }
+.event-tarefa { background-color: #cff4fc; color: #055160; border-left: 3px solid #0dcaf0; }
+.event-reuniao { background-color: #e0cffc; color: #4c0bce; border-left: 3px solid #6f42c1; }
+.event-importante { background-color: #ffcccd; color: #a00; border-left: 3px solid #dc3545; }
+
+/* ==========================================================================
+   10. MENSAGENS (LAYOUT & FILTROS)
+   ========================================================================== */
+/* Navegação Lateral */
+.nav-link-custom { 
+    color: #444746; 
+    font-weight: 500; 
+    padding: 10px 24px 10px 20px; 
+    border-radius: 0 24px 24px 0; 
+    display: flex; align-items: center; justify-content: space-between; 
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.nav-link-custom:hover { background-color: #e1e5ea; color: #1f1f1f; }
+.nav-link-custom.active { background-color: #d3e3fd; color: #001d35; font-weight: 700; }
+.menu-badge { font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 10px; }
+.nav-link-custom.active .menu-badge { background: rgba(255,255,255,0.4); }
+
+/* Filtros Toolbar */
+.btn-filter {
+    background-color: #fff;
+    border: 1px solid #dadce0;
+    color: #3c4043;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 5px 15px;
+    transition: all 0.2s;
+}
+.btn-filter:hover { background-color: #f1f3f4; color: #202124; }
+.btn-filter.active { background-color: #e8f0fe; color: #1967d2; border-color: transparent; }
+
+/* Conteúdo Email */
+.email-sender { width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.email-content-wrapper { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+.email-snippet { color: #5f6368; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; font-size: 0.9rem;}
+.email-date { width: 100px; text-align: right; font-size: 0.8rem; color: #5f6368; font-weight: 500; }
+.attachment-chip {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px; border-radius: 12px;
+    border: 1px solid #dadce0; background-color: #fff;
+    font-size: 0.75rem; color: #3c4043; font-weight: 500;
+    white-space: nowrap; margin-left: 8px;
+}
+.badge-attachment { background-color: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; font-weight: 400; font-size: 0.75rem; }
+
+/* Visualização Detalhada */
+.message-container { 
+    background: #ffffff; 
+    border: 1px solid #eef0f2; 
+    border-radius: 12px; 
+    padding: 2rem; 
+    min-height: 250px;
+    line-height: 1.7; color: #3c4043;
+}
+.attachment-card {
+    background: #fff; border: 1px solid #dadce0;
+    border-radius: 8px; padding: 10px 15px;
+    text-decoration: none !important; display: flex;
+    align-items: center; width: fit-content; min-width: 200px;
+    transition: all 0.2s;
+}
+.attachment-card:hover { border-color: #0d6efd; background: #f8fbff; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+
+/* ==========================================================================
+   11. PLUGINS & CUSTOMIZAÇÕES (Select2, Summernote)
+   ========================================================================== */
+/* Summernote */
+.note-editor.note-frame { border: none !important; box-shadow: none !important; }
+.note-toolbar { border-bottom: 1px solid #eee !important; background: #fff !important; }
+.note-statusbar { display: none !important; }
+
+/* Select2 Custom */
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__option { padding: 8px 12px; }
+.select2-item-contato { display: flex; align-items: center; line-height: 1.2; }
+.avatar-mini {
+    width: 32px; height: 32px;
+    background-color: #e9ecef; color: #495057;
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+    margin-right: 10px; text-transform: uppercase;
+    flex-shrink: 0; 
+}
+.avatar-small {
+    width: 32px; height: 32px;
+    font-size: 0.9rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background-color: #f0f2f5; color: #0d6efd;
+    font-weight: bold; flex-shrink: 0;
+}
+.select2-results__option--highlighted .avatar-mini { background-color: #fff; color: #0d6efd; }
+
+/* ==========================================================================
+   12. RESPONSIVIDADE GLOBAL
+   ========================================================================== */
+@media (max-width: 992px) { 
+    /* Ajustes Gerais */
     body { padding-top: 100px; }
+    .main-content-area { margin-top: 70px; }
+    
+    /* Login */
+    .login-container { flex-direction: column; height: auto; max-width: 90%; }
+    .login-image-section, .login-form-section { width: 100%; height: auto; }
+    .login-image-section { height: 250px; } 
+    .login-form-section { padding: 50px 20px; }
+
+    /* Layout */
     .sidebar-sticky { position: static; height: auto; }
     .page-header-actions { flex-direction: column; align-items: stretch; }
     .search-modern { max-width: 100%; }
+}
+
+@media (max-width: 768px) {
+    .login-container { flex-direction: column; min-height: auto; }
+    
+    /* Mensagens */
+    .assunto-responsivo { max-width: 180px; }
+}
+
+@media (min-width: 768px) {
+    .assunto-responsivo { max-width: 500px; }
+}
+
+/* Navegação Mobile Horizontal */
+.mobile-nav-container {
+    overflow-x: auto; white-space: nowrap;
+    -webkit-overflow-scrolling: touch; 
+    padding-bottom: 5px;
+}
+.mobile-nav-link {
+    display: inline-block; padding: 8px 16px;
+    margin-right: 8px; border-radius: 20px;
+    background-color: #fff; color: #555;
+    border: 1px solid #e0e0e0; text-decoration: none;
+    font-size: 0.9rem; font-weight: 600;
+}
+.mobile-nav-link.active {
+    background-color: #0d6efd; color: #fff;
+    border-color: #0d6efd;
 }
 

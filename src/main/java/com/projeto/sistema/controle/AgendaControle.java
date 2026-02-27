@@ -1,5 +1,6 @@
 package com.projeto.sistema.controle;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -55,36 +56,43 @@ public class AgendaControle {
         LocalDateTime inicioMes = anoMes.atDay(1).atStartOfDay();
         LocalDateTime fimMes = anoMes.atEndOfMonth().atTime(LocalTime.MAX);
 
-        // FORMATAÇÃO DO MÊS PARA BUSCA EM TEXTO (Ex: "/08")
+        // BUSCAS NO BANCO DE DADOS
         String mesFormatadoBanco = String.format("/%02d", mesAtual);
         List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco);
-        
         List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetween(inicioMes, fimMes);
         List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetween(inicioMes, fimMes);
         
         List<EventoAgenda> eventos = new ArrayList<>();
         eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
 
-        // EXTRAÇÃO DO DIA DO TEXTO "DD/MM" PARA O CALENDÁRIO
+        // 1. PROCESSAR ANIVERSARIANTES (COM PROTEÇÃO DE DATA)
         for (Contatos c : aniversariantes) {
             if (c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
                 try {
                     int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
-                    LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, diaNiver);
-                    eventos.add(new EventoAgenda(dataNiver, "NIVER", c.getNome(), "event-niver"));
+                    
+                    // Validação extra: Tenta criar a data. Se o dia não existir no ano atual (ex: 29/02 em 2025), cai no catch.
+                    try {
+                        LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, diaNiver);
+                        eventos.add(new EventoAgenda(dataNiver, "NIVER", c.getNome(), "event-niver"));
+                    } catch (DateTimeException e) {
+                        // Data inválida para este ano (ex: 29/02 em ano não bissexto). Ignorar silenciosamente.
+                    }
+                    
                 } catch (NumberFormatException e) {
-                    // Ignora contatos com formato inválido para não quebrar a tela
+                    // Ignora contatos com formato de data inválido (texto incorreto)
                 }
             }
         }
 
+        // 2. PROCESSAR ENVIOS
         for (MensagemLog log : envios) {
             eventos.add(new EventoAgenda(log.getDataEnvio().toLocalDate(), "ENVIO", log.getAssunto(), "event-envio"));
         }
 
+        // 3. PROCESSAR LEMBRETES
         for (Lembrete l : lembretes) {
             String corClasse = "event-tarefa";
-            
             if ("REUNIAO".equalsIgnoreCase(l.getTipo())) corClasse = "event-reuniao";
             else if ("IMPORTANTE".equalsIgnoreCase(l.getTipo())) corClasse = "event-importante";
             
@@ -98,7 +106,11 @@ public class AgendaControle {
         mv.addObject("mesExibicao", mesAtual);
         mv.addObject("anoExibicao", anoAtual);
         mv.addObject("totalDiasMes", anoMes.lengthOfMonth());
-        mv.addObject("todosContatos", contatosRepositorio.findAll());
+        
+        // Aqui ocorria o erro se a conexão estivesse instável.
+        // Se houver muitos contatos, considere remover isso e usar uma busca assíncrona.
+        mv.addObject("todosContatos", contatosRepositorio.findAll()); 
+        
         mv.addObject("novoLembrete", new Lembrete()); 
         
         int diaSemanaPrimeiroDia = anoMes.atDay(1).getDayOfWeek().getValue();
@@ -113,7 +125,6 @@ public class AgendaControle {
         return "redirect:/administrativo/agenda";
     }
 
-    // --- CORREÇÃO AQUI: Mudamos para @GetMapping para evitar erro 403/405 ---
     @GetMapping("/administrativo/agenda/remover/{id}") 
     @ResponseBody
     public ResponseEntity<?> removerEvento(@PathVariable Long id) {
@@ -128,7 +139,6 @@ public class AgendaControle {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir: " + e.getMessage());
         }
     }
-    // ------------------------------------------------------------------------
 
     @GetMapping("/administrativo/agenda/detalhes")
     @ResponseBody 
@@ -137,7 +147,7 @@ public class AgendaControle {
         
         List<DetalheAgendaDTO> detalhes = new ArrayList<>();
         
-        // 1. Aniversários - AJUSTADO PARA USAR STRING "DD/MM"
+        // 1. Aniversários
         String diaMesFormatado = String.format("%02d/%02d", data.getDayOfMonth(), data.getMonthValue());
         List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(diaMesFormatado);
         
@@ -153,7 +163,7 @@ public class AgendaControle {
             detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), "Grupo: " + m.getNomeGrupoDestino(), m.getId()));
         }
         
-        // 3. Lembretes (Tarefas)
+        // 3. Lembretes
         List<Lembrete> lembretesDia = lembreteRepositorio.findByDataHoraBetween(inicio, fim);
         for (Lembrete l : lembretesDia) {
             String subtitulo = (l.getContato() != null) ? "Com: " + l.getContato().getNome() : l.getDescricao();
@@ -182,4 +192,4 @@ public class AgendaControle {
         }
         return feriados;
     }
-    }
+}

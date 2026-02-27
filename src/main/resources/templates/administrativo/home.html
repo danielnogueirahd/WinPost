@@ -19,7 +19,7 @@
 <style>
 body {
 	font-family: 'Inter', sans-serif;
-	background-color: #f8f9fa;
+	/* Background removido para usar o padrão bg-light na tag body */
 }
 
 .card {
@@ -33,236 +33,257 @@ body {
 </style>
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-	<main class="flex-grow-1 pt-4" id="wrapper">
-		<div class="container-fluid px-4 mb-5">
-			<div class="row justify-content-center">
-				<div class="col-xl-10 col-12">
+	<div class="container-fluid px-4 mt-4 mb-5 flex-grow-1">
+		<div class="row justify-content-center">
+			<div class="col-xl-10 col-12">
 
+				<div
+					class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 					<div
-						class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-						<div
-							class="d-flex align-items-center ps-3 border-start border-4 border-primary">
-							<div>
-								<h2 class="fw-bold text-dark mb-0 h3">Página Inicial</h2>
-								<p class="text-muted mb-0 small">Visão geral e métricas do
-									WinPost.</p>
-							</div>
+						class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+						<div>
+							<h2 class="fw-bold text-dark mb-0 h3">Página Inicial</h2>
+							<p class="text-muted mb-0 small">Visão geral e métricas do
+								WinPost.</p>
 						</div>
 					</div>
-
-					<div class="row mb-4 g-3">
-						<div class="col-xl-3 col-md-6">
-							<div
-								class="card shadow-sm border-0 h-100 border-bottom border-primary border-3">
-								<div class="card-body p-4">
-									<div
-										class="d-flex justify-content-between align-items-start mb-2">
-										<h6 class="text-muted fw-bold mb-0 text-uppercase"
-											style="font-size: 0.75rem;">Total Contatos</h6>
-										<div
-											class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-light rounded"
-											style="width: 38px; height: 38px;">
-											<i class="fa-solid fa-users fs-6"></i>
-										</div>
-									</div>
-									<h3 class="fw-bold text-dark mb-0"
-										th:text="${totalContatos} ?: '0'">0</h3>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-xl-3 col-md-6">
-							<div
-								class="card shadow-sm border-0 h-100 border-bottom border-info border-3">
-								<div class="card-body p-4">
-									<div
-										class="d-flex justify-content-between align-items-start mb-2">
-										<h6 class="text-muted fw-bold mb-0 text-uppercase"
-											style="font-size: 0.75rem;">Grupos Ativos</h6>
-										<div
-											class="d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-light rounded"
-											style="width: 38px; height: 38px;">
-											<i class="fa-solid fa-layer-group fs-6"></i>
-										</div>
-									</div>
-									<h3 class="fw-bold text-dark mb-0"
-										th:text="${totalGrupos} ?: '0'">0</h3>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-xl-3 col-md-6">
-							<div
-								class="card shadow-sm border-0 h-100 border-bottom border-success border-3">
-								<div class="card-body p-4">
-									<div
-										class="d-flex justify-content-between align-items-start mb-2">
-										<h6 class="text-muted fw-bold mb-0 text-uppercase"
-											style="font-size: 0.75rem;">Mensagens Enviadas</h6>
-										<div
-											class="d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-light rounded"
-											style="width: 38px; height: 38px;">
-											<i class="fa-solid fa-paper-plane fs-6"></i>
-										</div>
-									</div>
-									<h3 class="fw-bold text-dark mb-0"
-										th:text="${mensagensEnviadas} ?: '0'">0</h3>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-xl-3 col-md-6">
-							<div
-								class="card shadow-sm border-0 h-100 border-bottom border-warning border-3">
-								<div class="card-body p-4">
-									<div
-										class="d-flex justify-content-between align-items-start mb-2">
-										<h6 class="text-muted fw-bold mb-0 text-uppercase"
-											style="font-size: 0.75rem;">Lembretes Hoje</h6>
-										<div
-											class="d-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-light rounded"
-											style="width: 38px; height: 38px;">
-											<i class="fa-solid fa-bell fs-6"></i>
-										</div>
-									</div>
-									<h3 class="fw-bold text-dark mb-0"
-										th:text="${lembretesHoje} ?: '0'">0</h3>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="row g-4">
-
-						<div class="col-lg-8">
-							<div class="card shadow-sm border-0 h-100">
-								<div
-									class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
-									<h6 class="m-0 fw-bold text-dark">
-										<i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Últimos
-										Cadastrados
-									</h6>
-									<a href="/listarContatos"
-										class="text-decoration-none small text-primary fw-bold">Ver
-										todos</a>
-								</div>
-								<div class="card-body p-0">
-									<div class="table-responsive">
-										<table
-											class="table table-hover align-middle mb-0 border-white">
-											<thead class="bg-light text-secondary">
-												<tr>
-													<th class="ps-4 small fw-bold py-3 border-bottom-0"
-														style="width: 45%;">Nome / Cadastro</th>
-													<th class="small fw-bold py-3 border-bottom-0"
-														style="width: 45%;">Contato</th>
-													<th
-														class="text-end pe-4 small fw-bold py-3 border-bottom-0"
-														style="width: 10%;">Ação</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr
-													th:if="${ultimosContatos == null or #lists.isEmpty(ultimosContatos)}">
-													<td colspan="3" class="text-center py-5 text-muted">Nenhum
-														contato recente encontrado.</td>
-												</tr>
-												<tr th:each="contato : ${ultimosContatos}">
-
-													<td class="ps-4">
-														<div class="fw-bold text-dark text-truncate"
-															style="max-width: 200px;" th:text="${contato.nome}">Nome</div>
-														<div class="text-muted mt-1" style="font-size: 0.75rem;">
-															<i class="far fa-calendar me-1"></i> Cadastro: <span
-																th:text="${contato.dataCadastro != null ? #temporals.format(contato.dataCadastro, 'dd/MM/yyyy') : '-'}">01/01/2024</span>
-														</div>
-													</td>
-
-													<td>
-														<div class="text-dark small mb-1 text-truncate"
-															style="max-width: 220px;">
-															<i class="far fa-envelope me-1 text-primary small"></i> <span
-																th:text="${contato.email} ?: 'Sem e-mail'">email@exemplo.com</span>
-														</div>
-														<div class="text-muted" style="font-size: 0.80rem;">
-															<i class="fas fa-phone me-1 text-success small"></i> <span
-																th:text="${contato.telefone} ?: 'Sem telefone'"></span>
-														</div>
-													</td>
-
-													<td class="text-end pe-4"><a
-														th:href="@{/editarContatos/{id}(id=${contato.id})}"
-														class="btn btn-sm btn-outline-primary border-0"
-														title="Editar"> <i class="fa-solid fa-pen-to-square"></i>
-													</a></td>
-
-												</tr>
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-lg-4 d-flex flex-column gap-4">
-
-							<div class="card shadow-sm border-0 flex-grow-1">
-								<div
-									class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
-									<h6 class="m-0 fw-bold text-dark">
-										<i class="fa-regular fa-calendar-check text-warning me-2"></i>Agenda
-										do Dia
-									</h6>
-									<a href="/administrativo/agenda"
-										class="text-decoration-none small text-primary fw-bold">Ver
-										agenda</a>
-								</div>
-								<div class="card-body p-0">
-									<div class="list-group list-group-flush">
-										<div
-											class="list-group-item px-4 py-3 border-bottom-0 border-start border-4 border-warning">
-											<div class="d-flex w-100 justify-content-between">
-												<h6 class="mb-1 fw-bold text-dark fs-6">Reunião Equipe</h6>
-												<span
-													class="badge bg-warning text-dark rounded-pill fw-bold">10:00</span>
-											</div>
-											<p class="mb-0 small text-secondary">Apresentação do
-												WinPost</p>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="card shadow-sm border-0">
-								<div class="card-body p-4">
-									<h6 class="fw-bold text-dark mb-3">
-										<i class="fa-solid fa-bolt text-info me-2"></i>Ações Rápidas
-									</h6>
-									<div class="d-grid gap-2">
-										<a href="/cadastroContatos"
-											class="btn btn-light text-start border shadow-none fw-medium py-2 text-dark">
-											<i class="fa-solid fa-user-plus me-2 text-primary"></i>
-											Adicionar Contato
-										</a> <a href="/grupos/cadastro"
-											class="btn btn-light text-start border shadow-none fw-medium py-2 text-dark">
-											<i class="fa-solid fa-folder-plus me-2 text-info"></i> Criar
-											Grupo
-										</a>
-									</div>
-								</div>
-							</div>
-
-						</div>
-					</div>
-
 				</div>
+
+				<div class="row mb-4 g-3">
+					<div class="col-xl-3 col-md-6">
+						<div
+							class="card shadow-sm border-0 h-100 border-bottom border-primary border-3">
+							<div class="card-body p-4">
+								<div
+									class="d-flex justify-content-between align-items-start mb-2">
+									<h6 class="text-muted fw-bold mb-0 text-uppercase"
+										style="font-size: 0.75rem;">Total Contatos</h6>
+									<div
+										class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-light rounded"
+										style="width: 38px; height: 38px;">
+										<i class="fa-solid fa-users fs-6"></i>
+									</div>
+								</div>
+								<h3 class="fw-bold text-dark mb-0"
+									th:text="${totalContatos} ?: '0'">0</h3>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xl-3 col-md-6">
+						<div
+							class="card shadow-sm border-0 h-100 border-bottom border-info border-3">
+							<div class="card-body p-4">
+								<div
+									class="d-flex justify-content-between align-items-start mb-2">
+									<h6 class="text-muted fw-bold mb-0 text-uppercase"
+										style="font-size: 0.75rem;">Grupos Ativos</h6>
+									<div
+										class="d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-light rounded"
+										style="width: 38px; height: 38px;">
+										<i class="fa-solid fa-layer-group fs-6"></i>
+									</div>
+								</div>
+								<h3 class="fw-bold text-dark mb-0"
+									th:text="${totalGrupos} ?: '0'">0</h3>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xl-3 col-md-6">
+						<div
+							class="card shadow-sm border-0 h-100 border-bottom border-success border-3">
+							<div class="card-body p-4">
+								<div
+									class="d-flex justify-content-between align-items-start mb-2">
+									<h6 class="text-muted fw-bold mb-0 text-uppercase"
+										style="font-size: 0.75rem;">Mensagens Enviadas</h6>
+									<div
+										class="d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-light rounded"
+										style="width: 38px; height: 38px;">
+										<i class="fa-solid fa-paper-plane fs-6"></i>
+									</div>
+								</div>
+								<h3 class="fw-bold text-dark mb-0"
+									th:text="${mensagensEnviadas} ?: '0'">0</h3>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xl-3 col-md-6">
+						<div
+							class="card shadow-sm border-0 h-100 border-bottom border-warning border-3">
+							<div class="card-body p-4">
+								<div
+									class="d-flex justify-content-between align-items-start mb-2">
+									<h6 class="text-muted fw-bold mb-0 text-uppercase"
+										style="font-size: 0.75rem;">Lembretes Hoje</h6>
+									<div
+										class="d-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-light rounded"
+										style="width: 38px; height: 38px;">
+										<i class="fa-solid fa-bell fs-6"></i>
+									</div>
+								</div>
+								<h3 class="fw-bold text-dark mb-0"
+									th:text="${lembretesHoje} ?: '0'">0</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row g-4">
+
+					<div class="col-lg-8">
+						<div class="card shadow-sm border-0 h-100">
+							<div
+								class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+								<h6 class="m-0 fw-bold text-dark">
+									<i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Últimos
+									Cadastrados
+								</h6>
+								<a href="/listarContatos"
+									class="text-decoration-none small text-primary fw-bold">Ver
+									todos</a>
+							</div>
+							<div class="card-body p-0">
+								<div class="table-responsive">
+									<table class="table table-hover align-middle mb-0 border-white">
+										<thead class="bg-light text-secondary">
+											<tr>
+												<th class="ps-4 small fw-bold py-3 border-bottom-0"
+													style="width: 45%;">Nome / Cadastro</th>
+												<th class="small fw-bold py-3 border-bottom-0"
+													style="width: 45%;">Contato</th>
+												<th class="text-end pe-4 small fw-bold py-3 border-bottom-0"
+													style="width: 10%;">Ação</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												th:if="${ultimosContatos == null or #lists.isEmpty(ultimosContatos)}">
+												<td colspan="3" class="text-center py-5 text-muted">Nenhum
+													contato recente encontrado.</td>
+											</tr>
+											<tr th:each="contato : ${ultimosContatos}">
+
+												<td class="ps-4">
+													<div class="fw-bold text-dark text-truncate"
+														style="max-width: 200px;" th:text="${contato.nome}">Nome</div>
+													<div class="text-muted mt-1" style="font-size: 0.75rem;">
+														<i class="far fa-calendar me-1"></i> Cadastro: <span
+															th:text="${contato.dataCadastro != null ? #temporals.format(contato.dataCadastro, 'dd/MM/yyyy') : '-'}">01/01/2024</span>
+													</div>
+												</td>
+
+												<td>
+													<div class="text-dark small mb-1 text-truncate"
+														style="max-width: 220px;">
+														<i class="far fa-envelope me-1 text-primary small"></i> <span
+															th:text="${contato.email} ?: 'Sem e-mail'">email@exemplo.com</span>
+													</div>
+													<div class="text-muted" style="font-size: 0.80rem;">
+														<i class="fas fa-phone me-1 text-success small"></i> <span
+															th:text="${contato.telefone} ?: 'Sem telefone'"></span>
+													</div>
+												</td>
+
+												<td class="text-end pe-4"><a
+													th:href="@{/editarContatos/{id}(id=${contato.id})}"
+													class="btn btn-sm btn-outline-primary border-0"
+													title="Editar"> <i class="fa-solid fa-pen-to-square"></i>
+												</a></td>
+
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="col-lg-4 d-flex flex-column gap-4">
+    
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h6 class="fw-bold text-dark mb-3">
+                <i class="fa-solid fa-bolt text-info me-2"></i>Ações Rápidas
+            </h6>
+            <div class="d-grid gap-3">
+                <a href="/cadastroContatos"
+                    class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
+                    <div class="icon-box bg-white text-primary shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
+                        style="width: 48px; height: 48px;">
+                        <i class="fa-solid fa-user-plus fs-5"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold text-dark">Adicionar Contato</h6>
+                        <small class="text-muted" style="font-size: 0.75rem;">Cadastrar novo cliente</small>
+                    </div> 
+                    <i class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
+                </a> 
+                
+                <a href="/grupos/cadastro"
+                    class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
+                    <div class="icon-box bg-white text-info shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
+                        style="width: 48px; height: 48px;">
+                        <i class="fa-solid fa-folder-plus fs-5"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold text-dark">Criar Grupo</h6>
+                        <small class="text-muted" style="font-size: 0.75rem;">Segmentar contatos</small>
+                    </div> 
+                    <i class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 flex-grow-1 d-flex flex-column overflow-hidden">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-shrink-0">
+            <h6 class="m-0 fw-bold text-dark">
+                <i class="fa-regular fa-calendar-check text-warning me-2"></i>Agenda do Dia
+            </h6>
+            <a href="/administrativo/agenda" class="text-decoration-none small text-primary fw-bold">Ver agenda</a>
+        </div>
+
+        <div class="card-body p-0 custom-scroll" 
+             style="height: 450px; overflow-y: auto;">
+
+            <div class="list-group list-group-flush h-100">
+
+                <div th:if="${#lists.isEmpty(agendaHoje)}"
+                    class="list-group-item px-4 py-5 text-center text-muted h-100 d-flex flex-column justify-content-center align-items-center border-0">
+                    <i class="fa-regular fa-face-smile mb-2 fs-4 d-block opacity-50"></i>
+                    <span class="small">Livre por hoje!</span>
+                </div>
+
+                <div th:each="evento : ${agendaHoje}"
+                    class="list-group-item px-4 py-3 border-bottom border-light border-start border-4 border-warning action-hover">
+                    <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                        <h6 class="mb-0 fw-bold text-dark fs-6 text-truncate"
+                            style="max-width: 70%;" th:text="${evento.titulo}">Reunião</h6>
+                        <span class="badge bg-warning text-dark rounded-pill fw-bold"
+                            style="font-size: 0.7rem;"
+                            th:text="${#temporals.format(evento.dataHora, 'HH:mm')}">10:00</span>
+                    </div>
+                    <p class="mb-0 small text-muted text-truncate"
+                        th:text="${evento.descricao}">Descrição do evento</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+				</div>
+
 			</div>
 		</div>
-	</main>
+	</div>
 
 	<div class="modal fade" id="modalRelatorio" tabindex="-1"
 		aria-labelledby="modalLabel" aria-hidden="true">
