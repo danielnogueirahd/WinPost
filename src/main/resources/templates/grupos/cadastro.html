@@ -80,6 +80,9 @@
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <div class="sticky-form">
                         <form th:action="@{/grupos/salvar}" method="post" id="formGrupo" th:object="${grupo}">
+                            
+                            <input type="hidden" id="idsContatos" name="idsContatos" />
+
                             <div class="card card-pro h-100 shadow-sm border-0">
                                 <div class="card-body p-4">
                                     
@@ -219,6 +222,24 @@
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script th:src="@{/js/grupos.js}"></script>
+
+    <script>
+        document.getElementById('formGrupo').addEventListener('submit', function(e) {
+            // 1. Cria um array para guardar os IDs
+            let idsSelecionados = [];
+            
+            // 2. Busca todos os checkboxes marcados na tabela (que tem a classe 'check-item')
+            document.querySelectorAll('.check-item:checked').forEach(function(checkbox) {
+                idsSelecionados.push(checkbox.value);
+            });
+    
+            // 3. Joga a lista (ex: "1,5,10") dentro do input hidden que criamos no form
+            document.getElementById('idsContatos').value = idsSelecionados.join(',');
+            
+            // Debug (pode remover depois): mostra no console o que está enviando
+            console.log("Enviando IDs: " + idsSelecionados.join(','));
+        });
+    </script>
 
 </body>
 </html>
