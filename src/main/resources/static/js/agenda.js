@@ -18,6 +18,7 @@ function abrirModalNovoEvento(dia, mes, ano) {
     var dataHoraISO = `${ano}-${mesFmt}-${diaFmt}T09:00`;
 
     // Reseta os campos
+    $('#inputId').val(''); // <--- IMPORTANTE: Limpa o ID para criar um novo
     $('#modalNovoEvento input[name="dataHora"]').val(dataHoraISO);
     $('#modalNovoEvento input[name="titulo"]').val('');
     $('#modalNovoEvento textarea[name="descricao"]').val('');
@@ -91,14 +92,22 @@ function verDetalhesDia(dia, mes, ano) {
                     else if (item.tipo === 'TAREFA') { icone = 'fa-list-check'; corIcone = 'text-secondary'; bgIcone = 'bg-secondary bg-opacity-10'; }
                     else { icone = 'fa-tag'; corIcone = 'text-dark'; bgIcone = 'bg-warning bg-opacity-10'; }
 
-                    // Botão de Excluir (X) com SweetAlert
+                    // --- ALTERAÇÃO AQUI: Botões de Editar (Lápis) e Excluir (X) ---
                     botoesAcao = `
-                        <button class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" 
-                                onclick="confirmarExclusao(${item.idRef})" 
-                                title="Cancelar/Excluir"
-                                style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-times"></i>
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-warning btn-sm rounded-circle shadow-sm" 
+                                    onclick="editarEvento(${item.idRef})" 
+                                    title="Editar"
+                                    style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" 
+                                    onclick="confirmarExclusao(${item.idRef})" 
+                                    title="Cancelar/Excluir"
+                                    style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     `;
                 }
 
@@ -149,7 +158,6 @@ function confirmarExclusao(id) {
 }
 
 function excluirEvento(id) {
-    // Verifica se o ID é válido antes de enviar
     if (!id) {
         Swal.fire('Erro!', 'ID do evento inválido ou indefinido.', 'error');
         return;
@@ -157,7 +165,7 @@ function excluirEvento(id) {
 
     $.ajax({
         url: '/administrativo/agenda/remover/' + id,
-        type: 'GET', // <--- MUDANÇA IMPORTANTE: Trocado de DELETE para GET para evitar bloqueios
+        type: 'GET',
         success: function(response) {
             Swal.fire({
                 title: 'Excluído!',
@@ -170,26 +178,9 @@ function excluirEvento(id) {
             });
         },
         error: function(xhr) {
-            // Diagnóstico de erro
             let msgErro = "Erro desconhecido.";
-            
-            if (xhr.responseText) {
-                msgErro = xhr.responseText;
-            } else if (xhr.status === 403) {
-                msgErro = "Acesso negado (403). Verifique se está logado.";
-            } else if (xhr.status === 404) {
-                msgErro = "Evento não encontrado no banco de dados (404).";
-            } else if (xhr.status === 405) {
-                msgErro = "Método não permitido (405). Tente reiniciar o servidor.";
-            }
-
-            console.error("Erro ao excluir:", xhr);
-            
-            Swal.fire(
-                'Ops! Deu erro.',
-                'O servidor respondeu: ' + msgErro,
-                'error'
-            );
+            if (xhr.responseText) msgErro = xhr.responseText;
+            Swal.fire('Ops! Deu erro.', msgErro, 'error');
         }
     });
 }
@@ -240,16 +231,11 @@ function salvarNovoTipo() {
     const cor = $('#novoTipoCor').val();
 
     if (!nome) {
-        if(typeof Swal !== 'undefined') Swal.fire('Atenção', 'Dê um nome ao tipo.', 'warning');
-        else alert("Por favor, dê um nome ao tipo.");
+        Swal.fire('Atenção', 'Dê um nome ao tipo.', 'warning');
         return;
     }
 
-    const payload = {
-        nome: nome,
-        icone: icone,
-        corHex: cor
-    };
+    const payload = { nome: nome, icone: icone, corHex: cor };
 
     const btn = document.querySelector('#areaCriacaoTipo button'); 
     const textoOriginal = btn.innerHTML;
@@ -263,7 +249,6 @@ function salvarNovoTipo() {
         data: JSON.stringify(payload),
         success: function(novoTipo) {
             const novoId = 'tipo' + novoTipo.id;
-            
             const htmlCard = `
                 <input type="radio" class="btn-check" name="tipo" id="${novoId}" value="${novoTipo.nome}" checked>
                 <label class="btn btn-outline-light text-start p-3 flex-fill border shadow-sm position-relative type-card fade-in" 
@@ -278,14 +263,12 @@ function salvarNovoTipo() {
                     <div class="check-indicator" style="color: ${novoTipo.corHex};"><i class="fa-solid fa-circle-check"></i></div>
                 </label>
             `;
-            
             $('#areaSelecaoTipos').append(htmlCard);
             alternarModoCriacao(false);
             $('#novoTipoNome').val('');
         },
         error: function() {
-             if(typeof Swal !== 'undefined') Swal.fire('Erro', 'Erro ao criar tipo. Verifique o servidor.', 'error');
-             else alert('Erro ao criar tipo.');
+             Swal.fire('Erro', 'Erro ao criar tipo. Verifique o servidor.', 'error');
         },
         complete: function() {
             btn.innerHTML = textoOriginal;
@@ -294,7 +277,49 @@ function salvarNovoTipo() {
     });
 }
 
-// Inicialização e CSS extra para animações
+/**
+ * 6. (NOVO) Carrega dados para edição e abre o modal
+ */
+function editarEvento(id) {
+    // Fecha o modal de lista
+    var elDetalhes = document.getElementById('modalDetalhesDia');
+    var modalDetalhes = bootstrap.Modal.getInstance(elDetalhes);
+    if (modalDetalhes) modalDetalhes.hide();
+
+    // Busca os dados completos do evento no Java
+    $.get('/administrativo/agenda/buscar/' + id, function(evento) {
+        
+        // 1. Preenche o ID Hidden (IMPORTANTE: O HTML PRECISA TER ESSE CAMPO)
+        $('#inputId').val(evento.id);
+        
+        // 2. Preenche Título e Descrição
+        $('#inputTitulo').val(evento.titulo);
+        $('#modalNovoEvento textarea[name="descricao"]').val(evento.descricao);
+
+        // 3. Preenche Data e Hora (Separando o ISO 2024-03-02T14:30)
+        if(evento.dataHora) {
+            let partes = evento.dataHora.split('T');
+            $('#tempData').val(partes[0]);
+            $('#tempHora').val(partes[1].substring(0, 5)); // Pega HH:mm
+            $('#inputDataHoraCompleta').val(evento.dataHora);
+        }
+
+        // 4. Seleciona o Tipo (Radio Button)
+        $('input[name="tipo"]').prop('checked', false); // Desmarca tudo
+        $(`input[name="tipo"][value="${evento.tipo}"]`).prop('checked', true); // Marca o certo
+        
+        // 5. Ajusta UI e Abre o Modal
+        alternarModoCriacao(false); 
+        
+        var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
+        modalNovo.show();
+        
+    }).fail(function() {
+        Swal.fire('Erro', 'Não foi possível carregar os dados para edição.', 'error');
+    });
+}
+
+// Inicialização e CSS extra
 document.addEventListener('DOMContentLoaded', function() {
     if (!document.getElementById('styleFadeIn')) {
         document.head.insertAdjacentHTML("beforeend", `

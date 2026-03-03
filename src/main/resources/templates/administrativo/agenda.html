@@ -176,6 +176,8 @@
 				<form th:action="@{/administrativo/agenda/salvar}" method="post"
 					th:object="${novoLembrete}">
 					<div class="modal-body p-4 pt-3">
+                        
+                        <input type="hidden" id="inputId" name="id" />
 
 						<div
 							class="d-flex justify-content-between align-items-center mb-2 ms-1">

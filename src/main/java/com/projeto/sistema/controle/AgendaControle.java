@@ -71,16 +71,15 @@ public class AgendaControle {
                 try {
                     int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
                     
-                    // Validação extra: Tenta criar a data. Se o dia não existir no ano atual (ex: 29/02 em 2025), cai no catch.
                     try {
                         LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, diaNiver);
                         eventos.add(new EventoAgenda(dataNiver, "NIVER", c.getNome(), "event-niver"));
                     } catch (DateTimeException e) {
-                        // Data inválida para este ano (ex: 29/02 em ano não bissexto). Ignorar silenciosamente.
+                        // Data inválida para este ano (ex: 29/02 em ano não bissexto).
                     }
                     
                 } catch (NumberFormatException e) {
-                    // Ignora contatos com formato de data inválido (texto incorreto)
+                    // Ignora contatos com formato de data inválido
                 }
             }
         }
@@ -107,8 +106,6 @@ public class AgendaControle {
         mv.addObject("anoExibicao", anoAtual);
         mv.addObject("totalDiasMes", anoMes.lengthOfMonth());
         
-        // Aqui ocorria o erro se a conexão estivesse instável.
-        // Se houver muitos contatos, considere remover isso e usar uma busca assíncrona.
         mv.addObject("todosContatos", contatosRepositorio.findAll()); 
         
         mv.addObject("novoLembrete", new Lembrete()); 
@@ -126,8 +123,7 @@ public class AgendaControle {
     }
 
     @GetMapping("/administrativo/agenda/remover/{id}") 
-    @ResponseBody
-    public ResponseEntity<?> removerEvento(@PathVariable Long id) {
+    public ResponseEntity<?> removerEvento(@PathVariable Long id) { // Removi @ResponseBody redundante com ResponseEntity
         try {
             if (lembreteRepositorio.existsById(id)) {
                 lembreteRepositorio.deleteById(id);
@@ -139,6 +135,14 @@ public class AgendaControle {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir: " + e.getMessage());
         }
     }
+
+    // --- NOVO MÉTODO PARA BUSCAR DADOS PARA EDIÇÃO ---
+    @GetMapping("/administrativo/agenda/buscar/{id}")
+    @ResponseBody
+    public Lembrete buscarEventoParaEdicao(@PathVariable Long id) {
+        return lembreteRepositorio.findById(id).orElse(null);
+    }
+    // --------------------------------------------------
 
     @GetMapping("/administrativo/agenda/detalhes")
     @ResponseBody 
