@@ -14,6 +14,63 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
+
+<style>
+/* --- ESTILOS CUSTOMIZADOS PARA O SWITCH MINIMALISTA --- */
+
+/* Contêiner principal da opção */
+.agenda-option-container {
+	background-color: #fff;
+	border: 1px solid #e0e6ed;
+	border-radius: 12px; /* Bordas mais arredondadas */
+	padding: 1rem 1.25rem;
+	transition: all 0.3s ease; /* Transição suave para interações */
+	margin-top: 1rem;
+}
+
+/* Efeito ao passar o mouse: Borda azul sutil e sombra suave (Glow) */
+.agenda-option-container:hover {
+	border-color: #a0cfff; /* Azul claro */
+	box-shadow: 0 4px 15px rgba(13, 110, 253, 0.1); /* Glow azul minimalista */
+}
+
+/* Estilo para a label principal */
+.agenda-label {
+	font-weight: 600;
+	color: #2c3e50;
+	margin-bottom: 0.1rem;
+	display: block;
+}
+
+/* Estilo para a descrição menor */
+.agenda-desc {
+	font-size: 0.85rem;
+	color: #7f8c8d;
+	margin-bottom: 0;
+}
+
+/* Customização do Switch do Bootstrap para ficar mais "clean" */
+.form-switch .form-check-input {
+	width: 2.8em; /* Ligeiramente maior */
+	height: 1.4em;
+	margin-left: -2.5em;
+	cursor: pointer;
+	border-color: #ced4da;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ced4da'/%3e%3c/svg%3e");
+}
+
+/* Cor quando o switch está ativado (Primary Blue) */
+.form-switch .form-check-input:checked {
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+}
+
+/* Foco do switch (remover outline padrão e colocar sombra suave) */
+.form-switch .form-check-input:focus {
+	border-color: #86b7fe;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+</style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
@@ -114,9 +171,29 @@
 											placeholder="DD/MM" maxlength="5"
 											onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}">
 									</div>
-								</div>
+
+									<div class="col-md-12 mt-1">
+										<div class="agenda-option-container d-flex align-items-center justify-content-between">
+											<div class="d-flex align-items-center">
+												<div class="text-primary me-3 fs-4" style="opacity: 0.8;">
+													<i class="fa-solid fa-calendar-check"></i>
+												</div>
+												<div>
+													<label class="agenda-label" for="switchAgenda">Vincular Aniversário à Agenda</label>
+													<p class="agenda-desc">Notificar na tela inicial no dia do aniversário.</p>
+												</div>
+											</div>
+											
+											<div class="form-check form-switch pe-2">
+                                                <input class="form-check-input" type="checkbox"
+													role="switch" id="switchAgenda" name="exibirNaAgenda">
+											</div>
+										</div>
+									</div>
+									</div>
 							</div>
 						</div>
+						
 						<div class="card card-modern mb-4">
 							<div class="card-header">
 								<h6 class="mb-0 fw-bold text-primary">

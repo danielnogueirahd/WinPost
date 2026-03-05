@@ -174,8 +174,8 @@ body {
 													<div class="fw-bold text-dark text-truncate"
 														style="max-width: 200px;" th:text="${contato.nome}">Nome</div>
 													<div class="text-muted mt-1" style="font-size: 0.75rem;">
-														<i class="far fa-calendar me-1"></i> Cadastro: <span
-															th:text="${contato.dataCadastro != null ? #temporals.format(contato.dataCadastro, 'dd/MM/yyyy') : '-'}">01/01/2024</span>
+														<i class="far fa-calendar me-1"></i> Nascimento: <span
+															th:text="${contato.dataNascimento != null && contato.dataNascimento != '' ? contato.dataNascimento : '-'}">01/01</span>
 													</div>
 												</td>
 
@@ -207,78 +207,87 @@ body {
 
 
 					<div class="col-lg-4 d-flex flex-column gap-4">
-    
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <h6 class="fw-bold text-dark mb-3">
-                <i class="fa-solid fa-bolt text-info me-2"></i>Ações Rápidas
-            </h6>
-            <div class="d-grid gap-3">
-                <a href="/cadastroContatos"
-                    class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
-                    <div class="icon-box bg-white text-primary shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
-                        style="width: 48px; height: 48px;">
-                        <i class="fa-solid fa-user-plus fs-5"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-0 fw-bold text-dark">Cadastrar Contato</h6>
-                        <small class="text-muted" style="font-size: 0.75rem;">Adicionar novo cliente</small>
-                    </div> 
-                    <i class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
-                </a> 
-                
-                <a href="/grupos/cadastro"
-                    class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
-                    <div class="icon-box bg-white text-info shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
-                        style="width: 48px; height: 48px;">
-                        <i class="fa-solid fa-folder-plus fs-5"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-0 fw-bold text-dark">Cadastrar Grupo</h6>
-                        <small class="text-muted" style="font-size: 0.75rem;">Segmentar contatos</small>
-                    </div> 
-                    <i class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
-                </a>
-            </div>
-        </div>
-    </div>
 
-    <div class="card shadow-sm border-0 flex-grow-1 d-flex flex-column overflow-hidden">
-        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-shrink-0">
-            <h6 class="m-0 fw-bold text-dark">
-                <i class="fa-regular fa-calendar-check text-warning me-2"></i>Agenda do Dia
-            </h6>
-            <a href="/administrativo/agenda" class="text-decoration-none small text-primary fw-bold">Ver agenda</a>
-        </div>
+						<div class="card shadow-sm border-0">
+							<div class="card-body p-4">
+								<h6 class="fw-bold text-dark mb-3">
+									<i class="fa-solid fa-bolt text-info me-2"></i>Ações Rápidas
+								</h6>
+								<div class="d-grid gap-3">
+									<a href="/cadastroContatos"
+										class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
+										<div
+											class="icon-box bg-white text-primary shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
+											style="width: 48px; height: 48px;">
+											<i class="fa-solid fa-user-plus fs-5"></i>
+										</div>
+										<div class="flex-grow-1">
+											<h6 class="mb-0 fw-bold text-dark">Cadastrar Contato</h6>
+											<small class="text-muted" style="font-size: 0.75rem;">Adicionar
+												novo cliente</small>
+										</div> <i
+										class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
+									</a> <a href="/grupos/cadastro"
+										class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
+										<div
+											class="icon-box bg-white text-info shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
+											style="width: 48px; height: 48px;">
+											<i class="fa-solid fa-folder-plus fs-5"></i>
+										</div>
+										<div class="flex-grow-1">
+											<h6 class="mb-0 fw-bold text-dark">Cadastrar Grupo</h6>
+											<small class="text-muted" style="font-size: 0.75rem;">Segmentar
+												contatos</small>
+										</div> <i
+										class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
+									</a>
+								</div>
+							</div>
+						</div>
 
-        <div class="card-body p-0 custom-scroll" 
-             style="height: 450px; overflow-y: auto;">
+						<div
+							class="card shadow-sm border-0 flex-grow-1 d-flex flex-column overflow-hidden">
+							<div
+								class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-shrink-0">
+								<h6 class="m-0 fw-bold text-dark">
+									<i class="fa-regular fa-calendar-check text-warning me-2"></i>Agenda
+									do Dia
+								</h6>
+								<a href="/administrativo/agenda"
+									class="text-decoration-none small text-primary fw-bold">Ver
+									agenda</a>
+							</div>
 
-            <div class="list-group list-group-flush h-100">
+							<div class="card-body p-0 custom-scroll"
+								style="height: 450px; overflow-y: auto;">
 
-                <div th:if="${#lists.isEmpty(agendaHoje)}"
-                    class="list-group-item px-4 py-5 text-center text-muted h-100 d-flex flex-column justify-content-center align-items-center border-0">
-                    <i class="fa-regular fa-face-smile mb-2 fs-4 d-block opacity-50"></i>
-                    <span class="small">Livre por hoje!</span>
-                </div>
+								<div class="list-group list-group-flush h-100">
 
-                <div th:each="evento : ${agendaHoje}"
-                    class="list-group-item px-4 py-3 border-bottom border-light border-start border-4 border-warning action-hover">
-                    <div class="d-flex w-100 justify-content-between align-items-center mb-1">
-                        <h6 class="mb-0 fw-bold text-dark fs-6 text-truncate"
-                            style="max-width: 70%;" th:text="${evento.titulo}">Reunião</h6>
-                        <span class="badge bg-warning text-dark rounded-pill fw-bold"
-                            style="font-size: 0.7rem;"
-                            th:text="${#temporals.format(evento.dataHora, 'HH:mm')}">10:00</span>
-                    </div>
-                    <p class="mb-0 small text-muted text-truncate"
-                        th:text="${evento.descricao}">Descrição do evento</p>
-                </div>
+									<div th:if="${#lists.isEmpty(agendaHoje)}"
+										class="list-group-item px-4 py-5 text-center text-muted h-100 d-flex flex-column justify-content-center align-items-center border-0">
+										<i
+											class="fa-regular fa-face-smile mb-2 fs-4 d-block opacity-50"></i>
+										<span class="small">Livre por hoje!</span>
+									</div>
 
-            </div>
-        </div>
-    </div>
-</div>
+									<div th:each="evento : ${agendaHoje}"
+										class="list-group-item px-4 py-3 border-bottom border-light border-start border-4 border-warning action-hover">
+										<div
+											class="d-flex w-100 justify-content-between align-items-center mb-1">
+											<h6 class="mb-0 fw-bold text-dark fs-6 text-truncate"
+												style="max-width: 70%;" th:text="${evento.titulo}">Reunião</h6>
+											<span class="badge bg-warning text-dark rounded-pill fw-bold"
+												style="font-size: 0.7rem;"
+												th:text="${#temporals.format(evento.dataHora, 'HH:mm')}">10:00</span>
+										</div>
+										<p class="mb-0 small text-muted text-truncate"
+											th:text="${evento.descricao}">Descrição do evento</p>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
 			</div>
