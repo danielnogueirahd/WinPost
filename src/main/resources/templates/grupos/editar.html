@@ -10,111 +10,211 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 <link rel="stylesheet" href="/css/estilo.css">
+
+<style>
+    /* Estilos Específicos para embelezar esta tela */
+    .card-modern {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        background-color: #fff;
+        transition: transform 0.2s ease;
+    }
+    
+    .card-header-clean {
+        background-color: transparent;
+        border-bottom: 1px solid #f0f2f5;
+        padding: 1.5rem;
+    }
+
+    /* Avatar com Inicial do Nome */
+    .avatar-initial {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-right: 1rem;
+    }
+
+    /* Ajuste na tabela para ficar bonita */
+    .table-custom tr td {
+        vertical-align: middle;
+        padding: 1rem 1.5rem;
+    }
+    .table-custom tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    /* Inputs Flutuantes mais suaves */
+    .form-floating > .form-control {
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+    }
+    .form-floating > .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+</style>
 </head>
 
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100" style="background-color: #f3f4f6;">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 	<main class="flex-grow-1">
 		
-
-		<div class="container py-4 mb-5">
+		<div class="container py-5">
 
             <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
 				<i class="fa-solid fa-check-circle me-2"></i> <span th:text="${mensagemSucesso}"></span>
 				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 			</div>
 
-			<div class="d-flex justify-content-between align-items-center mb-4">
-				<h2 class="text-dark mb-0 fw-bold">Editar Grupo</h2>
-				<a href="/grupos/gerenciar" class="btn btn-outline-secondary btn-sm">
-					<i class="fa-solid fa-arrow-left me-1"></i> Voltar
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+				    <h2 class="text-dark mb-0 fw-bold" style="letter-spacing: -0.5px;">Editar Grupo</h2>
+                    <p class="text-muted small mb-0">Gerencie os detalhes e membros deste grupo.</p>
+                </div>
+				<a href="/grupos/gerenciar" class="btn btn-white border shadow-sm rounded-pill px-4 fw-bold text-secondary hover-lift">
+					<i class="fa-solid fa-arrow-left me-2"></i> Voltar
 				</a>
 			</div>
 
 			<div class="row g-4">
-				<div class="col-lg-4">
+				
+                <div class="col-lg-4">
 					<form action="/grupos/atualizar" method="post" th:object="${grupo}">
 						<input type="hidden" th:field="*{id}">
 
-						<div class="card card-modern mb-4">
-							<div class="card-header fw-bold text-primary">Dados do Grupo</div>
-							<div class="card-body">
-								<div class="mb-3">
-									<label class="form-label small fw-bold text-muted">NOME</label>
-									<input type="text" class="form-control" th:field="*{nome}" required>
+                        <div class="card card-modern mb-4">
+							<div class="card-header-clean">
+                                <h6 class="fw-bold text-primary mb-0">
+                                    <i class="fa-solid fa-pen-to-square me-2"></i>Detalhes Principais
+                                </h6>
+                            </div>
+							<div class="card-body p-4">
+								
+                                <div class="form-floating mb-3">
+									<input type="text" class="form-control" id="nomeGrupo" th:field="*{nome}" placeholder="Nome do Grupo" required>
+                                    <label for="nomeGrupo">Nome do Grupo</label>
 								</div>
-								<div class="mb-3">
-									<label class="form-label small fw-bold text-muted">DESCRIÇÃO</label>
-									<textarea class="form-control" th:field="*{descricao}" rows="3"></textarea>
+								
+                                <div class="form-floating mb-4">
+									<textarea class="form-control" id="descGrupo" th:field="*{descricao}" placeholder="Descrição" style="height: 100px"></textarea>
+                                    <label for="descGrupo">Descrição (Opcional)</label>
 								</div>
 
 								<div class="d-grid gap-2">
-									<button type="submit" class="btn btn-primary fw-bold">
+									<button type="submit" class="btn btn-primary btn-lg fw-bold rounded-3 shadow-sm">
 										<i class="fa-solid fa-check me-2"></i>Salvar Alterações
 									</button>
 
                                     <button type="button" 
-                                            class="btn btn-outline-danger btn-sm"
-                                            th:data-url="@{/grupos/excluir/{id}(id=*{id})}"
-                                            onclick="confirmarExclusao(this.getAttribute('data-url'))">
-										<i class="fa-solid fa-trash-can me-2"></i>Excluir este Grupo
+                                            class="btn btn-light text-danger btn-sm border-0 mt-2"
+                                            th:attr="onclick=|confirmarExclusao('/grupos/excluir/' + ${grupo.id})|">
+										<i class="fa-solid fa-trash-can me-2"></i>Excluir Grupo
 									</button>
 								</div>
-
 							</div>
 						</div>
 
-                        <div class="card card-modern h-100">
-    <div class="card-header fw-bold bg-white text-dark d-flex align-items-center">
-        <div class="bg-light rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-            <i class="fa-solid fa-user-plus text-primary"></i>
-        </div>
-        <span>Adicionar Novos Membros</span>
-    </div>
-    
-    <div class="card-body">
-        <p class="small text-muted mb-3">Busque e selecione os contatos que deseja incluir neste grupo:</p>
-        
-        <div class="mb-3">
-            <select class="form-select select2-multiple" name="novosMembros" multiple="multiple" style="width: 100%">
-                <option th:each="c : ${todosContatos}" 
-                        th:value="${c.id}" 
-                        th:text="${c.nome}"
-                        th:data-nome="${c.nome}"
-                        th:data-email="${c.email}">
-                </option>
-            </select>
-        </div>
-        
-        <button type="submit" class="btn btn-primary w-100 btn-modern">
-            <i class="fa-solid fa-plus me-2"></i>Adicionar Selecionados
-        </button>
-    </div>
-</div>					</form>
+                        <div class="card card-modern" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
+                            <div class="card-header-clean d-flex align-items-center justify-content-between">
+                                <h6 class="fw-bold text-dark mb-0">
+                                    <i class="fa-solid fa-user-plus me-2 text-primary"></i>Adicionar Membros
+                                </h6>
+                            </div>
+                            
+                            <div class="card-body p-4">
+                                <p class="small text-muted mb-3">Pesquise contatos para incluir no grupo:</p>
+                                
+                                <div class="mb-3">
+                                    <select class="form-select select2-multiple" name="novosMembros" multiple="multiple" style="width: 100%">
+                                        <option th:each="c : ${todosContatos}" 
+                                                th:value="${c.id}" 
+                                                th:text="${c.nome}"
+                                                th:data-nome="${c.nome}"
+                                                th:data-email="${c.email}">
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-outline-primary w-100 fw-bold rounded-3">
+                                    Adicionar Selecionados
+                                </button>
+                            </div>
+                        </div>					
+                    </form>
 				</div>
 
                 <div class="col-lg-8">
 					<div class="card card-modern h-100">
-                        <div class="card-header bg-white"><span class="fw-bold text-dark">Membros Atuais</span></div>
+                        <div class="card-header-clean d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold text-dark mb-0">
+                                <i class="fa-solid fa-users me-2 text-secondary"></i>Membros Atuais
+                            </h6>
+                            <span class="badge bg-light text-dark border rounded-pill px-3">
+                                <span th:text="${#lists.size(grupo.contatos)}">0</span> membros
+                            </span>
+                        </div>
+                        
 						<div class="card-body p-0">
 							<div class="table-responsive">
-								<table class="table table-hover align-middle mb-0">
-									<thead class="bg-light">
-										<tr><th class="ps-4">Nome</th><th>Email</th><th class="text-end pe-4">Ação</th></tr>
+								<table class="table table-custom align-middle mb-0">
+									<thead class="bg-light text-muted small text-uppercase">
+										<tr>
+                                            <th class="ps-4">Participante</th>
+                                            <th>Contato</th>
+                                            <th class="text-end pe-4">Ação</th>
+                                        </tr>
 									</thead>
-									<tbody>
-										<tr th:each="membro : ${grupo.contatos}">
-											<td class="ps-4 fw-bold" th:text="${membro.nome}">Nome</td>
-											<td class="small text-muted" th:text="${membro.email}">Email</td>
+									<tbody class="border-top-0">
+                                        <tr th:each="membro : ${grupo.contatos}">
+											<td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-initial shadow-sm">
+                                                        <span th:text="${#strings.substring(membro.nome, 0, 1)}">A</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold text-dark" th:text="${membro.nome}">Nome</div>
+                                                        <small class="text-muted">Cadastrado no sistema</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+											<td>
+                                                <div class="text-muted small">
+                                                    <i class="fa-regular fa-envelope me-1"></i> <span th:text="${membro.email}">email</span>
+                                                </div>
+                                                <div class="text-muted small mt-1" th:if="${membro.telefone}">
+                                                    <i class="fa-solid fa-phone me-1"></i> <span th:text="${membro.telefone}">tel</span>
+                                                </div>
+                                            </td>
 											<td class="text-end pe-4">
-                                                <a th:href="@{/grupos/removerMembro/{grupoId}/{contatoId}(grupoId=${grupo.id}, contatoId=${membro.id})}"
-												class="btn btn-sm btn-light text-danger border hover-danger"
-												onclick="return confirm('Remover este usuário do grupo?');"> 
-                                                <i class="fa-solid fa-user-minus"></i></a>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-light text-danger rounded-circle shadow-sm"
+                                                        style="width: 32px; height: 32px;"
+                                                        title="Remover do Grupo"
+                                                        th:onclick="'javascript:abrirModalRemover(' + ${grupo.id} + ', ' + ${membro.id} + ')'">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
                                             </td>
 										</tr>
+
+                                        <tr th:if="${#lists.isEmpty(grupo.contatos)}">
+                                            <td colspan="3" class="text-center py-5">
+                                                <div class="opacity-50 mb-3">
+                                                    <i class="fa-solid fa-users-slash fa-3x text-secondary"></i>
+                                                </div>
+                                                <h6 class="fw-bold text-secondary">Nenhum membro neste grupo</h6>
+                                                <p class="small text-muted mb-0">Use o painel ao lado para adicionar pessoas.</p>
+                                            </td>
+                                        </tr>
 									</tbody>
 								</table>
 							</div>
@@ -127,7 +227,28 @@
 
     <div th:replace="~{fragments/modals :: modalExclusao}"></div>
 
-	
+    <div class="modal fade" id="modalRemoverMembro" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm"> <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body text-center p-4">
+                    <div class="mb-3">
+                        <div class="bg-danger bg-opacity-10 text-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fa-solid fa-user-minus fs-3"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-2">Remover membro?</h5>
+                    <p class="text-muted small mb-4">
+                        Esta pessoa sairá do grupo, mas o contato continuará salvo no sistema.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a id="btnConfirmarRemocao" href="#" class="btn btn-danger fw-bold rounded-3">
+                            Sim, remover
+                        </a>
+                        <button type="button" class="btn btn-light fw-bold rounded-3 text-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -139,32 +260,53 @@
     <script src="/js/grupos.js"></script>
 
 	<script>
-        // Função do Modal de Exclusão
+        // Lógica dos Modais (Mantida e otimizada)
         function confirmarExclusao(url) {
             var modalElement = document.getElementById('modalConfirmarExclusao');
-            if(modalElement){
-                var modal = new bootstrap.Modal(modalElement);
-                var btnConfirmar = document.getElementById('btnConfirmarExclusao');
-                if(btnConfirmar) btnConfirmar.setAttribute('href', url);
+            
+            if(!modalElement) {
+                if(confirm("Deseja realmente excluir este grupo?")) {
+                    window.location.href = url;
+                }
+                return;
+            }
+            var modal = new bootstrap.Modal(modalElement);
+            var btnConfirmar = document.getElementById('btnConfirmarExclusao');
+            if(btnConfirmar) {
+                btnConfirmar.setAttribute('href', url);
                 modal.show();
-            } else {
-                console.error("Modal de exclusão não encontrado no fragmento.");
             }
         }
+
+        function abrirModalRemover(grupoId, contatoId) {
+            var url = '/grupos/removerMembro/' + grupoId + '/' + contatoId;
+            var btn = document.getElementById('btnConfirmarRemocao');
+            if(btn) btn.setAttribute('href', url);
+            
+            var modal = new bootstrap.Modal(document.getElementById('modalRemoverMembro'));
+            modal.show();
+        }
+
+        $(document).ready(function() {
+            $('.select2-multiple').select2({
+                theme: 'bootstrap-5',
+                placeholder: "Selecione os contatos...",
+                allowClear: true,
+                width: '100%'
+            });
+        });
     </script>
 
     <script th:if="${mensagemSucesso}">
         Swal.fire({
-            title: 'Sucesso!',
+            title: 'Tudo certo!',
             text: '[[${mensagemSucesso}]]',
             icon: 'success',
             confirmButtonColor: '#0d6efd',
-            timer: 3000
+            timer: 3000,
+            showConfirmButton: false,
+            timerProgressBar: true
         });
     </script>
-</body>
-</html>
-
-	
 </body>
 </html>

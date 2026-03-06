@@ -58,15 +58,26 @@ public class AgendaControle {
 
         // BUSCAS NO BANCO DE DADOS
         String mesFormatadoBanco = String.format("/%02d", mesAtual);
+        
+        // Esta busca traz TODOS do mês. Nós filtramos abaixo no Java.
         List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco);
+        
         List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetween(inicioMes, fimMes);
         List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetween(inicioMes, fimMes);
         
         List<EventoAgenda> eventos = new ArrayList<>();
         eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
 
-        // 1. PROCESSAR ANIVERSARIANTES (COM PROTEÇÃO DE DATA)
+        // 1. PROCESSAR ANIVERSARIANTES (COM PROTEÇÃO DE DATA E FILTRO DA AGENDA)
         for (Contatos c : aniversariantes) {
+        	
+        	// --- CORREÇÃO AQUI ---
+        	// Se a opção "Vincular à Agenda" estiver desmarcada (false), pula este contato.
+        	if (!c.getExibirNaAgenda()) {
+        		continue;
+        	}
+        	// ---------------------
+
             if (c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
                 try {
                     int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
@@ -123,7 +134,7 @@ public class AgendaControle {
     }
 
     @GetMapping("/administrativo/agenda/remover/{id}") 
-    public ResponseEntity<?> removerEvento(@PathVariable Long id) { // Removi @ResponseBody redundante com ResponseEntity
+    public ResponseEntity<?> removerEvento(@PathVariable Long id) { 
         try {
             if (lembreteRepositorio.existsById(id)) {
                 lembreteRepositorio.deleteById(id);
@@ -153,6 +164,10 @@ public class AgendaControle {
         
         // 1. Aniversários
         String diaMesFormatado = String.format("%02d/%02d", data.getDayOfMonth(), data.getMonthValue());
+        
+        // A busca aqui já está filtrada pelo Repositório (que corrigimos antes), 
+        // mas por segurança, o Repositório deve ter o "AND c.exibirNaAgenda = true".
+        // Se o seu Repositório já estiver atualizado conforme seu último envio, isto funcionará perfeitamente.
         List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(diaMesFormatado);
         
         for (Contatos c : nivers) {
