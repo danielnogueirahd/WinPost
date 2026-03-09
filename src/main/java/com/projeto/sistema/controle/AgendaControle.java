@@ -174,12 +174,23 @@ public class AgendaControle {
             detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
         }
         
-        // 2. Envios
+     // 2. Envios (Mensagens)
         LocalDateTime inicio = data.atStartOfDay();
         LocalDateTime fim = data.atTime(LocalTime.MAX);
+        
+        // Busca as mensagens no intervalo do dia
         List<MensagemLog> msgs = mensagemRepositorio.findByDataEnvioBetween(inicio, fim);
+        
         for (MensagemLog m : msgs) {
-            detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), "Grupo: " + m.getNomeGrupoDestino(), m.getId()));
+            // Formata a hora (Ex: 14:30)
+            String horaFormatada = m.getDataEnvio().toLocalTime().toString();
+            if(horaFormatada.length() > 5) horaFormatada = horaFormatada.substring(0, 5);
+            
+            String subtitulo = horaFormatada + " - " + (m.getNomeGrupoDestino() != null ? m.getNomeGrupoDestino() : "Sem grupo");
+
+            // ADICIONA À LISTA
+            // O 4º parâmetro (m.getId()) é OBRIGATÓRIO para o botão de olho funcionar
+            detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), subtitulo, m.getId()));
         }
         
         // 3. Lembretes

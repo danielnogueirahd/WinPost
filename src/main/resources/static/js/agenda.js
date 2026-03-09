@@ -1,41 +1,54 @@
-// --- agenda.js ---
+// --- agenda.js (Versão Corrigida - Modal Safe) ---
+
+/**
+ * Função Auxiliar: Fecha o modal de lista para evitar sobreposição (backdrop travado)
+ */
+function fecharModalLista() {
+    var el = document.getElementById('modalDetalhesDia');
+    if (el) {
+        var modal = bootstrap.Modal.getInstance(el);
+        if (modal) {
+            modal.hide();
+        }
+    }
+}
 
 /**
  * 1. Abre o modal de cadastro de NOVO evento
- * Limpa o formulário e define a data selecionada
  */
 function abrirModalNovoEvento(dia, mes, ano) {
-    // Se o modal de detalhes estiver aberto, fecha ele antes
-    var elDetalhes = document.getElementById('modalDetalhesDia');
-    if (elDetalhes) {
-        var modalDetalhes = bootstrap.Modal.getInstance(elDetalhes);
-        if (modalDetalhes) modalDetalhes.hide();
-    }
+    fecharModalLista(); // Garante que a lista fecha
 
-    // Formata data para o input datetime-local (YYYY-MM-DDTHH:mm)
-    var mesFmt = mes < 10 ? '0' + mes : mes;
-    var diaFmt = dia < 10 ? '0' + dia : dia;
-    var dataHoraISO = `${ano}-${mesFmt}-${diaFmt}T09:00`;
+    // Pequeno delay para evitar conflito visual
+    setTimeout(() => {
+        // Formata data para o input
+        var mesFmt = mes < 10 ? '0' + mes : mes;
+        var diaFmt = dia < 10 ? '0' + dia : dia;
+        var dataHoraISO = `${ano}-${mesFmt}-${diaFmt}T09:00`;
 
-    // Reseta os campos
-    $('#inputId').val(''); // <--- IMPORTANTE: Limpa o ID para criar um novo
-    $('#modalNovoEvento input[name="dataHora"]').val(dataHoraISO);
-    $('#modalNovoEvento input[name="titulo"]').val('');
-    $('#modalNovoEvento textarea[name="descricao"]').val('');
-    $('#modalNovoEvento select[name="contato"]').val(''); 
-    
-    // Reseta a seleção de tipos para o padrão
-    alternarModoCriacao(false);
-    $('#tipoTarefa').prop('checked', true);
+        // Reseta os campos
+        $('#inputId').val(''); 
+        $('#modalNovoEvento input[name="dataHora"]').val(dataHoraISO);
+        $('#modalNovoEvento input[name="titulo"]').val('');
+        $('#modalNovoEvento textarea[name="descricao"]').val('');
+        
+        // Atualiza inputs visuais
+        $('#tempData').val(`${ano}-${mesFmt}-${diaFmt}`);
+        $('#tempHora').val('09:00');
+        $('#inputDataHoraCompleta').val(dataHoraISO);
 
-    // Abre o modal
-    var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
-    modalNovo.show();
+        // Reseta tipo
+        alternarModoCriacao(false);
+        $('#tipoTarefa').prop('checked', true);
+
+        // Abre modal
+        var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
+        modalNovo.show();
+    }, 150);
 }
 
 /**
  * 2. Abre o modal de DETALHES do dia (Listagem)
- * Busca os eventos via AJAX e monta a lista com botões de ação
  */
 function verDetalhesDia(dia, mes, ano) {
     var dataVisual = dia + '/' + mes + '/' + ano;
@@ -45,17 +58,18 @@ function verDetalhesDia(dia, mes, ano) {
     var diaFormatado = dia < 10 ? '0' + dia : dia;
     var dataISO = ano + '-' + mesFormatado + '-' + diaFormatado;
 
-    // Configura o botão "Adicionar" deste modal para abrir o formulário na data certa
     $('#btnAdicionarNestaData').attr('onclick', `abrirModalNovoEvento(${dia}, ${mes}, ${ano})`);
     
-    // Loading inicial
-    $('#listaDetalhes').html('<div class="text-center py-4"><div class="spinner-border text-primary spinner-border-sm"></div><p class="mt-2 small text-muted">Carregando...</p></div>');
+    // Loading visual
+    $('#listaDetalhes').html('<div class="text-center py-4"><div class="spinner-border text-primary spinner-border-sm"></div></div>');
     $('#msgVazio').addClass('d-none');
     
-    var modal = new bootstrap.Modal(document.getElementById('modalDetalhesDia'));
-    modal.show();
+    // Abre o modal
+    var elModal = document.getElementById('modalDetalhesDia');
+    var modalInstance = bootstrap.Modal.getInstance(elModal) || new bootstrap.Modal(elModal);
+    modalInstance.show();
 
-    // Chamada AJAX para buscar os detalhes
+    // Busca dados
     $.get('/administrativo/agenda/detalhes?data=' + dataISO, function(dados) {
         var html = '';
         
@@ -71,47 +85,39 @@ function verDetalhesDia(dia, mes, ano) {
                 var bgIcone = 'bg-light';
                 var botoesAcao = '';
 
-                // --- Configuração Visual baseada no Tipo ---
+                // Verifica se item.idRef veio nulo (debug)
+                if(!item.idRef && (item.tipo === 'ENVIO' || item.tipo !== 'NIVER' && item.tipo !== 'FERIADO')) {
+                    console.warn("Item sem ID recebido:", item);
+                }
+
+                // Lógica de Ícones e Ações
                 if (item.tipo === 'NIVER') { 
                     icone = 'fa-cake-candles'; corIcone = 'text-success'; bgIcone = 'bg-success bg-opacity-10';
-                    // Nivers não têm botão de excluir aqui
                 } 
                 else if (item.tipo === 'ENVIO') { 
                     icone = 'fa-paper-plane'; corIcone = 'text-primary'; bgIcone = 'bg-primary bg-opacity-10';
-                    // Botão para VER a mensagem enviada
+                    // Botão OLHO
                     botoesAcao = `<button onclick="verMensagem(${item.idRef})" class="btn btn-sm btn-outline-primary rounded-circle" title="Ler Mensagem"><i class="fa-solid fa-eye"></i></button>`;
                 } 
                 else if (item.tipo === 'FERIADO') { 
                     icone = 'fa-calendar-check'; corIcone = 'text-danger'; bgIcone = 'bg-danger bg-opacity-10';
-                    // Feriados são fixos, sem botão de excluir
                 }
                 else {
-                    // --- TAREFAS, REUNIÕES E PERSONALIZADOS (Podem ser excluídos) ---
+                    // Outros eventos (Reunião, Tarefa, etc)
                     if (item.tipo === 'REUNIAO') { icone = 'fa-users'; corIcone = 'text-info'; bgIcone = 'bg-info bg-opacity-10'; }
                     else if (item.tipo === 'IMPORTANTE') { icone = 'fa-triangle-exclamation'; corIcone = 'text-danger'; bgIcone = 'bg-danger bg-opacity-10'; }
                     else if (item.tipo === 'TAREFA') { icone = 'fa-list-check'; corIcone = 'text-secondary'; bgIcone = 'bg-secondary bg-opacity-10'; }
                     else { icone = 'fa-tag'; corIcone = 'text-dark'; bgIcone = 'bg-warning bg-opacity-10'; }
 
-                    // --- ALTERAÇÃO AQUI: Botões de Editar (Lápis) e Excluir (X) ---
+                    // Botões Editar/Excluir
                     botoesAcao = `
                         <div class="d-flex gap-2">
-                            <button class="btn btn-outline-warning btn-sm rounded-circle shadow-sm" 
-                                    onclick="editarEvento(${item.idRef})" 
-                                    title="Editar"
-                                    style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" 
-                                    onclick="confirmarExclusao(${item.idRef})" 
-                                    title="Cancelar/Excluir"
-                                    style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-times"></i>
-                            </button>
+                            <button class="btn btn-outline-warning btn-sm rounded-circle" onclick="editarEvento(${item.idRef})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-outline-danger btn-sm rounded-circle" onclick="confirmarExclusao(${item.idRef})" title="Excluir"><i class="fas fa-times"></i></button>
                         </div>
                     `;
                 }
 
-                // Renderiza o item da lista
                 html += `
                     <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
                         <div class="d-flex align-items-center">
@@ -126,9 +132,7 @@ function verDetalhesDia(dia, mes, ano) {
                                 </small>
                             </div>
                         </div>
-                        <div class="ms-2">
-                            ${botoesAcao}
-                        </div>
+                        <div class="ms-2">${botoesAcao}</div>
                     </div>
                 `;
             });
@@ -138,12 +142,110 @@ function verDetalhesDia(dia, mes, ano) {
 }
 
 /**
- * 3. Confirmação e Exclusão (SweetAlert2)
+ * 3. Ver Mensagem (O "OLHO")
+ */
+function verMensagem(id) {
+    if (!id) {
+        alert("Erro: ID da mensagem não encontrado.");
+        return;
+    }
+
+    // 1. Fecha a lista
+    fecharModalLista();
+
+    // 2. Abre o modal de leitura (com delay seguro)
+    setTimeout(() => {
+        var el = document.getElementById('modalLeitura');
+        var modalLeitura = new bootstrap.Modal(el);
+        modalLeitura.show();
+        
+        // Loading
+        $('#modalConteudo').html('<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>');
+        $('#modalAssunto').text('Carregando...');
+        
+        // Busca conteúdo
+        $.get("/mensagens/detalhes/" + id, function(data) {
+            $('#modalAssunto').text(data.assunto);
+            $('#modalGrupo').text(data.nomeGrupoDestino || 'Destinatário Único');
+            
+            if(data.dataEnvio) {
+                let dt = new Date(data.dataEnvio);
+                $('#modalData').text(dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
+            }
+
+            // Anexos (se houver)
+            if(data.nomesAnexos) {
+                $('#modalAnexos').text(data.nomesAnexos);
+                $('#areaAnexosModal').removeClass('d-none');
+            } else {
+                $('#areaAnexosModal').addClass('d-none');
+            }
+            
+            // Corpo da mensagem
+            $('#modalConteudo').html(data.conteudo);
+            
+            // Ajusta imagens grandes
+            $('#modalConteudo img').addClass('img-fluid rounded shadow-sm'); 
+
+        }).fail(function() {
+            $('#modalConteudo').html('<p class="text-danger text-center">Erro ao carregar mensagem. Tente novamente.</p>');
+        });
+    }, 150);
+}
+
+/**
+ * 4. Editar Evento (O "LÁPIS")
+ */
+function editarEvento(id) {
+    if (!id) return;
+
+    // 1. Fecha a lista
+    fecharModalLista();
+
+    // 2. Abre edição (com delay seguro)
+    setTimeout(() => {
+        $.get('/administrativo/agenda/buscar/' + id, function(evento) {
+            
+            $('#inputId').val(evento.id);
+            $('#inputTitulo').val(evento.titulo);
+            $('#modalNovoEvento textarea[name="descricao"]').val(evento.descricao);
+
+            if(evento.dataHora) {
+                let partes = evento.dataHora.split('T');
+                $('#tempData').val(partes[0]);
+                $('#tempHora').val(partes[1].substring(0, 5));
+                $('#inputDataHoraCompleta').val(evento.dataHora);
+            }
+
+            // Marca o tipo
+            $('input[name="tipo"]').prop('checked', false);
+            let radio = $(`input[name="tipo"][value="${evento.tipo}"]`);
+            if(radio.length > 0) radio.prop('checked', true);
+            else $('#tipoTarefa').prop('checked', true);
+            
+            alternarModoCriacao(false); 
+            
+            var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
+            modalNovo.show();
+            
+        }).fail(function() {
+            alert("Erro ao buscar dados do evento.");
+            // Reabre a lista se falhar
+            var el = document.getElementById('modalDetalhesDia');
+            if(el) new bootstrap.Modal(el).show();
+        });
+    }, 150);
+}
+
+/**
+ * 5. Excluir Evento
  */
 function confirmarExclusao(id) {
+    fecharModalLista(); // Fecha para mostrar o SweetAlert limpo
+
     Swal.fire({
         title: 'Tem certeza?',
-        text: "Você deseja cancelar este agendamento? Essa ação não pode ser desfeita.",
+        text: "Deseja remover este item da agenda?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -152,67 +254,26 @@ function confirmarExclusao(id) {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            excluirEvento(id);
-        }
-    });
-}
-
-function excluirEvento(id) {
-    if (!id) {
-        Swal.fire('Erro!', 'ID do evento inválido ou indefinido.', 'error');
-        return;
-    }
-
-    $.ajax({
-        url: '/administrativo/agenda/remover/' + id,
-        type: 'GET',
-        success: function(response) {
-            Swal.fire({
-                title: 'Excluído!',
-                text: 'O agendamento foi removido com sucesso.',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                location.reload(); 
+            $.ajax({
+                url: '/administrativo/agenda/remover/' + id,
+                type: 'GET', // Ajuste conforme seu Controller (GET ou DELETE)
+                success: function() {
+                    Swal.fire({ title: 'Excluído!', icon: 'success', timer: 1500, showConfirmButton: false })
+                    .then(() => location.reload());
+                },
+                error: function() {
+                    Swal.fire('Erro', 'Não foi possível excluir.', 'error');
+                }
             });
-        },
-        error: function(xhr) {
-            let msgErro = "Erro desconhecido.";
-            if (xhr.responseText) msgErro = xhr.responseText;
-            Swal.fire('Ops! Deu erro.', msgErro, 'error');
-        }
-    });
-}
-
-/**
- * 4. Ver detalhes de uma mensagem (ENVIO)
- */
-function verMensagem(id) {
-    $('#modalConteudo').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>');
-    var modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
-    modal.show();
-    
-    $.get("/mensagens/detalhes/" + id, function(data) {
-        $('#modalAssunto').text(data.assunto);
-        $('#modalGrupo').text(data.nomeGrupoDestino || 'Destinatário Único');
-        $('#modalData').text(new Date(data.dataEnvio).toLocaleString('pt-BR'));
-        
-        if(data.nomesAnexos) {
-            $('#modalAnexos').text(data.nomesAnexos);
-            $('#areaAnexosModal').removeClass('d-none');
         } else {
-            $('#areaAnexosModal').addClass('d-none');
+            // Se cancelar, reabre a lista
+            var el = document.getElementById('modalDetalhesDia');
+            if(el) new bootstrap.Modal(el).show();
         }
-        
-        $('#modalConteudo').html(data.conteudo);
-        $('#modalConteudo img').addClass('img-fluid rounded shadow-sm'); 
     });
 }
 
-/**
- * 5. Lógica Visual do Modal Novo Evento (Criar Tipo)
- */
+// Funções de Criação de Tipo (mantidas)
 function alternarModoCriacao(mostrar) {
     if (mostrar) {
         $('#areaSelecaoTipos').addClass('d-none');
@@ -230,22 +291,15 @@ function salvarNovoTipo() {
     const icone = $('#novoTipoIcone').val();
     const cor = $('#novoTipoCor').val();
 
-    if (!nome) {
-        Swal.fire('Atenção', 'Dê um nome ao tipo.', 'warning');
-        return;
-    }
+    if (!nome) { Swal.fire('Atenção', 'Dê um nome ao tipo.', 'warning'); return; }
 
     const payload = { nome: nome, icone: icone, corHex: cor };
-
     const btn = document.querySelector('#areaCriacaoTipo button'); 
     const textoOriginal = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-    btn.disabled = true;
+    btn.innerHTML = 'Salvando...'; btn.disabled = true;
 
     $.ajax({
-        url: '/api/tipos-evento', 
-        type: 'POST',
-        contentType: 'application/json',
+        url: '/api/tipos-evento', type: 'POST', contentType: 'application/json',
         data: JSON.stringify(payload),
         success: function(novoTipo) {
             const novoId = 'tipo' + novoTipo.id;
@@ -261,71 +315,12 @@ function salvarNovoTipo() {
                         <div class="fw-bold text-dark small">${novoTipo.nome}</div>
                     </div>
                     <div class="check-indicator" style="color: ${novoTipo.corHex};"><i class="fa-solid fa-circle-check"></i></div>
-                </label>
-            `;
+                </label>`;
             $('#areaSelecaoTipos').append(htmlCard);
             alternarModoCriacao(false);
             $('#novoTipoNome').val('');
         },
-        error: function() {
-             Swal.fire('Erro', 'Erro ao criar tipo. Verifique o servidor.', 'error');
-        },
-        complete: function() {
-            btn.innerHTML = textoOriginal;
-            btn.disabled = false;
-        }
+        error: function() { Swal.fire('Erro', 'Erro ao criar tipo.', 'error'); },
+        complete: function() { btn.innerHTML = textoOriginal; btn.disabled = false; }
     });
 }
-
-/**
- * 6. (NOVO) Carrega dados para edição e abre o modal
- */
-function editarEvento(id) {
-    // Fecha o modal de lista
-    var elDetalhes = document.getElementById('modalDetalhesDia');
-    var modalDetalhes = bootstrap.Modal.getInstance(elDetalhes);
-    if (modalDetalhes) modalDetalhes.hide();
-
-    // Busca os dados completos do evento no Java
-    $.get('/administrativo/agenda/buscar/' + id, function(evento) {
-        
-        // 1. Preenche o ID Hidden (IMPORTANTE: O HTML PRECISA TER ESSE CAMPO)
-        $('#inputId').val(evento.id);
-        
-        // 2. Preenche Título e Descrição
-        $('#inputTitulo').val(evento.titulo);
-        $('#modalNovoEvento textarea[name="descricao"]').val(evento.descricao);
-
-        // 3. Preenche Data e Hora (Separando o ISO 2024-03-02T14:30)
-        if(evento.dataHora) {
-            let partes = evento.dataHora.split('T');
-            $('#tempData').val(partes[0]);
-            $('#tempHora').val(partes[1].substring(0, 5)); // Pega HH:mm
-            $('#inputDataHoraCompleta').val(evento.dataHora);
-        }
-
-        // 4. Seleciona o Tipo (Radio Button)
-        $('input[name="tipo"]').prop('checked', false); // Desmarca tudo
-        $(`input[name="tipo"][value="${evento.tipo}"]`).prop('checked', true); // Marca o certo
-        
-        // 5. Ajusta UI e Abre o Modal
-        alternarModoCriacao(false); 
-        
-        var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
-        modalNovo.show();
-        
-    }).fail(function() {
-        Swal.fire('Erro', 'Não foi possível carregar os dados para edição.', 'error');
-    });
-}
-
-// Inicialização e CSS extra
-document.addEventListener('DOMContentLoaded', function() {
-    if (!document.getElementById('styleFadeIn')) {
-        document.head.insertAdjacentHTML("beforeend", `
-            <style id="styleFadeIn">
-                .fade-in { animation: fadeIn 0.3s ease-in-out; } 
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-            </style>`);
-    }
-});
