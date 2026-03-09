@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus; // Importe o HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,7 +42,7 @@ public class MensagemControle {
     private GrupoRepositorio grupoRepositorio;
 
     @Autowired
-    private EmailService emailService; // Agora será utilizado no método /enviar
+    private EmailService emailService;
 
     // --- REDIRECIONAMENTO PADRÃO ---
     @GetMapping("/enviadas")
@@ -267,5 +268,27 @@ public class MensagemControle {
             tituloCodificado = URLEncoder.encode(assunto, StandardCharsets.UTF_8.toString());
         } catch (Exception e) { e.printStackTrace(); }
         return "redirect:/administrativo/agenda?acao=novoEvento&titulo=" + tituloCodificado;
+    }
+
+    // --- NOVO MÉTODO: SALVAR OBSERVAÇÃO ---
+    @PostMapping("/salvarObservacao")
+    @ResponseBody
+    public ResponseEntity<?> salvarObservacao(@RequestParam Long id, @RequestParam String observacao) {
+        try {
+            // Busca a mensagem pelo ID
+            // CORREÇÃO: Usar 'mensagemRepositorio' e não 'mensagemLogRepositorio'
+            MensagemLog mensagem = mensagemRepositorio.findById(id).orElse(null);
+            
+            if (mensagem != null) {
+                // Atualiza o texto da observação
+                mensagem.setObservacao(observacao);
+                // Salva no banco
+                mensagemRepositorio.save(mensagem);
+                return ResponseEntity.ok("Salvo com sucesso!");
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar.");
+        }
     }
 }

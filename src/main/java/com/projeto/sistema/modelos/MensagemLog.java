@@ -37,7 +37,6 @@ public class MensagemLog implements Serializable {
     private String nomesAnexos; 
 
     private String status; // "SUCESSO", "ERRO"
-
     
     @Column(length = 50) 
     private String pasta = "ENVIADAS"; // Padrão: ENVIADAS
@@ -52,9 +51,15 @@ public class MensagemLog implements Serializable {
     @Column(columnDefinition = "BIT DEFAULT 0", nullable = false) 
     private boolean favorito = false;
     
-    // --- NOVO CAMPO: IMPORTANTE (Flag Azul) ---
+    // Mantivemos o campo importante caso precise dele para legado, 
+    // mas agora o foco será na observação.
     @Column(columnDefinition = "BIT DEFAULT 0", nullable = false)
     private boolean importante = false;
+
+    // --- NOVO CAMPO: OBSERVAÇÕES / CRM ---
+    // Usando VARCHAR(MAX) para permitir textos longos no SQL Server
+    @Column(columnDefinition = "VARCHAR(MAX)")
+    private String observacao;
 
     // --- Construtores ---
     public MensagemLog() {
@@ -119,7 +124,6 @@ public class MensagemLog implements Serializable {
         this.dataEnvio = dataEnvio;
     }
     
-    // Método auxiliar para saber se tem anexo na View (Thymeleaf)
     public boolean isTemAnexo() {
         return nomesAnexos != null && !nomesAnexos.isEmpty();
     }
@@ -138,11 +142,19 @@ public class MensagemLog implements Serializable {
         this.favorito = favorito;
     }
     
-    // Getters e Setters para Importante
     public boolean isImportante() {
         return importante;
     }
     public void setImportante(boolean importante) {
         this.importante = importante;
+    }
+
+    // --- Novos Getters e Setters para Observação ---
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }

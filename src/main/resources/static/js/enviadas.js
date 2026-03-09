@@ -1,8 +1,15 @@
-// Variável global para armazenar o ID selecionado para exclusão
+// Variável global para armazenar o ID da mensagem selecionada/aberta
 let idSelecionado = null;
 
 $(document).ready(function() {
-    // 1. Configura botão de confirmar envio para LIXEIRA (Funciona para listagem e modal)
+    
+    // 1. Inicia Tooltips do Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // 2. Configura botões de Ação (Lixeira / Exclusão Definitiva)
     $('#btnConfirmarLixeira').off('click').on('click', function() {
         if(idSelecionado) {
             $.post('/mensagens/lixeira/' + idSelecionado, function() {
@@ -11,7 +18,6 @@ $(document).ready(function() {
         }
     });
 
-    // 2. Configura botão de EXCLUSÃO DEFINITIVA
     $('#btnConfirmarExclusaoDefinitiva').off('click').on('click', function() {
         if(idSelecionado) {
             $.ajax({
@@ -28,64 +34,124 @@ $(document).ready(function() {
     });
 });
 
-// --- FUNÇÕES CHAMADAS PELO HTML ---
+// --- FUNÇÕES PRINCIPAIS ---
 
-// 1. Visualizar Detalhes (Lógica Principal do Modal)
-function verMensagem(id) {
-    // Feedback visual de carregamento
-    $('#modalConteudo').html('<div class="text-center py-5 text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Carregando...</div>');
+// 1. Visualizar Detalhes (Busca dados no Java e abre o Modal)
+function verMensagem(id, focarNota = false) {
+    idSelecionado = id;
+
+    // Feedback visual inicial
+    $('#modalConteudo').html('<div class="text-center py-5 text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Carregando conteúdo...</div>');
     $('#modalAssunto').text('Carregando...');
     
+    // Abre o modal
+    var modalEl = document.getElementById('modalLeitura');
+    var modal = new bootstrap.Modal(modalEl);
+    modal.show();
+
+    // Faz a requisição ao Back-end
     $.get("/mensagens/detalhes/" + id, function(data) {
-        // A. Preenche os textos
+        
+        // A. Preenche os textos principais
         $('#modalAssunto').text(data.assunto);
         $('#modalConteudo').html(data.conteudo); 
-        $('#modalGrupo').text(data.nomeGrupoDestino || 'Sem Grupo Definido');
+        $('#modalGrupo').text(data.nomeGrupoDestino || 'Sem Grupo');
         
-        // B. Define o Avatar (Primeira letra)
-        let avatarLetra = 'W';
+        // B. Preenche a Observação (Vinda do Banco de Dados)
+        // Se for null, coloca string vazia
+        $('#modalObservacao').val(data.observacao || '');
+
+        // C. Define o Avatar (Primeira letra)
+        let letra = 'W';
         if (data.nomeGrupoDestino && data.nomeGrupoDestino.trim().length > 0) {
-            avatarLetra = data.nomeGrupoDestino.trim().charAt(0).toUpperCase();
+            letra = data.nomeGrupoDestino.trim().charAt(0).toUpperCase();
         }
-        $('#modalAvatar').text(avatarLetra);
+        $('#modalAvatar').text(letra);
         
-        // C. Formata a Data
+        // D. Formata a Data
         if (data.dataEnvio) {
             const dt = new Date(data.dataEnvio);
             const opcoes = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             $('#modalData').text(dt.toLocaleDateString('pt-BR', opcoes));
         } else {
-            $('#modalData').text('Data desconhecida');
+            $('#modalData').text('');
         }
 
-        // D. Configura o botão de LIXEIRA do cabeçalho do modal
-        // Remove eventos anteriores (.off) e adiciona o novo (.on)
+        // E. Configura botão de excluir do modal
         $('#btnExcluirModal').off('click').on('click', function() {
-            // 1. Esconde o modal de leitura
-            var modalLeitura = bootstrap.Modal.getInstance(document.getElementById('modalLeitura'));
-            modalLeitura.hide();
-            
-            // 2. Abre o modal de confirmação de lixeira com o ID certo
+            modal.hide();
             abrirModalLixeira(id);
         });
 
-        // E. Abre o modal
-        var modal = new bootstrap.Modal(document.getElementById('modalLeitura'));
-        modal.show();
+        // F. Foca na nota se foi solicitado (clique no ícone da lista)
+        if(focarNota) {
+            setTimeout(() => {
+                const campoNota = document.getElementById('modalObservacao');
+                if(campoNota) {
+                    campoNota.focus();
+                    // Pequeno flash visual
+                    campoNota.style.transition = "background-color 0.3s";
+                    campoNota.style.backgroundColor = "#fff"; 
+                    setTimeout(() => { campoNota.style.backgroundColor = ""; }, 600);
+                }
+            }, 500); 
+        }
 
     }).fail(function() {
         $('#modalConteudo').html('<div class="text-center text-danger py-4">Erro ao carregar mensagem.</div>');
     });
 }
 
-// 2. Função de Imprimir (Gera janela limpa)
+// 2. Atalho: Abrir direto na Nota (clicado na lista)
+function abrirNota(id, event) {
+    if (event) event.stopPropagation();
+    // Chama a função principal com flag true
+    verMensagem(id, true);
+}
+
+// 3. Salvar Nota (Ajax Real)
+function salvarNota(btnElement) {
+    const originalContent = btnElement.innerHTML;
+    const textoNota = $('#modalObservacao').val();
+    
+    // Feedback "Salvando..."
+    btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Salvando...';
+    btnElement.classList.add('opacity-75');
+    
+    // Envia para o Back-end
+    $.post('/mensagens/salvarObservacao', { id: idSelecionado, observacao: textoNota })
+        .done(function() {
+            // Sucesso Visual
+            btnElement.innerHTML = '<i class="fa-solid fa-check-double"></i> Salvo!';
+            btnElement.classList.remove('btn-warning', 'text-dark', 'opacity-75');
+            btnElement.classList.add('btn-success', 'text-white', 'btn-salvo'); 
+            
+            // Volta ao estado original após 1.5s
+            setTimeout(() => {
+                btnElement.innerHTML = originalContent;
+                btnElement.classList.remove('btn-success', 'text-white', 'btn-salvo');
+                btnElement.classList.add('btn-warning', 'text-dark');
+                
+                // Opcional: Se quiser atualizar o ícone da lista sem recarregar tudo, precisaria de mais lógica JS.
+                // Por enquanto, o ícone só atualiza se der F5.
+            }, 1500);
+        })
+        .fail(function() {
+            alert("Erro ao salvar a anotação.");
+            btnElement.innerHTML = originalContent;
+            btnElement.classList.remove('opacity-75');
+        });
+}
+
+
+// --- OUTRAS FUNÇÕES AUXILIARES ---
+
 function imprimirMensagem() {
     const conteudo = document.getElementById('modalConteudo').innerHTML;
     const assunto = document.getElementById('modalAssunto').innerText;
     const data = document.getElementById('modalData').innerText;
     const grupo = document.getElementById('modalGrupo').innerText;
 
-    // Abre janela vazia
     const janela = window.open('', '', 'height=600,width=800');
     
     janela.document.write('<html><head><title>Impressão - WinPost</title>');
@@ -96,6 +162,7 @@ function imprimirMensagem() {
             h1 { font-size: 24px; margin: 0 0 10px 0; color: #000; }
             .meta { font-size: 14px; color: #666; margin-bottom: 5px; }
             .content { line-height: 1.6; font-size: 16px; }
+            img { max-width: 100%; }
         </style>
     `);
     janela.document.write('</head><body>');
@@ -113,21 +180,17 @@ function imprimirMensagem() {
     janela.document.close();
     janela.focus();
     
-    // Pequeno delay para garantir que o CSS carregou antes de abrir a caixa de impressão
     setTimeout(function() { 
         janela.print(); 
-        // Opcional: janela.close(); // Se quiser fechar a janela automaticamente após imprimir
     }, 500); 
 }
 
-// 3. Abrir Modal de Lixeira (Chamado pela listagem ou pelo modal de leitura)
 function abrirModalLixeira(id) {
     idSelecionado = id;
     var modal = new bootstrap.Modal(document.getElementById('modalLixeira'));
     modal.show();
 }
 
-// 4. Outras Funções Utilitárias
 function usarModelo(btn) {
     let id = $(btn).data('id');
     window.location.href = '/mensagens/preparar-envio/' + id;
@@ -154,17 +217,11 @@ function abrirModalExclusaoDefinitiva(id) {
 }
 
 function toggleAction(id, action, element, type) {
-    // Envia a requisição para o backend
     $.post('/mensagens/' + action + '/' + id, function(state) {
         if(type === 'star') {
-            // Alterna tanto o formato (solid/regular) quanto a cor (warning/muted)
             $(element).toggleClass('fa-solid text-warning fa-regular text-muted');
         }
-        if(type === 'flag') {
-            // Alterna o formato e a cor da bandeira (info/muted)
-            $(element).toggleClass('fa-solid text-info fa-regular text-muted');
-        }
     }).fail(function() {
-        console.error("Erro ao atualizar o status da mensagem.");
+        console.error("Erro ao atualizar status.");
     });
 }

@@ -57,6 +57,156 @@ a {
 .mobile-nav-container::-webkit-scrollbar {
     height: 4px; /*/ Height para horizontal */
 }
+
+
+/* ==========================================================================
+   NOVO ESTILO: INBOX MODERNA (Substitui a Tabela)
+   ========================================================================== */
+
+.email-list-wrapper {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+/* Cabeçalho da Lista (Apenas Desktop) */
+.email-list-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    font-weight: 700;
+}
+
+/* Linha da Mensagem (O Card/Linha individual) */
+.email-row {
+    position: relative;
+    border-bottom: 1px solid #f1f3f5;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #fff;
+    cursor: pointer;
+}
+
+.email-row:last-child {
+    border-bottom: none;
+}
+
+.email-row:hover {
+    background-color: #fdfdfd;
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transform: scale(1.002);
+}
+
+/* Tipografia da Mensagem */
+.email-subject {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.email-snippet {
+    color: #8898aa;
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+/* Badges de Grupo (Estilo Pílula Suave) */
+.badge-soft {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+}
+
+.badge-soft-primary { background: #e7f1ff; color: #0d6efd; }
+.badge-soft-success { background: #d1e7dd; color: #0f5132; }
+.badge-soft-info    { background: #cff4fc; color: #055160; }
+.badge-soft-warning { background: #fff3cd; color: #664d03; }
+.badge-soft-danger  { background: #f8d7da; color: #842029; }
+.badge-soft-secondary { background: #e2e3e5; color: #41464b; }
+
+/* Ações Flutuantes (Hover) */
+.email-actions {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.email-row:hover .email-actions {
+    opacity: 1;
+}
+
+/* Botões de Ação Redondos */
+.btn-icon-hover {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    transition: all 0.2s;
+}
+
+.btn-icon-hover:hover {
+    background-color: #f1f3f5;
+    color: #495057;
+}
+
+.btn-icon-hover.text-danger:hover {
+    background-color: #fce8e6;
+    color: #dc3545;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE CARD VIEW)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Esconde o cabeçalho no mobile */
+    .d-md-flex { display: none !important; }
+    
+    .email-row {
+        padding: 1.25rem !important;
+        display: block !important; /* Quebra o flexbox horizontal */
+    }
+
+    /* Reorganiza para visual de Card */
+    .email-row .row-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    /* Cabeçalho do Card Mobile (Grupo + Data) */
+    .mobile-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Assunto e Snippet */
+    .email-content-block {
+        margin-bottom: 0.8rem;
+    }
+    
+    .email-subject { font-size: 1rem; margin-bottom: 4px; display: block;}
+    .email-snippet { font-size: 0.9rem; -webkit-line-clamp: 2; }
+
+    /* Ações sempre visíveis no mobile */
+    .email-actions {
+        opacity: 1 !important;
+        display: flex;
+        justify-content: flex-end;
+        border-top: 1px solid #f0f0f0;
+        padding-top: 0.8rem;
+        margin-top: 0.5rem;
+    }
+}
 #areaSelecaoTipos::-webkit-scrollbar-thumb,
 .mobile-nav-container::-webkit-scrollbar-thumb {
     background: #e0e0e0;
