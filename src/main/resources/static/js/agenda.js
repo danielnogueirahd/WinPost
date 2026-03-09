@@ -1,7 +1,7 @@
-// --- agenda.js (Versão Corrigida - Modal Safe) ---
+// --- agenda.js (Versão Final - Modal Safe) ---
 
 /**
- * Função Auxiliar: Fecha o modal de lista para evitar sobreposição (backdrop travado)
+ * Função Auxiliar: Fecha o modal de lista para evitar travamento
  */
 function fecharModalLista() {
     var el = document.getElementById('modalDetalhesDia');
@@ -17,31 +17,25 @@ function fecharModalLista() {
  * 1. Abre o modal de cadastro de NOVO evento
  */
 function abrirModalNovoEvento(dia, mes, ano) {
-    fecharModalLista(); // Garante que a lista fecha
+    fecharModalLista(); // Fecha a lista antes de abrir o novo
 
-    // Pequeno delay para evitar conflito visual
     setTimeout(() => {
-        // Formata data para o input
         var mesFmt = mes < 10 ? '0' + mes : mes;
         var diaFmt = dia < 10 ? '0' + dia : dia;
         var dataHoraISO = `${ano}-${mesFmt}-${diaFmt}T09:00`;
 
-        // Reseta os campos
         $('#inputId').val(''); 
         $('#modalNovoEvento input[name="dataHora"]').val(dataHoraISO);
         $('#modalNovoEvento input[name="titulo"]').val('');
         $('#modalNovoEvento textarea[name="descricao"]').val('');
         
-        // Atualiza inputs visuais
         $('#tempData').val(`${ano}-${mesFmt}-${diaFmt}`);
         $('#tempHora').val('09:00');
         $('#inputDataHoraCompleta').val(dataHoraISO);
 
-        // Reseta tipo
         alternarModoCriacao(false);
         $('#tipoTarefa').prop('checked', true);
 
-        // Abre modal
         var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
         modalNovo.show();
     }, 150);
@@ -60,16 +54,13 @@ function verDetalhesDia(dia, mes, ano) {
 
     $('#btnAdicionarNestaData').attr('onclick', `abrirModalNovoEvento(${dia}, ${mes}, ${ano})`);
     
-    // Loading visual
     $('#listaDetalhes').html('<div class="text-center py-4"><div class="spinner-border text-primary spinner-border-sm"></div></div>');
     $('#msgVazio').addClass('d-none');
     
-    // Abre o modal
     var elModal = document.getElementById('modalDetalhesDia');
     var modalInstance = bootstrap.Modal.getInstance(elModal) || new bootstrap.Modal(elModal);
     modalInstance.show();
 
-    // Busca dados
     $.get('/administrativo/agenda/detalhes?data=' + dataISO, function(dados) {
         var html = '';
         
@@ -85,31 +76,28 @@ function verDetalhesDia(dia, mes, ano) {
                 var bgIcone = 'bg-light';
                 var botoesAcao = '';
 
-                // Verifica se item.idRef veio nulo (debug)
-                if(!item.idRef && (item.tipo === 'ENVIO' || item.tipo !== 'NIVER' && item.tipo !== 'FERIADO')) {
-                    console.warn("Item sem ID recebido:", item);
+                // Verifica se o ID veio nulo (para debug)
+                if(!item.idRef && item.tipo === 'ENVIO') {
+                    console.error("ERRO: Item de ENVIO sem ID recebido!", item);
                 }
 
-                // Lógica de Ícones e Ações
                 if (item.tipo === 'NIVER') { 
                     icone = 'fa-cake-candles'; corIcone = 'text-success'; bgIcone = 'bg-success bg-opacity-10';
                 } 
                 else if (item.tipo === 'ENVIO') { 
                     icone = 'fa-paper-plane'; corIcone = 'text-primary'; bgIcone = 'bg-primary bg-opacity-10';
-                    // Botão OLHO
+                    // BOTÃO OLHO (Usa item.idRef)
                     botoesAcao = `<button onclick="verMensagem(${item.idRef})" class="btn btn-sm btn-outline-primary rounded-circle" title="Ler Mensagem"><i class="fa-solid fa-eye"></i></button>`;
                 } 
                 else if (item.tipo === 'FERIADO') { 
                     icone = 'fa-calendar-check'; corIcone = 'text-danger'; bgIcone = 'bg-danger bg-opacity-10';
                 }
                 else {
-                    // Outros eventos (Reunião, Tarefa, etc)
                     if (item.tipo === 'REUNIAO') { icone = 'fa-users'; corIcone = 'text-info'; bgIcone = 'bg-info bg-opacity-10'; }
                     else if (item.tipo === 'IMPORTANTE') { icone = 'fa-triangle-exclamation'; corIcone = 'text-danger'; bgIcone = 'bg-danger bg-opacity-10'; }
                     else if (item.tipo === 'TAREFA') { icone = 'fa-list-check'; corIcone = 'text-secondary'; bgIcone = 'bg-secondary bg-opacity-10'; }
                     else { icone = 'fa-tag'; corIcone = 'text-dark'; bgIcone = 'bg-warning bg-opacity-10'; }
 
-                    // Botões Editar/Excluir
                     botoesAcao = `
                         <div class="d-flex gap-2">
                             <button class="btn btn-outline-warning btn-sm rounded-circle" onclick="editarEvento(${item.idRef})" title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -146,24 +134,20 @@ function verDetalhesDia(dia, mes, ano) {
  */
 function verMensagem(id) {
     if (!id) {
-        alert("Erro: ID da mensagem não encontrado.");
+        alert("Erro: ID da mensagem não encontrado. Verifique o Java.");
         return;
     }
 
-    // 1. Fecha a lista
-    fecharModalLista();
+    fecharModalLista(); // Fecha a lista
 
-    // 2. Abre o modal de leitura (com delay seguro)
     setTimeout(() => {
         var el = document.getElementById('modalLeitura');
         var modalLeitura = new bootstrap.Modal(el);
         modalLeitura.show();
         
-        // Loading
         $('#modalConteudo').html('<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>');
         $('#modalAssunto').text('Carregando...');
         
-        // Busca conteúdo
         $.get("/mensagens/detalhes/" + id, function(data) {
             $('#modalAssunto').text(data.assunto);
             $('#modalGrupo').text(data.nomeGrupoDestino || 'Destinatário Único');
@@ -173,7 +157,6 @@ function verMensagem(id) {
                 $('#modalData').text(dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}));
             }
 
-            // Anexos (se houver)
             if(data.nomesAnexos) {
                 $('#modalAnexos').text(data.nomesAnexos);
                 $('#areaAnexosModal').removeClass('d-none');
@@ -181,10 +164,7 @@ function verMensagem(id) {
                 $('#areaAnexosModal').addClass('d-none');
             }
             
-            // Corpo da mensagem
             $('#modalConteudo').html(data.conteudo);
-            
-            // Ajusta imagens grandes
             $('#modalConteudo img').addClass('img-fluid rounded shadow-sm'); 
 
         }).fail(function() {
@@ -199,10 +179,8 @@ function verMensagem(id) {
 function editarEvento(id) {
     if (!id) return;
 
-    // 1. Fecha a lista
-    fecharModalLista();
+    fecharModalLista(); // Fecha a lista
 
-    // 2. Abre edição (com delay seguro)
     setTimeout(() => {
         $.get('/administrativo/agenda/buscar/' + id, function(evento) {
             
@@ -217,7 +195,6 @@ function editarEvento(id) {
                 $('#inputDataHoraCompleta').val(evento.dataHora);
             }
 
-            // Marca o tipo
             $('input[name="tipo"]').prop('checked', false);
             let radio = $(`input[name="tipo"][value="${evento.tipo}"]`);
             if(radio.length > 0) radio.prop('checked', true);
@@ -241,7 +218,7 @@ function editarEvento(id) {
  * 5. Excluir Evento
  */
 function confirmarExclusao(id) {
-    fecharModalLista(); // Fecha para mostrar o SweetAlert limpo
+    fecharModalLista();
 
     Swal.fire({
         title: 'Tem certeza?',
@@ -256,7 +233,7 @@ function confirmarExclusao(id) {
         if (result.isConfirmed) {
             $.ajax({
                 url: '/administrativo/agenda/remover/' + id,
-                type: 'GET', // Ajuste conforme seu Controller (GET ou DELETE)
+                type: 'GET',
                 success: function() {
                     Swal.fire({ title: 'Excluído!', icon: 'success', timer: 1500, showConfirmButton: false })
                     .then(() => location.reload());
@@ -266,7 +243,6 @@ function confirmarExclusao(id) {
                 }
             });
         } else {
-            // Se cancelar, reabre a lista
             var el = document.getElementById('modalDetalhesDia');
             if(el) new bootstrap.Modal(el).show();
         }

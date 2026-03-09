@@ -174,22 +174,24 @@ public class AgendaControle {
             detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
         }
         
-     // 2. Envios (Mensagens)
+     // 2. Envios (Mensagens Enviadas)
         LocalDateTime inicio = data.atStartOfDay();
         LocalDateTime fim = data.atTime(LocalTime.MAX);
         
-        // Busca as mensagens no intervalo do dia
         List<MensagemLog> msgs = mensagemRepositorio.findByDataEnvioBetween(inicio, fim);
         
         for (MensagemLog m : msgs) {
-            // Formata a hora (Ex: 14:30)
+            // Formata a hora (Ex: "14:30") para aparecer no subtítulo
             String horaFormatada = m.getDataEnvio().toLocalTime().toString();
-            if(horaFormatada.length() > 5) horaFormatada = horaFormatada.substring(0, 5);
+            if(horaFormatada.length() > 5) {
+                horaFormatada = horaFormatada.substring(0, 5);
+            }
             
-            String subtitulo = horaFormatada + " - " + (m.getNomeGrupoDestino() != null ? m.getNomeGrupoDestino() : "Sem grupo");
+            String nomeGrupo = (m.getNomeGrupoDestino() != null) ? m.getNomeGrupoDestino() : "Sem grupo";
+            String subtitulo = horaFormatada + " - " + nomeGrupo;
 
-            // ADICIONA À LISTA
-            // O 4º parâmetro (m.getId()) é OBRIGATÓRIO para o botão de olho funcionar
+            // ADICIONA À LISTA COM O ID (4º Parâmetro)
+            // É aqui que o ID da mensagem é enviado para o botão do olho funcionar!
             detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), subtitulo, m.getId()));
         }
         
