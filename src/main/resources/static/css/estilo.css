@@ -935,3 +935,51 @@ a {
     border-color: #0d6efd;
 }
 
+
+/* --- Adicione ao final do seu arquivo estilo.css --- */
+
+/* Cursor pointer para ícones de ação */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Estilo do Card de Notas dentro do Modal */
+.card-nota {
+    background-color: #fff9c4; /* Amarelo post-it suave */
+    border: none;
+    transition: all 0.2s;
+}
+
+.card-nota:focus-within {
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25); /* Foco amarelo */
+}
+
+/* Estilo do Textarea da Nota */
+.textarea-nota {
+    resize: none;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    background: transparent;
+}
+
+.textarea-nota::placeholder {
+    color: #bcaaa4;
+    font-style: italic;
+}
+
+.textarea-nota:focus {
+    background: #fff;
+    box-shadow: none;
+    border-color: #ffc107;
+}
+
+/* Animaçãozinha ao salvar */
+@keyframes savePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.btn-salvo {
+    animation: savePulse 0.3s ease-in-out;
+}
