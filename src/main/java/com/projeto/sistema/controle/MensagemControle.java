@@ -35,260 +35,275 @@ import com.projeto.sistema.servicos.EmailService;
 @RequestMapping("/mensagens")
 public class MensagemControle {
 
-    @Autowired
-    private MensagemLogRepositorio mensagemRepositorio;
-    
-    @Autowired
-    private GrupoRepositorio grupoRepositorio;
+	@Autowired
+	private MensagemLogRepositorio mensagemRepositorio;
 
-    @Autowired
-    private EmailService emailService;
+	@Autowired
+	private GrupoRepositorio grupoRepositorio;
 
-    // --- REDIRECIONAMENTO PADRÃO ---
-    @GetMapping("/enviadas")
-    public String redirecionarEnviadas() {
-        return "redirect:/mensagens/caixa/ENVIADAS";
-    }
+	@Autowired
+	private EmailService emailService;
 
-    // --- LISTAGEM (CAIXA DE ENTRADA, ENVIADAS, LIXEIRA, ETC) ---
-    @GetMapping("/caixa/{pasta}")
-    public ModelAndView listarPorPasta(
-            @PathVariable("pasta") String pastaUrl,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "comAnexo", required = false) Boolean comAnexo,
-            @RequestParam(value = "busca", required = false) String busca,
-            @RequestParam(value = "data", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
-        
-        ModelAndView mv = new ModelAndView("mensagens/enviadas");
-        String pastaNormalizada = pastaUrl.toUpperCase();
-        
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by("dataEnvio").descending());
-        LocalDateTime inicio = (data != null) ? data.atStartOfDay() : null;
-        LocalDateTime fim = (data != null) ? data.atTime(LocalTime.MAX) : null;
+	// --- REDIRECIONAMENTO PADRÃO ---
+	@GetMapping("/enviadas")
+	public String redirecionarEnviadas() {
+		return "redirect:/mensagens/caixa/ENVIADAS";
+	}
 
-        String filtroPastaBanco = null;
-        Boolean filtroFavorito = null;
-        Boolean filtroImportante = null;
+	// --- LISTAGEM (CAIXA DE ENTRADA, ENVIADAS, LIXEIRA, ETC) ---
+	@GetMapping("/caixa/{pasta}")
+	public ModelAndView listarPorPasta(@PathVariable("pasta") String pastaUrl,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "comAnexo", required = false) Boolean comAnexo,
+			@RequestParam(value = "busca", required = false) String busca,
+			@RequestParam(value = "data", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
 
-        // Configura os filtros baseados na URL
-        switch (pastaNormalizada) {
-            case "FAVORITOS": filtroFavorito = true; break;
-            case "IMPORTANTE": filtroImportante = true; break;
-            case "LIXEIRA": filtroPastaBanco = "LIXEIRA"; break;
-            case "TODAS": break;
-            default: filtroPastaBanco = pastaNormalizada; break; // Ex: "ENVIADAS", "ENTRADA"
-        }
+		ModelAndView mv = new ModelAndView("mensagens/enviadas");
+		String pastaNormalizada = pastaUrl.toUpperCase();
 
-        Page<MensagemLog> paginaMensagens = mensagemRepositorio.filtrarMensagens(
-            filtroPastaBanco, filtroFavorito, filtroImportante, comAnexo, busca, inicio, fim, pageRequest
-        );
-        
-        // Adiciona dados à View
-        mv.addObject("listaMensagens", paginaMensagens.getContent());
-        mv.addObject("paginaAtual", page);
-        mv.addObject("totalPaginas", paginaMensagens.getTotalPages());
-        mv.addObject("totalItens", paginaMensagens.getTotalElements());
-        
-        // Mantém os filtros na tela
-        mv.addObject("filtroAnexo", comAnexo);
-        mv.addObject("termoBusca", busca);
-        mv.addObject("filtroData", data);
-        mv.addObject("pastaAtiva", pastaNormalizada);
-        
-        // Contadores para o Menu Lateral
-        mv.addObject("cntEntrada", mensagemRepositorio.countByPastaAndLidaFalse("ENTRADA"));
-        mv.addObject("cntEnviadas", mensagemRepositorio.countByPasta("ENVIADAS"));
-        mv.addObject("cntFavoritos", mensagemRepositorio.countByFavoritoTrue());
-        mv.addObject("cntImportante", mensagemRepositorio.countByImportanteTrue());
-        mv.addObject("cntLixeira", mensagemRepositorio.countByPasta("LIXEIRA"));
-        
-        return mv;
-    }
-    
-    // --- DETALHES DA MENSAGEM (JSON) ---
-    @GetMapping("/detalhes/{id}")
-    @ResponseBody
-    public MensagemLog getDetalhes(@PathVariable Long id) {
-        MensagemLog log = mensagemRepositorio.findById(id).orElse(new MensagemLog());
-        if (!log.isLida()) {
-            log.setLida(true);
-            mensagemRepositorio.save(log);
-        }
-        return log;
-    }
+		PageRequest pageRequest = PageRequest.of(page, 10, Sort.by("dataEnvio").descending());
+		LocalDateTime inicio = (data != null) ? data.atStartOfDay() : null;
+		LocalDateTime fim = (data != null) ? data.atTime(LocalTime.MAX) : null;
 
-    // --- AÇÕES RÁPIDAS (Favoritar, Importante, Lixeira) ---
+		String filtroPastaBanco = null;
+		Boolean filtroFavorito = null;
+		Boolean filtroImportante = null;
 
-    @PostMapping("/favoritar/{id}")
-    @ResponseBody
-    public ResponseEntity<Boolean> toggleFavorito(@PathVariable Long id) {
-        return mensagemRepositorio.findById(id).map(msg -> {
-            msg.setFavorito(!msg.isFavorito());
-            mensagemRepositorio.save(msg);
-            return ResponseEntity.ok(msg.isFavorito());
-        }).orElse(ResponseEntity.notFound().build());
-    }
+		// Configura os filtros baseados na URL
+		switch (pastaNormalizada) {
+		case "FAVORITOS":
+			filtroFavorito = true;
+			break;
+		case "IMPORTANTE":
+			filtroImportante = true;
+			break;
+		case "LIXEIRA":
+			filtroPastaBanco = "LIXEIRA";
+			break;
+		case "TODAS":
+			break;
+		default:
+			filtroPastaBanco = pastaNormalizada;
+			break; // Ex: "ENVIADAS", "ENTRADA"
+		}
 
-    @PostMapping("/importante/{id}")
-    @ResponseBody
-    public ResponseEntity<Boolean> toggleImportante(@PathVariable Long id) {
-        return mensagemRepositorio.findById(id).map(msg -> {
-            msg.setImportante(!msg.isImportante());
-            mensagemRepositorio.save(msg);
-            return ResponseEntity.ok(msg.isImportante());
-        }).orElse(ResponseEntity.notFound().build());
-    }
+		Page<MensagemLog> paginaMensagens = mensagemRepositorio.filtrarMensagens(filtroPastaBanco, filtroFavorito,
+				filtroImportante, comAnexo, busca, inicio, fim, pageRequest);
 
-    @PostMapping("/lixeira/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> moverParaLixeira(@PathVariable Long id) {
-        return mensagemRepositorio.findById(id).map(msg -> {
-            msg.setPasta("LIXEIRA");
-            mensagemRepositorio.save(msg);
-            return ResponseEntity.ok().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
-    }
+		// Adiciona dados à View
+		mv.addObject("listaMensagens", paginaMensagens.getContent());
+		mv.addObject("paginaAtual", page);
+		mv.addObject("totalPaginas", paginaMensagens.getTotalPages());
+		mv.addObject("totalItens", paginaMensagens.getTotalElements());
 
-    @PostMapping("/restaurar/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> restaurarMensagem(@PathVariable Long id) {
-        return mensagemRepositorio.findById(id).map(msg -> {
-            msg.setPasta("ENVIADAS"); // Restaura para Enviadas por padrão
-            mensagemRepositorio.save(msg);
-            return ResponseEntity.ok().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
-    }
+		// Mantém os filtros na tela
+		mv.addObject("filtroAnexo", comAnexo);
+		mv.addObject("termoBusca", busca);
+		mv.addObject("filtroData", data);
+		mv.addObject("pastaAtiva", pastaNormalizada);
 
-    @DeleteMapping("/excluir/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> excluirPermanente(@PathVariable Long id) {
-        if(mensagemRepositorio.existsById(id)) {
-            mensagemRepositorio.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
-    }
-    
-    // --- ENVIO DE MENSAGENS E MODELOS ---
+		// Contadores para o Menu Lateral
+		mv.addObject("cntEntrada", mensagemRepositorio.countByPastaAndLidaFalse("ENTRADA"));
+		mv.addObject("cntEnviadas", mensagemRepositorio.countByPasta("ENVIADAS"));
+		mv.addObject("cntFavoritos", mensagemRepositorio.countByFavoritoTrue());
+		mv.addObject("cntImportante", mensagemRepositorio.countByImportanteTrue());
+		mv.addObject("cntLixeira", mensagemRepositorio.countByPasta("LIXEIRA"));
 
-    // 1. Tela de Preparação (Vazia ou com Modelo)
-    @GetMapping("/preparar-envio/{id}")
-    public ModelAndView prepararEnvio(@PathVariable Long id) {
-        ModelAndView mv = new ModelAndView("mensagens/preparar");
-        MensagemLog modelo = mensagemRepositorio.findById(id).orElseThrow();
-        mv.addObject("modelo", modelo);
-        mv.addObject("listaGrupos", grupoRepositorio.findAll()); 
-        return mv;
-    }
+		return mv;
+	}
 
-    // 2. Tela de Preparação (Vindo da tela de Grupos)
-    @GetMapping("/preparar-grupo/{idGrupo}")
-    public ModelAndView prepararEnvioGrupo(@PathVariable Long idGrupo) {
-        ModelAndView mv = new ModelAndView("mensagens/preparar");
-        
-        MensagemLog modeloVazio = new MensagemLog();
-        modeloVazio.setAssunto("");
-        modeloVazio.setConteudo("");
-        
-        mv.addObject("modelo", modeloVazio);
-        mv.addObject("listaGrupos", grupoRepositorio.findAll());
-        mv.addObject("idGrupoSelecionado", idGrupo); 
-        
-        return mv;
-    }
+	// --- DETALHES DA MENSAGEM (JSON) ---
+	@GetMapping("/detalhes/{id}")
+	@ResponseBody
+	public MensagemLog getDetalhes(@PathVariable Long id) {
+		MensagemLog log = mensagemRepositorio.findById(id).orElse(new MensagemLog());
+		if (!log.isLida()) {
+			log.setLida(true);
+			mensagemRepositorio.save(log);
+		}
+		return log;
+	}
 
-    // 3. AÇÃO DE ENVIAR (Adicionado para completar a funcionalidade)
-    @PostMapping("/enviar")
-    public String enviarMensagem(@RequestParam("grupoId") Long grupoId,
-                                 @RequestParam("assunto") String assunto,
-                                 @RequestParam("conteudo") String conteudo,
-                                 RedirectAttributes attributes) {
-        
-        Optional<Grupo> grupoOpt = grupoRepositorio.findById(grupoId);
-        
-        if (grupoOpt.isPresent()) {
-            Grupo grupo = grupoOpt.get();
-            
-            // Tenta enviar o e-mail usando o serviço injetado
-            try {
-                // emailService.enviar(grupo, assunto, conteudo); // Descomente e ajuste conforme seu EmailService
-            } catch (Exception e) {
-                e.printStackTrace(); // Apenas loga o erro, mas salva no banco
-            }
+	// --- AÇÕES RÁPIDAS (Favoritar, Importante, Lixeira) ---
 
-            // Salva o registro na pasta ENVIADAS
-            MensagemLog enviada = new MensagemLog();
-            enviada.setPasta("ENVIADAS");
-            enviada.setNomeGrupoDestino(grupo.getNome());
-            enviada.setAssunto(assunto);
-            enviada.setConteudo(conteudo);
-            enviada.setDataEnvio(LocalDateTime.now());
-            enviada.setLida(true);
-            enviada.setStatus("SUCESSO");
-            
-            // Se tiver lista de contatos, salva a quantidade
-             if (grupo.getContatos() != null) {
-                 enviada.setTotalDestinatarios(grupo.getContatos().size());
-             }
+	@PostMapping("/favoritar/{id}")
+	@ResponseBody
+	public ResponseEntity<Boolean> toggleFavorito(@PathVariable Long id) {
+		return mensagemRepositorio.findById(id).map(msg -> {
+			msg.setFavorito(!msg.isFavorito());
+			mensagemRepositorio.save(msg);
+			return ResponseEntity.ok(msg.isFavorito());
+		}).orElse(ResponseEntity.notFound().build());
+	}
 
-            mensagemRepositorio.save(enviada);
-            
-            attributes.addFlashAttribute("mensagem", "Mensagem enviada com sucesso para " + grupo.getNome() + "!");
-            attributes.addFlashAttribute("tipoMensagem", "success");
-        } else {
-            attributes.addFlashAttribute("mensagem", "Erro: Grupo selecionado não existe.");
-            attributes.addFlashAttribute("tipoMensagem", "danger");
-        }
-        
-        return "redirect:/mensagens/caixa/ENVIADAS";
-    }
+	@PostMapping("/importante/{id}")
+	@ResponseBody
+	public ResponseEntity<Boolean> toggleImportante(@PathVariable Long id) {
+		return mensagemRepositorio.findById(id).map(msg -> {
+			msg.setImportante(!msg.isImportante());
+			mensagemRepositorio.save(msg);
+			return ResponseEntity.ok(msg.isImportante());
+		}).orElse(ResponseEntity.notFound().build());
+	}
 
-    // 4. Salvar Rascunho/Modelo (Simulador de Entrada)
-    @PostMapping("/salvarModelo")
-    public String salvarModelo(@RequestParam("categoria") String categoria,
-                               @RequestParam("assunto") String assunto,
-                               @RequestParam("conteudo") String conteudo) {
-        MensagemLog modelo = new MensagemLog();
-        modelo.setPasta("ENTRADA"); // Salva na Entrada como simulação/rascunho
-        modelo.setNomeGrupoDestino(categoria.toUpperCase());
-        modelo.setAssunto(assunto);
-        modelo.setConteudo(conteudo);
-        modelo.setDataEnvio(LocalDateTime.now());
-        modelo.setLida(true); 
-        mensagemRepositorio.save(modelo);
-        return "redirect:/mensagens/caixa/ENTRADA";
-    }
+	@PostMapping("/lixeira/{id}")
+	@ResponseBody
+	public ResponseEntity<Void> moverParaLixeira(@PathVariable Long id) {
+		return mensagemRepositorio.findById(id).map(msg -> {
+			msg.setPasta("LIXEIRA");
+			mensagemRepositorio.save(msg);
+			return ResponseEntity.ok().<Void>build();
+		}).orElse(ResponseEntity.notFound().build());
+	}
 
-    // 5. Agendar (Redireciona para Agenda)
-    @PostMapping("/agendar-modelo")
-    public String agendarModelo(@RequestParam("assunto") String assunto, 
-                                @RequestParam("conteudo") String conteudo) {
-        String tituloCodificado = assunto;
-        try {
-            tituloCodificado = URLEncoder.encode(assunto, StandardCharsets.UTF_8.toString());
-        } catch (Exception e) { e.printStackTrace(); }
-        return "redirect:/administrativo/agenda?acao=novoEvento&titulo=" + tituloCodificado;
-    }
+	@PostMapping("/restaurar/{id}")
+	@ResponseBody
+	public ResponseEntity<Void> restaurarMensagem(@PathVariable Long id) {
+		return mensagemRepositorio.findById(id).map(msg -> {
 
-    // --- NOVO MÉTODO: SALVAR OBSERVAÇÃO ---
-    @PostMapping("/salvarObservacao")
-    @ResponseBody
-    public ResponseEntity<?> salvarObservacao(@RequestParam Long id, @RequestParam String observacao) {
-        try {
-            // Busca a mensagem pelo ID
-            // CORREÇÃO: Usar 'mensagemRepositorio' e não 'mensagemLogRepositorio'
-            MensagemLog mensagem = mensagemRepositorio.findById(id).orElse(null);
-            
-            if (mensagem != null) {
-                // Atualiza o texto da observação
-                mensagem.setObservacao(observacao);
-                // Salva no banco
-                mensagemRepositorio.save(mensagem);
-                return ResponseEntity.ok("Salvo com sucesso!");
-            }
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar.");
-        }
-    }
+			// Verifica se a mensagem tem status.
+			// Modelos salvos não possuem status (é null), mensagens enviadas possuem
+			// "SUCESSO" ou "ERRO".
+			if (msg.getStatus() == null || msg.getStatus().trim().isEmpty()) {
+				msg.setPasta("ENTRADA"); // Restaura de volta para a tela de Modelos
+			} else {
+				msg.setPasta("ENVIADAS"); // Restaura de volta para a tela de Enviadas
+			}
+
+			mensagemRepositorio.save(msg);
+			return ResponseEntity.ok().<Void>build();
+		}).orElse(ResponseEntity.notFound().build());
+	}
+
+	@DeleteMapping("/excluir/{id}")
+	@ResponseBody
+	public ResponseEntity<Void> excluirPermanente(@PathVariable Long id) {
+		if (mensagemRepositorio.existsById(id)) {
+			mensagemRepositorio.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	// --- ENVIO DE MENSAGENS E MODELOS ---
+
+	// 1. Tela de Preparação (Vazia ou com Modelo)
+	@GetMapping("/preparar-envio/{id}")
+	public ModelAndView prepararEnvio(@PathVariable Long id) {
+		ModelAndView mv = new ModelAndView("mensagens/preparar");
+		MensagemLog modelo = mensagemRepositorio.findById(id).orElseThrow();
+		mv.addObject("modelo", modelo);
+		mv.addObject("listaGrupos", grupoRepositorio.findAll());
+		return mv;
+	}
+
+	// 2. Tela de Preparação (Vindo da tela de Grupos)
+	@GetMapping("/preparar-grupo/{idGrupo}")
+	public ModelAndView prepararEnvioGrupo(@PathVariable Long idGrupo) {
+		ModelAndView mv = new ModelAndView("mensagens/preparar");
+
+		MensagemLog modeloVazio = new MensagemLog();
+		modeloVazio.setAssunto("");
+		modeloVazio.setConteudo("");
+
+		mv.addObject("modelo", modeloVazio);
+		mv.addObject("listaGrupos", grupoRepositorio.findAll());
+		mv.addObject("idGrupoSelecionado", idGrupo);
+
+		return mv;
+	}
+
+	// 3. AÇÃO DE ENVIAR (Adicionado para completar a funcionalidade)
+	@PostMapping("/enviar")
+	public String enviarMensagem(@RequestParam("grupoId") Long grupoId, @RequestParam("assunto") String assunto,
+			@RequestParam("conteudo") String conteudo, RedirectAttributes attributes) {
+
+		Optional<Grupo> grupoOpt = grupoRepositorio.findById(grupoId);
+
+		if (grupoOpt.isPresent()) {
+			Grupo grupo = grupoOpt.get();
+
+			// Tenta enviar o e-mail usando o serviço injetado
+			try {
+				// emailService.enviar(grupo, assunto, conteudo); // Descomente e ajuste
+				// conforme seu EmailService
+			} catch (Exception e) {
+				e.printStackTrace(); // Apenas loga o erro, mas salva no banco
+			}
+
+			// Salva o registro na pasta ENVIADAS
+			MensagemLog enviada = new MensagemLog();
+			enviada.setPasta("ENVIADAS");
+			enviada.setNomeGrupoDestino(grupo.getNome());
+			enviada.setAssunto(assunto);
+			enviada.setConteudo(conteudo);
+			enviada.setDataEnvio(LocalDateTime.now());
+			enviada.setLida(true);
+			enviada.setStatus("SUCESSO");
+
+			// Se tiver lista de contatos, salva a quantidade
+			if (grupo.getContatos() != null) {
+				enviada.setTotalDestinatarios(grupo.getContatos().size());
+			}
+
+			mensagemRepositorio.save(enviada);
+
+			attributes.addFlashAttribute("mensagem", "Mensagem enviada com sucesso para " + grupo.getNome() + "!");
+			attributes.addFlashAttribute("tipoMensagem", "success");
+		} else {
+			attributes.addFlashAttribute("mensagem", "Erro: Grupo selecionado não existe.");
+			attributes.addFlashAttribute("tipoMensagem", "danger");
+		}
+
+		return "redirect:/mensagens/caixa/ENVIADAS";
+	}
+
+	// 4. Salvar Rascunho/Modelo (Simulador de Entrada)
+	@PostMapping("/salvarModelo")
+	public String salvarModelo(@RequestParam("categoria") String categoria, @RequestParam("assunto") String assunto,
+			@RequestParam("conteudo") String conteudo) {
+		MensagemLog modelo = new MensagemLog();
+		modelo.setPasta("ENTRADA"); // Salva na Entrada como simulação/rascunho
+		modelo.setNomeGrupoDestino(categoria.toUpperCase());
+		modelo.setAssunto(assunto);
+		modelo.setConteudo(conteudo);
+		modelo.setDataEnvio(LocalDateTime.now());
+		modelo.setLida(true);
+		mensagemRepositorio.save(modelo);
+		return "redirect:/mensagens/caixa/ENTRADA";
+	}
+
+	// 5. Agendar (Redireciona para Agenda)
+	@PostMapping("/agendar-modelo")
+	public String agendarModelo(@RequestParam("assunto") String assunto, @RequestParam("conteudo") String conteudo) {
+		String tituloCodificado = assunto;
+		try {
+			tituloCodificado = URLEncoder.encode(assunto, StandardCharsets.UTF_8.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "redirect:/administrativo/agenda?acao=novoEvento&titulo=" + tituloCodificado;
+	}
+
+	// --- NOVO MÉTODO: SALVAR OBSERVAÇÃO ---
+	@PostMapping("/salvarObservacao")
+	@ResponseBody
+	public ResponseEntity<?> salvarObservacao(@RequestParam Long id, @RequestParam String observacao) {
+		try {
+			// Busca a mensagem pelo ID
+			// CORREÇÃO: Usar 'mensagemRepositorio' e não 'mensagemLogRepositorio'
+			MensagemLog mensagem = mensagemRepositorio.findById(id).orElse(null);
+
+			if (mensagem != null) {
+				// Atualiza o texto da observação
+				mensagem.setObservacao(observacao);
+				// Salva no banco
+				mensagemRepositorio.save(mensagem);
+				return ResponseEntity.ok("Salvo com sucesso!");
+			}
+			return ResponseEntity.notFound().build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar.");
+		}
+	}
 }

@@ -22,7 +22,8 @@
 			</button>
 
 			<div class="collapse navbar-collapse" id="navbarMain">
-				<ul class="navbar-nav mb-2 mb-lg-0">
+				<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
+					,
 
 					<li class="nav-item"><a class="nav-link"
 						href="/administrativo/agenda"
@@ -40,21 +41,87 @@
 						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Contato</a>
 						<ul class="dropdown-menu shadow border-0 mt-2"
 							aria-labelledby="dropContatos">
-							<li><a class="dropdown-item py-2" href="/listarContatos"><i
-									class="fa-solid fa-list me-2 text-muted"></i>Listar Contatos</a></li>
-							<li><a class="dropdown-item py-2" href="/grupos/gerenciar"><i
-									class="fa-solid fa-layer-group me-2 text-muted"></i>Listar
-									Grupos</a></li>
-						
+							<li><a class="dropdown-item py-2" href="/listarContatos"
+								th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-list me-2"
+									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>Listar
+									Contatos
+							</a></li>
+							<li><a class="dropdown-item py-2" href="/grupos/gerenciar"
+								th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-layer-group me-2"
+									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>Listar
+									Grupos
+							</a></li>
 						</ul></li>
+
+
 
 					<li class="nav-item"><a class="nav-link"
 						href="/mensagens/enviadas"
 						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
 					</li>
 
+					<li class="nav-item d-lg-none my-2"><hr class="text-white-50"></li>
+
+					<li class="nav-item ms-lg-4"><a
+						class="nav-link text-white d-flex align-items-center" href="#"
+						data-bs-toggle="modal" data-bs-target="#modalLembretes"
+						title="Ver Lembretes"> <i
+							class="fa-solid fa-calendar-day fs-5"></i> <span
+							class="d-lg-none ms-3">Lembretes e Aniversários</span>
+					</a></li>
+
+					<li class="nav-item dropdown ms-lg-2"><a
+						class="nav-link text-white d-flex align-items-center" href="#"
+						id="dropNotificacoes" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false" title="Notificações">
+							<div class="position-relative d-inline-block">
+								<i class="fa-solid fa-bell fs-5"></i> <span id="badgeGeral"
+									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
+									style="font-size: 0.55rem; padding: 0.25em 0.4em;"> <span
+									id="contadorTexto">1</span>
+								</span>
+							</div> <span class="d-lg-none ms-3">Notificações</span>
+					</a>
+
+						<div id="listaNotificacoesContainer"
+							class="dropdown-menu dropdown-menu-lg-end shadow border-0 mt-2 p-0"
+							aria-labelledby="dropNotificacoes"
+							style="min-width: 280px; max-width: 95vw;">
+							<div class="p-3 bg-light border-bottom text-center rounded-top">
+								<h6 class="mb-0 fw-bold text-dark">
+									<i class="fa-regular fa-bell me-2"></i>Notificações
+								</h6>
+							</div>
+
+							<div id="notificacao-1"
+								class="dropdown-item p-3 border-bottom notificacao-item"
+								style="white-space: normal;">
+								<div class="d-flex w-100 justify-content-between mb-1">
+									<strong class="text-dark small">Nova mensagem de
+										sistema</strong> <small class="text-muted ms-2">Agora</small>
+								</div>
+								<p class="mb-2 small text-muted">Bem-vindo ao sistema
+									WINPOST! Esta é uma notificação de teste.</p>
+								<div class="text-end">
+									<button class="btn btn-sm btn-outline-primary"
+										onclick="marcarEFechar(1, event)">
+										<i class="fa-solid fa-check me-1"></i>Lida
+									</button>
+								</div>
+							</div>
+
+							<div id="msgSemNotificacaoJS"
+								class="d-none text-center p-4 text-muted small">
+								<i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
+								<p class="mb-0">Nenhuma notificação nova</p>
+							</div>
+						</div></li>
+
 				</ul>
 			</div>
+		</div>
 	</nav>
 
 	<div class="modal fade" id="modalLembretes" tabindex="-1"
@@ -90,6 +157,7 @@
 									th:text="${lembrete.titulo}">Título</strong> <span
 									class="badge bg-light text-secondary border">Amanhã</span>
 							</div>
+
 							<p class="mb-1 text-muted small" th:text="${lembrete.descricao}">Descrição...</p>
 
 							<div class="mt-2" th:if="${lembrete.tipo == 'NIVER'}">
@@ -165,7 +233,7 @@
 
         function verificarListaVazia() {
             const container = document.getElementById('listaNotificacoesContainer');
-            if(!container) return; // Segurança caso o container não exista na tela
+            if(!container) return; 
             const itens = container.querySelectorAll('[id^="notificacao-"]');
             if (itens.length === 0) {
                 const msgVazia = document.getElementById('msgSemNotificacaoJS');

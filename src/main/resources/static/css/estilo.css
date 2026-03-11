@@ -983,3 +983,10 @@ a {
 .btn-salvo {
     animation: savePulse 0.3s ease-in-out;
 }
+
+
+/* Efeito de hover vermelho para o botão da lixeira na tela de mensagens */
+.btn-icon-hover.lixeira-hover:hover {
+    color: #dc3545 !important;
+    background-color: #fce8e6 !important;
+}
