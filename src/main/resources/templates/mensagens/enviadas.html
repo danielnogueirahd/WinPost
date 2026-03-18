@@ -210,8 +210,8 @@ body {
 
 /* Efeito de hover vermelho para o botão da lixeira na tela de mensagens */
 .lixeira-hover:hover {
-    color: #dc3545 !important;
-    background-color: #fce8e6 !important;
+	color: #dc3545 !important;
+	background-color: #fce8e6 !important;
 }
 </style>
 </head>
@@ -271,7 +271,7 @@ body {
 							<span class="menu-icon"><i class="fa-fw"
 								th:classappend="${pastaAtiva == 'FAVORITOS'} ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i></span>
 							<span>Favoritos</span>
-						</a> 
+						</a>
 
 						<div class="my-2 border-bottom opacity-50"></div>
 
@@ -294,9 +294,8 @@ body {
 								<span th:if="${pastaAtiva == 'ENTRADA'}">Meus Modelos</span> <span
 									th:if="${pastaAtiva == 'ENVIADAS'}">Mensagens Enviadas</span> <span
 									th:if="${pastaAtiva == 'LIXEIRA'}">Lixeira</span> <span
-									th:if="${pastaAtiva == 'FAVORITOS'}">Favoritos</span> <span
-									
-							</h4>
+									th:if="${pastaAtiva == 'FAVORITOS'}">Favoritos</span>
+									</h4>
 							<small class="text-secondary fw-medium"
 								th:if="${totalPaginas > 0}"> <i
 								class="fa-solid fa-list-ul me-1"></i> Exibindo <span
@@ -417,30 +416,30 @@ body {
 
 										<div class="col-md-3 ps-0">
 											<div class="d-none d-md-flex align-items-center gap-2">
-												
-												<div class="d-flex align-items-center gap-2 me-1" onclick="event.stopPropagation()">
+
+												<div class="d-flex align-items-center gap-2 me-1"
+													onclick="event.stopPropagation()">
 													<i class="action-icon fs-6 cursor-pointer fa-star"
-													   th:classappend="${msg.favorito} ? 'fa-solid text-warning star-active' : 'fa-regular text-muted'"
-													   th:onclick="'toggleAction(' + ${msg.id} + ', \'favoritar\', this, \'star\')'"
-													   title="Favoritar"> 
-													</i> 
-													<i class="action-icon fs-6 cursor-pointer p-1 rounded-circle hover-bg-light fa-note-sticky"
-													   th:classappend="${msg.observacao != null and !msg.observacao.isEmpty()} ? 'fa-solid text-warning' : 'fa-regular text-muted'"
-													   th:onclick="'abrirNota(' + ${msg.id} + ', event)'"
-													   data-bs-toggle="tooltip" title="Anotações / CRM"> 
-													</i>
+														th:classappend="${msg.favorito} ? 'fa-solid text-warning star-active' : 'fa-regular text-muted'"
+														th:onclick="'toggleAction(' + ${msg.id} + ', \'favoritar\', this, \'star\')'"
+														title="Favoritar"> </i> <i
+														class="action-icon fs-6 cursor-pointer p-1 rounded-circle hover-bg-light fa-note-sticky"
+														th:classappend="${msg.observacao != null and !msg.observacao.isEmpty()} ? 'fa-solid text-warning' : 'fa-regular text-muted'"
+														th:onclick="'abrirNota(' + ${msg.id} + ', event)'"
+														data-bs-toggle="tooltip" title="Anotações / CRM"> </i>
 												</div>
-	
+
 												<span class="badge-soft text-truncate"
 													th:classappend="${msg.nomeGrupoDestino.length() > 10} ? 'badge-soft-info' : 'badge-soft-primary'"
 													th:text="${msg.nomeGrupoDestino}" style="max-width: 140px;">Grupo</span>
 											</div>
 										</div>
-										
+
 										<div class="col-md-6 d-flex align-items-center">
 											<div class="text-truncate" style="max-width: 100%;">
 												<span class="fw-bold text-dark me-2"
-													th:text="${msg.assunto}">Assunto</span>  <span class="text-secondary small"
+													th:text="${msg.assunto}">Assunto</span> <span
+													class="text-secondary small"
 													th:text="'- ' + ${#strings.abbreviate(msg.conteudo.replaceAll('<[^>]*>', ''), 70)}">
 													Prévia... </span>
 											</div>

@@ -32,38 +32,41 @@
         </div>
 
         <div class="login-form-section">
-            <div class="form-wrapper">
-                <h3 class="mb-4 fw-bold text-dark">Login</h3>
+            <div class="form-wrapper w-100" style="max-width: 380px; margin: 0 auto;">
+                
+                <h3 class="mb-5 fw-bold text-dark text-center text-md-start">Login</h3>
 
-                <div th:if="${param.error}" class="alert alert-danger py-2 small text-center mb-3">
+                <div th:if="${param.error}" class="alert alert-danger py-2 small text-center mb-4 rounded-3">
                     Usuário ou senha inválidos.
                 </div>
-                <div th:if="${param.logout}" class="alert alert-info py-2 small text-center mb-3">
+                <div th:if="${param.logout}" class="alert alert-info py-2 small text-center mb-4 rounded-3">
                     Você saiu do sistema.
                 </div>
 
                 <form th:action="@{/login}" method="post">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">USUÁRIO</label>
-                        <input type="text" class="form-control" name="username" placeholder="Seu usuário" required>
+                    
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted mb-2">USUÁRIO</label>
+                        <input type="text" class="form-control py-2" name="username" placeholder="Seu usuário" required>
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">SENHA</label>
-                        <input type="password" class="form-control" name="password" placeholder="Sua senha" required>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted mb-2">SENHA</label>
+                        <input type="password" class="form-control py-2" name="password" placeholder="Sua senha" required>
                     </div>
                     
-                    <div class="form-check mb-2">
-                        <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
-                        <label class="form-check-label small text-muted" for="remember-me">Lembrar-me</label>
+                    <div class="form-check mb-4 pt-1">
+                        <input type="checkbox" class="form-check-input shadow-sm" id="remember-me" name="remember-me">
+                        <label class="form-check-label small text-muted mt-1" for="remember-me" style="cursor: pointer;">Lembrar-me</label>
                     </div>
 
-                    <button type="submit" class="btn btn-custom">ENTRAR</button>
+                    <button type="submit" class="btn btn-custom w-100 py-2 mb-4 fw-bold shadow-sm">ENTRAR</button>
 
-                    <div class="links-uteis">
-                        <a href="#">Esqueceu a senha?</a>
-                        <a href="#">Cadastre-se</a>
+                    <div class="links-uteis d-flex justify-content-between mt-2">
+                        <a href="#" class="text-decoration-none small text-muted">Esqueceu a senha?</a>
+                        <a href="#" class="text-decoration-none small fw-bold text-primary">Cadastre-se</a>
                     </div>
+                    
                 </form>
             </div>
         </div>

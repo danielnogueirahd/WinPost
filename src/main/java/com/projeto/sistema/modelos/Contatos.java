@@ -41,13 +41,15 @@ public class Contatos implements Serializable {
 
     @Column(length = 50)
     @Size(max = 50, message = "O nome deve ter no máximo 50 caracteres")
+    
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
     @Column(nullable = false, length = 255)
-    @NotBlank(message = "O email é obrigatório")
     @Size(max = 255, message = "O email deve ter no máximo 255 caracteres")
-    @Email(message = "Digite um email válido")
+    
+    
+    @Email(message = "Formato de e-mail inválido")
     private String email;
 
     @NotBlank(message = "O telefone é obrigatório")
@@ -86,7 +88,7 @@ public class Contatos implements Serializable {
     // --- DATAS E CONFIGURAÇÕES ---
 
     @Column(name = "data_nascimento", length = 5)
-    @Pattern(regexp = "^$|^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])$", message = "A data deve estar no formato DD/MM")
+    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[1-9]|1[0-2])$", message = "Data inválida. Use o formato DD/MM.")
     private String dataNascimento;
 
     @CreatedDate

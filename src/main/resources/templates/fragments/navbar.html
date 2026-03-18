@@ -10,7 +10,9 @@
 			<a href="javascript:history.back()"
 				class="text-white me-3 d-flex align-items-center text-decoration-none btn-voltar-nav"
 				title="Voltar"> <i class="fa-solid fa-chevron-left fs-5"></i>
-			</a> <a class="navbar-brand d-flex align-items-center me-auto me-lg-4"
+			</a> 
+			
+			<a class="navbar-brand d-flex align-items-center me-lg-4"
 				href="/administrativo"> <img src="/img/logoInput.png"
 				alt="Logótipo WINPOST" title="Página Inicial WINPOST" height="32"
 				class="me-2 bg-primary rounded px-2 shadow-sm">
@@ -22,8 +24,8 @@
 			</button>
 
 			<div class="collapse navbar-collapse" id="navbarMain">
-				<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
-					,
+				
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
 
 					<li class="nav-item"><a class="nav-link"
 						href="/administrativo/agenda"
@@ -55,16 +57,19 @@
 							</a></li>
 						</ul></li>
 
-
-
 					<li class="nav-item"><a class="nav-link"
 						href="/mensagens/enviadas"
 						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
 					</li>
 
+				</ul>
+
+
+				<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
+					
 					<li class="nav-item d-lg-none my-2"><hr class="text-white-50"></li>
 
-					<li class="nav-item ms-lg-4"><a
+					<li class="nav-item"><a
 						class="nav-link text-white d-flex align-items-center" href="#"
 						data-bs-toggle="modal" data-bs-target="#modalLembretes"
 						title="Ver Lembretes"> <i
@@ -117,9 +122,41 @@
 								<i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
 								<p class="mb-0">Nenhuma notificação nova</p>
 							</div>
-						</div></li>
+						</div>
+					</li>
 
+					<li class="nav-item dropdown ms-lg-3 border-start border-secondary ps-lg-3">
+						<a class="nav-link text-white d-flex align-items-center" href="#"
+						id="dropUsuario" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false" title="Minha Conta"> <i
+							class="fa-solid fa-circle-user fs-4"></i> <span
+							class="d-lg-none ms-3">Minha Conta</span>
+						</a>
+
+						<ul class="dropdown-menu dropdown-menu-lg-end shadow border-0 mt-2"
+							aria-labelledby="dropUsuario">
+
+							<li><a class="dropdown-item py-2" href="/perfil"
+								th:classappend="${paginaAtiva == 'perfil'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-user-gear me-2"
+									th:classappend="${paginaAtiva == 'perfil'} ? 'text-white' : 'text-muted'"></i>Meu
+									Perfil
+							</a></li>
+
+							<li><hr class="dropdown-divider"></li>
+
+							<li>
+								<form th:action="@{/logout}" method="post" class="m-0">
+									<button type="submit"
+										class="dropdown-item py-2 text-danger fw-bold">
+										<i class="fa-solid fa-right-from-bracket me-2"></i>Sair
+									</button>
+								</form>
+							</li>
+						</ul>
+					</li>
 				</ul>
+				
 			</div>
 		</div>
 	</nav>

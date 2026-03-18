@@ -171,7 +171,12 @@
 											de Nascimento</label> <input type="text" class="form-control"
 											id="dataNascimento" th:field="*{dataNascimento}"
 											placeholder="DD/MM" maxlength="5"
-											onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}">
+											onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}"
+											th:classappend="${#fields.hasErrors('dataNascimento')} ? 'is-invalid'">
+
+										<div class="invalid-feedback"
+											th:if="${#fields.hasErrors('dataNascimento')}"
+											th:errors="*{dataNascimento}"></div>
 									</div>
 
 									<div class="col-md-12 mt-1">
