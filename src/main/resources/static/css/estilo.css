@@ -635,7 +635,7 @@ a {
 .row-selected td:first-child {
     /* Marcador lateral com o azul firme do sistema */
     border-left: 3px solid var(--primary) !important;
-
+} /* <--- ADICIONE ESTA CHAVE AQUI */
 /* Avatares e Badges */
 .avatar-modern {
     width: 38px;
