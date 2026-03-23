@@ -10,7 +10,6 @@ $(document).ready(function() {
         return $('<div class="select2-item-contato"><div class="fw-bold">' + nome + '</div><div class="text-muted small">' + email + '</div></div>');
     }
     
-    // Se houver select2 na página, inicializa
     if($('.select2-multiple').length) {
         $('.select2-multiple').select2({
             theme: 'bootstrap-5',
@@ -27,7 +26,6 @@ $(document).ready(function() {
     
     var idsSelecionados = new Set();
     
-    // Inicializa o DataTables
     var table = $('#tabelaSelecao').DataTable({
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json',
@@ -35,31 +33,24 @@ $(document).ready(function() {
         },
         pageLength: 9,
         lengthChange: false,
-        ordering: false, // Importante: mantemos desligado para facilitar a manipulação do DOM
+        ordering: false,
         dom: "<'row mb-3'<'col-sm-12'f>><'row'<'col-sm-12'tr>><'row mt-3'<'col-sm-12'p>>"
     });
 
-    // Ajuste de estilo da busca
     $('.dataTables_filter input').addClass('form-control ps-3').css('border-radius', '8px');
 
     // --- FUNÇÃO CENTRAL: ALTERAR TODOS ---
-    // Esta função controla a lógica de dados, independente do visual
     function toggleTodos(marcar) {
-        // Pega os dados de TODAS as linhas filtradas (visíveis ou não)
-        var dados = table.rows({ search: 'applied' }).data();
+        // Pega todos os NÓS do DOM da tabela filtrada (independente da página)
+        var nodesFiltrados = table.rows({ search: 'applied' }).nodes();
         
-        dados.each(function(value) {
-            // value[0] é o HTML da primeira coluna: <input ... value="123">
-            // Usamos REGEX para extrair o valor, ignorando parsing de HTML que pode falhar
-            var match = value[0].match(/value=["']([^"']+)["']/);
-            var id = match ? match[1] : null;
-
-            if (id) {
-                if (marcar) {
-                    idsSelecionados.add(id);
-                } else {
-                    idsSelecionados.delete(id);
-                }
+        // Itera sobre os checkboxes reais em vez de usar Regex
+        $(nodesFiltrados).find('.check-item').each(function() {
+            var id = $(this).val();
+            if (marcar) {
+                idsSelecionados.add(id);
+            } else {
+                idsSelecionados.delete(id);
             }
         });
 
@@ -67,23 +58,21 @@ $(document).ready(function() {
     }
 
     // --- FUNÇÃO CENTRAL: ATUALIZAR VISUAL ---
-    function atualizarVisual() {
-        // 1. Atualiza os checkboxes VISÍVEIS na página atual
-        // Usamos table.nodes() para pegar apenas o que existe no DOM agora
-        $(table.rows({ page: 'current' }).nodes()).each(function() {
-            var input = $(this).find('.check-item');
-            var id = input.val();
-            
-            if (idsSelecionados.has(id)) {
-                input.prop('checked', true);
-                $(this).addClass('bg-primary bg-opacity-10'); // Pinta a linha
-            } else {
-                input.prop('checked', false);
-                $(this).removeClass('bg-primary bg-opacity-10');
-            }
-        });
+	function atualizarVisual() {
+	        // Atualiza linhas visíveis
+	        $(table.rows({ page: 'current' }).nodes()).each(function() {
+	            var input = $(this).find('.check-item');
+	            var id = input.val();
+	            
+	            if (idsSelecionados.has(id)) {
+	                input.prop('checked', true);
+	            } else {
+	                input.prop('checked', false);
+	            }
+	        });
+	        // ... resto do código continua igual abaixo ...
 
-        // 2. Atualiza contador e botão
+        // 2. Atualiza contador e badge de status
         var total = idsSelecionados.size;
         var textoContador = total === 1 ? '1 contato selecionado' : total + ' contatos selecionados';
         
@@ -91,39 +80,31 @@ $(document).ready(function() {
         if(total > 0) $('#contadorSelecao').removeClass('text-muted').addClass('text-primary');
         else $('#contadorSelecao').addClass('text-muted').removeClass('text-primary');
 
-        // 3. Atualiza estado do Checkbox Mestre e Botão Grande
-        // Lógica: Se todos da página ATUAL estão marcados, o mestre fica marcado
+        // 3. Verifica se TUDO na PÁGINA ATUAL está marcado para o checkbox do cabeçalho
         var inputsPagina = $('.check-item', table.rows({ page: 'current' }).nodes());
         var totalPagina = inputsPagina.length;
         var marcadosPagina = inputsPagina.filter(':checked').length;
-        
         var paginaCheia = (totalPagina > 0 && totalPagina === marcadosPagina);
         
-        // Atualiza checkbox mestre sem disparar eventos
         $('#checkAll').prop('checked', paginaCheia);
 
-        // --- ATUALIZAÇÃO DO VISUAL DO BOTÃO DE SELECIONAR TODOS ---
+        // 4. Verifica se TUDO NA TABELA FILTRADA (todas as páginas) está marcado para o BOTÃO GLOBAL
+        var totalFiltrados = table.rows({ search: 'applied' }).count();
+        var todosSelecionadosGeral = (total > 0 && total === totalFiltrados);
+
         var btnAll = $('#btnToggleAll');
         var iconeBtnAll = btnAll.find('i');
         var txtBtnAll = $('#txtBtnAll');
 
-        if (paginaCheia || (total > 0 && total === table.rows({ search: 'applied' }).count())) {
-            // Estado: Desmarcar Todos (BOTÃO VERMELHO)
+        if (todosSelecionadosGeral) {
+            // Estado: Desmarcar Todos
             txtBtnAll.text('Desmarcar Todos');
-            
-            // Remove as classes claras e adiciona as classes vermelhas
             btnAll.removeClass('btn-light border').addClass('btn-danger text-white border-danger');
-            
-            // Troca o ícone para um X branco
             iconeBtnAll.removeClass('text-primary fa-check-double').addClass('text-white fa-xmark');
         } else {
-            // Estado: Selecionar Todos (BOTÃO CLARO PADRÃO)
+            // Estado: Selecionar Todos
             txtBtnAll.text('Selecionar Todos');
-            
-            // Remove as classes vermelhas e volta para o botão claro original
             btnAll.removeClass('btn-danger text-white border-danger').addClass('btn-light border');
-            
-            // Volta o ícone original azul
             iconeBtnAll.removeClass('text-white fa-xmark').addClass('text-primary fa-check-double');
         }
     }
@@ -131,7 +112,7 @@ $(document).ready(function() {
 
     // --- EVENTOS ---
 
-    // 1. Clique no Checkbox Mestre (#checkAll)
+    // 1. Clique no Checkbox Mestre da Tabela (#checkAll)
     $('#tabelaSelecao').on('click', '#checkAll', function() {
         var marcar = this.checked;
         toggleTodos(marcar);
@@ -141,16 +122,17 @@ $(document).ready(function() {
     $('#btnToggleAll').on('click', function(e) {
         e.preventDefault();
         
-        // Verifica o estado atual do checkbox mestre para decidir se marca ou desmarca tudo
-        var estaMarcado = $('#checkAll').prop('checked');
-        var novaAcao = !estaMarcado; // Se estava marcado, vamos desmarcar
+        // Avalia se vamos marcar ou desmarcar com base no todo, não só na página
+        var totalFiltrados = table.rows({ search: 'applied' }).count();
+        var todosSelecionadosGeral = (idsSelecionados.size > 0 && idsSelecionados.size === totalFiltrados);
         
+        var novaAcao = !todosSelecionadosGeral; // Inverte o estado atual
         toggleTodos(novaAcao);
     });
 
     // 3. Clique em Checkbox Individual (.check-item)
     $('#tabelaSelecao tbody').on('click', '.check-item', function(e) {
-        e.stopPropagation(); // Evita conflito com o clique da linha
+        e.stopPropagation(); 
         var id = $(this).val();
         if (this.checked) idsSelecionados.add(id);
         else idsSelecionados.delete(id);
@@ -159,29 +141,29 @@ $(document).ready(function() {
 
     // 4. Clique na Linha (Melhoria de UX)
     $('#tabelaSelecao tbody').on('click', 'tr', function(e) {
-        // Se clicar na linha (mas não no input), simulamos o clique no input
         if (e.target.type !== 'checkbox') {
             var checkbox = $(this).find('.check-item');
             if (checkbox.length) {
-                 checkbox.prop('checked', !checkbox.prop('checked')); // Inverte o checked
-                 // Dispara manualmente a lógica que o clique direto faria
+                 var novoEstado = !checkbox.prop('checked');
+                 checkbox.prop('checked', novoEstado); 
+                 
                  var id = checkbox.val();
-                 if (checkbox.prop('checked')) idsSelecionados.add(id);
+                 if (novoEstado) idsSelecionados.add(id);
                  else idsSelecionados.delete(id);
+                 
                  atualizarVisual();
             }
         }
     });
 
-    // 5. Redesenho da Tabela (Paginação, Filtro, Ordenação)
+    // 5. Redesenho da Tabela (Mantém a seleção ao mudar de página)
     table.on('draw', function() {
         atualizarVisual();
     });
 
     // --- CARREGAMENTO INICIAL ---
-    // Recupera checkboxes já marcados (ex: reload após erro de validação)
-    $('.check-item').each(function() {
-        if(this.checked) idsSelecionados.add($(this).val());
+    $('.check-item:checked').each(function() {
+        idsSelecionados.add($(this).val());
     });
     atualizarVisual();
 
@@ -191,29 +173,29 @@ $(document).ready(function() {
     $('#formGrupo').on('submit', function(e) {
         var form = this;
         
-        // Limpa inputs hidden antigos para não duplicar
+        // Limpa inputs hidden antigos para evitar duplicação ou conflitos
+        $('#idsContatos').remove();
         $(form).find('input[name="idsContatos"]').remove();
 
         if (idsSelecionados.size === 0) {
             e.preventDefault();
-            alert('Por favor, selecione pelo menos um contato.');
+            alert('Por favor, selecione pelo menos um contato para criar o grupo.');
             return false;
         }
 
-        // Cria um input hidden para cada ID selecionado
-        idsSelecionados.forEach(function(id) {
-            $(form).append(
-                $('<input>')
-                    .attr('type', 'hidden')
-                    .attr('name', 'idsContatos')
-                    .attr('value', id)
-            );
-        });
+        // Transforma o Set de volta em um formato suportado pelo seu Controller (Vírgula)
+        var idsString = Array.from(idsSelecionados).join(',');
+        
+        $(form).append(
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'idsContatos')
+                .attr('value', idsString)
+        );
     });
 
 });
 
-// Função global para manter filtros na URL
 function prepararFiltro() {
     var n = document.getElementById('inputNome');
     var d = document.getElementById('inputDescricao');

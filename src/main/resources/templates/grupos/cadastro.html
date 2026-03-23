@@ -148,43 +148,17 @@
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
     <script th:src="@{/js/grupos.js}"></script>
 
-    <script>
-        $(document).ready(function() {
-            // Sincroniza clique na linha com o checkbox
-            $('.row-contato').on('click', function(e) {
-                if (e.target.type !== 'checkbox') {
-                    const $checkbox = $(this).find('.check-item');
-                    $checkbox.prop('checked', !$checkbox.prop('checked')).trigger('change');
-                }
-            });
-
-            // Adiciona classe de seleção e atualiza contador
-            $(document).on('change', '.check-item', function() {
-                const $row = $(this).closest('tr');
-                if (this.checked) {
-                    $row.addClass('row-selected');
-                } else {
-                    $row.removeClass('row-selected');
-                }
-                
-                const count = $('.check-item:checked').length;
-                $('#contadorSelecao').text(count);
-            });
-
-            // Intercepta o envio para popular o input hidden
-            $('#formGrupo').on('submit', function() {
-                let ids = [];
-                $('.check-item:checked').each(function() {
-                    ids.push($(this).val());
-                });
-                $('#idsContatos').val(ids.join(','));
-            });
-        });
-    </script>
+</body>
+</html>
 
 </body>
 </html>
