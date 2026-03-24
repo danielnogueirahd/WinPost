@@ -1,7 +1,15 @@
 package com.projeto.sistema.modelos;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
@@ -21,6 +29,10 @@ public class Usuario implements Serializable {
     private String senha;
     private String cargo; // Ex: Administrador
 
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private Empresa empresa; // Importante: não colocar (optional = false), pois o Admin Master pode não ter empresa!
+    
     // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -34,4 +46,12 @@ public class Usuario implements Serializable {
     public void setSenha(String senha) { this.senha = senha; }
     public String getCargo() { return cargo; }
     public void setCargo(String cargo) { this.cargo = cargo; }
+    
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+    
 }
