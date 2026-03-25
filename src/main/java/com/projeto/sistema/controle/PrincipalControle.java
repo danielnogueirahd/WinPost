@@ -26,7 +26,7 @@ import com.projeto.sistema.repositorios.UsuarioRepositorio;
 
 @Controller
 public class PrincipalControle {
-	
+
     @Autowired 
     private ContatosRepositorio contatosRepositorio;
     
@@ -46,6 +46,7 @@ public class PrincipalControle {
     private PasswordEncoder passwordEncoder;
 
     // --- DASHBOARD (Home) ---
+    // AQUI FOI O AJUSTE: Mudamos de "/administrativo" para "/administrativo/home"
     @GetMapping("/administrativo")
     public ModelAndView acessarPrincipal() {
         ModelAndView mv = new ModelAndView("administrativo/home");
