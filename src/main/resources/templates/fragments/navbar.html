@@ -1,4 +1,4 @@
-<div th:fragment="navbar">
+<div th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 	<link rel="stylesheet" href="/css/navbar.css">
 
@@ -27,43 +27,50 @@
 				
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
 
-					<li class="nav-item"><a class="nav-link"
+					<li class="nav-item" sec:authorize="hasAuthority('AGENDA_VISUALIZAR')">
+						<a class="nav-link"
 						href="/administrativo/agenda"
 						th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
 					</li>
 
-					<li class="nav-item"><a class="nav-link"
+					<li class="nav-item">
+						<a class="nav-link"
 						href="/administrativo"
 						th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
 					</li>
 
-					<li class="nav-item dropdown"><a
-						class="nav-link dropdown-toggle" href="#" id="dropContatos"
+					<li class="nav-item dropdown" sec:authorize="hasAnyAuthority('CONTATO_VISUALIZAR', 'GRUPO_VISUALIZAR')">
+						<a class="nav-link dropdown-toggle" href="#" id="dropContatos"
 						role="button" data-bs-toggle="dropdown"
 						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Contato</a>
 						<ul class="dropdown-menu shadow border-0 mt-2"
 							aria-labelledby="dropContatos">
-							<li><a class="dropdown-item py-2" href="/listarContatos"
+							
+							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')">
+								<a class="dropdown-item py-2" href="/listarContatos"
 								th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
 									<i class="fa-solid fa-list me-2"
-									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>Listar
-									Contatos
-							</a></li>
-							<li><a class="dropdown-item py-2" href="/grupos/gerenciar"
+									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>Listar Contatos
+								</a>
+							</li>
+							
+							<li sec:authorize="hasAuthority('GRUPO_VISUALIZAR')">
+								<a class="dropdown-item py-2" href="/grupos/gerenciar"
 								th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'bg-primary text-white' : ''">
 									<i class="fa-solid fa-layer-group me-2"
-									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>Listar
-									Grupos
-							</a></li>
-						</ul></li>
+									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>Listar Grupos
+								</a>
+							</li>
+						</ul>
+					</li>
 
-					<li class="nav-item"><a class="nav-link"
+					<li class="nav-item" sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')">
+						<a class="nav-link"
 						href="/mensagens/enviadas"
 						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
 					</li>
 
 				</ul>
-
 
 				<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
 					

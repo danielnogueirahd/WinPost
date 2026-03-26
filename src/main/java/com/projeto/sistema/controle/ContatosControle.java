@@ -3,6 +3,7 @@ package com.projeto.sistema.controle;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize; // <-- NOVO IMPORT DE SEGURANÇA
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +28,10 @@ public class ContatosControle {
     private ContatosRepositorio contatosRepositorio;
 
     @Autowired
-    private GrupoRepositorio grupoRepositorio; // Adicionado aqui no topo para organizar
+    private GrupoRepositorio grupoRepositorio;
 
+    // FECHADURA: Só entra quem tem poder para CRIAR contactos
+    @PreAuthorize("hasAuthority('CONTATO_CRIAR')")
     @GetMapping("/cadastroContatos")
     public ModelAndView cadastrar(Contatos contatos) {
         ModelAndView mv = new ModelAndView("contatos/cadastroContatos");
@@ -37,7 +40,8 @@ public class ContatosControle {
         return mv;
     }
 
- 
+    // FECHADURA: Só entra quem tem poder para VISUALIZAR contactos
+    @PreAuthorize("hasAuthority('CONTATO_VISUALIZAR')")
     @GetMapping("/listarContatos")
     public ModelAndView listar(
             @RequestParam(value = "nome", required = false) String nome,
@@ -46,10 +50,7 @@ public class ContatosControle {
         
         ModelAndView mv = new ModelAndView("contatos/lista");
 
-        // AQUI ESTÁ A MUDANÇA: Usamos o método novo 'filtrarBusca'
-        // Ele vai buscar por nome E cidade E grupo, tudo junto.
         mv.addObject("listaContatos", contatosRepositorio.filtrarBusca(nome, cidade, grupoId));
-
         mv.addObject("listaEstados", UF.values());
         mv.addObject("listaGrupos", grupoRepositorio.findAll());
         mv.addObject("grupoSelecionado", grupoId); 
@@ -57,27 +58,33 @@ public class ContatosControle {
         return mv;
     }
 
+    // FECHADURA: Só entra quem tem poder para EDITAR contactos
+    @PreAuthorize("hasAuthority('CONTATO_EDITAR')")
     @GetMapping("/editarContatos/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
         Optional<Contatos> contatos = contatosRepositorio.findById(id);
         
-        // Proteção contra erro 500 (No value present)
         if (contatos.isEmpty()) {
             return new ModelAndView("redirect:/listarContatos");
         }
         
         return cadastrar(contatos.get());
     }
+
+    // FECHADURA: Só entra quem tem poder para EXCLUIR contactos
+    @PreAuthorize("hasAuthority('CONTATO_EXCLUIR')")
     @GetMapping("/removerContatos/{id}")
     public ModelAndView remover(@PathVariable("id") Long id) {
         Optional<Contatos> contato = contatosRepositorio.findById(id);
         if (contato.isPresent()) {
             contatosRepositorio.delete(contato.get());
         }
-        // Redireciona para o listar (que agora aceita parâmetros, mas aqui chamamos sem nenhum para listar tudo)
         return new ModelAndView("redirect:/listarContatos");
     }
 
+    // FECHADURA: Como o botão "Salvar" serve tanto para criar um novo como para atualizar um existente, 
+    // verificamos se o utilizador tem pelo menos uma das duas permissões
+    @PreAuthorize("hasAnyAuthority('CONTATO_CRIAR', 'CONTATO_EDITAR')")
     @PostMapping("/salvarContato")
     public ModelAndView salvar(@Valid @ModelAttribute("contato") Contatos contatos, BindingResult result, RedirectAttributes attributes) {
 

@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize; // <-- NOVO IMPORT DE SEGURANÇA
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -50,7 +51,8 @@ public class GrupoControle {
     @Autowired
     private EmailService emailService;
 
-    // 1. TELA DE CADASTRO
+    // FECHADURA: Apenas quem pode CRIAR grupos
+    @PreAuthorize("hasAuthority('GRUPO_CRIAR')")
     @GetMapping("/cadastro")
     public ModelAndView cadastrar(Grupo grupo,
             @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
@@ -98,7 +100,8 @@ public class GrupoControle {
         return mv;
     }
 
-    // 2. SALVAR NOVO GRUPO
+    // FECHADURA: Apenas quem pode CRIAR grupos
+    @PreAuthorize("hasAuthority('GRUPO_CRIAR')")
     @PostMapping("/salvar")
     public String salvar(@Valid Grupo grupo, BindingResult result,
             @RequestParam(value = "idsContatos", required = false) List<Long> idsContatos,
@@ -115,7 +118,8 @@ public class GrupoControle {
         return "redirect:/grupos/gerenciar";
     }
 
-    // 3. TELA DE GERENCIAR
+    // FECHADURA: Apenas quem pode VISUALIZAR grupos
+    @PreAuthorize("hasAuthority('GRUPO_VISUALIZAR')")
     @GetMapping("/gerenciar")
     public ModelAndView gerenciar(@RequestParam(value = "pesquisa", required = false) String pesquisa) {
         ModelAndView mv = new ModelAndView("grupos/gerenciar");
@@ -131,7 +135,8 @@ public class GrupoControle {
         return mv;
     }
 
-    // 4. EXCLUIR GRUPO
+    // FECHADURA: Apenas quem pode EXCLUIR grupos
+    @PreAuthorize("hasAuthority('GRUPO_EXCLUIR')")
     @GetMapping("/excluir/{id}")
     public String excluir(@PathVariable Long id, RedirectAttributes attributes) {
         grupoService.excluirGrupo(id);
@@ -139,7 +144,8 @@ public class GrupoControle {
         return "redirect:/grupos/gerenciar";
     }
 
-    // 5. TELA DE EDIÇÃO
+    // FECHADURA: Apenas quem pode EDITAR grupos
+    @PreAuthorize("hasAuthority('GRUPO_EDITAR')")
     @GetMapping("/editar/{id}")
     public ModelAndView editar(@PathVariable("id") Long id) {
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(id);
@@ -154,20 +160,18 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-    // 6. ATUALIZAR GRUPO (ALTERADO A PEDIDO DO CHEFE)
+    // FECHADURA: Apenas quem pode EDITAR grupos
+    @PreAuthorize("hasAuthority('GRUPO_EDITAR')")
     @PostMapping("/atualizar")
     public ModelAndView atualizar(Grupo grupo,
             @RequestParam(value = "novosMembros", required = false) List<Long> novosMembros,
             RedirectAttributes attributes) {
 
-        // 1. Salva as alterações do nome/descrição do grupo
         Grupo grupoSalvo = grupoRepositorio.save(grupo);
 
-        // 2. Adiciona novos membros, se houver
         if (novosMembros != null && !novosMembros.isEmpty()) {
             List<Contatos> contatosAdd = contatosRepositorio.findAllById(novosMembros);
             for (Contatos c : contatosAdd) {
-                // Só adiciona se o contato já não estiver no grupo (evita duplicidade)
                 if (!c.getGrupos().contains(grupoSalvo)) {
                     c.getGrupos().add(grupoSalvo);
                     contatosRepositorio.save(c);
@@ -175,16 +179,12 @@ public class GrupoControle {
             }
         }
         
-        // 3. Mensagem de sucesso
         attributes.addFlashAttribute("mensagem", "Grupo atualizado com sucesso!");
-
-        // --- MUDANÇA REALIZADA AQUI ---
-        // Antes: Redirecionava para a tela de edição ("redirect:/grupos/editar/" + grupo.getId())
-        // Agora: Redireciona para a tela de gerenciamento, conforme solicitado.
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-    // 7. REMOVER MEMBRO
+    // FECHADURA: Apenas quem pode EDITAR grupos
+    @PreAuthorize("hasAuthority('GRUPO_EDITAR')")
     @GetMapping("/removerMembro/{grupoId}/{contatoId}")
     public ModelAndView removerMembro(@PathVariable("grupoId") Long grupoId, @PathVariable("contatoId") Long contatoId,
             RedirectAttributes attributes) {
@@ -207,7 +207,8 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/editar/" + grupoId);
     }
 
-    // 8. DISPARAR AÇÃO (COM UPLOAD DE ARQUIVOS)
+    // FECHADURA: Apenas quem pode VISUALIZAR grupos (ou enviar mensagens, se tiver a permissão específica)
+    @PreAuthorize("hasAuthority('GRUPO_VISUALIZAR')")
     @PostMapping("/disparar")
     public ModelAndView dispararAcao(@RequestParam("grupoId") Long grupoId, @RequestParam("assunto") String assunto,
             @RequestParam("mensagem") String mensagem,
@@ -258,7 +259,8 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-    // 9. DISPARO DIRETO (SEM ANEXOS)
+    // FECHADURA: Apenas quem pode VISUALIZAR grupos
+    @PreAuthorize("hasAuthority('GRUPO_VISUALIZAR')")
     @PostMapping("/disparar-direto")
     public ModelAndView dispararDireto(@RequestParam("idGrupo") Long idGrupo, @RequestParam("assunto") String assunto,
             @RequestParam("conteudo") String conteudo, RedirectAttributes attributes) throws Exception {
