@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Agenda | WinPost</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
 
 <style>
@@ -90,7 +94,8 @@
 	font-size: 0.70rem; /* Textos dos eventos menores */
 	margin-bottom: 2px; /* Mais colados uns aos outros */
 	padding: 2px 6px; /* Mais finos */
-	border-radius: 4px; /* Cantos menos arredondados para economizar espaço */
+	border-radius: 4px;
+	/* Cantos menos arredondados para economizar espaço */
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -103,7 +108,7 @@
 }
 
 .event-badge i {
-    font-size: 0.70rem; /* Ícones menores para acompanhar o texto */
+	font-size: 0.70rem; /* Ícones menores para acompanhar o texto */
 }
 
 .event-badge:hover {
@@ -114,14 +119,45 @@
 }
 
 /* Cores dos Badges */
-.event-badge.TAREFA { background-color: #f1f3f5; color: #495057; border-color: #e9ecef; }
-.event-badge.REUNIAO { background-color: #e3f2fd; color: #0d47a1; border-color: #bbdefb; }
-.event-badge.IMPORTANTE { background-color: #ffebee; color: #b71c1c; border-color: #ffcdd2; }
-.event-badge.NIVER { background-color: #e8f5e9; color: #1b5e20; border-color: #c8e6c9; }
-.event-badge.ENVIO { background-color: #f3e5f5; color: #4a148c; border-color: #e1bee7; }
-.event-badge.FERIADO { background-color: #fff3e0; color: #e65100; border: 1px dashed #ffe0b2; }
+.event-badge.TAREFA {
+	background-color: #f1f3f5;
+	color: #495057;
+	border-color: #e9ecef;
+}
 
-.calendar-day-header:nth-child(7n), .calendar-day:nth-child(7n) { border-right: none; }
+.event-badge.REUNIAO {
+	background-color: #e3f2fd;
+	color: #0d47a1;
+	border-color: #bbdefb;
+}
+
+.event-badge.IMPORTANTE {
+	background-color: #ffebee;
+	color: #b71c1c;
+	border-color: #ffcdd2;
+}
+
+.event-badge.NIVER {
+	background-color: #e8f5e9;
+	color: #1b5e20;
+	border-color: #c8e6c9;
+}
+
+.event-badge.ENVIO {
+	background-color: #f3e5f5;
+	color: #4a148c;
+	border-color: #e1bee7;
+}
+
+.event-badge.FERIADO {
+	background-color: #fff3e0;
+	color: #e65100;
+	border: 1px dashed #ffe0b2;
+}
+
+.calendar-day-header:nth-child(7n), .calendar-day:nth-child(7n) {
+	border-right: none;
+}
 
 /* --- 2. MODAL MODERNO (PADRONIZAÇÃO) --- */
 .modal-modern-content {
@@ -183,34 +219,38 @@
 			<div class="d-flex justify-content-between align-items-center mb-3">
 				<div>
 					<h2 class="text-dark mb-0 fw-bold fs-4">Minha Agenda</h2>
-					<p class="text-muted small mb-0">Gerencie seus eventos e disparos.</p>
+					<p class="text-muted small mb-0">Gerencie seus eventos e
+						disparos.</p>
 				</div>
 
-				<button
-					class="btn btn-primary shadow-sm fw-bold rounded-pill px-4"
-					th:onclick="'abrirModalNovoEvento(' + ${#temporals.createNow().dayOfMonth} + ',' + ${#temporals.createNow().monthValue} + ',' + ${#temporals.createNow().year} + ')'">
+				<button class="btn btn-primary shadow-sm fw-bold rounded-pill px-4"
+					sec:authorize="hasAuthority('AGENDA_CRIAR')"
+					th:onclick="'abrirModalNovoEvento(...)">
 					<i class="fa-solid fa-plus me-2"></i>Novo Evento
 				</button>
 			</div>
 
 			<div class="card shadow-sm border-0 bg-transparent">
 
-				<div class="calendar-header-wrapper d-flex justify-content-between align-items-center flex-wrap gap-2">
+				<div
+					class="calendar-header-wrapper d-flex justify-content-between align-items-center flex-wrap gap-2">
 					<div class="d-flex align-items-center gap-3">
 						<div class="btn-group shadow-sm bg-white rounded-3">
-							<a th:href="@{/administrativo/agenda(mes=${mesExibicao == 1 ? 12 : mesExibicao - 1}, ano=${mesExibicao == 1 ? anoExibicao - 1 : anoExibicao})}"
+							<a
+								th:href="@{/administrativo/agenda(mes=${mesExibicao == 1 ? 12 : mesExibicao - 1}, ano=${mesExibicao == 1 ? anoExibicao - 1 : anoExibicao})}"
 								class="btn btn-outline-light btn-sm text-dark border-0 py-1 px-3">
 								<i class="fa-solid fa-chevron-left"></i>
-							</a> 
-                            <a href="/administrativo/agenda"
+							</a> <a href="/administrativo/agenda"
 								class="btn btn-outline-light btn-sm text-dark border-0 fw-bold px-3 border-start border-end">Hoje</a>
-							<a th:href="@{/administrativo/agenda(mes=${mesExibicao == 12 ? 1 : mesExibicao + 1}, ano=${mesExibicao == 12 ? anoExibicao + 1 : anoExibicao})}"
+							<a
+								th:href="@{/administrativo/agenda(mes=${mesExibicao == 12 ? 1 : mesExibicao + 1}, ano=${mesExibicao == 12 ? anoExibicao + 1 : anoExibicao})}"
 								class="btn btn-outline-light btn-sm text-dark border-0 py-1 px-3">
 								<i class="fa-solid fa-chevron-right"></i>
 							</a>
 						</div>
 						<h4 class="fw-bold text-dark mb-0 text-capitalize ms-1 fs-5">
-							<span th:text="${T(java.time.Month).of(mesExibicao).getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('pt-BR'))}">Mês</span>
+							<span
+								th:text="${T(java.time.Month).of(mesExibicao).getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('pt-BR'))}">Mês</span>
 							<span class="text-muted fw-light" th:text="${anoExibicao}">2024</span>
 						</h4>
 					</div>
@@ -227,25 +267,35 @@
 					<div class="calendar-day-header">Sáb</div>
 
 					<th:block th:if="${diaSemanaInicio != 7}">
-						<div th:each="i : ${#numbers.sequence(0, diaSemanaInicio - 1)}" class="calendar-day day-empty"></div>
+						<div th:each="i : ${#numbers.sequence(0, diaSemanaInicio - 1)}"
+							class="calendar-day day-empty"></div>
 					</th:block>
 
 					<th:block th:each="dia : ${#numbers.sequence(1, totalDiasMes)}">
 
-						<div class="calendar-day" th:onclick="'verDetalhesDia(' + ${dia} + ',' + ${mesExibicao} + ',' + ${anoExibicao} + ')'">
+						<div class="calendar-day"
+							th:onclick="'verDetalhesDia(' + ${dia} + ',' + ${mesExibicao} + ',' + ${anoExibicao} + ')'">
 							<div class="day-number" th:text="${dia}"
 								th:classappend="${dia == #temporals.createNow().dayOfMonth and mesExibicao == #temporals.createNow().monthValue and anoExibicao == #temporals.createNow().year} ? 'day-today'">
 							</div>
 
 							<th:block th:each="evento : ${listaEventos}">
-								<div th:if="${evento.data.dayOfMonth == dia}" th:class="'event-badge ' + ${evento.tipo}" th:title="${evento.titulo}">
-									<i th:if="${evento.tipo == 'NIVER'}" class="fa-solid fa-cake-candles me-1"></i> 
-                                    <i th:if="${evento.tipo == 'ENVIO'}" class="fa-solid fa-paper-plane me-1"></i> 
-                                    <i th:if="${evento.tipo == 'FERIADO'}" class="fa-regular fa-calendar-check me-1"></i> 
-                                    <i th:if="${evento.tipo == 'TAREFA'}" class="fa-solid fa-list-check me-1"></i> 
-                                    <i th:if="${evento.tipo == 'REUNIAO'}" class="fa-solid fa-users me-1"></i> 
-                                    <i th:if="${evento.tipo == 'IMPORTANTE'}" class="fa-solid fa-triangle-exclamation me-1"></i> 
-                                    <span th:text="${evento.titulo}">Título</span>
+								<div th:if="${evento.data.dayOfMonth == dia}"
+									th:class="'event-badge ' + ${evento.tipo}"
+									th:title="${evento.titulo}">
+									<i th:if="${evento.tipo == 'NIVER'}"
+										class="fa-solid fa-cake-candles me-1"></i> <i
+										th:if="${evento.tipo == 'ENVIO'}"
+										class="fa-solid fa-paper-plane me-1"></i> <i
+										th:if="${evento.tipo == 'FERIADO'}"
+										class="fa-regular fa-calendar-check me-1"></i> <i
+										th:if="${evento.tipo == 'TAREFA'}"
+										class="fa-solid fa-list-check me-1"></i> <i
+										th:if="${evento.tipo == 'REUNIAO'}"
+										class="fa-solid fa-users me-1"></i> <i
+										th:if="${evento.tipo == 'IMPORTANTE'}"
+										class="fa-solid fa-triangle-exclamation me-1"></i> <span
+										th:text="${evento.titulo}">Título</span>
 								</div>
 							</th:block>
 						</div>
@@ -257,25 +307,33 @@
 		</div>
 	</main>
 
-    <div class="modal fade" id="modalDetalhesDia" tabindex="-1" aria-hidden="true">
+	<div class="modal fade" id="modalDetalhesDia" tabindex="-1"
+		aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content modal-modern-content">
 				<div class="modal-header bg-primary text-white p-3 border-0">
 					<h6 class="modal-title fw-bold mb-0">
-						<i class="fa-regular fa-calendar me-2"></i> <span id="modalTituloData">Detalhes</span>
+						<i class="fa-regular fa-calendar me-2"></i> <span
+							id="modalTituloData">Detalhes</span>
 					</h6>
-					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body p-0">
 					<div id="listaDetalhes" class="list-group list-group-flush"></div>
 					<div id="msgVazio" class="text-center py-4 d-none">
-						<i class="fa-regular fa-calendar-xmark fs-3 text-muted mb-2 opacity-50"></i>
+						<i
+							class="fa-regular fa-calendar-xmark fs-3 text-muted mb-2 opacity-50"></i>
 						<p class="text-muted small mb-0">Nenhum evento registrado.</p>
 					</div>
 				</div>
 				<div class="modal-footer bg-light border-0 p-2">
-					<button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Fechar</button>
-					<button type="button" class="btn btn-sm btn-primary fw-bold rounded-pill px-3" id="btnAdicionarNestaData">
+					<button type="button"
+						class="btn btn-sm btn-secondary rounded-pill px-3"
+						data-bs-dismiss="modal">Fechar</button>
+					<button type="button"
+						class="btn btn-sm btn-primary fw-bold rounded-pill px-3"
+						id="btnAdicionarNestaData">
 						<i class="fa-solid fa-plus me-1"></i> Adicionar
 					</button>
 				</div>
@@ -283,139 +341,237 @@
 		</div>
 	</div>
 
-    <div class="modal fade" id="modalNovoEvento" tabindex="-1" aria-hidden="true">
+	<div class="modal fade" id="modalNovoEvento" tabindex="-1"
+		aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-lg">
 			<div class="modal-content modal-modern-content">
 
 				<div class="modal-header border-0 pb-0 ps-4 pe-4 pt-4">
 					<h5 class="modal-title fw-bold text-dark fs-5">
-						<span class="text-primary me-2"><i class="fa-regular fa-calendar-plus"></i></span> Novo Agendamento
+						<span class="text-primary me-2"><i
+							class="fa-regular fa-calendar-plus"></i></span> Novo Agendamento
 					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 
-				<form th:action="@{/administrativo/agenda/salvar}" method="post" th:object="${novoLembrete}">
+				<form th:action="@{/administrativo/agenda/salvar}" method="post"
+					th:object="${novoLembrete}">
 					<div class="modal-body p-4 pt-3">
 						<input type="hidden" id="inputId" name="id" />
 
-						<div class="d-flex justify-content-between align-items-center mb-2 ms-1">
-							<label class="small fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">Qual o tipo do evento?</label>
-							<button type="button" class="btn btn-sm btn-link text-decoration-none fw-bold p-0" onclick="alternarModoCriacao(true)" id="btnNovoTipo">
+						<div
+							class="d-flex justify-content-between align-items-center mb-2 ms-1">
+							<label class="small fw-bold text-muted text-uppercase"
+								style="font-size: 0.75rem;">Qual o tipo do evento?</label>
+							<button type="button"
+								class="btn btn-sm btn-link text-decoration-none fw-bold p-0"
+								onclick="alternarModoCriacao(true)" id="btnNovoTipo">
 								<i class="fa-solid fa-plus me-1"></i>Novo Tipo
 							</button>
 						</div>
 
-						<div id="areaSelecaoTipos" class="d-flex gap-2 mb-4 w-100 overflow-auto pb-2">
-							<input type="radio" class="btn-check" name="tipo" id="tipoTarefa" value="TAREFA" checked> 
-                            <label class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm type-card" for="tipoTarefa" style="min-width: 120px;">
+						<div id="areaSelecaoTipos"
+							class="d-flex gap-2 mb-4 w-100 overflow-auto pb-2">
+							<input type="radio" class="btn-check" name="tipo" id="tipoTarefa"
+								value="TAREFA" checked> <label
+								class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm type-card"
+								for="tipoTarefa" style="min-width: 120px;">
 								<div class="d-flex flex-column align-items-center text-center">
-									<div class="icon-box bg-info bg-opacity-10 text-info rounded-circle mb-1 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+									<div
+										class="icon-box bg-info bg-opacity-10 text-info rounded-circle mb-1 d-flex align-items-center justify-content-center"
+										style="width: 30px; height: 30px;">
 										<i class="fa-solid fa-list-check" style="font-size: 0.85rem;"></i>
 									</div>
 									<div class="fw-bold text-dark" style="font-size: 0.8rem;">Tarefa</div>
 								</div>
-								<div class="check-indicator text-info"><i class="fa-solid fa-circle-check"></i></div>
-							</label> 
-                            
-                            <input type="radio" class="btn-check" name="tipo" id="tipoReuniao" value="REUNIAO"> 
-                            <label class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm type-card" for="tipoReuniao" style="min-width: 120px;">
+								<div class="check-indicator text-info">
+									<i class="fa-solid fa-circle-check"></i>
+								</div>
+							</label> <input type="radio" class="btn-check" name="tipo"
+								id="tipoReuniao" value="REUNIAO"> <label
+								class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm type-card"
+								for="tipoReuniao" style="min-width: 120px;">
 								<div class="d-flex flex-column align-items-center text-center">
-									<div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle mb-1 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+									<div
+										class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle mb-1 d-flex align-items-center justify-content-center"
+										style="width: 30px; height: 30px;">
 										<i class="fa-solid fa-users" style="font-size: 0.85rem;"></i>
 									</div>
 									<div class="fw-bold text-dark" style="font-size: 0.8rem;">Reunião</div>
 								</div>
-								<div class="check-indicator text-primary"><i class="fa-solid fa-circle-check"></i></div>
-							</label> 
-                            
-                            <input type="radio" class="btn-check" name="tipo" id="tipoImportante" value="IMPORTANTE"> 
-                            <label class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm type-card" for="tipoImportante" style="min-width: 120px;">
+								<div class="check-indicator text-primary">
+									<i class="fa-solid fa-circle-check"></i>
+								</div>
+							</label> <input type="radio" class="btn-check" name="tipo"
+								id="tipoImportante" value="IMPORTANTE"> <label
+								class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm type-card"
+								for="tipoImportante" style="min-width: 120px;">
 								<div class="d-flex flex-column align-items-center text-center">
-									<div class="icon-box bg-danger bg-opacity-10 text-danger rounded-circle mb-1 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
-										<i class="fa-solid fa-triangle-exclamation" style="font-size: 0.85rem;"></i>
+									<div
+										class="icon-box bg-danger bg-opacity-10 text-danger rounded-circle mb-1 d-flex align-items-center justify-content-center"
+										style="width: 30px; height: 30px;">
+										<i class="fa-solid fa-triangle-exclamation"
+											style="font-size: 0.85rem;"></i>
 									</div>
 									<div class="fw-bold text-dark" style="font-size: 0.8rem;">Urgente</div>
 								</div>
-								<div class="check-indicator text-danger"><i class="fa-solid fa-circle-check"></i></div>
+								<div class="check-indicator text-danger">
+									<i class="fa-solid fa-circle-check"></i>
+								</div>
 							</label>
 
 							<th:block th:each="tp : ${tiposPersonalizados}">
-								<input type="radio" class="btn-check" name="tipo" th:id="'tipo' + ${tp.id}" th:value="${tp.nome}">
-								<label class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm position-relative type-card" th:for="'tipo' + ${tp.id}" style="min-width: 120px;" th:styleappend="'--cor-personalizada: ' + ${tp.corHex}">
+								<input type="radio" class="btn-check" name="tipo"
+									th:id="'tipo' + ${tp.id}" th:value="${tp.nome}">
+								<label
+									class="btn btn-outline-light text-start p-2 flex-fill border shadow-sm position-relative type-card"
+									th:for="'tipo' + ${tp.id}" style="min-width: 120px;"
+									th:styleappend="'--cor-personalizada: ' + ${tp.corHex}">
 									<div class="d-flex flex-column align-items-center text-center">
-										<div class="icon-box bg-opacity-10 rounded-circle mb-1 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;" th:style="'background-color: ' + ${tp.corHex} + '20; color: ' + ${tp.corHex}">
-											<i class="fa-solid" style="font-size: 0.85rem;" th:classappend="${tp.icone}"></i>
+										<div
+											class="icon-box bg-opacity-10 rounded-circle mb-1 d-flex align-items-center justify-content-center"
+											style="width: 30px; height: 30px;"
+											th:style="'background-color: ' + ${tp.corHex} + '20; color: ' + ${tp.corHex}">
+											<i class="fa-solid" style="font-size: 0.85rem;"
+												th:classappend="${tp.icone}"></i>
 										</div>
-										<div class="fw-bold text-dark" style="font-size: 0.8rem;" th:text="${tp.nome}">Pers.</div>
+										<div class="fw-bold text-dark" style="font-size: 0.8rem;"
+											th:text="${tp.nome}">Pers.</div>
 									</div>
-									<div class="check-indicator" th:style="'color: ' + ${tp.corHex}"><i class="fa-solid fa-circle-check"></i></div>
+									<div class="check-indicator"
+										th:style="'color: ' + ${tp.corHex}">
+										<i class="fa-solid fa-circle-check"></i>
+									</div>
 								</label>
 							</th:block>
 						</div>
 
-						<div id="areaCriacaoTipo" class="card bg-light border-0 p-3 mb-4 d-none position-relative">
-							<button type="button" class="btn-close position-absolute top-0 end-0 m-2" onclick="alternarModoCriacao(false)"></button>
-							<h6 class="small fw-bold text-muted mb-2">CRIAR NOVA CATEGORIA</h6>
+						<div id="areaCriacaoTipo"
+							class="card bg-light border-0 p-3 mb-4 d-none position-relative">
+							<button type="button"
+								class="btn-close position-absolute top-0 end-0 m-2"
+								onclick="alternarModoCriacao(false)"></button>
+							<h6 class="small fw-bold text-muted mb-2">CRIAR NOVA
+								CATEGORIA</h6>
 							<div class="row g-2 align-items-center">
-								<div class="col-6"><input type="text" id="novoTipoNome" class="form-control form-control-sm" placeholder="Nome do Tipo"></div>
+								<div class="col-6">
+									<input type="text" id="novoTipoNome"
+										class="form-control form-control-sm"
+										placeholder="Nome do Tipo">
+								</div>
 								<div class="col-4">
 									<select id="novoTipoIcone" class="form-select form-select-sm">
-										<option value="fa-star">★ Geral</option><option value="fa-briefcase">💼 Trabalho</option><option value="fa-dumbbell">🏋️ Treino</option><option value="fa-graduation-cap">🎓 Estudo</option><option value="fa-plane">✈️ Viagem</option><option value="fa-heart-pulse">❤️ Saúde</option><option value="fa-house">🏠 Casa</option><option value="fa-cart-shopping">🛒 Compras</option><option value="fa-money-bill-wave">💲 Financeiro</option><option value="fa-utensils">🍽️ Almoço</option><option value="fa-car">🚗 Transporte</option><option value="fa-gamepad">🎮 Lazer</option>
+										<option value="fa-star">★ Geral</option>
+										<option value="fa-briefcase">💼 Trabalho</option>
+										<option value="fa-dumbbell">🏋️ Treino</option>
+										<option value="fa-graduation-cap">🎓 Estudo</option>
+										<option value="fa-plane">✈️ Viagem</option>
+										<option value="fa-heart-pulse">❤️ Saúde</option>
+										<option value="fa-house">🏠 Casa</option>
+										<option value="fa-cart-shopping">🛒 Compras</option>
+										<option value="fa-money-bill-wave">💲 Financeiro</option>
+										<option value="fa-utensils">🍽️ Almoço</option>
+										<option value="fa-car">🚗 Transporte</option>
+										<option value="fa-gamepad">🎮 Lazer</option>
 									</select>
 								</div>
-								<div class="col-2"><input type="color" id="novoTipoCor" class="form-control form-control-sm w-100" value="#6610f2"></div>
-								<div class="col-12 mt-2 text-end"><button type="button" class="btn btn-primary btn-sm rounded-pill px-3" onclick="salvarNovoTipo()">Salvar</button></div>
+								<div class="col-2">
+									<input type="color" id="novoTipoCor"
+										class="form-control form-control-sm w-100" value="#6610f2">
+								</div>
+								<div class="col-12 mt-2 text-end">
+									<button type="button"
+										class="btn btn-primary btn-sm rounded-pill px-3"
+										onclick="salvarNovoTipo()">Salvar</button>
+								</div>
 							</div>
 						</div>
 
 						<div class="card border shadow-sm rounded-3 overflow-hidden mb-3">
-							<input type="text" class="form-control border-0 rounded-0 fw-bold fs-6 px-3 pt-3 pb-2 shadow-none text-dark" id="inputTitulo" name="titulo" placeholder="Assunto do Evento" required>
+							<input type="text"
+								class="form-control border-0 rounded-0 fw-bold fs-6 px-3 pt-3 pb-2 shadow-none text-dark"
+								id="inputTitulo" name="titulo" placeholder="Assunto do Evento"
+								required>
 							<hr class="m-0 text-muted opacity-25">
-							<textarea class="form-control border-0 rounded-0 px-3 pt-2 pb-3 shadow-none text-secondary" name="descricao" rows="2" placeholder="Detalhes, links ou observações..." style="resize: none; font-size: 0.9rem;"></textarea>
+							<textarea
+								class="form-control border-0 rounded-0 px-3 pt-2 pb-3 shadow-none text-secondary"
+								name="descricao" rows="2"
+								placeholder="Detalhes, links ou observações..."
+								style="resize: none; font-size: 0.9rem;"></textarea>
 						</div>
 
 						<div class="row g-2 mb-2">
 							<input type="hidden" name="dataHora" id="inputDataHoraCompleta">
 							<div class="col-6">
-								<div class="d-flex align-items-center bg-light rounded-2 px-3 py-2 border h-100">
+								<div
+									class="d-flex align-items-center bg-light rounded-2 px-3 py-2 border h-100">
 									<i class="fa-regular fa-calendar text-primary me-2"></i>
-									<div class="w-100"><label class="fw-bold text-muted mb-0" style="font-size: 0.60rem;">DIA</label><input type="date" id="tempData" class="form-control form-control-sm border-0 p-0 bg-transparent shadow-none fw-bold text-dark" required></div>
+									<div class="w-100">
+										<label class="fw-bold text-muted mb-0"
+											style="font-size: 0.60rem;">DIA</label><input type="date"
+											id="tempData"
+											class="form-control form-control-sm border-0 p-0 bg-transparent shadow-none fw-bold text-dark"
+											required>
+									</div>
 								</div>
 							</div>
 							<div class="col-6">
-								<div class="d-flex align-items-center bg-light rounded-2 px-3 py-2 border h-100">
+								<div
+									class="d-flex align-items-center bg-light rounded-2 px-3 py-2 border h-100">
 									<i class="fa-regular fa-clock text-primary me-2"></i>
-									<div class="w-100"><label class="fw-bold text-muted mb-0" style="font-size: 0.60rem;">HORÁRIO</label><input type="time" id="tempHora" class="form-control form-control-sm border-0 p-0 bg-transparent shadow-none fw-bold text-dark" required></div>
+									<div class="w-100">
+										<label class="fw-bold text-muted mb-0"
+											style="font-size: 0.60rem;">HORÁRIO</label><input type="time"
+											id="tempHora"
+											class="form-control form-control-sm border-0 p-0 bg-transparent shadow-none fw-bold text-dark"
+											required>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer border-0 px-4 pb-3 pt-0">
-						<button type="button" class="btn btn-light btn-sm px-4 text-muted fw-bold rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-						<button type="submit" class="btn btn-primary btn-sm px-5 fw-bold rounded-pill shadow-sm"><i class="fa-solid fa-check me-2"></i>Agendar</button>
+						<button type="button"
+							class="btn btn-light btn-sm px-4 text-muted fw-bold rounded-pill"
+							data-bs-dismiss="modal">Cancelar</button>
+						<button type="submit"
+							class="btn btn-primary btn-sm px-5 fw-bold rounded-pill shadow-sm">
+							<i class="fa-solid fa-check me-2"></i>Agendar
+						</button>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 
-    <div class="modal fade" id="modalLeitura" tabindex="-1" aria-labelledby="modalAssunto" aria-hidden="true">
-		<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+	<div class="modal fade" id="modalLeitura" tabindex="-1"
+		aria-labelledby="modalAssunto" aria-hidden="true">
+		<div
+			class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content modal-modern-content">
 
 				<div class="modal-modern-header p-3">
 					<div class="d-flex align-items-start gap-3">
-						<div class="avatar-initials flex-shrink-0" style="width: 40px; height: 40px;">W</div>
+						<div class="avatar-initials flex-shrink-0"
+							style="width: 40px; height: 40px;">W</div>
 						<div class="flex-grow-1">
 							<div class="d-flex justify-content-between align-items-start">
-								<h5 class="modal-title fw-bolder text-dark mb-1 lh-sm" id="modalAssunto">Carregando...</h5>
-								<button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Fechar"></button>
+								<h5 class="modal-title fw-bolder text-dark mb-1 lh-sm"
+									id="modalAssunto">Carregando...</h5>
+								<button type="button" class="btn-close ms-2"
+									data-bs-dismiss="modal" aria-label="Fechar"></button>
 							</div>
 
-							<div class="d-flex flex-wrap gap-2 mt-1 align-items-center" style="font-size: 0.8rem;">
-								<span class="badge bg-light text-secondary border fw-normal px-2 py-1 rounded d-flex align-items-center"><i class="fa-regular fa-envelope me-1"></i> WinPost System</span> 
-                                <span class="badge bg-light text-primary border border-primary-subtle fw-normal px-2 py-1 rounded d-flex align-items-center"><i class="fa-solid fa-users me-1"></i> <span id="modalGrupo">...</span></span> 
-                                <span class="badge bg-light text-secondary border fw-normal px-2 py-1 rounded d-flex align-items-center"><i class="fa-regular fa-calendar me-1"></i> <span id="modalData">...</span></span>
+							<div class="d-flex flex-wrap gap-2 mt-1 align-items-center"
+								style="font-size: 0.8rem;">
+								<span
+									class="badge bg-light text-secondary border fw-normal px-2 py-1 rounded d-flex align-items-center"><i
+									class="fa-regular fa-envelope me-1"></i> WinPost System</span> <span
+									class="badge bg-light text-primary border border-primary-subtle fw-normal px-2 py-1 rounded d-flex align-items-center"><i
+									class="fa-solid fa-users me-1"></i> <span id="modalGrupo">...</span></span>
+								<span
+									class="badge bg-light text-secondary border fw-normal px-2 py-1 rounded d-flex align-items-center"><i
+									class="fa-regular fa-calendar me-1"></i> <span id="modalData">...</span></span>
 							</div>
 						</div>
 					</div>
@@ -423,30 +579,44 @@
 
 				<div class="modal-body px-3 py-3 bg-light">
 					<div class="message-body-card p-3">
-						<div id="modalConteudo" class="text-break" style="white-space: pre-wrap; font-size: 0.9rem;"></div>
+						<div id="modalConteudo" class="text-break"
+							style="white-space: pre-wrap; font-size: 0.9rem;"></div>
 					</div>
 
 					<div id="areaAnexosModal" class="d-none mt-3">
-						<h6 class="fw-bold text-muted mb-2 text-uppercase ps-1" style="font-size: 0.75rem;"><i class="fa-solid fa-paperclip me-1"></i> Anexos</h6>
+						<h6 class="fw-bold text-muted mb-2 text-uppercase ps-1"
+							style="font-size: 0.75rem;">
+							<i class="fa-solid fa-paperclip me-1"></i> Anexos
+						</h6>
 						<div class="d-flex flex-wrap gap-2">
-							<div class="border rounded px-2 py-1 bg-white text-dark d-flex align-items-center gap-2 shadow-sm">
-								<div class="bg-danger bg-opacity-10 text-danger rounded d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;"><i class="fa-solid fa-file-pdf" style="font-size: 0.75rem;"></i></div>
+							<div
+								class="border rounded px-2 py-1 bg-white text-dark d-flex align-items-center gap-2 shadow-sm">
+								<div
+									class="bg-danger bg-opacity-10 text-danger rounded d-flex align-items-center justify-content-center"
+									style="width: 24px; height: 24px;">
+									<i class="fa-solid fa-file-pdf" style="font-size: 0.75rem;"></i>
+								</div>
 								<div>
-									<div id="modalAnexos" class="fw-bold text-truncate" style="max-width: 200px; font-size: 0.8rem;">arquivo.pdf</div>
+									<div id="modalAnexos" class="fw-bold text-truncate"
+										style="max-width: 200px; font-size: 0.8rem;">arquivo.pdf</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer bg-light border-top-0 py-2 px-3">
-					<button type="button" class="btn btn-secondary btn-sm fw-bold rounded-pill px-4 shadow-sm" data-bs-dismiss="modal">Fechar</button>
+					<button type="button"
+						class="btn btn-secondary btn-sm fw-bold rounded-pill px-4 shadow-sm"
+						data-bs-dismiss="modal">Fechar</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script th:src="@{/js/agenda.js}"></script>
 

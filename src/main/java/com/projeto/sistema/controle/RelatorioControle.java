@@ -14,13 +14,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.servicos.RelatorioService;
 
+
 @Controller
+@PreAuthorize("hasAuthority('RELATORIO_VISUALIZAR')") // <-- O LEÃO DE CHÁCARA AQUI!
 public class RelatorioControle {
+    // ... todo o seu código continua igual para baixo
 
     @Autowired
     private ContatosRepositorio contatosRepositorio;

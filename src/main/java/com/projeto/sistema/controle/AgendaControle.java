@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize; // <-- O IMPORT ESTÁ AQUI
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,8 @@ public class AgendaControle {
     @Autowired
     private LembreteRepositorio lembreteRepositorio;
 
+    // FECHADURA: Apenas quem pode VER a agenda
+    @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
     @GetMapping("/administrativo/agenda")
     public ModelAndView acessarAgenda(@RequestParam(required = false) Integer mes, 
                                       @RequestParam(required = false) Integer ano) {
@@ -56,41 +59,32 @@ public class AgendaControle {
         LocalDateTime inicioMes = anoMes.atDay(1).atStartOfDay();
         LocalDateTime fimMes = anoMes.atEndOfMonth().atTime(LocalTime.MAX);
 
-        // BUSCAS NO BANCO DE DADOS
         String mesFormatadoBanco = String.format("/%02d", mesAtual);
         
-        // Esta busca traz TODOS do mês. Nós filtramos abaixo no Java.
         List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco);
-        
         List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetween(inicioMes, fimMes);
         List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetween(inicioMes, fimMes);
         
         List<EventoAgenda> eventos = new ArrayList<>();
         eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
 
-        // 1. PROCESSAR ANIVERSARIANTES (COM PROTEÇÃO DE DATA E FILTRO DA AGENDA)
+        // 1. PROCESSAR ANIVERSARIANTES
         for (Contatos c : aniversariantes) {
-        	
-        	// --- CORREÇÃO AQUI ---
-        	// Se a opção "Vincular à Agenda" estiver desmarcada (false), pula este contato.
         	if (!c.getExibirNaAgenda()) {
         		continue;
         	}
-        	// ---------------------
 
             if (c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
                 try {
                     int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
-                    
                     try {
                         LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, diaNiver);
                         eventos.add(new EventoAgenda(dataNiver, "NIVER", c.getNome(), "event-niver"));
                     } catch (DateTimeException e) {
-                        // Data inválida para este ano (ex: 29/02 em ano não bissexto).
+                        // Ignora
                     }
-                    
                 } catch (NumberFormatException e) {
-                    // Ignora contatos com formato de data inválido
+                    // Ignora
                 }
             }
         }
@@ -116,9 +110,7 @@ public class AgendaControle {
         mv.addObject("mesExibicao", mesAtual);
         mv.addObject("anoExibicao", anoAtual);
         mv.addObject("totalDiasMes", anoMes.lengthOfMonth());
-        
         mv.addObject("todosContatos", contatosRepositorio.findAll()); 
-        
         mv.addObject("novoLembrete", new Lembrete()); 
         
         int diaSemanaPrimeiroDia = anoMes.atDay(1).getDayOfWeek().getValue();
@@ -127,12 +119,16 @@ public class AgendaControle {
         return mv;
     }
 
+    // FECHADURA: Apenas quem pode CRIAR ou EDITAR na agenda
+    @PreAuthorize("hasAnyAuthority('AGENDA_CRIAR', 'AGENDA_EDITAR')")
     @PostMapping("/administrativo/agenda/salvar")
     public String salvarLembrete(Lembrete lembrete) {
         lembreteRepositorio.save(lembrete);
         return "redirect:/administrativo/agenda";
     }
 
+    // FECHADURA: Apenas quem pode EXCLUIR na agenda
+    @PreAuthorize("hasAuthority('AGENDA_EXCLUIR')")
     @GetMapping("/administrativo/agenda/remover/{id}") 
     public ResponseEntity<?> removerEvento(@PathVariable Long id) { 
         try {
@@ -147,14 +143,16 @@ public class AgendaControle {
         }
     }
 
-    // --- NOVO MÉTODO PARA BUSCAR DADOS PARA EDIÇÃO ---
+    // FECHADURA: Quem pode VER a agenda também precisa poder ver os detalhes para edição
+    @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
     @GetMapping("/administrativo/agenda/buscar/{id}")
     @ResponseBody
     public Lembrete buscarEventoParaEdicao(@PathVariable Long id) {
         return lembreteRepositorio.findById(id).orElse(null);
     }
-    // --------------------------------------------------
 
+    // FECHADURA: Apenas quem pode VER a agenda pode clicar num dia e ver os detalhes
+    @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
     @GetMapping("/administrativo/agenda/detalhes")
     @ResponseBody 
     public List<DetalheAgendaDTO> obterDetalhesDia(
@@ -164,24 +162,19 @@ public class AgendaControle {
         
         // 1. Aniversários
         String diaMesFormatado = String.format("%02d/%02d", data.getDayOfMonth(), data.getMonthValue());
-        
-        // A busca aqui já está filtrada pelo Repositório (que corrigimos antes), 
-        // mas por segurança, o Repositório deve ter o "AND c.exibirNaAgenda = true".
-        // Se o seu Repositório já estiver atualizado conforme seu último envio, isto funcionará perfeitamente.
         List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(diaMesFormatado);
         
         for (Contatos c : nivers) {
             detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
         }
         
-     // 2. Envios (Mensagens Enviadas)
+        // 2. Envios
         LocalDateTime inicio = data.atStartOfDay();
         LocalDateTime fim = data.atTime(LocalTime.MAX);
         
         List<MensagemLog> msgs = mensagemRepositorio.findByDataEnvioBetween(inicio, fim);
         
         for (MensagemLog m : msgs) {
-            // Formata a hora (Ex: "14:30") para aparecer no subtítulo
             String horaFormatada = m.getDataEnvio().toLocalTime().toString();
             if(horaFormatada.length() > 5) {
                 horaFormatada = horaFormatada.substring(0, 5);
@@ -190,8 +183,6 @@ public class AgendaControle {
             String nomeGrupo = (m.getNomeGrupoDestino() != null) ? m.getNomeGrupoDestino() : "Sem grupo";
             String subtitulo = horaFormatada + " - " + nomeGrupo;
 
-            // ADICIONA À LISTA COM O ID (4º Parâmetro)
-            // É aqui que o ID da mensagem é enviado para o botão do olho funcionar!
             detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), subtitulo, m.getId()));
         }
         

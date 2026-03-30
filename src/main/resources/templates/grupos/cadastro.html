@@ -1,161 +1,194 @@
 <!DOCTYPE html>
 <html xmlns:th="https://thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Novo Grupo | WinPost</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Novo Grupo | WinPost</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
-    <link rel="stylesheet" href="/css/estilo.css">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+<link rel="stylesheet" href="/css/estilo.css">
 </head>
 
 <body class="bg-light d-flex flex-column min-vh-100">
 
-    <div th:replace="~{fragments/navbar :: navbar}"></div>
+	<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    <main class="flex-grow-1">
-        <div class="container py-5">
+	<main class="flex-grow-1">
+		<div class="container py-5">
 
-            <div class="page-header-modern d-flex justify-content-between align-items-center mb-5 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <div class="avatar-modern me-3" style="width: 48px; height: 48px; font-size: 1.2rem;">
-                        <i class="fa-solid fa-layer-group"></i>
-                    </div>
-                    <div>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-1">
-                                <li class="breadcrumb-item small text-muted">Gestão</li>
-                                <li class="breadcrumb-item small active">Grupos</li>
-                            </ol>
-                        </nav>
-                        <h3 class="fw-bold text-dark mb-0">Novo Grupo</h3>
-                    </div>
-                </div>
-                <a href="/grupos/gerenciar" class="btn btn-outline-secondary btn-modern">
-                    <i class="fa-solid fa-arrow-left me-2"></i>Voltar
-                </a>
-            </div>
+			<div
+				class="page-header-modern d-flex justify-content-between align-items-center mb-5 shadow-sm">
+				<div class="d-flex align-items-center">
+					<div class="avatar-modern me-3"
+						style="width: 48px; height: 48px; font-size: 1.2rem;">
+						<i class="fa-solid fa-layer-group"></i>
+					</div>
+					<div>
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-1">
+								<li class="breadcrumb-item small text-muted">Gestão</li>
+								<li class="breadcrumb-item small active">Grupos</li>
+							</ol>
+						</nav>
+						<h3 class="fw-bold text-dark mb-0">Novo Grupo</h3>
+					</div>
+				</div>
+				<a href="/grupos/gerenciar"
+					class="btn btn-outline-secondary btn-modern"> <i
+					class="fa-solid fa-arrow-left me-2"></i>Voltar
+				</a>
+			</div>
 
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="sticky-top" style="top: 20px;">
-                        <form th:action="@{/grupos/salvar}" method="post" id="formGrupo" th:object="${grupo}">
-                            <input type="hidden" id="idsContatos" name="idsContatos" />
-                            
-                            <div class="card card-modern p-4">
-                                <h6 class="form-label-modern mb-4 border-bottom pb-2">Informações do Grupo</h6>
-                                
-                                <div class="mb-4">
-                                    <label for="inputNome" class="form-label-modern">Nome do Grupo *</label>
-                                    <input type="text" class="form-control form-control-modern" id="inputNome" th:field="*{nome}" placeholder="Ex: Clientes VIP" required>
-                                </div>
+			<div class="row g-4">
+				<div class="col-lg-4">
+					<div class="sticky-top" style="top: 20px;">
+						<form th:action="@{/grupos/salvar}" method="post" id="formGrupo"
+							th:object="${grupo}">
+							<input type="hidden" id="idsContatos" name="idsContatos" />
 
-                                <div class="mb-4">
-                                    <label for="inputDescricao" class="form-label-modern">Descrição</label>
-                                    <textarea class="form-control form-control-modern" id="inputDescricao" th:field="*{descricao}" rows="4" placeholder="Para que serve este grupo?"></textarea>
-                                </div>
+							<div class="card card-modern p-4">
+								<h6 class="form-label-modern mb-4 border-bottom pb-2">Informações
+									do Grupo</h6>
 
-                                <div class="p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center" style="background-color: #f8fafc; border: 1px dashed #cbd5e1;">
-                                    <span class="text-muted small fw-bold text-uppercase">Membros:</span>
-                                    <span id="contadorSelecao" class="h5 mb-0 fw-bold text-primary">0</span>
-                                </div>
+								<div class="mb-4">
+									<label for="inputNome" class="form-label-modern">Nome
+										do Grupo *</label> <input type="text"
+										class="form-control form-control-modern" id="inputNome"
+										th:field="*{nome}" placeholder="Ex: Clientes VIP" required>
+								</div>
 
-                                <button type="submit" class="btn btn-primary-modern btn-modern w-100 py-3 shadow-sm">
-                                    <i class="fa-solid fa-floppy-disk me-2"></i>Salvar Grupo
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+								<div class="mb-4">
+									<label for="inputDescricao" class="form-label-modern">Descrição</label>
+									<textarea class="form-control form-control-modern"
+										id="inputDescricao" th:field="*{descricao}" rows="4"
+										placeholder="Para que serve este grupo?"></textarea>
+								</div>
 
-                <div class="col-lg-8">
-                    <div class="card card-modern overflow-hidden">
-                        
-                        <div class="p-4 bg-white border-bottom">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div>
-                                    <h5 class="fw-bold mb-1">Membros Disponíveis</h5>
-                                    <p class="text-muted small mb-0">Selecione os contatos que deseja adicionar.</p>
-                                </div>
-                                <button type="button" class="btn btn-light btn-sm btn-modern border" id="btnToggleAll">
-                                    <i class="fa-solid fa-check-double text-primary me-2"></i><span id="txtBtnAll">Selecionar Todos</span>
-                                </button>
-                            </div>
+								<div
+									class="p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center"
+									style="background-color: #f8fafc; border: 1px dashed #cbd5e1;">
+									<span class="text-muted small fw-bold text-uppercase">Membros:</span>
+									<span id="contadorSelecao" class="h5 mb-0 fw-bold text-primary">0</span>
+								</div>
 
-                            <div class="p-3 rounded-3" style="background-color: #f1f5f9;">
-                                <form action="/grupos/cadastro" method="get" id="formFiltro" onsubmit="prepararFiltro()" class="row g-3 align-items-end">
-                                    <input type="hidden" name="nome" id="hiddenNome"> 
-                                    <input type="hidden" name="descricao" id="hiddenDescricao">
-                                    
-                                    <div class="col-md-4">
-                                        <label class="form-label-modern mb-1">Desde</label>
-                                        <input type="date" class="form-control form-control-modern border-0 shadow-sm" name="dataInicio" th:value="${dataInicio}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label-modern mb-1">Até</label>
-                                        <input type="date" class="form-control form-control-modern border-0 shadow-sm" name="dataFim" th:value="${dataFim}">
-                                    </div>
-                                    <div class="col-md-4 d-flex gap-2">
-                                        <button type="submit" class="btn btn-dark btn-sm flex-grow-1 btn-modern">Filtrar</button>
-                                        <a th:if="${dataInicio != null or dataFim != null}" href="/grupos/cadastro" class="btn btn-outline-danger btn-sm btn-modern">Limpar</a>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+								<button type="submit"
+									class="btn btn-primary-modern btn-modern w-100 py-3 shadow-sm">
+									<i class="fa-solid fa-floppy-disk me-2"></i>Salvar Grupo
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
 
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0" id="tabelaSelecao">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" style="width: 60px;">
-                                                <input type="checkbox" class="form-check-input" id="checkAll">
-                                            </th>
-                                            <th>Contato</th>
-                                            <th>Email</th>
-                                            <th class="text-end px-4">Local</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="c : ${listaContatos}" class="row-contato">
-                                            <td class="text-center">
-                                                <input type="checkbox" class="form-check-input check-item" th:value="${c.id}">
-                                            </td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar-modern me-3">
-                                                        <span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
-                                                    </div>
-                                                    <div>
-                                                        <span class="fw-bold text-dark d-block" th:text="${c.nome}">Nome</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-muted small" th:text="${c.email}">email</td>
-                                            <td class="text-end px-4">
-                                                <span class="badge-soft small" th:text="${c.cidade}">Local</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>      
-        </div>
-    </main>
+				<div class="col-lg-8">
+					<div class="card card-modern overflow-hidden">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+						<div class="p-4 bg-white border-bottom">
+							<div
+								class="d-flex justify-content-between align-items-center mb-4">
+								<div>
+									<h5 class="fw-bold mb-1">Membros Disponíveis</h5>
+									<p class="text-muted small mb-0">Selecione os contatos que
+										deseja adicionar.</p>
+								</div>
+								<button type="button"
+									class="btn btn-light btn-sm btn-modern border"
+									id="btnToggleAll">
+									<i class="fa-solid fa-check-double text-primary me-2"></i><span
+										id="txtBtnAll">Selecionar Todos</span>
+								</button>
+							</div>
 
-    <script th:src="@{/js/grupos.js}"></script>
+							<div class="p-3 rounded-3" style="background-color: #f1f5f9;">
+								<form action="/grupos/cadastro" method="get" id="formFiltro"
+									onsubmit="prepararFiltro()" class="row g-3 align-items-end">
+									<input type="hidden" name="nome" id="hiddenNome"> <input
+										type="hidden" name="descricao" id="hiddenDescricao">
+
+									<div class="col-md-4">
+										<label class="form-label-modern mb-1">Desde</label> <input
+											type="date"
+											class="form-control form-control-modern border-0 shadow-sm"
+											name="dataInicio" th:value="${dataInicio}">
+									</div>
+									<div class="col-md-4">
+										<label class="form-label-modern mb-1">Até</label> <input
+											type="date"
+											class="form-control form-control-modern border-0 shadow-sm"
+											name="dataFim" th:value="${dataFim}">
+									</div>
+									<div class="col-md-4 d-flex gap-2">
+										<button type="submit"
+											class="btn btn-dark btn-sm flex-grow-1 btn-modern">Filtrar</button>
+										<a th:if="${dataInicio != null or dataFim != null}"
+											href="/grupos/cadastro"
+											class="btn btn-outline-danger btn-sm btn-modern">Limpar</a>
+									</div>
+								</form>
+							</div>
+						</div>
+
+						<div class="card-body p-0">
+							<div class="table-responsive">
+								<table class="table align-middle mb-0" id="tabelaSelecao">
+									<thead>
+										<tr>
+											<th class="text-center" style="width: 60px;"><input
+												type="checkbox" class="form-check-input" id="checkAll">
+											</th>
+											<th>Contato</th>
+											<th>Email</th>
+											<th class="text-end px-4">Local</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="c : ${listaContatos}" class="row-contato">
+											<td class="text-center"><input type="checkbox"
+												class="form-check-input check-item" th:value="${c.id}">
+											</td>
+											<td>
+												<div class="d-flex align-items-center">
+													<div class="avatar-modern me-3">
+														<span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
+													</div>
+													<div>
+														<span class="fw-bold text-dark d-block"
+															th:text="${c.nome}">Nome</span>
+													</div>
+												</div>
+											</td>
+											<td class="text-muted small" th:text="${c.email}">email</td>
+											<td class="text-end px-4"><span class="badge-soft small"
+												th:text="${c.cidade}">Local</span></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script
+		src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+	<script th:src="@{/js/grupos.js}"></script>
 
 </body>
 </html>

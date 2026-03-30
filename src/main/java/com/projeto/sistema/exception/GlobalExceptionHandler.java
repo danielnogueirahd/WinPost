@@ -55,4 +55,12 @@ public class GlobalExceptionHandler {
         mv.addObject("message", e.getMessage());
         return mv;
     }
+ // NOVO IMPORT LÁ NO TOPO DO ARQUIVO (junto com os outros):
+    // import org.springframework.security.access.AccessDeniedException;
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public String handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
+        // Redireciona diretamente para a nossa tela nova de bloqueio
+        return "error/403";
+    }
 }

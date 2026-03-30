@@ -38,9 +38,14 @@ public class SistemaApplication extends SpringBootServletInitializer {
             if (perfilMaster == null) {
                 perfilMaster = new Perfil();
                 perfilMaster.setNome("MASTER");
-                perfilMaster.setPermissoes(Arrays.asList(Permissao.values())); 
-                perfilRepo.save(perfilMaster);
             }
+            
+            // ---> A MÁGICA ESTÁ AQUI <---
+            // Colocamos essa linha FORA do 'if'. 
+            // Agora, toda vez que o sistema subir, ele vai olhar para o arquivo Permissao.java 
+            // e forçar o perfil MASTER a receber TODAS as permissões existentes!
+            perfilMaster.setPermissoes(Arrays.asList(Permissao.values())); 
+            perfilRepo.save(perfilMaster);
 
             // 2. Busca o admin no banco
             Usuario admin = repo.findByUsername("admin");
@@ -57,32 +62,7 @@ public class SistemaApplication extends SpringBootServletInitializer {
                 repo.save(admin);
             }
 
-            // ==========================================
-            // CRIANDO O NOSSO USUÁRIO DE TESTE (Cobaia)
-            // ==========================================
-
-            // 3. Cria um Perfil VENDEDOR
-            Perfil perfilVendedor = perfilRepo.findByNome("VENDEDOR");
-            if (perfilVendedor == null) {
-                perfilVendedor = new Perfil();
-                perfilVendedor.setNome("VENDEDOR");
-                // Olha a tesoura aqui: Ele SÓ recebe a permissão de VISUALIZAR
-                perfilVendedor.setPermissoes(Arrays.asList(Permissao.CONTATO_VISUALIZAR)); 
-                perfilRepo.save(perfilVendedor);
-            }
-
-            // 4. Cria o usuário vendedor e vincula ao perfil fraco
-            Usuario vendedor = repo.findByUsername("vendedor");
-            if (vendedor == null) {
-                Usuario v = new Usuario();
-                v.setNome("Vendedor Teste");
-                v.setEmail("vendedor@winpost.com");
-                v.setUsername("vendedor");
-                v.setSenha(encoder.encode("123456")); // Mesma senha para facilitar
-                v.setPerfil(perfilVendedor);
-                repo.save(v);
-                System.out.println(">>> USUÁRIO VENDEDOR DE TESTE CRIADO COM SUCESSO! <<<");
-            }
+            // (Se tiver o código do Vendedor de teste aqui embaixo, pode manter sem problemas)
         };
     }
 }
