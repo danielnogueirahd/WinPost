@@ -1,4 +1,5 @@
-<div th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:fragment="navbar"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 	<link rel="stylesheet" href="/css/navbar.css">
 
@@ -10,9 +11,7 @@
 			<a href="javascript:history.back()"
 				class="text-white me-3 d-flex align-items-center text-decoration-none btn-voltar-nav"
 				title="Voltar"> <i class="fa-solid fa-chevron-left fs-5"></i>
-			</a> 
-			
-			<a class="navbar-brand d-flex align-items-center me-lg-4"
+			</a> <a class="navbar-brand d-flex align-items-center me-lg-4"
 				href="/administrativo"> <img src="/img/logoInput.png"
 				alt="Logótipo WINPOST" title="Página Inicial WINPOST" height="32"
 				class="me-2 bg-primary rounded px-2 shadow-sm">
@@ -24,56 +23,76 @@
 			</button>
 
 			<div class="collapse navbar-collapse" id="navbarMain">
-				
+
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
 
-					<li class="nav-item" sec:authorize="hasAuthority('AGENDA_VISUALIZAR')">
-						<a class="nav-link"
-						href="/administrativo/agenda"
+					<li class="nav-item"
+						sec:authorize="hasAuthority('AGENDA_VISUALIZAR')"><a
+						class="nav-link" href="/administrativo/agenda"
 						th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
 					</li>
 
-					<li class="nav-item">
-						<a class="nav-link"
+					<li class="nav-item"><a class="nav-link"
 						href="/administrativo"
 						th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
 					</li>
 
-					<li class="nav-item dropdown" sec:authorize="hasAnyAuthority('CONTATO_VISUALIZAR', 'GRUPO_VISUALIZAR')">
+					<li class="nav-item dropdown"
+						sec:authorize="hasAnyAuthority('CONTATO_VISUALIZAR', 'GRUPO_VISUALIZAR')">
 						<a class="nav-link dropdown-toggle" href="#" id="dropContatos"
 						role="button" data-bs-toggle="dropdown"
 						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Contato</a>
 						<ul class="dropdown-menu shadow border-0 mt-2"
 							aria-labelledby="dropContatos">
-							
-							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')">
-								<a class="dropdown-item py-2" href="/listarContatos"
+
+							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')"><a
+								class="dropdown-item py-2" href="/listarContatos"
 								th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
 									<i class="fa-solid fa-list me-2"
-									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>Listar Contatos
-								</a>
-							</li>
-							
-							<li sec:authorize="hasAuthority('GRUPO_VISUALIZAR')">
-								<a class="dropdown-item py-2" href="/grupos/gerenciar"
+									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>Listar
+									Contatos
+							</a></li>
+
+							<li sec:authorize="hasAuthority('GRUPO_VISUALIZAR')"><a
+								class="dropdown-item py-2" href="/grupos/gerenciar"
 								th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'bg-primary text-white' : ''">
 									<i class="fa-solid fa-layer-group me-2"
-									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>Listar Grupos
-								</a>
-							</li>
+									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>Listar
+									Grupos
+							</a></li>
 						</ul>
 					</li>
 
-					<li class="nav-item" sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')">
-						<a class="nav-link"
-						href="/mensagens/enviadas"
+					<li class="nav-item"
+						sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')"><a
+						class="nav-link" href="/mensagens/enviadas"
 						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
+					</li>
+					<li class="nav-item dropdown"
+						sec:authorize="hasAnyAuthority('USUARIO_VISUALIZAR', 'PERFIL_VISUALIZAR')">
+						<a class="nav-link dropdown-toggle" href="#" id="dropAdmin"
+						role="button" data-bs-toggle="dropdown"
+						th:classappend="${paginaAtiva == 'usuarios' || paginaAtiva == 'perfis'} ? 'active'">
+							<i class="fa-solid fa-shield-halved me-1 d-none d-lg-inline"></i>Acessos
+					</a>
+
+						<ul class="dropdown-menu shadow border-0 mt-2"
+							aria-labelledby="dropAdmin">
+
+							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')"><a
+								class="dropdown-item py-2" href="/administrativo/usuarios"
+								th:classappend="${paginaAtiva == 'usuarios'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-users me-2"
+									th:classappend="${paginaAtiva == 'usuarios'} ? 'text-white' : 'text-muted'"></i>Usuários
+							</a></li>
+
+						</ul>
 					</li>
 
 				</ul>
 
 				<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
-					
+
 					<li class="nav-item d-lg-none my-2"><hr class="text-white-50"></li>
 
 					<li class="nav-item"><a
@@ -129,18 +148,19 @@
 								<i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
 								<p class="mb-0">Nenhuma notificação nova</p>
 							</div>
-						</div>
-					</li>
+						</div></li>
 
-					<li class="nav-item dropdown ms-lg-3 border-start border-secondary ps-lg-3">
+					<li
+						class="nav-item dropdown ms-lg-3 border-start border-secondary ps-lg-3">
 						<a class="nav-link text-white d-flex align-items-center" href="#"
 						id="dropUsuario" role="button" data-bs-toggle="dropdown"
 						aria-expanded="false" title="Minha Conta"> <i
 							class="fa-solid fa-circle-user fs-4"></i> <span
 							class="d-lg-none ms-3">Minha Conta</span>
-						</a>
+					</a>
 
-						<ul class="dropdown-menu dropdown-menu-lg-end shadow border-0 mt-2"
+						<ul
+							class="dropdown-menu dropdown-menu-lg-end shadow border-0 mt-2"
 							aria-labelledby="dropUsuario">
 
 							<li><a class="dropdown-item py-2" href="/perfil"
@@ -163,7 +183,7 @@
 						</ul>
 					</li>
 				</ul>
-				
+
 			</div>
 		</div>
 	</nav>

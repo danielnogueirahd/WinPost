@@ -12,8 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus; // Importe o HttpStatus
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize; // <-- NOVO IMPORT DE SEGURANÇA
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,13 +45,15 @@ public class MensagemControle {
 	@Autowired
 	private EmailService emailService;
 
-	// --- REDIRECIONAMENTO PADRÃO ---
+	// FECHADURA: Apenas quem pode VISUALIZAR
+	@PreAuthorize("hasAuthority('MENSAGEM_VISUALIZAR')")
 	@GetMapping("/enviadas")
 	public String redirecionarEnviadas() {
 		return "redirect:/mensagens/caixa/ENVIADAS";
 	}
 
-	// --- LISTAGEM (CAIXA DE ENTRADA, ENVIADAS, LIXEIRA, ETC) ---
+	// FECHADURA: Apenas quem pode VISUALIZAR
+	@PreAuthorize("hasAuthority('MENSAGEM_VISUALIZAR')")
 	@GetMapping("/caixa/{pasta}")
 	public ModelAndView listarPorPasta(@PathVariable("pasta") String pastaUrl,
 			@RequestParam(value = "page", defaultValue = "0") int page,
@@ -69,7 +72,6 @@ public class MensagemControle {
 		Boolean filtroFavorito = null;
 		Boolean filtroImportante = null;
 
-		// Configura os filtros baseados na URL
 		switch (pastaNormalizada) {
 		case "FAVORITOS":
 			filtroFavorito = true;
@@ -84,25 +86,22 @@ public class MensagemControle {
 			break;
 		default:
 			filtroPastaBanco = pastaNormalizada;
-			break; // Ex: "ENVIADAS", "ENTRADA"
+			break; 
 		}
 
 		Page<MensagemLog> paginaMensagens = mensagemRepositorio.filtrarMensagens(filtroPastaBanco, filtroFavorito,
 				filtroImportante, comAnexo, busca, inicio, fim, pageRequest);
 
-		// Adiciona dados à View
 		mv.addObject("listaMensagens", paginaMensagens.getContent());
 		mv.addObject("paginaAtual", page);
 		mv.addObject("totalPaginas", paginaMensagens.getTotalPages());
 		mv.addObject("totalItens", paginaMensagens.getTotalElements());
 
-		// Mantém os filtros na tela
 		mv.addObject("filtroAnexo", comAnexo);
 		mv.addObject("termoBusca", busca);
 		mv.addObject("filtroData", data);
 		mv.addObject("pastaAtiva", pastaNormalizada);
 
-		// Contadores para o Menu Lateral
 		mv.addObject("cntEntrada", mensagemRepositorio.countByPastaAndLidaFalse("ENTRADA"));
 		mv.addObject("cntEnviadas", mensagemRepositorio.countByPasta("ENVIADAS"));
 		mv.addObject("cntFavoritos", mensagemRepositorio.countByFavoritoTrue());
@@ -112,7 +111,8 @@ public class MensagemControle {
 		return mv;
 	}
 
-	// --- DETALHES DA MENSAGEM (JSON) ---
+	// FECHADURA: Apenas quem pode VISUALIZAR (para ler a mensagem)
+	@PreAuthorize("hasAuthority('MENSAGEM_VISUALIZAR')")
 	@GetMapping("/detalhes/{id}")
 	@ResponseBody
 	public MensagemLog getDetalhes(@PathVariable Long id) {
@@ -124,8 +124,8 @@ public class MensagemControle {
 		return log;
 	}
 
-	// --- AÇÕES RÁPIDAS (Favoritar, Importante, Lixeira) ---
-
+	// FECHADURA: Organização da caixa pode ser feita por quem visualiza
+	@PreAuthorize("hasAuthority('MENSAGEM_VISUALIZAR')")
 	@PostMapping("/favoritar/{id}")
 	@ResponseBody
 	public ResponseEntity<Boolean> toggleFavorito(@PathVariable Long id) {
@@ -136,6 +136,7 @@ public class MensagemControle {
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
+	@PreAuthorize("hasAuthority('MENSAGEM_VISUALIZAR')")
 	@PostMapping("/importante/{id}")
 	@ResponseBody
 	public ResponseEntity<Boolean> toggleImportante(@PathVariable Long id) {
@@ -146,6 +147,8 @@ public class MensagemControle {
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
+	// FECHADURA: Apenas quem pode EXCLUIR
+	@PreAuthorize("hasAuthority('MENSAGEM_EXCLUIR')")
 	@PostMapping("/lixeira/{id}")
 	@ResponseBody
 	public ResponseEntity<Void> moverParaLixeira(@PathVariable Long id) {
@@ -156,25 +159,24 @@ public class MensagemControle {
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
+	// FECHADURA: Apenas quem pode EXCLUIR (pode restaurar da lixeira)
+	@PreAuthorize("hasAuthority('MENSAGEM_EXCLUIR')")
 	@PostMapping("/restaurar/{id}")
 	@ResponseBody
 	public ResponseEntity<Void> restaurarMensagem(@PathVariable Long id) {
 		return mensagemRepositorio.findById(id).map(msg -> {
-
-			// Verifica se a mensagem tem status.
-			// Modelos salvos não possuem status (é null), mensagens enviadas possuem
-			// "SUCESSO" ou "ERRO".
 			if (msg.getStatus() == null || msg.getStatus().trim().isEmpty()) {
-				msg.setPasta("ENTRADA"); // Restaura de volta para a tela de Modelos
+				msg.setPasta("ENTRADA"); 
 			} else {
-				msg.setPasta("ENVIADAS"); // Restaura de volta para a tela de Enviadas
+				msg.setPasta("ENVIADAS"); 
 			}
-
 			mensagemRepositorio.save(msg);
 			return ResponseEntity.ok().<Void>build();
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
+	// FECHADURA: Apenas quem pode EXCLUIR
+	@PreAuthorize("hasAuthority('MENSAGEM_EXCLUIR')")
 	@DeleteMapping("/excluir/{id}")
 	@ResponseBody
 	public ResponseEntity<Void> excluirPermanente(@PathVariable Long id) {
@@ -185,9 +187,8 @@ public class MensagemControle {
 		return ResponseEntity.notFound().build();
 	}
 
-	// --- ENVIO DE MENSAGENS E MODELOS ---
-
-	// 1. Tela de Preparação (Vazia ou com Modelo)
+	// FECHADURA: Apenas quem pode CRIAR (Enviar mensagens)
+	@PreAuthorize("hasAuthority('MENSAGEM_CRIAR')")
 	@GetMapping("/preparar-envio/{id}")
 	public ModelAndView prepararEnvio(@PathVariable Long id) {
 		ModelAndView mv = new ModelAndView("mensagens/preparar");
@@ -197,7 +198,8 @@ public class MensagemControle {
 		return mv;
 	}
 
-	// 2. Tela de Preparação (Vindo da tela de Grupos)
+	// FECHADURA: Apenas quem pode CRIAR
+	@PreAuthorize("hasAuthority('MENSAGEM_CRIAR')")
 	@GetMapping("/preparar-grupo/{idGrupo}")
 	public ModelAndView prepararEnvioGrupo(@PathVariable Long idGrupo) {
 		ModelAndView mv = new ModelAndView("mensagens/preparar");
@@ -213,7 +215,8 @@ public class MensagemControle {
 		return mv;
 	}
 
-	// 3. AÇÃO DE ENVIAR (Adicionado para completar a funcionalidade)
+	// FECHADURA: Apenas quem pode CRIAR
+	@PreAuthorize("hasAuthority('MENSAGEM_CRIAR')")
 	@PostMapping("/enviar")
 	public String enviarMensagem(@RequestParam("grupoId") Long grupoId, @RequestParam("assunto") String assunto,
 			@RequestParam("conteudo") String conteudo, RedirectAttributes attributes) {
@@ -223,15 +226,12 @@ public class MensagemControle {
 		if (grupoOpt.isPresent()) {
 			Grupo grupo = grupoOpt.get();
 
-			// Tenta enviar o e-mail usando o serviço injetado
 			try {
-				// emailService.enviar(grupo, assunto, conteudo); // Descomente e ajuste
-				// conforme seu EmailService
+				// emailService.enviar(grupo, assunto, conteudo); 
 			} catch (Exception e) {
-				e.printStackTrace(); // Apenas loga o erro, mas salva no banco
+				e.printStackTrace(); 
 			}
 
-			// Salva o registro na pasta ENVIADAS
 			MensagemLog enviada = new MensagemLog();
 			enviada.setPasta("ENVIADAS");
 			enviada.setNomeGrupoDestino(grupo.getNome());
@@ -241,7 +241,6 @@ public class MensagemControle {
 			enviada.setLida(true);
 			enviada.setStatus("SUCESSO");
 
-			// Se tiver lista de contatos, salva a quantidade
 			if (grupo.getContatos() != null) {
 				enviada.setTotalDestinatarios(grupo.getContatos().size());
 			}
@@ -258,12 +257,13 @@ public class MensagemControle {
 		return "redirect:/mensagens/caixa/ENVIADAS";
 	}
 
-	// 4. Salvar Rascunho/Modelo (Simulador de Entrada)
+	// FECHADURA: Apenas quem pode CRIAR (Modelos de envio)
+	@PreAuthorize("hasAuthority('MENSAGEM_CRIAR')")
 	@PostMapping("/salvarModelo")
 	public String salvarModelo(@RequestParam("categoria") String categoria, @RequestParam("assunto") String assunto,
 			@RequestParam("conteudo") String conteudo) {
 		MensagemLog modelo = new MensagemLog();
-		modelo.setPasta("ENTRADA"); // Salva na Entrada como simulação/rascunho
+		modelo.setPasta("ENTRADA"); 
 		modelo.setNomeGrupoDestino(categoria.toUpperCase());
 		modelo.setAssunto(assunto);
 		modelo.setConteudo(conteudo);
@@ -273,7 +273,8 @@ public class MensagemControle {
 		return "redirect:/mensagens/caixa/ENTRADA";
 	}
 
-	// 5. Agendar (Redireciona para Agenda)
+	// FECHADURA: Apenas quem pode CRIAR
+	@PreAuthorize("hasAuthority('MENSAGEM_CRIAR')")
 	@PostMapping("/agendar-modelo")
 	public String agendarModelo(@RequestParam("assunto") String assunto, @RequestParam("conteudo") String conteudo) {
 		String tituloCodificado = assunto;
@@ -285,19 +286,16 @@ public class MensagemControle {
 		return "redirect:/administrativo/agenda?acao=novoEvento&titulo=" + tituloCodificado;
 	}
 
-	// --- NOVO MÉTODO: SALVAR OBSERVAÇÃO ---
+	// FECHADURA: Organização pode ser feita por quem visualiza
+	@PreAuthorize("hasAuthority('MENSAGEM_VISUALIZAR')")
 	@PostMapping("/salvarObservacao")
 	@ResponseBody
 	public ResponseEntity<?> salvarObservacao(@RequestParam Long id, @RequestParam String observacao) {
 		try {
-			// Busca a mensagem pelo ID
-			// CORREÇÃO: Usar 'mensagemRepositorio' e não 'mensagemLogRepositorio'
 			MensagemLog mensagem = mensagemRepositorio.findById(id).orElse(null);
 
 			if (mensagem != null) {
-				// Atualiza o texto da observação
 				mensagem.setObservacao(observacao);
-				// Salva no banco
 				mensagemRepositorio.save(mensagem);
 				return ResponseEntity.ok("Salvo com sucesso!");
 			}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestão de Utilizadores | WinPost</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+	<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+	<div class="container-fluid px-4 mt-4 mb-5">
+
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+				<div>
+					<h2 class="fw-bold text-dark mb-0 h3">Utilizadores e Acessos</h2>
+					<p class="text-muted mb-0 small">Gere quem pode entrar e o que pode fazer no sistema.</p>
+				</div>
+			</div>
+
+			<div class="d-flex gap-2">
+				<a href="/administrativo/usuarios/novo" class="btn btn-primary fw-bold shadow-sm" sec:authorize="hasAuthority('USUARIO_CRIAR')"> 
+					<i class="fa-solid fa-user-plus"></i> <span class="d-none d-md-inline ms-1">Novo Utilizador</span>
+				</a>
+			</div>
+		</div>
+
+		<div class="card shadow-sm border-0">
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle mb-0">
+						<thead class="bg-light text-secondary">
+							<tr>
+								<th class="ps-4">Nome</th>
+								<th>E-mail</th>
+								<th>Username</th>
+								<th>Perfil de Acesso</th>
+								<th class="text-end pe-4">Ações</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="usuario : ${listaUsuarios}">
+								
+								<td class="ps-4">
+									<div class="d-flex align-items-center">
+										<div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3 shadow-sm" style="width: 40px; height: 40px; font-weight: bold;">
+											<span th:text="${#strings.substring(usuario.nome, 0, 1).toUpperCase()}">A</span>
+										</div>
+										<span class="fw-bold text-dark" th:text="${usuario.nome}">Nome do Utilizador</span>
+									</div>
+								</td>
+								
+								<td class="text-muted small">
+									<i class="fa-regular fa-envelope me-1"></i> <span th:text="${usuario.email}">email@dominio.com</span>
+								</td>
+								
+								<td>
+									<span class="badge bg-light text-dark border" th:text="'@' + ${usuario.username}">@username</span>
+								</td>
+								
+								<td>
+									<span th:if="${usuario.perfil != null}" class="badge bg-success bg-opacity-10 text-light border border-success border-opacity-25 px-2 py-1" th:text="${usuario.perfil.nome}">ADMIN</span>
+									<span th:unless="${usuario.perfil != null}" class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">Sem Perfil</span>
+								</td>
+								
+								<td class="text-end pe-4">
+									<div class="btn-group">
+										<a th:href="@{/administrativo/usuarios/editar/{id}(id=${usuario.id})}" class="btn btn-sm btn-outline-primary border-0" title="Editar" sec:authorize="hasAuthority('USUARIO_EDITAR')"> 
+											<i class="fa-solid fa-pen-to-square"></i>
+										</a>
+										<button type="button" class="btn btn-sm btn-outline-danger border-0" title="Excluir" sec:authorize="hasAuthority('USUARIO_EXCLUIR')">
+											<i class="fa-regular fa-trash-can"></i>
+										</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

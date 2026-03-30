@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org">
+<html xmlns:th="https://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,12 +16,11 @@
 /* --- LAYOUT DE APLICATIVO (MAILBOX) --- */
 body {
 	background-color: #f4f7fe !important;
-	overflow-y: hidden; /* Evita scroll duplo na página toda */
+	overflow-y: hidden;
 }
 
 .mailbox-wrapper {
 	height: calc(100vh - 130px);
-	/* Altura exata da tela menos o menu superior */
 	min-height: 600px;
 	background: #ffffff;
 	border-radius: 16px;
@@ -31,7 +30,6 @@ body {
 	overflow: hidden;
 }
 
-/* --- SIDEBAR ESQUERDA FIXA --- */
 .sidebar-caixa {
 	width: 260px;
 	background-color: #f8fafc;
@@ -44,7 +42,6 @@ body {
 	overflow-y: auto;
 }
 
-/* Scrollbar invisível na sidebar para visual clean */
 .sidebar-caixa::-webkit-scrollbar {
 	width: 4px;
 }
@@ -81,7 +78,7 @@ body {
 	color: #0d6efd;
 	font-weight: 700;
 }
-/* Estilos Específicos dos Menus Ativos */
+
 .menu-item.active-enviadas {
 	background-color: #f0fdf4;
 	color: #16a34a;
@@ -104,7 +101,6 @@ body {
 	justify-content: center;
 }
 
-/* --- CONTEÚDO PRINCIPAL (LISTA) --- */
 .content-caixa {
 	flex-grow: 1;
 	display: flex;
@@ -128,7 +124,6 @@ body {
 	background: #fff;
 }
 
-/* Custom Scrollbar para a lista de emails */
 .content-body::-webkit-scrollbar {
 	width: 8px;
 }
@@ -143,7 +138,6 @@ body {
 	border: 2px solid #f8fafc;
 }
 
-/* --- ESTILOS DOS ITENS DE EMAIL --- */
 .email-row {
 	border-bottom: 1px solid #f1f5f9;
 	transition: all 0.15s ease;
@@ -156,10 +150,8 @@ body {
 .email-row:hover {
 	background-color: #f8fafc;
 	box-shadow: inset 4px 0 0 #0d6efd;
-	/* Linha azul de destaque na esquerda */
 }
 
-/* Botão Primário com Gradiente */
 .btn-compose {
 	background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
 	color: white;
@@ -178,7 +170,6 @@ body {
 	box-shadow: 0 6px 15px rgba(13, 110, 253, 0.35);
 }
 
-/* Barra de Pesquisa */
 .search-modern {
 	background: #f8fafc;
 	border-radius: 50px;
@@ -208,7 +199,6 @@ body {
 	color: #64748b;
 }
 
-/* Efeito de hover vermelho para o botão da lixeira na tela de mensagens */
 .lixeira-hover:hover {
 	color: #dc3545 !important;
 	background-color: #fce8e6 !important;
@@ -226,6 +216,7 @@ body {
 
 			<div class="d-lg-none mb-3">
 				<a href="/grupos/gerenciar"
+					sec:authorize="hasAuthority('MENSAGEM_CRIAR')"
 					class="btn btn-primary rounded-pill shadow-sm py-2 px-4 fw-bold w-100 mb-3">
 					<i class="fa-solid fa-pen-to-square me-2"></i>Nova Mensagem
 				</a>
@@ -245,6 +236,7 @@ body {
 				<div class="sidebar-caixa d-none d-lg-flex">
 
 					<a href="/grupos/gerenciar"
+						sec:authorize="hasAuthority('MENSAGEM_CRIAR')"
 						class="btn-compose text-decoration-none mb-4 w-100"> <i
 						class="fa-solid fa-pen-to-square me-2"></i>Escrever
 					</a>
@@ -312,6 +304,7 @@ body {
 							</form>
 
 							<button th:if="${pastaAtiva == 'ENTRADA'}"
+								sec:authorize="hasAuthority('MENSAGEM_CRIAR')"
 								class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill fw-bold shadow-sm"
 								onclick="abrirModalCriacao()">
 								<i class="fa-solid fa-plus"></i> Novo Modelo
@@ -347,7 +340,7 @@ body {
 														th:onclick="'toggleAction(' + ${msg.id} + ', \'favoritar\', this, \'star\')'"><i
 															class="fa-solid fa-star me-2 text-warning"></i>Favoritar</a></li>
 													<li><hr class="dropdown-divider"></li>
-													<li><a class="dropdown-item small text-danger"
+													<li sec:authorize="hasAuthority('MENSAGEM_EXCLUIR')"><a class="dropdown-item small text-danger"
 														href="#"
 														th:onclick="'abrirModalLixeira(' + ${msg.id} + ')'"><i
 															class="fa-solid fa-trash-can me-2"></i>Excluir</a></li>
@@ -365,6 +358,7 @@ body {
 
 										<div class="mt-auto pt-3 border-top">
 											<button
+												sec:authorize="hasAuthority('MENSAGEM_CRIAR')"
 												class="btn btn-light text-primary border border-primary-subtle w-100 rounded-pill fw-bold hover-bg-light"
 												onclick="usarModelo(this)" th:data-id="${msg.id}">
 												<i class="fa-solid fa-wand-magic-sparkles me-2"></i>Utilizar
@@ -385,6 +379,7 @@ body {
 									<p class="text-secondary mb-4">Você ainda não possui
 										modelos salvos.</p>
 									<button
+										sec:authorize="hasAuthority('MENSAGEM_CRIAR')"
 										class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm"
 										onclick="abrirModalCriacao()">Criar Meu Primeiro
 										Modelo</button>
@@ -458,6 +453,7 @@ body {
 												onclick="event.stopPropagation()">
 												<div th:if="${pastaAtiva != 'LIXEIRA'}">
 													<button type="button"
+														sec:authorize="hasAuthority('MENSAGEM_EXCLUIR')"
 														class="btn btn-sm text-secondary hover-bg-light rounded-circle lixeira-hover"
 														th:onclick="'abrirModalLixeira(' + ${msg.id} + ')'"
 														title="Excluir">
@@ -465,7 +461,7 @@ body {
 													</button>
 												</div>
 
-												<div th:if="${pastaAtiva == 'LIXEIRA'}" class="d-flex gap-1">
+												<div th:if="${pastaAtiva == 'LIXEIRA'}" class="d-flex gap-1" sec:authorize="hasAuthority('MENSAGEM_EXCLUIR')">
 													<button type="button"
 														class="btn btn-sm text-success hover-bg-light rounded-circle"
 														th:onclick="'restaurarMensagem(' + ${msg.id} + ')'"
@@ -599,6 +595,7 @@ body {
 								<i class="fa-solid fa-print"></i>
 							</button>
 							<button type="button"
+								sec:authorize="hasAuthority('MENSAGEM_EXCLUIR')"
 								class="btn btn-light btn-sm rounded-circle text-danger lixeira-hover"
 								id="btnExcluirModal" title="Excluir">
 								<i class="fa-regular fa-trash-can"></i>
