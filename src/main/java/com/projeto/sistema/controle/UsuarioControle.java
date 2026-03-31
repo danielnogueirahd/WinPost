@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,22 +50,53 @@ public class UsuarioControle {
         return mv;
     }
 
-    // FECHADURA: Apenas quem tem permissão para CRIAR salva novos no banco
-    @PreAuthorize("hasAuthority('USUARIO_CRIAR')")
+ // FECHADURA: Tanto quem CRIA quanto quem EDITA pode salvar
+    @PreAuthorize("hasAnyAuthority('USUARIO_CRIAR', 'USUARIO_EDITAR')")
     @PostMapping("/salvar")
     public String salvarUsuario(Usuario usuario, RedirectAttributes attributes) {
         
-        // Verifica se é um usuário NOVO (não tem ID ainda)
+        // Se o ID for null, é um NOVO usuário
         if (usuario.getId() == null) {
-            // Pega a senha que foi digitada na tela e transforma num código ilegível (Hash)
             String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
             usuario.setSenha(senhaCriptografada);
-        } 
+        } else {
+            // Se já tem ID, é uma EDIÇÃO! Busca o usuário antigo no banco
+            Usuario usuarioAntigo = usuarioRepositorio.findById(usuario.getId()).orElse(null);
+            
+            if (usuarioAntigo != null) {
+                // Se você digitou uma senha nova na tela, ele criptografa a nova
+                if (usuario.getSenha() != null && !usuario.getSenha().trim().isEmpty()) {
+                    usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+                } else {
+                    // Se você deixou a senha em branco na tela, ele mantém a senha antiga que estava no banco
+                    usuario.setSenha(usuarioAntigo.getSenha());
+                }
+            }
+        }
         
-        // Salva a pessoa no banco de dados
         usuarioRepositorio.save(usuario);
+        return "redirect:/administrativo/usuarios";
+    }
+
+    // FECHADURA: Apenas quem tem permissão para EDITAR
+    @PreAuthorize("hasAuthority('USUARIO_EDITAR')")
+    @GetMapping("/editar/{id}")
+    public ModelAndView editarUsuario(@PathVariable("id") Long id) {
+        ModelAndView mv = new ModelAndView("administrativo/usuarios/cadastro");
         
-        // Redireciona de volta para a tabela
+        // Pega o usuário no banco pelo ID e joga na tela
+        mv.addObject("usuario", usuarioRepositorio.findById(id).orElse(new Usuario()));
+        mv.addObject("listaPerfis", perfilRepositorio.findAll());
+        mv.addObject("paginaAtiva", "usuarios");
+        
+        return mv;
+    }
+
+    // FECHADURA: Apenas quem tem permissão para EXCLUIR
+    @PreAuthorize("hasAuthority('USUARIO_EXCLUIR')")
+    @GetMapping("/remover/{id}")
+    public String removerUsuario(@PathVariable("id") Long id) {
+        usuarioRepositorio.deleteById(id);
         return "redirect:/administrativo/usuarios";
     }
 }

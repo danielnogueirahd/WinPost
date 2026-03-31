@@ -1,7 +1,7 @@
 package com.projeto.sistema.servicos;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,41 +18,31 @@ import com.projeto.sistema.modelos.Usuario;
 import com.projeto.sistema.repositorios.UsuarioRepositorio;
 
 @Service
-@Transactional // Muito importante: garante que a lista de permissões seja lida corretamente do banco
+@Transactional
 public class ImplementsUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UsuarioRepositorio usuarioRepository;
+	@Autowired
+	private UsuarioRepositorio usuarioRepositorio;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsername(username);
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		// 1. Busca o usuário no banco pelo username
+		Usuario usuario = usuarioRepositorio.findByUsername(username);
 
-        if (usuario == null) {
-            throw new UsernameNotFoundException("Usuário não encontrado!");
-        }
+		if (usuario == null) {
+			throw new UsernameNotFoundException("Usuário não encontrado!");
+		}
 
-        // A MÁGICA ACONTECE AQUI: Criamos a "mochila" de permissões do Spring
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        
-        // Se o usuário tem um perfil...
-        if (usuario.getPerfil() != null) {
-            
-            // 1. Adicionamos o nome do perfil dele como uma ROLE (Ex: ROLE_MASTER)
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getPerfil().getNome()));
-            
-            // 2. Abrimos o Perfil, pegamos cada uma das Permissões do Enum e colocamos na mochila
-            for (Permissao permissao : usuario.getPerfil().getPermissoes()) {
-                authorities.add(new SimpleGrantedAuthority(permissao.name()));
-            }
-        }
+		// 2. Traduz as permissões do seu Perfil para os "Crachás" do Spring Security
+		List<GrantedAuthority> autoridades = new ArrayList<>();
+		
+		if (usuario.getPerfil() != null && usuario.getPerfil().getPermissoes() != null) {
+			for (Permissao permissao : usuario.getPerfil().getPermissoes()) {
+				autoridades.add(new SimpleGrantedAuthority(permissao.name()));
+			}
+		}
 
-        // O Spring Security pega essa mochila e deixa o usuário entrar na festa
-        return new User(
-            usuario.getUsername(), 
-            usuario.getSenha(), 
-            true, true, true, true, 
-            authorities
-        );
-    }
+		// 3. Retorna o usuário prontinho para o Spring liberar a entrada
+		return new User(usuario.getUsername(), usuario.getSenha(), true, true, true, true, autoridades);
+	}
 }
