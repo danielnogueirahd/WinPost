@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestão de Perfis | WinPost</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+	<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+	<div class="container-fluid px-4 mt-4 mb-5">
+
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div
+				class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+				<div>
+					<h2 class="fw-bold text-dark mb-0 h3">Perfis de Acesso</h2>
+					<p class="text-muted mb-0 small">Gere os cargos e controle o
+						nível de permissões do sistema.</p>
+				</div>
+			</div>
+
+			<div class="d-flex gap-2">
+				<a href="/administrativo/perfis/novo"
+					class="btn btn-primary fw-bold shadow-sm"> <i
+					class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo
+						Perfil</span>
+				</a>
+			</div>
+		</div>
+
+		<div class="card shadow-sm border-0">
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle mb-0">
+						<thead class="bg-light text-secondary">
+							<tr>
+								<th class="ps-4">Nome do Perfil</th>
+								<th>Nº de Permissões</th>
+								<th class="text-end pe-4">Ações</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="perfil : ${listaPerfis}">
+
+								<td class="ps-4">
+									<div class="d-flex align-items-center">
+										<i class="fa-solid fa-shield-halved text-primary me-3 fs-5"></i>
+										<span class="fw-bold text-dark" th:text="${perfil.nome}">ADMINISTRADOR</span>
+									</div>
+								</td>
+
+								<td><span
+									class="badge bg-success bg-opacity-10 text-light border px-3 py-1 rounded-pill"
+									th:text="${#lists.size(perfil.permissoes)} + ' permissões liberadas'">
+										10 permissões </span></td>
+
+								<td class="text-end pe-4">
+									<div class="btn-group">
+										<a
+											th:href="@{/administrativo/perfis/editar/{id}(id=${perfil.id})}"
+											class="btn btn-sm btn-outline-primary border-0"
+											title="Editar"> <i class="fa-solid fa-pen-to-square"></i>
+										</a>
+
+										<button type="button"
+											class="btn btn-sm btn-outline-danger border-0"
+											title="Excluir" data-bs-toggle="modal"
+											data-bs-target="#modalExclusaoPerfil"
+											th:data-id="${perfil.id}" th:data-nome="${perfil.nome}"
+											onclick="prepararExclusaoPerfil(this)">
+											<i class="fa-regular fa-trash-can"></i>
+										</button>
+									</div>
+								</td>
+							</tr>
+
+							<tr th:if="${#lists.isEmpty(listaPerfis)}">
+								<td colspan="3" class="text-center py-5 text-muted"><i
+									class="fa-solid fa-folder-open fs-2 mb-3 opacity-50"></i>
+									<p class="mb-0">Nenhum perfil de acesso cadastrado.</p></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="modal fade" id="modalExclusaoPerfil" tabindex="-1"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-sm">
+			<div class="modal-content border-0 shadow-lg rounded-4 text-center">
+				<div class="modal-body p-4">
+					<div class="mb-3 text-danger">
+						<i class="fa-solid fa-triangle-exclamation fs-1"></i>
+					</div>
+					<h6 class="fw-bold mb-2">Excluir Perfil?</h6>
+					<p class="small text-muted mb-4">
+						Tem certeza que deseja excluir o perfil <strong
+							id="nomePerfilExclusao" class="text-dark"></strong>? Esta ação
+						não pode ser desfeita e pode afetar utilizadores vinculados a ele.
+					</p>
+
+					<div class="d-flex gap-2 justify-content-center">
+						<button type="button"
+							class="btn btn-light rounded-pill px-3 fw-bold text-secondary"
+							data-bs-dismiss="modal">Cancelar</button>
+						<a href="#" id="btnConfirmarExclusaoPerfil"
+							class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Sim,
+							Excluir</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+		function prepararExclusaoPerfil(botao) {
+			var id = botao.getAttribute('data-id');
+			var nome = botao.getAttribute('data-nome');
+
+			document.getElementById('nomePerfilExclusao').textContent = nome;
+			document.getElementById('btnConfirmarExclusaoPerfil').href = '/administrativo/perfis/remover/'
+					+ id;
+		}
+	</script>
+</body>
+</html>

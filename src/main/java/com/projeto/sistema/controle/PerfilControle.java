@@ -17,61 +17,59 @@ import com.projeto.sistema.repositorios.PerfilRepositorio;
 @RequestMapping("/administrativo/perfis")
 public class PerfilControle {
 
-    @Autowired
-    private PerfilRepositorio perfilRepositorio;
+	@Autowired
+	private PerfilRepositorio perfilRepositorio;
 
-    // FECHADURA: Apenas quem pode VISUALIZAR perfis
-    @PreAuthorize("hasAuthority('PERFIL_VISUALIZAR')")
-    @GetMapping
-    public ModelAndView listarPerfis() {
-        ModelAndView mv = new ModelAndView("administrativo/perfis/lista");
-        mv.addObject("listaPerfis", perfilRepositorio.findAll());
-        mv.addObject("paginaAtiva", "perfis");
-        return mv;
-    }
+	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN ENTRAR
+	// @PreAuthorize("hasAuthority('PERFIL_VISUALIZAR')")
+	@GetMapping
+	public ModelAndView listarPerfis() {
+		ModelAndView mv = new ModelAndView("administrativo/perfis/lista");
+		mv.addObject("listaPerfis", perfilRepositorio.findAll());
+		mv.addObject("paginaAtiva", "perfis");
+		return mv;
+	}
 
-    // FECHADURA: Apenas quem pode CRIAR perfis
-    @PreAuthorize("hasAuthority('PERFIL_CRIAR')")
-    @GetMapping("/novo")
-    public ModelAndView novoPerfil() {
-        ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
-        mv.addObject("perfil", new Perfil());
-        
-        // Manda todas as permissões do sistema (Enum) para o HTML criar as caixinhas (checkbox)
-        mv.addObject("todasPermissoes", Permissao.values());
-        
-        mv.addObject("paginaAtiva", "perfis");
-        return mv;
-    }
+	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN CRIAR O PRIMEIRO
+	@PreAuthorize("hasAuthority('PERFIL_CRIAR')")
+	@GetMapping("/novo")
+	public ModelAndView novoPerfil() {
+		ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
+		mv.addObject("perfil", new Perfil());
+		mv.addObject("todasPermissoes", Permissao.values());
+		mv.addObject("paginaAtiva", "perfis");
+		return mv;
+	}
 
-    // FECHADURA: Quem pode CRIAR ou EDITAR pode salvar
-    @PreAuthorize("hasAnyAuthority('PERFIL_CRIAR', 'PERFIL_EDITAR')")
-    @PostMapping("/salvar")
-    public String salvarPerfil(Perfil perfil) {
-        perfilRepositorio.save(perfil);
-        return "redirect:/administrativo/perfis";
-    }
+	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN SALVAR
+	 @PreAuthorize("hasAnyAuthority('PERFIL_CRIAR', 'PERFIL_EDITAR')")
+	@PostMapping("/salvar")
+	public String salvarPerfil(Perfil perfil) {
+		perfilRepositorio.save(perfil);
+		return "redirect:/administrativo/perfis";
+	}
 
-    // FECHADURA: Apenas quem pode EDITAR
-    @PreAuthorize("hasAuthority('PERFIL_EDITAR')")
-    @GetMapping("/editar/{id}")
-    public ModelAndView editarPerfil(@PathVariable("id") Long id) {
-        ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
-        
-        mv.addObject("perfil", perfilRepositorio.findById(id).orElse(new Perfil()));
-        mv.addObject("todasPermissoes", Permissao.values());
-        mv.addObject("paginaAtiva", "perfis");
-        
-        return mv;
-    }
+	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN EDITAR
+	// @PreAuthorize("hasAuthority('PERFIL_EDITAR')")
+	@GetMapping("/editar/{id}")
+	public ModelAndView editarPerfil(@PathVariable("id") Long id) {
+		ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
 
-    // FECHADURA: Apenas quem pode EXCLUIR
-    @PreAuthorize("hasAuthority('PERFIL_EXCLUIR')")
-    @GetMapping("/remover/{id}")
-    public String removerPerfil(@PathVariable("id") Long id) {
-        // ATENÇÃO: Na vida real, você não pode excluir um perfil se houver usuários usando ele.
-        // O SQL Server vai bloquear automaticamente se houver essa dependência.
-        perfilRepositorio.deleteById(id);
-        return "redirect:/administrativo/perfis";
-    }
+		mv.addObject("perfil", perfilRepositorio.findById(id).orElse(new Perfil()));
+		mv.addObject("todasPermissoes", Permissao.values());
+		mv.addObject("paginaAtiva", "perfis");
+
+		return mv;
+	}
+
+	// FECHADURA: Apenas quem pode EXCLUIR
+	@PreAuthorize("hasAuthority('PERFIL_EXCLUIR')")
+	@GetMapping("/remover/{id}")
+	public String removerPerfil(@PathVariable("id") Long id) {
+		// ATENÇÃO: Na vida real, você não pode excluir um perfil se houver usuários
+		// usando ele.
+		// O SQL Server vai bloquear automaticamente se houver essa dependência.
+		perfilRepositorio.deleteById(id);
+		return "redirect:/administrativo/perfis";
+	}
 }

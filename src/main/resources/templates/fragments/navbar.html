@@ -68,14 +68,14 @@
 						class="nav-link" href="/mensagens/enviadas"
 						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
 					</li>
-					
+
 					<li class="nav-item dropdown"
 						sec:authorize="hasAnyAuthority('USUARIO_VISUALIZAR', 'PERFIL_VISUALIZAR')">
 						<a class="nav-link dropdown-toggle" href="#" id="dropAdmin"
 						role="button" data-bs-toggle="dropdown"
 						th:classappend="${paginaAtiva == 'usuarios' || paginaAtiva == 'perfis'} ? 'active'">
 							<i class="fa-solid fa-shield-halved me-1 d-none d-lg-inline"></i>Acessos
-					    </a>
+					</a>
 
 						<ul class="dropdown-menu shadow border-0 mt-2"
 							aria-labelledby="dropAdmin">
@@ -86,12 +86,13 @@
 									<i class="fa-solid fa-users me-2"
 									th:classappend="${paginaAtiva == 'usuarios'} ? 'text-white' : 'text-muted'"></i>Usuários
 							</a></li>
-							
+
 							<li sec:authorize="hasAuthority('PERFIL_VISUALIZAR')"><a
 								class="dropdown-item py-2" href="/administrativo/perfis"
 								th:classappend="${paginaAtiva == 'perfis'} ? 'bg-primary text-white' : ''">
 									<i class="fa-solid fa-id-card-clip me-2"
-									th:classappend="${paginaAtiva == 'perfis'} ? 'text-white' : 'text-muted'"></i>Perfis de Acesso
+									th:classappend="${paginaAtiva == 'perfis'} ? 'text-white' : 'text-muted'"></i>Perfis
+									de Acesso
 							</a></li>
 
 						</ul>
