@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
 <meta charset="utf-8">
@@ -63,11 +64,11 @@
 					<i class="fa-solid fa-file-pdf"></i> <span
 						class="d-none d-md-inline ms-1">Relatório</span>
 				</button>
-				
+
 				<a href="/cadastroContatos"
 					class="btn btn-primary fw-bold shadow-sm"
-					sec:authorize="hasAuthority('CONTATO_CRIAR')"> 
-					<i class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo</span>
+					sec:authorize="hasAuthority('CONTATO_CRIAR')"> <i
+					class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo</span>
 				</a>
 			</div>
 		</div>
@@ -156,7 +157,7 @@
 										<span class="fw-bold" th:text="${contato.rua}"></span>, <span
 											th:text="${contato.numero}"></span> <span
 											th:if="${contato.complemento}" class="text-muted"
-				                       							th:text="'(' + ${contato.complemento} + ')'"></span>
+											th:text="'(' + ${contato.complemento} + ')'"></span>
 									</div>
 									<div class="text-xsmall text-muted">
 										<span th:text="${contato.bairro}"></span> • <span
@@ -168,13 +169,13 @@
 
 								<td class="text-end">
 									<div class="btn-group">
+
 										<a th:href="@{/editarContatos/{id}(id=${contato.id})}"
 											class="btn btn-sm btn-outline-primary border-0"
-											title="Editar"
-											sec:authorize="hasAuthority('CONTATO_EDITAR')"> 
+											title="Editar" sec:authorize="hasAuthority('CONTATO_EDITAR')">
 											<i class="fa-solid fa-pen-to-square"></i>
 										</a>
-										
+
 										<button type="button"
 											class="btn btn-sm btn-outline-danger border-0"
 											th:data-url="@{/removerContatos/{id}(id=${contato.id})}"
@@ -183,6 +184,7 @@
 											sec:authorize="hasAuthority('CONTATO_EXCLUIR')">
 											<i class="fa-regular fa-trash-can"></i>
 										</button>
+
 									</div>
 								</td>
 							</tr>
