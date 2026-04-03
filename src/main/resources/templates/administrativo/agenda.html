@@ -225,7 +225,7 @@
 
 				<button class="btn btn-primary shadow-sm fw-bold rounded-pill px-4"
 					sec:authorize="hasAuthority('AGENDA_CRIAR')"
-					th:onclick="'abrirModalNovoEvento(...)">
+					th:onclick="abrirModalNovoEvento(...)">
 					<i class="fa-solid fa-plus me-2"></i>Novo Evento
 				</button>
 			</div>

@@ -13,7 +13,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize; // <-- NOVO IMPORT DE SEGURANÇA
+import org.springframework.security.access.prepost.PreAuthorize; // <-- IMPORT DE SEGURANÇA OK!
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -207,8 +207,8 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/editar/" + grupoId);
     }
 
-    // FECHADURA: Apenas quem pode VISUALIZAR grupos (ou enviar mensagens, se tiver a permissão específica)
-    @PreAuthorize("hasAuthority('GRUPO_VISUALIZAR')")
+    // FECHADURA: Apenas quem pode ENVIAR mensagens
+    @PreAuthorize("hasAuthority('MENSAGEM_ENVIAR')") // <-- AJUSTADO PARA MAIOR SEGURANÇA
     @PostMapping("/disparar")
     public ModelAndView dispararAcao(@RequestParam("grupoId") Long grupoId, @RequestParam("assunto") String assunto,
             @RequestParam("mensagem") String mensagem,
@@ -259,8 +259,8 @@ public class GrupoControle {
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
-    // FECHADURA: Apenas quem pode VISUALIZAR grupos
-    @PreAuthorize("hasAuthority('GRUPO_VISUALIZAR')")
+    // FECHADURA: Apenas quem pode ENVIAR mensagens
+    @PreAuthorize("hasAuthority('MENSAGEM_ENVIAR')") // <-- AJUSTADO PARA MAIOR SEGURANÇA
     @PostMapping("/disparar-direto")
     public ModelAndView dispararDireto(@RequestParam("idGrupo") Long idGrupo, @RequestParam("assunto") String assunto,
             @RequestParam("conteudo") String conteudo, RedirectAttributes attributes) throws Exception {
