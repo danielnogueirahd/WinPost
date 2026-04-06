@@ -8,7 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne; // <-- IMPORT NOVO
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -27,9 +29,20 @@ public class Grupo implements Serializable {
 
     private String descricao;
 
-    // O mappedBy deve apontar para o nome da variável na classe Contatos ('grupos')
+    // --- RELACIONAMENTOS ---
+
+    // 1. Relacionamento com Contatos
     @ManyToMany(mappedBy = "grupos")
     private List<Contatos> contatos = new ArrayList<>();
+
+    // 2. Relacionamento com Empresa (O CARIMBO MULTI-TENANT)
+    // NOTA TEMPORÁRIA: Deixei nullable = true para o seu sistema não quebrar ao ligar.
+    // Depois de rodar a primeira vez, mude para nullable = false (igual fizemos nos contatos)
+    @ManyToOne
+    @JoinColumn(name = "empresa_id", nullable = true) 
+    private Empresa empresa;
+
+    // --- GETTERS E SETTERS ---
 
     public Long getId() {
         return id;
@@ -63,8 +76,14 @@ public class Grupo implements Serializable {
         this.contatos = contatos;
     }
     
-    
- // ... rest of getters and setters ...
+    // Getters e Setters da Empresa
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
 
     @Override
     public int hashCode() {

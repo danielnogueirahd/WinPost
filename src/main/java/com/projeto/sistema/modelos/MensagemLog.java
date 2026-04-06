@@ -8,6 +8,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn; // <-- IMPORT NOVO
+import jakarta.persistence.ManyToOne; // <-- IMPORT NOVO
 import jakarta.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -60,6 +62,12 @@ public class MensagemLog implements Serializable {
     // Usando VARCHAR(MAX) para permitir textos longos no SQL Server
     @Column(columnDefinition = "VARCHAR(MAX)")
     private String observacao;
+
+    // --- O CARIMBO DA EMPRESA (Multi-Tenant) ---
+    // Temporariamente true para o banco aceitar a atualização sem apagar o histórico
+    @ManyToOne
+    @JoinColumn(name = "empresa_id", nullable = true) 
+    private Empresa empresa;
 
     // --- Construtores ---
     public MensagemLog() {
@@ -156,5 +164,14 @@ public class MensagemLog implements Serializable {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    // --- Getters e Setters da Empresa ---
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
     }
 }

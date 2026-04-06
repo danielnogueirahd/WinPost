@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.UF;
 import com.projeto.sistema.modelos.Usuario;
+import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
@@ -46,24 +48,23 @@ public class PrincipalControle {
     private PasswordEncoder passwordEncoder;
 
     // --- DASHBOARD (Home) ---
-    // AQUI FOI O AJUSTE: Mudamos de "/administrativo" para "/administrativo/home"
     @GetMapping("/administrativo")
-    public ModelAndView acessarPrincipal() {
+    public ModelAndView acessarPrincipal(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
         ModelAndView mv = new ModelAndView("administrativo/home");
         
-        // 1. Total de Contatos
-        mv.addObject("totalContatos", contatosRepositorio.count()); 
+        // 1. Total de Contatos DA EMPRESA
+        mv.addObject("totalContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa()).size()); 
         
-        // 2. Últimos cadastrados (Busca os 10 mais recentes pelo ID)
-        mv.addObject("ultimosContatos", contatosRepositorio.findTop10ByOrderByIdDesc());
+        // 2. Últimos cadastrados DA EMPRESA (Busca os 10 mais recentes)
+        mv.addObject("ultimosContatos", contatosRepositorio.findTop10ByEmpresaOrderByIdDesc(usuarioLogado.getEmpresa()));
         
-        // 3. Total de Grupos
-        mv.addObject("totalGrupos", grupoRepositorio.count());
+        // 3. Total de Grupos DA EMPRESA
+        mv.addObject("totalGrupos", grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa()).size());
         
-        // 4. Mensagens Enviadas (Filtro corrigido para "ENVIADAS" conforme o banco)
-        mv.addObject("mensagensEnviadas", mensagemRepositorio.countByPasta("ENVIADAS"));
+        // 4. Mensagens Enviadas DA EMPRESA (O ERRO ESTAVA AQUI)
+        mv.addObject("mensagensEnviadas", mensagemRepositorio.countByPastaAndEmpresa("ENVIADAS", usuarioLogado.getEmpresa()));
         
-        // 5. Lembretes e Agenda de Hoje
+        // 5. Lembretes e Agenda de Hoje (Em breve também será filtrado por empresa)
         LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
         LocalDateTime fimDia = LocalDate.now().atTime(LocalTime.MAX);
         
@@ -71,11 +72,11 @@ public class PrincipalControle {
         List<Lembrete> agendaHoje = lembreteRepositorio.findByDataHoraBetween(inicioDia, fimDia);
         
         mv.addObject("lembretesHoje", agendaHoje.size()); // Quantidade para o Card colorido
-        mv.addObject("agendaHoje", agendaHoje);           // Lista detalhada para o Widget lateral
+        mv.addObject("agendaHoje", agendaHoje);            // Lista detalhada para o Widget lateral
         
         // Dados para Modais (Cadastro rápido e Relatórios)
         mv.addObject("listaEstados", UF.values());
-        mv.addObject("listaGrupos", grupoRepositorio.findAll()); 
+        mv.addObject("listaGrupos", grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa())); 
         
         return mv;
     }
@@ -94,7 +95,7 @@ public class PrincipalControle {
     public String salvarPerfil(Usuario usuarioForm, Principal principal, RedirectAttributes attributes) {
         Usuario usuarioBanco = usuarioRepositorio.findByUsername(principal.getName());
         
-        // Atualiza apenas nome e email, mantendo a senha antiga
+        // Atualiza apenas nome e email, mantendo a senha antiga e a empresa intacta
         usuarioBanco.setNome(usuarioForm.getNome());
         usuarioBanco.setEmail(usuarioForm.getEmail());
         

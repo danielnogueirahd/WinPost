@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.projeto.sistema.modelos.Permissao;
 import com.projeto.sistema.modelos.Usuario;
+import com.projeto.sistema.modelos.UsuarioLogado; // IMPORT NOVO AQUI
 import com.projeto.sistema.repositorios.UsuarioRepositorio;
 
 @Service
@@ -42,7 +42,13 @@ public class ImplementsUserDetailsService implements UserDetailsService {
 			}
 		}
 
-		// 3. Retorna o usuário prontinho para o Spring liberar a entrada
-		return new User(usuario.getUsername(), usuario.getSenha(), true, true, true, true, autoridades);
+		// 3. Retorna o nosso UsuarioLogado (Crachá VIP), carregando a Empresa e o ID na memória!
+		return new UsuarioLogado(
+				usuario.getUsername(), 
+				usuario.getSenha(), 
+				autoridades, 
+				usuario.getEmpresa(), 
+				usuario.getId()
+		);
 	}
 }

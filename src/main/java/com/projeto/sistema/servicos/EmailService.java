@@ -34,19 +34,12 @@ public class EmailService {
     @Autowired
     private GrupoRepositorio grupoRepositorio;
 
-    // A mesma pasta definida no Controller
     private final String PASTA_UPLOAD = "uploads/";
 
-    /**
-     * Método principal de disparo.
-     * Agora recebe o ID do grupo (Long) e apenas os nomes dos arquivos (List<String>),
-     * pois os arquivos físicos já foram salvos pelo Controller.
-     */
     @Async 
-    @Transactional // Garante transação aberta para buscar os contatos do grupo (Evita LazyInitializationException)
+    @Transactional 
     public void enviarDisparo(Long idGrupo, String assunto, String conteudoHtml, List<String> nomesAnexos, LocalDateTime dataAgendamento) {
         
-        // 1. Buscamos o grupo pelo ID dentro desta Thread Assíncrona
         Grupo grupo = grupoRepositorio.findById(idGrupo).orElse(null);
         
         if (grupo == null) {
@@ -54,54 +47,46 @@ public class EmailService {
             return;
         }
 
-        // 2. Prepara o Log para o Banco de Dados
         MensagemLog log = new MensagemLog();
         log.setAssunto(assunto);
         log.setConteudo(conteudoHtml);
         log.setNomeGrupoDestino(grupo.getNome());
         
-        // Cuidado: getContatos() precisa estar dentro do @Transactional
+        // <-- A MÁGICA: O Log herda a empresa do Grupo automaticamente!
+        log.setEmpresa(grupo.getEmpresa()); 
+        
         log.setTotalDestinatarios(grupo.getContatos().size());
         
-        // Converte a lista de nomes (List) para uma String única separada por vírgulas para salvar no banco
         if (nomesAnexos != null && !nomesAnexos.isEmpty()) {
             log.setNomesAnexos(String.join(",", nomesAnexos));
         }
 
-        // --- LÓGICA DE AGENDAMENTO ---
         if (dataAgendamento != null) {
             log.setDataEnvio(dataAgendamento);
             log.setStatus("AGENDADO");
             logRepositorio.save(log);
-            return; // Se for agendado, paramos aqui. O robô (@Scheduled) pega depois.
+            return; 
         }
 
-        // --- ENVIO IMEDIATO ---
         log.setDataEnvio(LocalDateTime.now());
         log.setStatus("ENVIANDO...");
         log = logRepositorio.save(log);
 
-        // Chama o método que faz o loop e envia os emails
         realizarEnvio(grupo, assunto, conteudoHtml, log);
     }
 
-    /**
-     * Robô que roda a cada 60 segundos para verificar se há mensagens agendadas
-     */
     @Scheduled(fixedRate = 60000)
-    @Transactional // Necessário para carregar os contatos do grupo sem erro
+    @Transactional 
     public void verificarEnviosAgendados() {
-        // Busca mensagens com status AGENDADO e data anterior ou igual a agora
         List<MensagemLog> agendados = logRepositorio.findByStatusAndDataEnvioBefore("AGENDADO", LocalDateTime.now());
         
         for (MensagemLog msg : agendados) {
             System.out.println("Processando agendamento ID: " + msg.getId());
             
-            // Tenta recuperar o grupo pelo nome salvo no log
-            List<Grupo> gruposEncontrados = grupoRepositorio.findByNomeContainingIgnoreCase(msg.getNomeGrupoDestino());
+            // <-- BLINDAGEM: O Robô agora busca o grupo pelo nome E PELA EMPRESA da mensagem!
+            List<Grupo> gruposEncontrados = grupoRepositorio.findByNomeContainingIgnoreCaseAndEmpresa(msg.getNomeGrupoDestino(), msg.getEmpresa());
             
             if (!gruposEncontrados.isEmpty()) {
-                // Pega o primeiro grupo encontrado (assumindo nomes únicos ou similares)
                 Grupo grupo = gruposEncontrados.get(0);
                 
                 msg.setStatus("ENVIANDO (Agendado)...");
@@ -116,10 +101,6 @@ public class EmailService {
         }
     }
 
-    /**
-     * Método privado que efetivamente itera sobre os contatos e envia o email.
-     * Busca os anexos diretamente do disco usando o nome salvo no Log.
-     */
     private void realizarEnvio(Grupo grupo, String assunto, String conteudoHtml, MensagemLog log) {
         int enviados = 0;
         int erros = 0;
@@ -129,31 +110,25 @@ public class EmailService {
                 if (contato.getEmail() != null && !contato.getEmail().isEmpty()) {
                     
                     MimeMessage message = mailSender.createMimeMessage();
-                    // 'true' indica que é multipart (aceita anexos)
                     MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
                     
                     helper.setFrom("nao-responda@winpost.com");
                     helper.setTo(contato.getEmail());
                     helper.setSubject(assunto);
                     
-                    // Substituição de variáveis no texto
                     String corpoFinal = conteudoHtml.replace("{nome}", contato.getNome());
                     helper.setText(corpoFinal, true);
 
-                    // --- ANEXOS ---
-                    // Verifica se há nomes de arquivos salvos no log
                     if (log.getNomesAnexos() != null && !log.getNomesAnexos().isEmpty()) {
                         String[] nomesArquivos = log.getNomesAnexos().split(",");
                         
                         for (String nomeFisico : nomesArquivos) {
                             if (!nomeFisico.trim().isEmpty()) {
-                                // Busca o arquivo na pasta do sistema
                                 File arquivoFisico = new File(PASTA_UPLOAD + nomeFisico.trim());
                                 
                                 if (arquivoFisico.exists()) {
                                     FileSystemResource fileResource = new FileSystemResource(arquivoFisico);
                                     
-                                    // Limpa o nome para o usuário (remove o timestamp 12345_arquivo.pdf -> arquivo.pdf)
                                     String nomeOriginal = nomeFisico.contains("_") ? 
                                                           nomeFisico.substring(nomeFisico.indexOf("_") + 1) : 
                                                           nomeFisico;
@@ -173,12 +148,10 @@ public class EmailService {
             }
         }
 
-        // Atualiza o status final no log
         log.setStatus(erros == 0 ? "SUCESSO" : "PARCIAL (" + erros + " erros)");
         logRepositorio.save(log);
     }
     
-    // Método para envio simples unitário (ex: recuperação de senha)
     @Async
     public void enviarEmailSimples(String para, String assunto, String conteudo) {
         try {

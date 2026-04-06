@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.LembreteDTO;
+import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
@@ -32,20 +34,28 @@ public class GlobalAtributos {
     // --- Carrega os Grupos Globalmente para o Modal ---
     @ModelAttribute("listaGruposGlobal")
     public List<?> carregarGruposGlobais() {
+        // (Futuramente vamos blindar o GrupoRepositorio também. Por enquanto mantemos o findAll)
         return grupoRepositorio.findAll();
     }
     // -------------------------------------------------------------
 
     @ModelAttribute("listaLembretes")
-    public List<LembreteDTO> carregarLembretesFuturos() {
+    public List<LembreteDTO> carregarLembretesFuturos(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
         List<LembreteDTO> lembretes = new ArrayList<>();
+        
+        // TRAVA DE SEGURANÇA: Se não houver ninguém logado (ex: tela de Login), devolve a lista vazia
+        if (usuarioLogado == null) {
+            return lembretes;
+        }
         
         // Data alvo: AMANHÃ
         LocalDate amanha = LocalDate.now().plusDays(1);
         
         // --- 1. Busca Aniversariantes de Amanhã (AJUSTADO PARA O NOVO FORMATO DD/MM) ---
         String diaMesAmanha = String.format("%02d/%02d", amanha.getDayOfMonth(), amanha.getMonthValue());
-        List<Contatos> aniversariantesAmanha = contatosRepositorio.findByDiaEMesAniversario(diaMesAmanha);
+        
+        // <-- AQUI ACONTECE A MÁGICA: Passamos a empresa do usuário logado na busca!
+        List<Contatos> aniversariantesAmanha = contatosRepositorio.findByDiaEMesAniversario(diaMesAmanha, usuarioLogado.getEmpresa());
 
         for (Contatos c : aniversariantesAmanha) {
             lembretes.add(new LembreteDTO(
@@ -79,8 +89,8 @@ public class GlobalAtributos {
     }
     
     @ModelAttribute("qtdLembretes")
-    public int contarLembretes() {
-        return carregarLembretesFuturos().size();
+    public int contarLembretes(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
+        return carregarLembretesFuturos(usuarioLogado).size(); // <-- REPASSA O CRACHÁ PARA O MÉTODO DE CIMA
     }
     
 }

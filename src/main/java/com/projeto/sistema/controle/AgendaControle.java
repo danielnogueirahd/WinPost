@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize; // <-- O IMPORT ESTÁ AQUI
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ import com.projeto.sistema.modelos.DetalheAgendaDTO;
 import com.projeto.sistema.modelos.EventoAgenda;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.MensagemLog;
+import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
 import com.projeto.sistema.repositorios.MensagemLogRepositorio;
@@ -47,7 +49,8 @@ public class AgendaControle {
     @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
     @GetMapping("/administrativo/agenda")
     public ModelAndView acessarAgenda(@RequestParam(required = false) Integer mes, 
-                                      @RequestParam(required = false) Integer ano) {
+                                      @RequestParam(required = false) Integer ano,
+                                      @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
         
         ModelAndView mv = new ModelAndView("administrativo/agenda");
         
@@ -61,8 +64,13 @@ public class AgendaControle {
 
         String mesFormatadoBanco = String.format("/%02d", mesAtual);
         
-        List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco);
-        List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetween(inicioMes, fimMes);
+        // <-- PASSA A EMPRESA NA BUSCA DOS ANIVERSARIANTES
+        List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco, usuarioLogado.getEmpresa());
+        
+        // <-- PASSA A EMPRESA NA BUSCA DE MENSAGENS (O ERRO ESTAVA AQUI)
+        List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetweenAndEmpresa(inicioMes, fimMes, usuarioLogado.getEmpresa());
+        
+        // Lembretes ainda sem empresa, ajustaremos na próxima etapa
         List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetween(inicioMes, fimMes);
         
         List<EventoAgenda> eventos = new ArrayList<>();
@@ -70,9 +78,9 @@ public class AgendaControle {
 
         // 1. PROCESSAR ANIVERSARIANTES
         for (Contatos c : aniversariantes) {
-        	if (!c.getExibirNaAgenda()) {
-        		continue;
-        	}
+            if (!c.getExibirNaAgenda()) {
+                continue;
+            }
 
             if (c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
                 try {
@@ -110,7 +118,10 @@ public class AgendaControle {
         mv.addObject("mesExibicao", mesAtual);
         mv.addObject("anoExibicao", anoAtual);
         mv.addObject("totalDiasMes", anoMes.lengthOfMonth());
-        mv.addObject("todosContatos", contatosRepositorio.findAll()); 
+        
+        // <-- PASSA A EMPRESA PARA LISTAR APENAS OS CONTATOS DO UTILIZADOR NO MODAL DE NOVO LEMBRETE
+        mv.addObject("todosContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa())); 
+        
         mv.addObject("novoLembrete", new Lembrete()); 
         
         int diaSemanaPrimeiroDia = anoMes.atDay(1).getDayOfWeek().getValue();
@@ -122,7 +133,8 @@ public class AgendaControle {
     // FECHADURA: Apenas quem pode CRIAR ou EDITAR na agenda
     @PreAuthorize("hasAnyAuthority('AGENDA_CRIAR', 'AGENDA_EDITAR')")
     @PostMapping("/administrativo/agenda/salvar")
-    public String salvarLembrete(Lembrete lembrete) {
+    public String salvarLembrete(Lembrete lembrete, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        // Futuramente, quando Lembrete tiver Empresa, coloque aqui: lembrete.setEmpresa(usuarioLogado.getEmpresa());
         lembreteRepositorio.save(lembrete);
         return "redirect:/administrativo/agenda";
     }
@@ -156,13 +168,16 @@ public class AgendaControle {
     @GetMapping("/administrativo/agenda/detalhes")
     @ResponseBody 
     public List<DetalheAgendaDTO> obterDetalhesDia(
-            @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+            @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
         
         List<DetalheAgendaDTO> detalhes = new ArrayList<>();
         
         // 1. Aniversários
         String diaMesFormatado = String.format("%02d/%02d", data.getDayOfMonth(), data.getMonthValue());
-        List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(diaMesFormatado);
+        
+        // <-- PASSA A EMPRESA NA BUSCA DE DETALHES DO DIA
+        List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(diaMesFormatado, usuarioLogado.getEmpresa());
         
         for (Contatos c : nivers) {
             detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
@@ -172,7 +187,8 @@ public class AgendaControle {
         LocalDateTime inicio = data.atStartOfDay();
         LocalDateTime fim = data.atTime(LocalTime.MAX);
         
-        List<MensagemLog> msgs = mensagemRepositorio.findByDataEnvioBetween(inicio, fim);
+        // <-- PASSA A EMPRESA NA BUSCA DE MENSAGENS NO DIA (O OUTRO ERRO ESTAVA AQUI)
+        List<MensagemLog> msgs = mensagemRepositorio.findByDataEnvioBetweenAndEmpresa(inicio, fim, usuarioLogado.getEmpresa());
         
         for (MensagemLog m : msgs) {
             String horaFormatada = m.getDataEnvio().toLocalTime().toString();

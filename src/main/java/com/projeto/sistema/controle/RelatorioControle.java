@@ -11,11 +11,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.projeto.sistema.modelos.Contatos;
+import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.servicos.RelatorioService;
 
@@ -23,7 +26,6 @@ import com.projeto.sistema.servicos.RelatorioService;
 @Controller
 @PreAuthorize("hasAuthority('RELATORIO_VISUALIZAR')") // <-- O LEÃO DE CHÁCARA AQUI!
 public class RelatorioControle {
-    // ... todo o seu código continua igual para baixo
 
     @Autowired
     private ContatosRepositorio contatosRepositorio;
@@ -66,14 +68,15 @@ public class RelatorioControle {
             @RequestParam(value = "estado", required = false) String estado,
             @RequestParam(value = "grupoId", required = false) Long grupoId,
             @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
         
         if (nome != null && nome.isEmpty()) nome = null;
         if (cidade != null && cidade.isEmpty()) cidade = null;
         if (estado != null && estado.isEmpty()) estado = null;
 
-        // 1. Busca no banco usando os parâmetros de texto (nome, cidade, estado, grupoId)
-        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId);
+        // 1. Busca no banco usando os parâmetros de texto + EMPRESA DO USUÁRIO LOGADO
+        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId, usuarioLogado.getEmpresa());
         
         // 2. Filtra pelo período de CADASTRO
         contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);
@@ -98,15 +101,16 @@ public class RelatorioControle {
             @RequestParam(value = "estado", required = false) String estado,
             @RequestParam(value = "grupoId", required = false) Long grupoId,
             @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
         
         // 1. Limpeza dos filtros (igual ao relatório)
         if (nome != null && nome.isEmpty()) nome = null;
         if (cidade != null && cidade.isEmpty()) cidade = null;
         if (estado != null && estado.isEmpty()) estado = null;
 
-        // 2. Busca os contatos usando o MESMO filtro do banco
-        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId);
+        // 2. Busca os contatos usando o MESMO filtro do banco + EMPRESA DO USUÁRIO LOGADO
+        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId, usuarioLogado.getEmpresa());
         
         // 3. Aplica o filtro de CADASTRO
         contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);

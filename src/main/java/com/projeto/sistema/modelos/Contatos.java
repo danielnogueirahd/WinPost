@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
@@ -31,227 +32,236 @@ import jakarta.validation.constraints.Size;
 @EntityListeners(AuditingEntityListener.class)
 public class Contatos implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    // --- DADOS PESSOAIS ---
+	// --- DADOS PESSOAIS ---
 
-    @Column(length = 50)
-    @Size(max = 50, message = "O nome deve ter no máximo 50 caracteres")
-    
-    @NotBlank(message = "O nome é obrigatório")
-    private String nome;
+	@Column(length = 50)
+	@Size(max = 50, message = "O nome deve ter no máximo 50 caracteres")
 
-    @Column(nullable = false, length = 255)
-    @Size(max = 255, message = "O email deve ter no máximo 255 caracteres")
-    
-    
-    @Email(message = "Formato de e-mail inválido")
-    private String email;
+	@NotBlank(message = "O nome é obrigatório")
+	private String nome;
 
-    @NotBlank(message = "O telefone é obrigatório")
-    private String telefone;
+	@Column(nullable = false, length = 255)
+	@Size(max = 255, message = "O email deve ter no máximo 255 caracteres")
 
-    // --- ENDEREÇO ---
+	@Email(message = "Formato de e-mail inválido")
+	private String email;
 
-    @NotBlank(message = "O CEP é obrigatório")
-    private String cep;
+	@NotBlank(message = "O telefone é obrigatório")
+	private String telefone;
 
-    @Column(length = 150)
-    @NotBlank(message = "A rua é obrigatória")
-    @Size(max = 150, message = "A rua deve ter no máximo 150 caracteres")
-    private String rua;
+	// --- ENDEREÇO ---
 
-    @NotNull(message = "O número é obrigatório")
-    @Min(value = 1, message = "O número deve ser positivo")
-    @Max(value = 999999, message = "O número deve ter no máximo 6 dígitos")
-    private Integer numero;
+	@NotBlank(message = "O CEP é obrigatório")
+	private String cep;
 
-    @Column(length = 100)
-    @NotBlank(message = "O bairro é obrigatório")
-    @Size(max = 100, message = "O bairro deve ter no máximo 100 caracteres")
-    private String bairro;
+	@Column(length = 150)
+	@NotBlank(message = "A rua é obrigatória")
+	@Size(max = 150, message = "A rua deve ter no máximo 150 caracteres")
+	private String rua;
 
-    @Column(length = 100)
-    @NotBlank(message = "A cidade é obrigatória")
-    @Size(max = 100, message = "A cidade deve ter no máximo 100 caracteres")
-    private String cidade;
+	@NotNull(message = "O número é obrigatório")
+	@Min(value = 1, message = "O número deve ser positivo")
+	@Max(value = 999999, message = "O número deve ter no máximo 6 dígitos")
+	private Integer numero;
 
-    @NotBlank(message = "O estado é obrigatório")
-    private String estado;
+	@Column(length = 100)
+	@NotBlank(message = "O bairro é obrigatório")
+	@Size(max = 100, message = "O bairro deve ter no máximo 100 caracteres")
+	private String bairro;
 
-    private String complemento;
+	@Column(length = 100)
+	@NotBlank(message = "A cidade é obrigatória")
+	@Size(max = 100, message = "A cidade deve ter no máximo 100 caracteres")
+	private String cidade;
 
-    // --- DATAS E CONFIGURAÇÕES ---
+	@NotBlank(message = "O estado é obrigatório")
+	private String estado;
 
-    @Column(name = "data_nascimento", length = 5)
-    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[1-9]|1[0-2])$", message = "Data inválida. Use o formato DD/MM.")
-    private String dataNascimento;
+	private String complemento;
 
-    @CreatedDate
-    @Column(name = "data_cadastro", nullable = false, updatable = false)
-    private LocalDate dataCadastro;
+	// --- DATAS E CONFIGURAÇÕES ---
 
-    // MUDANÇA AQUI: Alterado de 'boolean' para 'Boolean' para aceitar NULL do banco
-    @Column(name = "exibir_na_agenda")
-    private Boolean exibirNaAgenda = false; 
+	@Column(name = "data_nascimento", length = 5)
+	@Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[1-9]|1[0-2])$", message = "Data inválida. Use o formato DD/MM.")
+	private String dataNascimento;
 
-    // --- RELACIONAMENTOS ---
+	@CreatedDate
+	@Column(name = "data_cadastro", nullable = false, updatable = false)
+	private LocalDate dataCadastro;
 
-    @ManyToMany
-    @JoinTable(name = "contato_grupo", 
-               joinColumns = @JoinColumn(name = "contato_id"), 
-               inverseJoinColumns = @JoinColumn(name = "grupo_id"))
-    private List<Grupo> grupos = new ArrayList<>();
+	// MUDANÇA AQUI: Alterado de 'boolean' para 'Boolean' para aceitar NULL do banco
+	@Column(name = "exibir_na_agenda")
+	private Boolean exibirNaAgenda = false;
 
-    // --- GETTERS E SETTERS ---
+	// --- RELACIONAMENTOS ---
 
-    public Long getId() {
-        return id;
-    }
+	@ManyToMany
+	@JoinTable(name = "contato_grupo", joinColumns = @JoinColumn(name = "contato_id"), inverseJoinColumns = @JoinColumn(name = "grupo_id"))
+	private List<Grupo> grupos = new ArrayList<>();
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@ManyToOne
+	@JoinColumn(name = "empresa_id", nullable = true) // nullable = false garante que nenhum contacto fica "órfão"
+	private Empresa empresa;
 
-    public String getNome() {
-        return nome;
-    }
+	// --- GETTERS E SETTERS ---
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public String getTelefone() {
-        return telefone;
-    }
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public String getCep() {
-        return cep;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setCep(String cep) {
-        this.cep = cep;
-    }
+	public String getTelefone() {
+		return telefone;
+	}
 
-    public String getRua() {
-        return rua;
-    }
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
 
-    public void setRua(String rua) {
-        this.rua = rua;
-    }
+	public String getCep() {
+		return cep;
+	}
 
-    public Integer getNumero() {
-        return numero;
-    }
+	public void setCep(String cep) {
+		this.cep = cep;
+	}
 
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
+	public String getRua() {
+		return rua;
+	}
 
-    public String getBairro() {
-        return bairro;
-    }
+	public void setRua(String rua) {
+		this.rua = rua;
+	}
 
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
-    }
+	public Integer getNumero() {
+		return numero;
+	}
 
-    public String getCidade() {
-        return cidade;
-    }
+	public void setNumero(Integer numero) {
+		this.numero = numero;
+	}
 
-    public void setCidade(String cidade) {
-        this.cidade = cidade;
-    }
+	public String getBairro() {
+		return bairro;
+	}
 
-    public String getEstado() {
-        return estado;
-    }
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
 
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
+	public String getCidade() {
+		return cidade;
+	}
 
-    public String getComplemento() {
-        return complemento;
-    }
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
+	}
 
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
-    }
+	public String getEstado() {
+		return estado;
+	}
 
-    public String getDataNascimento() {
-        return dataNascimento;
-    }
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
 
-    public void setDataNascimento(String dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
+	public String getComplemento() {
+		return complemento;
+	}
 
-    public LocalDate getDataCadastro() {
-        return dataCadastro;
-    }
+	public void setComplemento(String complemento) {
+		this.complemento = complemento;
+	}
 
-    public void setDataCadastro(LocalDate dataCadastro) {
-        this.dataCadastro = dataCadastro;
-    }
+	public String getDataNascimento() {
+		return dataNascimento;
+	}
 
-    // MUDANÇA AQUI: Getter seguro que transforma NULL em false
-    public Boolean getExibirNaAgenda() {
-        return exibirNaAgenda != null ? exibirNaAgenda : false;
-    }
+	public void setDataNascimento(String dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
 
-    public void setExibirNaAgenda(Boolean exibirNaAgenda) {
-        this.exibirNaAgenda = exibirNaAgenda;
-    }
+	public LocalDate getDataCadastro() {
+		return dataCadastro;
+	}
 
-    public List<Grupo> getGrupos() {
-        return grupos;
-    }
+	public void setDataCadastro(LocalDate dataCadastro) {
+		this.dataCadastro = dataCadastro;
+	}
 
-    public void setGrupos(List<Grupo> grupos) {
-        this.grupos = grupos;
-    }
+	// MUDANÇA AQUI: Getter seguro que transforma NULL em false
+	public Boolean getExibirNaAgenda() {
+		return exibirNaAgenda != null ? exibirNaAgenda : false;
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
+	public void setExibirNaAgenda(Boolean exibirNaAgenda) {
+		this.exibirNaAgenda = exibirNaAgenda;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Contatos other = (Contatos) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
-    }
+	public List<Grupo> getGrupos() {
+		return grupos;
+	}
+
+	public void setGrupos(List<Grupo> grupos) {
+		this.grupos = grupos;
+	}
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Contatos other = (Contatos) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
 }

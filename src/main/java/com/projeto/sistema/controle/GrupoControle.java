@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize; // <-- IMPORT DE SEGURANÇA OK!
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -28,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.Grupo;
+import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.servicos.EmailService;
@@ -56,7 +57,8 @@ public class GrupoControle {
     @GetMapping("/cadastro")
     public ModelAndView cadastrar(Grupo grupo,
             @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- LÊ O CRACHÁ
 
         ModelAndView mv = new ModelAndView("grupos/cadastro");
         mv.addObject("grupo", grupo);
@@ -65,7 +67,8 @@ public class GrupoControle {
         mv.addObject("dataFim", dataFim);
 
         if (dataInicio != null && dataFim != null) {
-            List<Contatos> todos = contatosRepositorio.findAll();
+            // <-- BLINDAGEM: Busca apenas os contatos da empresa!
+            List<Contatos> todos = contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
             List<Contatos> filtrados = new ArrayList<>();
 
             LocalDate inicioBase = LocalDate.of(2024, dataInicio.getMonthValue(), dataInicio.getDayOfMonth());
@@ -94,7 +97,8 @@ public class GrupoControle {
             mv.addObject("listaContatos", filtrados);
             mv.addObject("filtrado", true);
         } else {
-            mv.addObject("listaContatos", contatosRepositorio.findAll());
+            // <-- BLINDAGEM: Lista apenas os contatos da empresa
+            mv.addObject("listaContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
         }
 
         return mv;
@@ -105,11 +109,15 @@ public class GrupoControle {
     @PostMapping("/salvar")
     public String salvar(@Valid Grupo grupo, BindingResult result,
             @RequestParam(value = "idsContatos", required = false) List<Long> idsContatos,
-            RedirectAttributes attributes) {
+            RedirectAttributes attributes, 
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- LÊ O CRACHÁ
 
         if (result.hasErrors()) {
             return "grupos/cadastro";
         }
+
+        // <-- CARIMBA A EMPRESA ANTES DE SALVAR O GRUPO
+        grupo.setEmpresa(usuarioLogado.getEmpresa());
 
         grupoService.salvarGrupoComContatos(grupo, idsContatos);
 
@@ -121,14 +129,18 @@ public class GrupoControle {
     // FECHADURA: Apenas quem pode VISUALIZAR grupos
     @PreAuthorize("hasAuthority('GRUPO_VISUALIZAR')")
     @GetMapping("/gerenciar")
-    public ModelAndView gerenciar(@RequestParam(value = "pesquisa", required = false) String pesquisa) {
+    public ModelAndView gerenciar(@RequestParam(value = "pesquisa", required = false) String pesquisa, 
+                                  @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- LÊ O CRACHÁ
+        
         ModelAndView mv = new ModelAndView("grupos/gerenciar");
 
         if (pesquisa != null && !pesquisa.isEmpty()) {
-            mv.addObject("listaGrupos", grupoRepositorio.findByNomeContainingIgnoreCaseOrderByNomeAsc(pesquisa));
+            // <-- O CORRETIVO DO ERRO: Passa o Crachá para a busca
+            mv.addObject("listaGrupos", grupoRepositorio.findByNomeContainingIgnoreCaseAndEmpresaOrderByNomeAsc(pesquisa, usuarioLogado.getEmpresa()));
             mv.addObject("termoPesquisa", pesquisa);
         } else {
-            mv.addObject("listaGrupos", grupoRepositorio.findAll(Sort.by(Sort.Direction.ASC, "nome")));
+            // <-- Busca todos os grupos DA EMPRESA
+            mv.addObject("listaGrupos", grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
         }
 
         mv.addObject("paginaAtiva", "gerenciarGrupo");
@@ -138,22 +150,31 @@ public class GrupoControle {
     // FECHADURA: Apenas quem pode EXCLUIR grupos
     @PreAuthorize("hasAuthority('GRUPO_EXCLUIR')")
     @GetMapping("/excluir/{id}")
-    public String excluir(@PathVariable Long id, RedirectAttributes attributes) {
-        grupoService.excluirGrupo(id);
-        attributes.addFlashAttribute("mensagem", "Grupo excluído com sucesso!");
+    public String excluir(@PathVariable Long id, RedirectAttributes attributes, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        Optional<Grupo> grupoOpt = grupoRepositorio.findById(id);
+        
+        // <-- SEGURANÇA: Só exclui se o grupo pertencer à empresa do usuário
+        if (grupoOpt.isPresent() && grupoOpt.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
+            grupoService.excluirGrupo(id);
+            attributes.addFlashAttribute("mensagem", "Grupo excluído com sucesso!");
+        } else {
+            attributes.addFlashAttribute("mensagemErro", "Grupo não encontrado ou sem permissão.");
+        }
+        
         return "redirect:/grupos/gerenciar";
     }
 
     // FECHADURA: Apenas quem pode EDITAR grupos
     @PreAuthorize("hasAuthority('GRUPO_EDITAR')")
     @GetMapping("/editar/{id}")
-    public ModelAndView editar(@PathVariable("id") Long id) {
+    public ModelAndView editar(@PathVariable("id") Long id, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(id);
 
-        if (grupoOpt.isPresent()) {
+        if (grupoOpt.isPresent() && grupoOpt.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
             ModelAndView mv = new ModelAndView("grupos/editar");
             mv.addObject("grupo", grupoOpt.get());
-            mv.addObject("todosContatos", contatosRepositorio.findAll());
+            // <-- BLINDAGEM: Lista de contatos da empresa
+            mv.addObject("todosContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
             mv.addObject("paginaAtiva", "gerenciarGrupo");
             return mv;
         }
@@ -165,14 +186,18 @@ public class GrupoControle {
     @PostMapping("/atualizar")
     public ModelAndView atualizar(Grupo grupo,
             @RequestParam(value = "novosMembros", required = false) List<Long> novosMembros,
-            RedirectAttributes attributes) {
+            RedirectAttributes attributes, 
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
+        // <-- CARIMBA A EMPRESA
+        grupo.setEmpresa(usuarioLogado.getEmpresa());
         Grupo grupoSalvo = grupoRepositorio.save(grupo);
 
         if (novosMembros != null && !novosMembros.isEmpty()) {
             List<Contatos> contatosAdd = contatosRepositorio.findAllById(novosMembros);
             for (Contatos c : contatosAdd) {
-                if (!c.getGrupos().contains(grupoSalvo)) {
+                // Segurança extra: Garante que o contato adicionado é da mesma empresa
+                if (c.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId()) && !c.getGrupos().contains(grupoSalvo)) {
                     c.getGrupos().add(grupoSalvo);
                     contatosRepositorio.save(c);
                 }
@@ -187,7 +212,7 @@ public class GrupoControle {
     @PreAuthorize("hasAuthority('GRUPO_EDITAR')")
     @GetMapping("/removerMembro/{grupoId}/{contatoId}")
     public ModelAndView removerMembro(@PathVariable("grupoId") Long grupoId, @PathVariable("contatoId") Long contatoId,
-            RedirectAttributes attributes) {
+            RedirectAttributes attributes, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
         Optional<Contatos> contatoOpt = contatosRepositorio.findById(contatoId);
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(grupoId);
@@ -196,10 +221,16 @@ public class GrupoControle {
             Contatos contato = contatoOpt.get();
             Grupo grupo = grupoOpt.get();
 
-            contato.getGrupos().remove(grupo);
-            contatosRepositorio.save(contato);
-
-            attributes.addFlashAttribute("mensagemSucesso", "Membro removido do grupo.");
+            // <-- SEGURANÇA: Garante que ambos são da mesma empresa do usuário
+            if (grupo.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId()) && 
+                contato.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
+                
+                contato.getGrupos().remove(grupo);
+                contatosRepositorio.save(contato);
+                attributes.addFlashAttribute("mensagemSucesso", "Membro removido do grupo.");
+            } else {
+                attributes.addFlashAttribute("mensagemErro", "Operação não permitida.");
+            }
         } else {
             attributes.addFlashAttribute("mensagemErro", "Membro ou Grupo não encontrado.");
         }
@@ -208,17 +239,17 @@ public class GrupoControle {
     }
 
     // FECHADURA: Apenas quem pode ENVIAR mensagens
-    @PreAuthorize("hasAuthority('MENSAGEM_ENVIAR')") // <-- AJUSTADO PARA MAIOR SEGURANÇA
+    @PreAuthorize("hasAuthority('MENSAGEM_ENVIAR')")
     @PostMapping("/disparar")
     public ModelAndView dispararAcao(@RequestParam("grupoId") Long grupoId, @RequestParam("assunto") String assunto,
             @RequestParam("mensagem") String mensagem,
             @RequestParam(value = "dataAgendamento", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataAgendamento,
-            @RequestParam(value = "anexos", required = false) MultipartFile[] anexos, RedirectAttributes attributes)
-            throws Exception {
+            @RequestParam(value = "anexos", required = false) MultipartFile[] anexos, RedirectAttributes attributes,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) throws Exception {
 
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(grupoId);
 
-        if (grupoOpt.isPresent()) {
+        if (grupoOpt.isPresent() && grupoOpt.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
             Grupo grupo = grupoOpt.get();
             if (grupo.getContatos().isEmpty()) {
                 attributes.addFlashAttribute("mensagemErro", "O grupo está vazio. Adicione contatos antes de enviar.");
@@ -253,27 +284,28 @@ public class GrupoControle {
                 }
             }
         } else {
-            attributes.addFlashAttribute("mensagemErro", "Grupo não encontrado.");
+            attributes.addFlashAttribute("mensagemErro", "Grupo não encontrado ou sem permissão.");
         }
 
         return new ModelAndView("redirect:/grupos/gerenciar");
     }
 
     // FECHADURA: Apenas quem pode ENVIAR mensagens
-    @PreAuthorize("hasAuthority('MENSAGEM_ENVIAR')") // <-- AJUSTADO PARA MAIOR SEGURANÇA
+    @PreAuthorize("hasAuthority('MENSAGEM_ENVIAR')")
     @PostMapping("/disparar-direto")
     public ModelAndView dispararDireto(@RequestParam("idGrupo") Long idGrupo, @RequestParam("assunto") String assunto,
-            @RequestParam("conteudo") String conteudo, RedirectAttributes attributes) throws Exception {
+            @RequestParam("conteudo") String conteudo, RedirectAttributes attributes,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) throws Exception {
 
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(idGrupo);
 
-        if (grupoOpt.isPresent()) {
+        if (grupoOpt.isPresent() && grupoOpt.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
             Grupo grupo = grupoOpt.get();
             emailService.enviarDisparo(grupo.getId(), assunto, conteudo, null, null);
             attributes.addFlashAttribute("mensagemSucesso",
                     "Disparo realizado com sucesso para o grupo " + grupo.getNome());
         } else {
-            attributes.addFlashAttribute("mensagemErro", "Grupo selecionado não encontrado.");
+            attributes.addFlashAttribute("mensagemErro", "Grupo selecionado não encontrado ou sem permissão.");
         }
 
         return new ModelAndView("redirect:/mensagens/caixa/ENVIADAS");
