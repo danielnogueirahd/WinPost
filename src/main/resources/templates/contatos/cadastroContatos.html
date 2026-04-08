@@ -103,9 +103,9 @@
 				</div>
 			</div>
 
-			<form action="/salvarContato" th:object="${contato}" method="post"
+			<form th:action="@{/salvarContato}" th:object="${contato}"
+				method="post"
 				onsubmit="this.querySelector('button[type=submit]').disabled = true; this.querySelector('button[type=submit]').innerHTML = '<i class=\'fa-solid fa-spinner fa-spin me-2\'></i>A gravar...';">
-
 				<div class="row justify-content-center mb-4">
 					<div class="col-lg-10">
 						<div

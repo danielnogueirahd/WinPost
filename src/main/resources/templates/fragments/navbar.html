@@ -87,8 +87,6 @@
 									th:classappend="${paginaAtiva == 'usuarios'} ? 'text-white' : 'text-muted'"></i>Usuários
 							</a></li>
 
-							<li sec:authorize="hasAuthority('PERFIL_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/administrativo/perfis"
 							<li><a class="dropdown-item py-2"
 								href="/administrativo/perfis"
 								th:classappend="${paginaAtiva == 'perfis'} ? 'bg-primary text-white' : ''">
@@ -316,3 +314,4 @@
             }
         }
     </script>
+</div>

@@ -2,6 +2,19 @@
 let idSelecionado = null;
 
 $(document).ready(function() {
+	
+	$(function () {
+	    // Busca o token e o nome do cabeçalho nas meta tags que adicionamos acima
+	    var token = $("meta[name='_csrf']").attr("content");
+	    var header = $("meta[name='_csrf_header']").attr("content");
+
+	    // Configura o jQuery para enviar o token automaticamente em cada requisição AJAX
+	    $(document).ajaxSend(function(e, xhr, options) {
+	        if (header && token) {
+	            xhr.setRequestHeader(header, token);
+	        }
+	    });
+	});
     
     // 1. Inicia Tooltips do Bootstrap
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
