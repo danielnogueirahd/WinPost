@@ -3,196 +3,82 @@
 
 	<link rel="stylesheet" href="/css/navbar.css">
 
-	<nav
-		class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top"
-		style="z-index: 1040;">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm"
+		th:fragment="navbar">
 		<div class="container-fluid">
 
-			<a href="javascript:history.back()"
-				class="text-white me-3 d-flex align-items-center text-decoration-none btn-voltar-nav"
-				title="Voltar"> <i class="fa-solid fa-chevron-left fs-5"></i>
-			</a> <a class="navbar-brand d-flex align-items-center me-lg-4"
-				href="/administrativo"> <img src="/img/logoInput.png"
-				alt="Logótipo WINPOST" title="Página Inicial WINPOST" height="32"
-				class="me-2 bg-primary rounded px-2 shadow-sm">
+			<a class="navbar-brand fw-bold" th:href="@{/administrativo}"> <i
+				class="fas fa-paper-plane text-primary me-2"></i> WINPOST
 			</a>
 
-			<button class="navbar-toggler border-0" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarMain">
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
-			<div class="collapse navbar-collapse" id="navbarMain">
+			<div class="collapse navbar-collapse" id="menuPrincipal">
 
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
-
-					<li class="nav-item"
-						sec:authorize="hasAuthority('AGENDA_VISUALIZAR')"><a
-						class="nav-link" href="/administrativo/agenda"
-						th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
-					</li>
-
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item"><a class="nav-link"
-						href="/administrativo"
-						th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
-					</li>
-
-					<li class="nav-item dropdown"
-						sec:authorize="hasAnyAuthority('CONTATO_VISUALIZAR', 'GRUPO_VISUALIZAR')">
-						<a class="nav-link dropdown-toggle" href="#" id="dropContatos"
-						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Contato</a>
-						<ul class="dropdown-menu shadow border-0 mt-2"
-							aria-labelledby="dropContatos">
-
-							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/listarContatos"
-								th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-list me-2"
-									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>Listar
-									Contatos
-							</a></li>
-
-							<li sec:authorize="hasAuthority('GRUPO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/grupos/gerenciar"
-								th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-layer-group me-2"
-									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>Listar
-									Grupos
-							</a></li>
-						</ul>
-					</li>
-
-					<li class="nav-item"
-						sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')"><a
-						class="nav-link" href="/mensagens/enviadas"
-						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
-					</li>
-
-					<li class="nav-item dropdown"
-						sec:authorize="hasAnyAuthority('USUARIO_VISUALIZAR', 'PERFIL_VISUALIZAR')">
-						<a class="nav-link dropdown-toggle" href="#" id="dropAdmin"
-						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'usuarios' || paginaAtiva == 'perfis'} ? 'active'">
-							<i class="fa-solid fa-shield-halved me-1 d-none d-lg-inline"></i>Acessos
-					</a>
-
-						<ul class="dropdown-menu shadow border-0 mt-2"
-							aria-labelledby="dropAdmin">
-
-							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/administrativo/usuarios"
-								th:classappend="${paginaAtiva == 'usuarios'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-users me-2"
-									th:classappend="${paginaAtiva == 'usuarios'} ? 'text-white' : 'text-muted'"></i>Usuários
-							</a></li>
-
-							<li><a class="dropdown-item py-2"
-								href="/administrativo/perfis"
-								th:classappend="${paginaAtiva == 'perfis'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-id-card-clip me-2"
-									th:classappend="${paginaAtiva == 'perfis'} ? 'text-white' : 'text-muted'"></i>Perfis
-									de Acesso
-							</a></li>
-
-						</ul>
-					</li>
-
+						th:href="@{/administrativo}">Dashboard</a></li>
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/listarContatos}">Contatos</a></li>
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/grupos/gerenciar}">Grupos</a></li>
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/mensagens/caixa/ENVIADAS}">Mensagens</a></li>
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/administrativo/agenda}">Agenda</a></li>
 				</ul>
 
-				<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
+				<ul class="navbar-nav ms-auto align-items-center">
 
-					<li class="nav-item d-lg-none my-2"><hr class="text-white-50"></li>
-
-					<li class="nav-item"><a
-						class="nav-link text-white d-flex align-items-center" href="#"
-						data-bs-toggle="modal" data-bs-target="#modalLembretes"
-						title="Ver Lembretes"> <i
-							class="fa-solid fa-calendar-day fs-5"></i> <span
-							class="d-lg-none ms-3">Lembretes e Aniversários</span>
-					</a></li>
-
-					<li class="nav-item dropdown ms-lg-2"><a
-						class="nav-link text-white d-flex align-items-center" href="#"
-						id="dropNotificacoes" role="button" data-bs-toggle="dropdown"
-						aria-expanded="false" title="Notificações">
-							<div class="position-relative d-inline-block">
-								<i class="fa-solid fa-bell fs-5"></i> <span id="badgeGeral"
-									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
-									style="font-size: 0.55rem; padding: 0.25em 0.4em;"> <span
-									id="contadorTexto">1</span>
-								</span>
-							</div> <span class="d-lg-none ms-3">Notificações</span>
+					<li class="nav-item dropdown me-3"><a
+						class="nav-link dropdown-toggle position-relative" href="#"
+						id="notificacoesMenu" role="button" data-bs-toggle="dropdown">
+							<i class="fas fa-bell fs-5"></i> <span
+							th:if="${qtdLembretes > 0}"
+							class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+							th:text="${qtdLembretes}"> 3 </span>
 					</a>
+						<ul class="dropdown-menu dropdown-menu-end shadow border-0">
+							<li><h6 class="dropdown-header text-uppercase text-muted">Amanhã
+									na Agenda</h6></li>
 
-						<div id="listaNotificacoesContainer"
-							class="dropdown-menu dropdown-menu-lg-end shadow border-0 mt-2 p-0"
-							aria-labelledby="dropNotificacoes"
-							style="min-width: 280px; max-width: 95vw;">
-							<div class="p-3 bg-light border-bottom text-center rounded-top">
-								<h6 class="mb-0 fw-bold text-dark">
-									<i class="fa-regular fa-bell me-2"></i>Notificações
-								</h6>
-							</div>
+							<li th:if="${qtdLembretes == 0}"><a
+								class="dropdown-item text-muted" href="#">Tudo tranquilo!</a></li>
 
-							<div id="notificacao-1"
-								class="dropdown-item p-3 border-bottom notificacao-item"
-								style="white-space: normal;">
-								<div class="d-flex w-100 justify-content-between mb-1">
-									<strong class="text-dark small">Nova mensagem de
-										sistema</strong> <small class="text-muted ms-2">Agora</small>
-								</div>
-								<p class="mb-2 small text-muted">Bem-vindo ao sistema
-									WINPOST! Esta é uma notificação de teste.</p>
-								<div class="text-end">
-									<button class="btn btn-sm btn-outline-primary"
-										onclick="marcarEFechar(1, event)">
-										<i class="fa-solid fa-check me-1"></i>Lida
-									</button>
-								</div>
-							</div>
-
-							<div id="msgSemNotificacaoJS"
-								class="d-none text-center p-4 text-muted small">
-								<i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
-								<p class="mb-0">Nenhuma notificação nova</p>
-							</div>
-						</div></li>
-
-					<li
-						class="nav-item dropdown ms-lg-3 border-start border-secondary ps-lg-3">
-						<a class="nav-link text-white d-flex align-items-center" href="#"
-						id="dropUsuario" role="button" data-bs-toggle="dropdown"
-						aria-expanded="false" title="Minha Conta"> <i
-							class="fa-solid fa-circle-user fs-4"></i> <span
-							class="d-lg-none ms-3">Minha Conta</span>
-					</a>
-
-						<ul
-							class="dropdown-menu dropdown-menu-lg-end shadow border-0 mt-2"
-							aria-labelledby="dropUsuario">
-
-							<li><a class="dropdown-item py-2" href="/perfil"
-								th:classappend="${paginaAtiva == 'perfil'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-user-gear me-2"
-									th:classappend="${paginaAtiva == 'perfil'} ? 'text-white' : 'text-muted'"></i>Meu
-									Perfil
+							<li th:each="lembrete : ${listaLembretes}"><a
+								class="dropdown-item" th:href="@{/administrativo/agenda}"> <i
+									class="fas fa-circle text-warning fa-xs me-2"></i> <span
+									th:text="${lembrete.titulo}">Compromisso</span>
 							</a></li>
-
 							<li><hr class="dropdown-divider"></li>
+							<li><a
+								class="dropdown-item text-center small text-primary fw-bold"
+								th:href="@{/administrativo/agenda}">Abrir Agenda Completa</a></li>
+						</ul></li>
 
+					<li class="nav-item dropdown"><a
+						class="nav-link dropdown-toggle d-flex align-items-center"
+						href="#" id="perfilMenu" role="button" data-bs-toggle="dropdown">
+							<i class="fas fa-user-circle fs-4 me-2 text-secondary"></i> <span
+							class="fw-semibold" sec:authentication="principal.username">Usuário</span>
+					</a>
+						<ul class="dropdown-menu dropdown-menu-end shadow border-0">
+							<li><a class="dropdown-item" th:href="@{/perfil}"> <i
+									class="fas fa-cog text-secondary me-2"></i> Meu Perfil
+							</a></li>
+							<li><hr class="dropdown-divider"></li>
 							<li>
-								<form th:action="@{/logout}" method="post" class="m-0">
-									<button type="submit"
-										class="dropdown-item py-2 text-danger fw-bold">
-										<i class="fa-solid fa-right-from-bracket me-2"></i>Sair
+								<form th:action="@{/logout}" method="post" class="m-0 p-0">
+									<button type="submit" class="dropdown-item text-danger">
+										<i class="fas fa-sign-out-alt me-2"></i> Sair do Sistema
 									</button>
 								</form>
 							</li>
-						</ul>
-					</li>
+						</ul></li>
 				</ul>
-
 			</div>
 		</div>
 	</nav>

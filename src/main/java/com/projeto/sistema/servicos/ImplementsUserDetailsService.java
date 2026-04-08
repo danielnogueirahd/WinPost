@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.projeto.sistema.modelos.Permissao;
 import com.projeto.sistema.modelos.Usuario;
-import com.projeto.sistema.modelos.UsuarioLogado; // IMPORT NOVO AQUI
+import com.projeto.sistema.modelos.UsuarioLogado;
 import com.projeto.sistema.repositorios.UsuarioRepositorio;
 
 @Service
@@ -42,13 +42,7 @@ public class ImplementsUserDetailsService implements UserDetailsService {
 			}
 		}
 
-		// 3. Retorna o nosso UsuarioLogado (Crachá VIP), carregando a Empresa e o ID na memória!
-		return new UsuarioLogado(
-				usuario.getUsername(), 
-				usuario.getSenha(), 
-				autoridades, 
-				usuario.getEmpresa(), 
-				usuario.getId()
-		);
+		// 3. Retorna o nosso UsuarioLogado (Crachá VIP) numa única linha para evitar erros
+		return new UsuarioLogado(usuario.getUsername(), usuario.getSenha(), autoridades, usuario.getEmpresa(), usuario.getId());
 	}
 }

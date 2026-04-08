@@ -16,14 +16,12 @@ public class UsuarioLogado extends User {
     
     // (Opcional, mas muito útil) Guardar também o ID do usuário
     private Long idUsuario; 
+    
+    private String nome;
 
-    // 3. O Construtor: É aqui que o crachá é fabricado na hora do login
+ // Atualizar o construtor para receber o nome:
     public UsuarioLogado(String username, String password, Collection<? extends GrantedAuthority> authorities, Empresa empresa, Long idUsuario) {
-        
-        // O 'super' entrega o nome, senha e permissões para o Spring tomar conta
         super(username, password, true, true, true, true, authorities);
-        
-        // E nós guardamos a empresa e o ID na nossa parte do crachá
         this.empresa = empresa;
         this.idUsuario = idUsuario;
     }
@@ -35,5 +33,8 @@ public class UsuarioLogado extends User {
 
     public Long getIdUsuario() {
         return idUsuario;
+    }
+    public String getNome() {
+        return nome;
     }
 }

@@ -37,6 +37,11 @@ public class Lembrete {
     @JoinColumn(name = "contato_id")
     private Contatos contato;
 
+    // --- O CARIMBO DA EMPRESA (Multi-Tenant) ---
+    @ManyToOne
+    @JoinColumn(name = "empresa_id", nullable = true) 
+    private Empresa empresa;
+
     // --- Construtores ---
     public Lembrete() {}
 
@@ -76,5 +81,13 @@ public class Lembrete {
     }
     public void setContato(Contatos contato) {
         this.contato = contato;
+    }
+    
+    // --- Getters e Setters da Empresa ---
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
     }
 }

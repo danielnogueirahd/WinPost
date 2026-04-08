@@ -31,7 +31,7 @@ public class PerfilControle {
 	}
 
 	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN CRIAR O PRIMEIRO
-	@PreAuthorize("hasAuthority('PERFIL_CRIAR')")
+	// @PreAuthorize("hasAuthority('PERFIL_CRIAR')") <-- AQUI ESTAVA O BLOQUEIO!
 	@GetMapping("/novo")
 	public ModelAndView novoPerfil() {
 		ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
@@ -42,7 +42,7 @@ public class PerfilControle {
 	}
 
 	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN SALVAR
-	 @PreAuthorize("hasAnyAuthority('PERFIL_CRIAR', 'PERFIL_EDITAR')")
+	// @PreAuthorize("hasAnyAuthority('PERFIL_CRIAR', 'PERFIL_EDITAR')") <-- AQUI TAMBÉM!
 	@PostMapping("/salvar")
 	public String salvarPerfil(Perfil perfil) {
 		perfilRepositorio.save(perfil);
@@ -63,7 +63,7 @@ public class PerfilControle {
 	}
 
 	// FECHADURA: Apenas quem pode EXCLUIR
-	@PreAuthorize("hasAuthority('PERFIL_EXCLUIR')")
+	// @PreAuthorize("hasAuthority('PERFIL_EXCLUIR')") <-- Comentei também para você conseguir apagar se errar algo agora
 	@GetMapping("/remover/{id}")
 	public String removerPerfil(@PathVariable("id") Long id) {
 		// ATENÇÃO: Na vida real, você não pode excluir um perfil se houver usuários

@@ -69,7 +69,7 @@ public class PrincipalControle {
         LocalDateTime fimDia = LocalDate.now().atTime(LocalTime.MAX);
         
         // Busca lembretes entre 00:00 e 23:59 de hoje
-        List<Lembrete> agendaHoje = lembreteRepositorio.findByDataHoraBetween(inicioDia, fimDia);
+        List<Lembrete> agendaHoje = lembreteRepositorio.findByDataHoraBetweenAndEmpresa(inicioDia, fimDia, usuarioLogado.getEmpresa());
         
         mv.addObject("lembretesHoje", agendaHoje.size()); // Quantidade para o Card colorido
         mv.addObject("agendaHoje", agendaHoje);            // Lista detalhada para o Widget lateral
