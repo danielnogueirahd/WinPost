@@ -7,44 +7,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gestão de Perfis | WinPost</title>
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
+
+<style>
+	body {
+		font-family: 'Inter', sans-serif;
+		background-color: #f8f9fc !important;
+	}
+
+	.card-premium {
+		border-radius: 12px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+		border: 1px solid rgba(0, 0, 0, 0.05) !important;
+	}
+
+	.table-custom-header th {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-weight: 600;
+		color: #6c757d;
+		border-bottom: 2px solid #edf2f9;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+	}
+
+	.table-hover tbody tr { transition: background-color 0.2s ease; }
+
+	.badge-soft-success {
+		background-color: rgba(25, 135, 84, 0.1);
+		color: #146c43;
+		font-weight: 600;
+		border: 1px solid rgba(25, 135, 84, 0.2);
+	}
+
+	.btn-action {
+		color: #adb5bd;
+		background: transparent;
+		border-radius: 8px;
+		transition: all 0.2s ease;
+		padding: 0.4rem 0.6rem;
+		border: none;
+	}
+	.btn-action.edit:hover { color: #0d6efd; background-color: rgba(13, 110, 253, 0.1); }
+	.btn-action.delete:hover { color: #dc3545; background-color: rgba(220, 53, 69, 0.1); }
+
+	.empty-state {
+		border: 2px dashed #dee2e6;
+		border-radius: 12px;
+		background-color: #fff;
+		padding: 3rem 1rem;
+	}
+
+	.modal-icon-danger {
+		width: 72px;
+		height: 72px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #fff0f1;
+		color: #dc3545;
+		border-radius: 50%;
+		font-size: 2rem;
+		margin-bottom: 1.25rem;
+	}
+</style>
 </head>
 
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 	<div class="container-fluid px-4 mt-4 mb-5">
 
-		<div class="d-flex justify-content-between align-items-center mb-4">
-			<div
-				class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+			<div class="d-flex align-items-center ps-3 border-start border-4 border-primary rounded-1">
 				<div>
-					<h2 class="fw-bold text-dark mb-0 h3">Perfis de Acesso</h2>
-					<p class="text-muted mb-0 small">Gere os cargos e controle o
-						nível de permissões do sistema.</p>
+					<h2 class="fw-bold text-dark mb-0 h4">Perfis de Acesso</h2>
+					<p class="text-muted mb-0 small">Gere os cargos e controle o nível de permissões do sistema.</p>
 				</div>
 			</div>
 
-			<div class="d-flex gap-2">
-				<a href="/administrativo/perfis/novo"
-					class="btn btn-primary fw-bold shadow-sm"> <i
-					class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo
-						Perfil</span>
+			<div>
+				<a href="/administrativo/perfis/novo" class="btn btn-primary fw-bold shadow-sm rounded-pill px-4 transition-all"> 
+					<i class="fa-solid fa-plus me-1"></i> Novo Perfil
 				</a>
 			</div>
 		</div>
 
-		<div class="card shadow-sm border-0">
+		<div class="card card-premium bg-white">
 			<div class="card-body p-0">
 				<div class="table-responsive">
 					<table class="table table-hover align-middle mb-0">
-						<thead class="bg-light text-secondary">
+						<thead class="table-custom-header bg-light">
 							<tr>
 								<th class="ps-4">Nome do Perfil</th>
 								<th>Nº de Permissões</th>
@@ -53,32 +112,35 @@
 						</thead>
 						<tbody>
 							<tr th:each="perfil : ${listaPerfis}">
-
-								<td class="ps-4">
+								<td class="ps-4 py-3">
 									<div class="d-flex align-items-center">
-										<i class="fa-solid fa-shield-halved text-primary me-3 fs-5"></i>
+										<div class="bg-primary bg-opacity-10 text-light rounded d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+											<i class="fa-solid fa-shield-halved fs-5"></i>
+										</div>
 										<span class="fw-bold text-dark" th:text="${perfil.nome}">ADMINISTRADOR</span>
 									</div>
 								</td>
 
-								<td><span
-									class="badge bg-success bg-opacity-10 text-light border px-3 py-1 rounded-pill"
-									th:text="${#lists.size(perfil.permissoes)} + ' permissões liberadas'">
-										10 permissões </span></td>
+								<td class="py-3">
+									<span class="badge badge-soft-success px-3 py-2 rounded-pill" th:text="${#lists.size(perfil.permissoes)} + ' permissões liberadas'">
+										10 permissões
+									</span>
+								</td>
 
-								<td class="text-end pe-4">
-									<div class="btn-group">
-										<a
-											th:href="@{/administrativo/perfis/editar/{id}(id=${perfil.id})}"
-											class="btn btn-sm btn-outline-primary border-0"
-											title="Editar"> <i class="fa-solid fa-pen-to-square"></i>
+								<td class="text-end pe-4 py-3">
+									<div class="d-flex justify-content-end gap-1">
+										<a th:href="@{/administrativo/perfis/editar/{id}(id=${perfil.id})}"
+											class="btn btn-action edit"
+											data-bs-toggle="tooltip" title="Editar Perfil"> 
+											<i class="fa-solid fa-pen-to-square"></i>
 										</a>
 
 										<button type="button"
-											class="btn btn-sm btn-outline-danger border-0"
-											title="Excluir" data-bs-toggle="modal"
-											data-bs-target="#modalExclusaoPerfil"
-											th:data-id="${perfil.id}" th:data-nome="${perfil.nome}"
+											class="btn btn-action delete"
+											data-bs-toggle="tooltip" 
+											title="Excluir Perfil"
+											th:data-id="${perfil.id}" 
+											th:data-nome="${perfil.nome}"
 											onclick="prepararExclusaoPerfil(this)">
 											<i class="fa-regular fa-trash-can"></i>
 										</button>
@@ -87,57 +149,58 @@
 							</tr>
 
 							<tr th:if="${#lists.isEmpty(listaPerfis)}">
-								<td colspan="3" class="text-center py-5 text-muted"><i
-									class="fa-solid fa-folder-open fs-2 mb-3 opacity-50"></i>
-									<p class="mb-0">Nenhum perfil de acesso cadastrado.</p></td>
+								<td colspan="3" class="p-4 text-center">
+									<div class="empty-state">
+										<i class="fa-solid fa-folder-open fs-2 text-muted opacity-25 mb-3"></i>
+										<h6 class="fw-bold">Nenhum perfil encontrado</h6>
+										<p class="text-muted small">Crie um perfil para começar a definir permissões.</p>
+										<a href="/administrativo/perfis/novo" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">Criar Agora</a>
+									</div>
+								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
-
 	</div>
 
-	<div class="modal fade" id="modalExclusaoPerfil" tabindex="-1"
-		aria-hidden="true">
+	<div class="modal fade" id="modalExclusaoPerfil" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-sm">
-			<div class="modal-content border-0 shadow-lg rounded-4 text-center">
-				<div class="modal-body p-4">
-					<div class="mb-3 text-danger">
-						<i class="fa-solid fa-triangle-exclamation fs-1"></i>
+			<div class="modal-content border-0 shadow-lg rounded-4">
+				<div class="modal-body p-4 text-center">
+					<div class="modal-icon-danger">
+						<i class="fa-solid fa-triangle-exclamation"></i>
 					</div>
-					<h6 class="fw-bold mb-2">Excluir Perfil?</h6>
-					<p class="small text-muted mb-4">
-						Tem certeza que deseja excluir o perfil <strong
-							id="nomePerfilExclusao" class="text-dark"></strong>? Esta ação
-						não pode ser desfeita e pode afetar utilizadores vinculados a ele.
-					</p>
-
-					<div class="d-flex gap-2 justify-content-center">
-						<button type="button"
-							class="btn btn-light rounded-pill px-3 fw-bold text-secondary"
-							data-bs-dismiss="modal">Cancelar</button>
-						<a href="#" id="btnConfirmarExclusaoPerfil"
-							class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Sim,
-							Excluir</a>
+					<h5 class="fw-bold mb-2">Excluir Perfil?</h5>
+					<p class="small text-muted mb-4">Tem certeza que deseja excluir <strong id="nomePerfilExclusao"></strong>?</p>
+					<div class="d-flex gap-2">
+						<button type="button" class="btn btn-light rounded-pill w-50 fw-bold text-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<a href="#" id="btnConfirmarExclusaoPerfil" class="btn btn-danger rounded-pill w-50 fw-bold shadow-sm">Excluir</a>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
 	<script>
+		document.addEventListener("DOMContentLoaded", function(){
+			var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+			tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
+		});
+
 		function prepararExclusaoPerfil(botao) {
 			var id = botao.getAttribute('data-id');
 			var nome = botao.getAttribute('data-nome');
 
 			document.getElementById('nomePerfilExclusao').textContent = nome;
-			document.getElementById('btnConfirmarExclusaoPerfil').href = '/administrativo/perfis/remover/'
-					+ id;
+			document.getElementById('btnConfirmarExclusaoPerfil').href = '/administrativo/perfis/remover/' + id;
+			
+			// Abre o modal via JS para evitar erros de sintaxe no HTML
+			var meuModal = new bootstrap.Modal(document.getElementById('modalExclusaoPerfil'));
+			meuModal.show();
 		}
 	</script>
 </body>

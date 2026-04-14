@@ -63,11 +63,10 @@ public class PerfilControle {
 	}
 
 	// FECHADURA: Apenas quem pode EXCLUIR
-	// @PreAuthorize("hasAuthority('PERFIL_EXCLUIR')") <-- Comentei também para você conseguir apagar se errar algo agora
+	// @PreAuthorize("hasAuthority('PERFIL_EXCLUIR')") 
 	@GetMapping("/remover/{id}")
 	public String removerPerfil(@PathVariable("id") Long id) {
-		// ATENÇÃO: Na vida real, você não pode excluir um perfil se houver usuários
-		// usando ele.
+		
 		// O SQL Server vai bloquear automaticamente se houver essa dependência.
 		perfilRepositorio.deleteById(id);
 		return "redirect:/administrativo/perfis";

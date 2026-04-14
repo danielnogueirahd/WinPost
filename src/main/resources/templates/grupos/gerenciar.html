@@ -1,118 +1,144 @@
 <!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gerenciar Grupos | WinPost</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gerenciar Grupos | WinPost</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/2.3.6/css/dataTables.dataTables.css" />
-<link rel="stylesheet" href="/css/estilo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.6/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="/css/estilo.css">
 
-<style>
-/* ESTILO EXTRA PARA TABELA COMPACTA (Idêntico ao Lista Contatos) */
-.table-compact td, .table-compact th {
-	padding: 0.6rem 0.5rem; 
-	vertical-align: middle;
-}
-.text-small { font-size: 0.85rem; }
-.text-xsmall { font-size: 0.75rem; }
-</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fc !important; }
+
+        /* Cartões e Sombras Premium */
+        .card-premium { border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+
+        /* Barra de Busca Customizada */
+        .search-container { background: #fff; border-radius: 12px; border: 1px solid #eaedf1; padding: 1rem 1.25rem; }
+        .input-group-custom { border: 1px solid #dee2e6; border-radius: 8px; transition: all 0.2s; }
+        .input-group-custom:focus-within { border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,0.1); }
+        .input-group-custom .form-control { border: none !important; box-shadow: none !important; font-size: 0.9rem; }
+
+        /* Estilo da Tabela */
+        .table-custom-header th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6c757d; padding: 1rem 0.75rem; border-bottom: 2px solid #f1f4f8; }
+        .table-hover tbody tr { transition: background 0.2s; }
+        .table-hover tbody tr:hover { background-color: #fbfcfe; }
+
+        /* Badges Modernas */
+        .badge-soft-primary { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; border: 1px solid rgba(13, 110, 253, 0.2); font-weight: 600; }
+
+        /* Botões de Ação Minimalistas */
+        .btn-action { color: #adb5bd; background: transparent; border-radius: 8px; transition: all 0.2s; padding: 0.4rem 0.6rem; border: none; }
+        .btn-action.edit:hover { color: #0d6efd; background-color: rgba(13, 110, 253, 0.1); }
+        .btn-action.delete:hover { color: #dc3545; background-color: rgba(220, 53, 69, 0.1); }
+        .btn-action.send:hover { color: #198754; background-color: rgba(25, 135, 84, 0.1); }
+
+        /* Modal Alerta Premium */
+        .modal-icon-danger { width: 64px; height: 64px; display: inline-flex; align-items: center; justify-content: center; background-color: #fff0f1; color: #dc3545; border-radius: 50%; font-size: 1.75rem; margin-bottom: 1rem; }
+    </style>
 </head>
 
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <div class="container-fluid px-4 mt-4 mb-5 flex-grow-1">
 
-        <div th:if="${mensagemErro} or ${erro}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3 mb-4">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i> 
-            <span th:text="${mensagemErro ?: erro}"></span>
+        <div th:if="${mensagemErro} or ${erro}" class="alert alert-danger alert-dismissible fade show card-premium border-0 shadow-sm mb-4">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-circle-exclamation fs-5 me-3"></i>
+                <span th:text="${mensagemErro ?: erro}" class="fw-medium"></span>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
-		<div class="d-flex justify-content-between align-items-center mb-4">
-			<div class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+			<div class="d-flex align-items-center ps-3 border-start border-4 border-primary rounded-1">
 				<div>
-					<h2 class="fw-bold text-dark mb-0 h3">Gerenciar Grupos</h2>
-					<p class="text-muted mb-0 small">Segmentação e gestão para disparos.</p>
+					<h2 class="fw-bold text-dark mb-0 h4">Gerenciar Grupos</h2>
+					<p class="text-muted mb-0 small">Segmentação e gestão para disparos de mensagens.</p>
 				</div>
 			</div>
 
 			<div class="d-flex gap-2">
-				<a href="/mensagens/enviadas" class="btn btn-light text-secondary border shadow-sm fw-bold">
-					<i class="fa-solid fa-clock-rotate-left"></i> <span class="d-none d-md-inline ms-1">Histórico</span>
+				<a href="/mensagens/enviadas" class="btn btn-light text-dark border shadow-sm fw-bold rounded-pill px-3">
+					<i class="fa-solid fa-clock-rotate-left me-1"></i> Histórico
 				</a>
-				<a href="/grupos/cadastro" class="btn btn-primary fw-bold shadow-sm"> 
-                    <i class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo</span>
+				<a href="/grupos/cadastro" class="btn btn-primary fw-bold shadow-sm rounded-pill px-4"> 
+                    <i class="fa-solid fa-plus me-1"></i> Novo Grupo
 				</a>
 			</div>
 		</div>
 
-        <div class="card shadow-sm mb-4 border-0">
-			<div class="card-body p-3">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 text-secondary"><i class="fas fa-search"></i></span> 
-                            <input type="text" id="buscaRapida" class="form-control border-start-0 ps-0 shadow-none" placeholder="Buscar grupo rapidamente...">
-                        </div>
+        <div class="search-container card-premium mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group input-group-custom bg-white">
+                        <span class="input-group-text bg-transparent border-0 text-muted"><i class="fas fa-search"></i></span> 
+                        <input type="text" id="buscaRapida" class="form-control" placeholder="Buscar grupo por nome ou descrição...">
                     </div>
                 </div>
-			</div>
-		</div>
+            </div>
+        </div>
 
-        <div class="card shadow-sm border-0">
+        <div class="card card-premium bg-white">
 			<div class="card-body p-0">
 				<div class="table-responsive">
-                    <table class="table table-hover table-compact mb-0" id="tabelaGrupos">
-						<thead class="bg-light text-secondary">
+                    <table class="table table-hover align-middle mb-0" id="tabelaGrupos">
+						<thead class="table-custom-header bg-light">
 							<tr>
-                                <th style="width: 5%;">ID</th>
+                                <th class="ps-4" style="width: 8%;">ID</th>
 								<th style="width: 25%;">Grupo</th>
-								<th style="width: 35%;">Descrição</th>
+								<th style="width: 30%;">Descrição</th>
 								<th style="width: 15%;" class="text-center">Membros</th>
-								<th style="width: 10%;" class="text-center">Disparar</th>
-								<th style="width: 10%;" class="text-end">Ações</th>
+								<th style="width: 22%;" class="text-end pe-4">Ações</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="grupo : ${listaGrupos}">
-                                <td class="fw-bold text-muted small" th:text="${grupo.id}"></td>
+                                <td class="ps-4 fw-bold text-muted small" th:text="${grupo.id}"></td>
 
                                 <td>
-                                    <div class="fw-bold text-dark text-truncate" style="max-width: 200px;" th:text="${grupo.nome}">Nome</div>
-                                    <div class="text-xsmall text-muted mt-1"><i class="fa-solid fa-users text-primary"></i> Grupo de Envio</div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light text-primary rounded me-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px;">
+                                            <i class="fa-solid fa-layer-group"></i>
+                                        </div>
+                                        <div class="fw-bold text-dark" th:text="${grupo.nome}">Nome</div>
+                                    </div>
 								</td>
 
                                 <td>
-									<div class="text-small text-muted text-truncate" style="max-width: 300px;" th:text="${grupo.descricao}">
-										Descrição
+									<div class="text-muted small text-truncate" style="max-width: 250px;" th:text="${grupo.descricao}">
+										Descrição do grupo aqui...
 									</div>
 								</td>
 
                                 <td class="text-center">
-									<span class="badge bg-light text-dark border px-2 py-1 fw-bold">
-                                        <i class="fa-regular fa-user text-secondary me-1"></i> <span th:text="${#lists.size(grupo.contatos)}">0</span>
+									<span class="badge badge-soft-primary px-3 py-2 rounded-pill">
+                                        <i class="fa-solid fa-users me-1 small"></i> <span th:text="${#lists.size(grupo.contatos)}">0</span> membros
                                     </span>
 								</td>
 
-                                <td class="text-center">
-                                    <a th:href="@{/mensagens/preparar-grupo/{id}(id=${grupo.id})}" class="btn btn-sm btn-success fw-bold px-3 py-1 shadow-sm" title="Preparar Envio"> 
-                                        <i class="fa-regular fa-paper-plane"></i>
-									</a>
-                                </td>
-
-                                <td class="text-end">
-									<div class="btn-group">
-										<a th:href="@{/grupos/editar/{id}(id=${grupo.id})}" class="btn btn-sm btn-outline-primary border-0" title="Editar"> 
+                                <td class="text-end pe-4">
+									<div class="d-flex justify-content-end gap-1">
+                                        <a th:href="@{/mensagens/preparar-grupo/{id}(id=${grupo.id})}" 
+                                           class="btn btn-action send" data-bs-toggle="tooltip" title="Preparar Disparo"> 
+                                            <i class="fa-solid fa-paper-plane"></i>
+                                        </a>
+                                        <a th:href="@{/grupos/editar/{id}(id=${grupo.id})}" 
+                                           class="btn btn-action edit" data-bs-toggle="tooltip" title="Editar Grupo"> 
                                             <i class="fa-solid fa-pen-to-square"></i>
 										</a>
-										<button type="button" class="btn btn-sm btn-outline-danger border-0"
-											th:data-url="@{/grupos/excluir/{id}(id=${grupo.id})}"
-											onclick="confirmarExclusao(this.getAttribute('data-url'))" title="Excluir">
+                                        <button type="button" class="btn btn-action delete"
+											th:data-id="${grupo.id}" th:data-nome="${grupo.nome}"
+                                            th:data-url="@{/grupos/excluir/{id}(id=${grupo.id})}"
+											onclick="confirmarExclusaoPremium(this)" data-bs-toggle="tooltip" title="Excluir Grupo">
 											<i class="fa-regular fa-trash-can"></i>
 										</button>
 									</div>
@@ -124,33 +150,31 @@
 			</div>
 		</div>
 
-        <div class="mt-3">
-			<a href="/administrativo" class="text-decoration-none text-secondary small"> 
+        <div class="mt-4">
+			<a href="/administrativo" class="text-decoration-none text-secondary small hover-primary transition-all"> 
                 <i class="fa-solid fa-arrow-left me-1"></i> Voltar ao Dashboard
 			</a>
 		</div>
-
 	</div>
 
     <div th:replace="~{fragments/modals :: modalNovaMensagem}"></div>
-	<div th:replace="~{fragments/modals :: modalExclusao}"></div>
 
     <div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content border-0 shadow-lg">
-				<div class="modal-header bg-danger text-white border-0">
-					<h5 class="modal-title fw-bold">
-						<i class="fa-solid fa-triangle-exclamation me-2"></i>Tem certeza?
-					</h5>
-					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-				</div>
-				<div class="modal-body text-center py-4">
-					<p class="mb-0 text-secondary fs-5">Você está prestes a excluir este Grupo.</p>
-					<p class="text-muted small">Apenas o grupo será excluído, os contatos não serão perdidos.</p>
-				</div>
-				<div class="modal-footer bg-light border-0 justify-content-center">
-					<button type="button" class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
-					<a href="#" id="btnConfirmarExclusao" class="btn btn-danger px-4 fw-bold">Sim, Excluir</a>
+		<div class="modal-dialog modal-dialog-centered modal-sm">
+			<div class="modal-content border-0 shadow-lg rounded-4">
+				<div class="modal-body p-4 text-center">
+					<div class="modal-icon-danger">
+						<i class="fa-solid fa-triangle-exclamation"></i>
+					</div>
+					<h5 class="fw-bold mb-2 text-dark">Excluir Grupo?</h5>
+					<p class="small text-muted mb-4">
+                        Deseja excluir o grupo <strong id="nomeGrupoExclusao"></strong>? <br>
+                        <span class="text-danger small mt-1 d-block">Os contatos não serão perdidos.</span>
+                    </p>
+					<div class="d-flex gap-2">
+						<button type="button" class="btn btn-light rounded-pill w-50 fw-bold text-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<a href="#" id="btnConfirmarExclusaoLink" class="btn btn-danger rounded-pill w-50 fw-bold shadow-sm">Excluir</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -163,31 +187,29 @@
 
 	<script>
         $(document).ready(function() {
-            // Inicializa a tabela usando o mesmo padrão de Contatos
             var table = $('#tabelaGrupos').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json'
-                },
-                columnDefs: [
-                    { orderable: false, targets: [4, 5] } // Remove ordenação dos botões Enviar e Ações
-                ],
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
+                columnDefs: [{ orderable: false, targets: -1 }],
                 paging: true,
-                searching: true,
-                dom: 'lrtip',
-                lengthChange: false,
+                dom: 'rtip', // Oculta busca padrão para usar a nossa
                 pageLength: 10
             });
 
-            // Conecta o campo de busca rápido à API do DataTables
-            $('#buscaRapida').on('keyup', function() {
-                table.search(this.value).draw();
-            });
+            $('#buscaRapida').on('keyup', function() { table.search(this.value).draw(); });
+
+            // Inicializar Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
         });
 
-        // Função do Modal de Exclusão (Padrão Contatos)
-        function confirmarExclusao(url) {
+        function confirmarExclusaoPremium(botao) {
+            const url = botao.getAttribute('data-url');
+            const nome = botao.getAttribute('data-nome');
+            
+            document.getElementById('nomeGrupoExclusao').textContent = nome;
+            document.getElementById('btnConfirmarExclusaoLink').setAttribute('href', url);
+            
             var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
-            document.getElementById('btnConfirmarExclusao').setAttribute('href', url);
             modal.show();
         }
     </script>
@@ -200,9 +222,7 @@
                 text: msg,
                 icon: 'success',
                 confirmButtonColor: '#0d6efd',
-                confirmButtonText: 'Continuar',
-                timer: 3000,
-                timerProgressBar: true
+                timer: 3000
             });
         }
     </script>

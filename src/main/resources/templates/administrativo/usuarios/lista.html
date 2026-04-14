@@ -7,47 +7,123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gestão de Utilizadores | WinPost</title>
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="/css/estilo.css">
+
+<style>
+	body {
+		font-family: 'Inter', sans-serif;
+		background-color: #f8f9fc !important;
+	}
+
+	/* Cartão Premium */
+	.card-premium {
+		border-radius: 12px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+		border: 1px solid rgba(0, 0, 0, 0.05) !important;
+	}
+
+	/* Tabela Modernizada */
+	.table-custom-header th {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-weight: 600;
+		color: #6c757d;
+		padding: 1rem 0.75rem;
+		border-bottom: 2px solid #f1f4f8;
+	}
+	.table-hover tbody tr { transition: background-color 0.2s; }
+	.table-hover tbody tr:hover { background-color: #fbfcfe; }
+
+	/* Avatar SaaS Squircle */
+	.avatar-wrapper {
+		width: 40px;
+		height: 40px;
+		background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+		color: white;
+		border-radius: 12px; /* Estilo Squircle */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 700;
+		font-size: 0.95rem;
+		box-shadow: 0 4px 10px rgba(13, 110, 253, 0.15);
+	}
+
+	/* Badges Soft Contrast */
+	.badge-soft-success {
+		background-color: rgba(25, 135, 84, 0.1);
+		color: #146c43;
+		border: 1px solid rgba(25, 135, 84, 0.2);
+		font-weight: 600;
+	}
+	.badge-soft-warning {
+		background-color: rgba(255, 193, 7, 0.1);
+		color: #856404;
+		border: 1px solid rgba(255, 193, 7, 0.2);
+		font-weight: 600;
+	}
+
+	/* Botões de Ação Minimalistas */
+	.btn-action {
+		color: #adb5bd;
+		background: transparent;
+		border-radius: 8px;
+		transition: all 0.2s ease;
+		padding: 0.4rem 0.6rem;
+		border: none;
+	}
+	.btn-action.edit:hover { color: #0d6efd; background-color: rgba(13, 110, 253, 0.1); }
+	.btn-action.delete:hover { color: #dc3545; background-color: rgba(220, 53, 69, 0.1); }
+
+	/* Modal Premium Danger */
+	.modal-icon-danger {
+		width: 64px;
+		height: 64px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #fff0f1;
+		color: #dc3545;
+		border-radius: 50%;
+		font-size: 1.75rem;
+		margin-bottom: 1.25rem;
+	}
+</style>
 </head>
 
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
 	<div th:replace="~{fragments/navbar :: navbar}"></div>
 
 	<div class="container-fluid px-4 mt-4 mb-5">
 
-		<div class="d-flex justify-content-between align-items-center mb-4">
-			<div
-				class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+			<div class="d-flex align-items-center ps-3 border-start border-4 border-primary rounded-1">
 				<div>
-					<h2 class="fw-bold text-dark mb-0 h3">Utilizadores e Acessos</h2>
-					<p class="text-muted mb-0 small">Gere quem pode entrar e o que
-						pode fazer no sistema.</p>
+					<h2 class="fw-bold text-dark mb-0 h4">Utilizadores e Acessos</h2>
+					<p class="text-muted mb-0 small">Gere quem pode entrar e o nível de acesso de cada conta.</p>
 				</div>
 			</div>
 
-			<div class="d-flex gap-2">
-				<a href="/administrativo/usuarios/novo"
-					class="btn btn-primary fw-bold shadow-sm"
-					sec:authorize="hasAuthority('USUARIO_CRIAR')"> <i
-					class="fa-solid fa-user-plus"></i> <span
-					class="d-none d-md-inline ms-1">Novo Utilizador</span>
+			<div sec:authorize="hasAuthority('USUARIO_CRIAR')">
+				<a href="/administrativo/usuarios/novo" class="btn btn-primary fw-bold shadow-sm rounded-pill px-4 transition-all"> 
+					<i class="fa-solid fa-user-plus me-1"></i> Novo Utilizador
 				</a>
 			</div>
 		</div>
 
-		<div class="card shadow-sm border-0">
+		<div class="card card-premium bg-white">
 			<div class="card-body p-0">
 				<div class="table-responsive">
 					<table class="table table-hover align-middle mb-0">
-						<thead class="bg-light text-secondary">
+						<thead class="table-custom-header bg-light">
 							<tr>
-								<th class="ps-4">Nome</th>
+								<th class="ps-4">Identificação</th>
 								<th>E-mail</th>
 								<th>Username</th>
 								<th>Perfil de Acesso</th>
@@ -56,52 +132,66 @@
 						</thead>
 						<tbody>
 							<tr th:each="usuario : ${listaUsuarios}">
-
-								<td class="ps-4">
+								<td class="ps-4 py-3">
 									<div class="d-flex align-items-center">
-										<div
-											class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3 shadow-sm"
-											style="width: 40px; height: 40px; font-weight: bold;">
-											<span
-												th:text="${#strings.substring(usuario.nome, 0, 1).toUpperCase()}">A</span>
+										<div class="avatar-wrapper me-3">
+											<span th:text="${#strings.substring(usuario.nome, 0, 1).toUpperCase()}">U</span>
 										</div>
-										<span class="fw-bold text-dark" th:text="${usuario.nome}">Nome
-											do Utilizador</span>
+										<div>
+											<div class="fw-bold text-dark" th:text="${usuario.nome}">Nome do Utilizador</div>
+											<div class="text-muted" style="font-size: 0.7rem;">
+												<i class="fa-solid fa-circle text-success me-1" style="font-size: 0.5rem;"></i> Ativo
+											</div>
+										</div>
 									</div>
 								</td>
 
-								<td class="text-muted small"><i
-									class="fa-regular fa-envelope me-1"></i> <span
-									th:text="${usuario.email}">email@dominio.com</span></td>
+								<td class="text-muted small">
+									<i class="fa-regular fa-envelope me-1 opacity-75"></i> 
+									<span th:text="${usuario.email}">email@dominio.com</span>
+								</td>
 
-								<td><span class="badge bg-light text-dark border"
-									th:text="'@' + ${usuario.username}">@username</span></td>
+								<td>
+									<span class="badge bg-light text-primary border fw-medium px-2 py-1" th:text="'@' + ${usuario.username}">@username</span>
+								</td>
 
-								<td><span th:if="${usuario.perfil != null}"
-									class="badge bg-success bg-opacity-10 text-light border border-success border-opacity-25 px-2 py-1"
-									th:text="${usuario.perfil.nome}">ADMIN</span> <span
-									th:unless="${usuario.perfil != null}"
-									class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">Sem
-										Perfil</span></td>
+								<td>
+									<span th:if="${usuario.perfil != null}"
+										class="badge badge-soft-success px-3 py-2 rounded-pill"
+										th:text="${usuario.perfil.nome}">ADMIN</span> 
+									
+									<span th:unless="${usuario.perfil != null}"
+										class="badge badge-soft-warning px-3 py-2 rounded-pill">
+										Sem Perfil
+									</span>
+								</td>
 
 								<td class="text-end pe-4">
-									<div class="btn-group">
-										<a
-											th:href="@{/administrativo/usuarios/editar/{id}(id=${usuario.id})}"
-											class="btn btn-sm btn-outline-primary border-0"
-											title="Editar" sec:authorize="hasAuthority('USUARIO_EDITAR')">
+									<div class="d-flex justify-content-end gap-1">
+										<a th:href="@{/administrativo/usuarios/editar/{id}(id=${usuario.id})}"
+											class="btn btn-action edit"
+											data-bs-toggle="tooltip" title="Editar Utilizador" 
+											sec:authorize="hasAuthority('USUARIO_EDITAR')">
 											<i class="fa-solid fa-pen-to-square"></i>
 										</a>
+										
 										<button type="button"
-											class="btn btn-sm btn-outline-danger border-0"
-											title="Excluir"
+											class="btn btn-action delete"
+											data-bs-toggle="tooltip" title="Excluir Utilizador"
 											sec:authorize="hasAuthority('USUARIO_EXCLUIR')"
-											data-bs-toggle="modal" data-bs-target="#modalExclusao"
 											th:data-id="${usuario.id}" th:data-nome="${usuario.nome}"
 											onclick="prepararExclusao(this)">
 											<i class="fa-regular fa-trash-can"></i>
 										</button>
 									</div>
+								</td>
+							</tr>
+
+							<tr th:if="${#lists.isEmpty(listaUsuarios)}">
+								<td colspan="5" class="py-5 text-center">
+									<i class="fa-solid fa-users-slash fs-1 text-muted opacity-25 mb-3"></i>
+									<h6 class="fw-bold text-secondary">Nenhum utilizador encontrado</h6>
+									<p class="text-muted small">Comece adicionando um novo utilizador ao sistema.</p>
 								</td>
 							</tr>
 						</tbody>
@@ -112,48 +202,49 @@
 
 	</div>
 
-	<div class="modal fade" id="modalExclusao" tabindex="-1"
-		aria-hidden="true">
+	<div class="modal fade" id="modalExclusao" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-sm">
-			<div class="modal-content border-0 shadow-lg rounded-4 text-center">
-				<div class="modal-body p-4">
-					<div class="mb-3 text-danger">
-						<i class="fa-solid fa-triangle-exclamation fs-1"></i>
+			<div class="modal-content border-0 shadow-lg rounded-4">
+				<div class="modal-body p-4 text-center">
+					<div class="modal-icon-danger">
+						<i class="fa-solid fa-triangle-exclamation"></i>
 					</div>
-					<h6 class="fw-bold mb-2">Excluir Utilizador?</h6>
+					<h5 class="fw-bold mb-2 text-dark">Excluir Utilizador?</h5>
 					<p class="small text-muted mb-4">
-						Tem certeza que deseja excluir <strong id="nomeUsuarioExclusao"
-							class="text-dark">este usuário</strong>? Esta ação não pode ser
-						desfeita.
+						Tem certeza que deseja excluir o acesso de <strong id="nomeUsuarioExclusao" class="text-dark"></strong>? Esta ação é irreversível.
 					</p>
 
 					<div class="d-flex gap-2 justify-content-center">
-						<button type="button"
-							class="btn btn-light rounded-pill px-3 fw-bold text-secondary"
-							data-bs-dismiss="modal">Cancelar</button>
-						<a href="#" id="btnConfirmarExclusao"
-							class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Sim,
-							Excluir</a>
+						<button type="button" class="btn btn-light rounded-pill px-4 fw-bold text-secondary w-50" data-bs-dismiss="modal">Cancelar</button>
+						<a href="#" id="btnConfirmarExclusao" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm w-50">Excluir</a>
 					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 			
-			<script>
+	<script>
+	// Inicializador de Tooltips
+	document.addEventListener("DOMContentLoaded", function(){
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+		tooltipTriggerList.map(function (el) {
+			return new bootstrap.Tooltip(el);
+		});
+	});
+
     function prepararExclusao(botao) {
-        // Pega o ID e o Nome que colocamos escondidos no botão da lixeira
         var idUsuario = botao.getAttribute('data-id');
         var nomeUsuario = botao.getAttribute('data-nome');
         
-        // Atualiza o texto do modal com o nome da pessoa para evitar erros
         document.getElementById('nomeUsuarioExclusao').textContent = nomeUsuario;
-        
-        // Constrói o link de exclusão com o ID correto e coloca no botão vermelho do Modal
         document.getElementById('btnConfirmarExclusao').href = '/administrativo/usuarios/remover/' + idUsuario;
+
+        // Abrir o modal manualmente para evitar erros de sintaxe no HTML
+        var meuModal = new bootstrap.Modal(document.getElementById('modalExclusao'));
+        meuModal.show();
     }
-</script>
+	</script>
 </body>
 </html>
