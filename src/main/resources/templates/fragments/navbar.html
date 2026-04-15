@@ -24,7 +24,8 @@
 
 			<div class="collapse navbar-collapse" id="navbarMain">
 
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
+				<ul
+					class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center navbar-center-pill">
 
 					<li class="nav-item"
 						sec:authorize="hasAuthority('AGENDA_VISUALIZAR')"><a
@@ -74,12 +75,10 @@
 						<a class="nav-link dropdown-toggle" href="#" id="dropAdmin"
 						role="button" data-bs-toggle="dropdown"
 						th:classappend="${paginaAtiva == 'usuarios' || paginaAtiva == 'perfis'} ? 'active'">
-							<i class="fa-solid fa-shield-halved me-1 d-none d-lg-inline"></i>Acessos
-					</a>
+							Acessos </a>
 
 						<ul class="dropdown-menu shadow border-0 mt-2"
 							aria-labelledby="dropAdmin">
-
 							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')"><a
 								class="dropdown-item py-2" href="/administrativo/usuarios"
 								th:classappend="${paginaAtiva == 'usuarios'} ? 'bg-primary text-white' : ''">
@@ -94,13 +93,12 @@
 									th:classappend="${paginaAtiva == 'perfis'} ? 'text-white' : 'text-muted'"></i>Perfis
 									de Acesso
 							</a></li>
-
 						</ul>
 					</li>
 
 				</ul>
 
-				<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
+				<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
 
 					<li class="nav-item d-lg-none my-2"><hr class="text-white-50"></li>
 

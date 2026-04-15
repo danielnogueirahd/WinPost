@@ -198,3 +198,31 @@
     background-color: rgba(13, 110, 253, 0.03) !important;
     box-shadow: none !important; /* Remove aquela sombra feia padrão do bootstrap no foco */
 }
+
+
+/* --- EFEITO PÍLULA CENTRAL (Minimalista) --- */
+/* --- EFEITO PÍLULA CENTRAL (Minimalista - Centro Absoluto) --- */
+@media (min-width: 992px) {
+    .navbar-center-pill {
+        /* O SEGREDO DO CENTRO ABSOLUTO */
+        position: absolute !important;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1050; /* Garante que nada passe por cima */
+
+        /* Design da pílula */
+        background: rgba(255, 255, 255, 0.15); 
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 0.15rem 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+    
+    .navbar-center-pill .nav-link {
+        margin: 0 8px; 
+        padding: 0.5rem 0.5rem;
+    }
+}

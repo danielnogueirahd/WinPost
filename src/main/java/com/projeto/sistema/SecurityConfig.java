@@ -24,7 +24,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 // AQUI ESTÁ A CORREÇÃO: O caminho exato da sua home!
-                .defaultSuccessUrl("/administrativo", true) 
+                .defaultSuccessUrl("/administrativo/agenda", true) 
                 .permitAll()
             )
             .logout(logout -> logout
