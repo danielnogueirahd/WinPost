@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne; // <-- IMPORT NOVO
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -36,8 +36,6 @@ public class Grupo implements Serializable {
     private List<Contatos> contatos = new ArrayList<>();
 
     // 2. Relacionamento com Empresa (O CARIMBO MULTI-TENANT)
-    // NOTA TEMPORÁRIA: Deixei nullable = true para o seu sistema não quebrar ao ligar.
-    // Depois de rodar a primeira vez, mude para nullable = false (igual fizemos nos contatos)
     @ManyToOne
     @JoinColumn(name = "empresa_id", nullable = true) 
     private Empresa empresa;

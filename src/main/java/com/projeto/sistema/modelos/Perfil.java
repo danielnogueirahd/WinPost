@@ -17,16 +17,16 @@ public class Perfil implements Serializable {
     @Column(unique = true)
     private String nome; // Ex: "ADMINISTRADOR", "ATENDENTE"
 
-    /* * EXPLICAÇÃO DA MÁGICA ABAIXO:
-     * Como uma pessoa pode ter VÁRIAS permissões, usamos uma Lista (List).
-     * O @ElementCollection avisa o Hibernate: "Ei, crie uma tabelinha separada 
-     * no banco de dados só para guardar as permissões desse perfil!"
-     */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "perfil_permissoes", joinColumns = @JoinColumn(name = "perfil_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "permissao")
     private List<Permissao> permissoes = new ArrayList<>();
+
+    // --- O CARIMBO DA EMPRESA (Multi-Tenant) ---
+    @ManyToOne
+    @JoinColumn(name = "empresa_id", nullable = true) 
+    private Empresa empresa;
 
     // Getters e Setters
     public Long getId() { return id; }
@@ -37,4 +37,8 @@ public class Perfil implements Serializable {
     
     public List<Permissao> getPermissoes() { return permissoes; }
     public void setPermissoes(List<Permissao> permissoes) { this.permissoes = permissoes; }
+
+    // Getters e Setters da Empresa
+    public Empresa getEmpresa() { return empresa; }
+    public void setEmpresa(Empresa empresa) { this.empresa = empresa; }
 }

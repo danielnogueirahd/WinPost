@@ -43,6 +43,7 @@ public class ImplementsUserDetailsService implements UserDetailsService {
 		}
 
 		// 3. Retorna o nosso UsuarioLogado (Crachá VIP) numa única linha para evitar erros
-		return new UsuarioLogado(usuario.getUsername(), usuario.getSenha(), autoridades, usuario.getEmpresa(), usuario.getId());
+		// Retorna o nosso UsuarioLogado adicionando o usuario.getNome() no final
+		return new UsuarioLogado(usuario.getUsername(), usuario.getSenha(), autoridades, usuario.getEmpresa(), usuario.getId(), usuario.getNome());
 	}
 }

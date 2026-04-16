@@ -13,7 +13,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -27,8 +27,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projeto.sistema.modelos.Contatos;
+import com.projeto.sistema.modelos.Empresa;
 import com.projeto.sistema.modelos.Grupo;
-import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
+import com.projeto.sistema.modelos.UsuarioLogado;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.servicos.EmailService;
@@ -58,7 +59,7 @@ public class GrupoControle {
     public ModelAndView cadastrar(Grupo grupo,
             @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- LÊ O CRACHÁ
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
         ModelAndView mv = new ModelAndView("grupos/cadastro");
         mv.addObject("grupo", grupo);
@@ -67,7 +68,7 @@ public class GrupoControle {
         mv.addObject("dataFim", dataFim);
 
         if (dataInicio != null && dataFim != null) {
-            // <-- BLINDAGEM: Busca apenas os contatos da empresa!
+            // BLINDAGEM: Busca apenas os contatos da empresa!
             List<Contatos> todos = contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
             List<Contatos> filtrados = new ArrayList<>();
 
@@ -97,7 +98,7 @@ public class GrupoControle {
             mv.addObject("listaContatos", filtrados);
             mv.addObject("filtrado", true);
         } else {
-            // <-- BLINDAGEM: Lista apenas os contatos da empresa
+            // BLINDAGEM: Lista apenas os contatos da empresa
             mv.addObject("listaContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
         }
 
@@ -110,13 +111,13 @@ public class GrupoControle {
     public String salvar(@Valid Grupo grupo, BindingResult result,
             @RequestParam(value = "idsContatos", required = false) List<Long> idsContatos,
             RedirectAttributes attributes, 
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- LÊ O CRACHÁ
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
         if (result.hasErrors()) {
             return "grupos/cadastro";
         }
 
-        // <-- CARIMBA A EMPRESA ANTES DE SALVAR O GRUPO
+        // CARIMBA A EMPRESA ANTES DE SALVAR O GRUPO
         grupo.setEmpresa(usuarioLogado.getEmpresa());
 
         grupoService.salvarGrupoComContatos(grupo, idsContatos);
@@ -130,16 +131,16 @@ public class GrupoControle {
     @PreAuthorize("hasAuthority('GRUPO_VISUALIZAR')")
     @GetMapping("/gerenciar")
     public ModelAndView gerenciar(@RequestParam(value = "pesquisa", required = false) String pesquisa, 
-                                  @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- LÊ O CRACHÁ
+                                  @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
         
         ModelAndView mv = new ModelAndView("grupos/gerenciar");
 
         if (pesquisa != null && !pesquisa.isEmpty()) {
-            // <-- O CORRETIVO DO ERRO: Passa o Crachá para a busca
+            // O CORRETIVO DO ERRO: Passa o Crachá para a busca
             mv.addObject("listaGrupos", grupoRepositorio.findByNomeContainingIgnoreCaseAndEmpresaOrderByNomeAsc(pesquisa, usuarioLogado.getEmpresa()));
             mv.addObject("termoPesquisa", pesquisa);
         } else {
-            // <-- Busca todos os grupos DA EMPRESA
+            // Busca todos os grupos DA EMPRESA
             mv.addObject("listaGrupos", grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
         }
 
@@ -153,7 +154,7 @@ public class GrupoControle {
     public String excluir(@PathVariable Long id, RedirectAttributes attributes, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(id);
         
-        // <-- SEGURANÇA: Só exclui se o grupo pertencer à empresa do usuário
+        // SEGURANÇA: Só exclui se o grupo pertencer à empresa do usuário
         if (grupoOpt.isPresent() && grupoOpt.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
             grupoService.excluirGrupo(id);
             attributes.addFlashAttribute("mensagem", "Grupo excluído com sucesso!");
@@ -173,7 +174,7 @@ public class GrupoControle {
         if (grupoOpt.isPresent() && grupoOpt.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
             ModelAndView mv = new ModelAndView("grupos/editar");
             mv.addObject("grupo", grupoOpt.get());
-            // <-- BLINDAGEM: Lista de contatos da empresa
+            // BLINDAGEM: Lista de contatos da empresa
             mv.addObject("todosContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
             mv.addObject("paginaAtiva", "gerenciarGrupo");
             return mv;
@@ -189,7 +190,7 @@ public class GrupoControle {
             RedirectAttributes attributes, 
             @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-        // <-- CARIMBA A EMPRESA
+        // CARIMBA A EMPRESA
         grupo.setEmpresa(usuarioLogado.getEmpresa());
         Grupo grupoSalvo = grupoRepositorio.save(grupo);
 
@@ -221,7 +222,7 @@ public class GrupoControle {
             Contatos contato = contatoOpt.get();
             Grupo grupo = grupoOpt.get();
 
-            // <-- SEGURANÇA: Garante que ambos são da mesma empresa do usuário
+            // SEGURANÇA: Garante que ambos são da mesma empresa do usuário
             if (grupo.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId()) && 
                 contato.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
                 

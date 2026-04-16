@@ -8,6 +8,7 @@ public class EventoAgenda {
     private String tipo; // Vamos usar "NIVER" ou "ENVIO"
     private String titulo; // Ex: "Aniversário de João", "Promoção de Natal"
     private String cor; // "success" (verde) ou "primary" (azul)
+    private Empresa empresa; // O CARIMBO DA EMPRESA (Multi-Tenant)
 
     public EventoAgenda(LocalDate data, String tipo, String titulo, String cor) {
         this.data = data;
@@ -28,4 +29,7 @@ public class EventoAgenda {
     
     public String getCor() { return cor; }
     public void setCor(String cor) { this.cor = cor; }
+   
+    public Empresa getEmpresa() { return empresa; }
+    public void setEmpresa(Empresa empresa) { this.empresa = empresa; }
 }

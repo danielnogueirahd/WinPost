@@ -8,8 +8,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn; // <-- IMPORT NOVO
-import jakarta.persistence.ManyToOne; // <-- IMPORT NOVO
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -59,119 +59,62 @@ public class MensagemLog implements Serializable {
     private boolean importante = false;
 
     // --- NOVO CAMPO: OBSERVAÇÕES / CRM ---
-    // Usando VARCHAR(MAX) para permitir textos longos no SQL Server
     @Column(columnDefinition = "VARCHAR(MAX)")
     private String observacao;
 
     // --- O CARIMBO DA EMPRESA (Multi-Tenant) ---
-    // Temporariamente true para o banco aceitar a atualização sem apagar o histórico
     @ManyToOne
     @JoinColumn(name = "empresa_id", nullable = true) 
     private Empresa empresa;
 
     // --- Construtores ---
     public MensagemLog() {
-        
     }
 
     // --- Getters e Setters ---
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getAssunto() {
-        return assunto;
-    }
-    public void setAssunto(String assunto) {
-        this.assunto = assunto;
-    }
-    public String getConteudo() {
-        return conteudo;
-    }
-    public void setConteudo(String conteudo) {
-        this.conteudo = conteudo;
-    }
-    public String getNomeGrupoDestino() {
-        return nomeGrupoDestino;
-    }
-    public void setNomeGrupoDestino(String nomeGrupoDestino) {
-        this.nomeGrupoDestino = nomeGrupoDestino;
-    }
-    public Integer getTotalDestinatarios() {
-        return totalDestinatarios;
-    }
-    public void setTotalDestinatarios(Integer totalDestinatarios) {
-        this.totalDestinatarios = totalDestinatarios;
-    }
-    public String getNomesAnexos() {
-        return nomesAnexos;
-    }
-    public void setNomesAnexos(String nomesAnexos) {
-        this.nomesAnexos = nomesAnexos;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     
-    public String getPasta() {
-        return pasta;
-    }
-    public void setPasta(String pasta) {
-        this.pasta = pasta;
-    }
+    public String getAssunto() { return assunto; }
+    public void setAssunto(String assunto) { this.assunto = assunto; }
+    
+    public String getConteudo() { return conteudo; }
+    public void setConteudo(String conteudo) { this.conteudo = conteudo; }
+    
+    public String getNomeGrupoDestino() { return nomeGrupoDestino; }
+    public void setNomeGrupoDestino(String nomeGrupoDestino) { this.nomeGrupoDestino = nomeGrupoDestino; }
+    
+    public Integer getTotalDestinatarios() { return totalDestinatarios; }
+    public void setTotalDestinatarios(Integer totalDestinatarios) { this.totalDestinatarios = totalDestinatarios; }
+    
+    public String getNomesAnexos() { return nomesAnexos; }
+    public void setNomesAnexos(String nomesAnexos) { this.nomesAnexos = nomesAnexos; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    
+    public String getPasta() { return pasta; }
+    public void setPasta(String pasta) { this.pasta = pasta; }
 
-    public LocalDateTime getDataEnvio() {
-        return dataEnvio;
-    }
-    public void setDataEnvio(LocalDateTime dataEnvio) {
-        this.dataEnvio = dataEnvio;
-    }
+    public LocalDateTime getDataEnvio() { return dataEnvio; }
+    public void setDataEnvio(LocalDateTime dataEnvio) { this.dataEnvio = dataEnvio; }
     
     public boolean isTemAnexo() {
         return nomesAnexos != null && !nomesAnexos.isEmpty();
     }
 
-    public boolean isLida() {
-        return lida;
-    }
-    public void setLida(boolean lida) {
-        this.lida = lida;
-    }
+    public boolean isLida() { return lida; }
+    public void setLida(boolean lida) { this.lida = lida; }
     
-    public boolean isFavorito() {
-        return favorito;
-    }
-    public void setFavorito(boolean favorito) {
-        this.favorito = favorito;
-    }
+    public boolean isFavorito() { return favorito; }
+    public void setFavorito(boolean favorito) { this.favorito = favorito; }
     
-    public boolean isImportante() {
-        return importante;
-    }
-    public void setImportante(boolean importante) {
-        this.importante = importante;
-    }
+    public boolean isImportante() { return importante; }
+    public void setImportante(boolean importante) { this.importante = importante; }
 
-    // --- Novos Getters e Setters para Observação ---
-    public String getObservacao() {
-        return observacao;
-    }
+    public String getObservacao() { return observacao; }
+    public void setObservacao(String observacao) { this.observacao = observacao; }
 
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
-    }
-
-    // --- Getters e Setters da Empresa ---
-    public Empresa getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
-    }
+    public Empresa getEmpresa() { return empresa; }
+    public void setEmpresa(Empresa empresa) { this.empresa = empresa; }
 }
