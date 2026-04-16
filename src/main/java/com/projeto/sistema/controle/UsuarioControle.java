@@ -50,7 +50,7 @@ public class UsuarioControle {
 	    mv.addObject("usuario", new Usuario());
 	    mv.addObject("listaPerfis", perfilRepositorio.findAll());
 	    
-	    // ESTA LINHA É A CHAVE:
+	    // Esta linha é obrigatória para o dropdown de empresas aparecer!
 	    mv.addObject("listaEmpresas", empresaService.listarTodas()); 
 	    
 	    mv.addObject("paginaAtiva", "usuarios");
