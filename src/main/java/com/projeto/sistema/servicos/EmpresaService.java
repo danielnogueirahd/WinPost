@@ -1,9 +1,12 @@
 package com.projeto.sistema.servicos;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.projeto.sistema.modelos.Empresa;
 import com.projeto.sistema.repositorios.EmpresaRepositorio;
 
@@ -22,5 +25,14 @@ public class EmpresaService {
         return empresaRepositorio.findAll();
     }
     
-    // Métodos buscarPorId e excluir...
-}
+    // MÉTODO NOVO: Buscar para poder Editar
+    public Empresa buscarPorId(Long id) {
+        Optional<Empresa> empresa = empresaRepositorio.findById(id);
+        return empresa.orElse(null);
+    }
+
+    // MÉTODO NOVO: Excluir
+    public void excluir(Long id) {
+        empresaRepositorio.deleteById(id);
+    }
+    }

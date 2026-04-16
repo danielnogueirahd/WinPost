@@ -62,7 +62,17 @@
 									Grupos
 							</a></li>
 						</ul>
+					<li class="nav-item"
+						sec:authorize="hasAuthority('CONFIGURACOES_SISTEMA')"><a
+						class="nav-link d-flex align-items-center"
+						th:href="@{/administrativo/empresas}"
+						th:classappend="${paginaAtiva == 'empresas' ? 'active fw-bold' : ''}">
+        <i class="bi bi-buildings me-2"></i>
+        <span>Empresas</span>
+    </a>
+</li>
 					</li>
+					
 
 					<li class="nav-item"
 						sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')"><a

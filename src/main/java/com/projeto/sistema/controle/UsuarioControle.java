@@ -14,89 +14,99 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.projeto.sistema.modelos.Usuario;
 import com.projeto.sistema.repositorios.PerfilRepositorio;
 import com.projeto.sistema.repositorios.UsuarioRepositorio;
+import com.projeto.sistema.servicos.EmpresaService;
 
 @Controller
 @RequestMapping("/administrativo/usuarios")
 public class UsuarioControle {
 
-    @Autowired
-    private UsuarioRepositorio usuarioRepositorio;
+	@Autowired
+	private UsuarioRepositorio usuarioRepositorio;
 
-    @Autowired
-    private PerfilRepositorio perfilRepositorio;
+	@Autowired
+	private PerfilRepositorio perfilRepositorio;
 
-    // A NOSSA MÁQUINA DE CRIPTOGRAFAR SENHAS
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private EmpresaService empresaService;
 
-    // FECHADURA: Apenas quem tem permissão para VISUALIZAR
-    @PreAuthorize("hasAuthority('USUARIO_VISUALIZAR')")
-    @GetMapping
-    public ModelAndView listarUsuarios() {
-        ModelAndView mv = new ModelAndView("administrativo/usuarios/lista");
-        mv.addObject("listaUsuarios", usuarioRepositorio.findAll());
-        mv.addObject("paginaAtiva", "usuarios"); 
-        return mv;
-    }
+	// A NOSSA MÁQUINA DE CRIPTOGRAFAR SENHAS
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    // FECHADURA: Apenas quem tem permissão para CRIAR
-    @PreAuthorize("hasAuthority('USUARIO_CRIAR')")
-    @GetMapping("/novo")
-    public ModelAndView novoUsuario() {
-        ModelAndView mv = new ModelAndView("administrativo/usuarios/cadastro");
-        mv.addObject("usuario", new Usuario());
-        mv.addObject("listaPerfis", perfilRepositorio.findAll());
-        mv.addObject("paginaAtiva", "usuarios");
-        return mv;
-    }
+	// FECHADURA: Apenas quem tem permissão para VISUALIZAR
+	@PreAuthorize("hasAuthority('USUARIO_VISUALIZAR')")
+	@GetMapping
+	public ModelAndView listarUsuarios() {
+		ModelAndView mv = new ModelAndView("administrativo/usuarios/lista");
+		mv.addObject("listaUsuarios", usuarioRepositorio.findAll());
+		mv.addObject("paginaAtiva", "usuarios");
+		return mv;
+	}
 
- // FECHADURA: Tanto quem CRIA quanto quem EDITA pode salvar
-    @PreAuthorize("hasAnyAuthority('USUARIO_CRIAR', 'USUARIO_EDITAR')")
-    @PostMapping("/salvar")
-    public String salvarUsuario(Usuario usuario, RedirectAttributes attributes) {
-        
-        // Se o ID for null, é um NOVO usuário
-        if (usuario.getId() == null) {
-            String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
-            usuario.setSenha(senhaCriptografada);
-        } else {
-            // Se já tem ID, é uma EDIÇÃO! Busca o usuário antigo no banco
-            Usuario usuarioAntigo = usuarioRepositorio.findById(usuario.getId()).orElse(null);
-            
-            if (usuarioAntigo != null) {
-                // Se você digitou uma senha nova na tela, ele criptografa a nova
-                if (usuario.getSenha() != null && !usuario.getSenha().trim().isEmpty()) {
-                    usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-                } else {
-                    // Se você deixou a senha em branco na tela, ele mantém a senha antiga que estava no banco
-                    usuario.setSenha(usuarioAntigo.getSenha());
-                }
-            }
-        }
-        
-        usuarioRepositorio.save(usuario);
-        return "redirect:/administrativo/usuarios";
-    }
+	@PreAuthorize("hasAuthority('USUARIO_CRIAR')")
+	@GetMapping("/novo")
+	public ModelAndView novoUsuario() {
+	    ModelAndView mv = new ModelAndView("administrativo/usuarios/cadastro");
+	    mv.addObject("usuario", new Usuario());
+	    mv.addObject("listaPerfis", perfilRepositorio.findAll());
+	    
+	    // ESTA LINHA É A CHAVE:
+	    mv.addObject("listaEmpresas", empresaService.listarTodas()); 
+	    
+	    mv.addObject("paginaAtiva", "usuarios");
+	    return mv;
+	}
 
-    // FECHADURA: Apenas quem tem permissão para EDITAR
-    @PreAuthorize("hasAuthority('USUARIO_EDITAR')")
-    @GetMapping("/editar/{id}")
-    public ModelAndView editarUsuario(@PathVariable("id") Long id) {
-        ModelAndView mv = new ModelAndView("administrativo/usuarios/cadastro");
-        
-        // Pega o usuário no banco pelo ID e joga na tela
-        mv.addObject("usuario", usuarioRepositorio.findById(id).orElse(new Usuario()));
-        mv.addObject("listaPerfis", perfilRepositorio.findAll());
-        mv.addObject("paginaAtiva", "usuarios");
-        
-        return mv;
-    }
+	// FECHADURA: Tanto quem CRIA quanto quem EDITA pode salvar
+	@PreAuthorize("hasAnyAuthority('USUARIO_CRIAR', 'USUARIO_EDITAR')")
+	@PostMapping("/salvar")
+	public String salvarUsuario(Usuario usuario, RedirectAttributes attributes) {
 
-    // FECHADURA: Apenas quem tem permissão para EXCLUIR
-    @PreAuthorize("hasAuthority('USUARIO_EXCLUIR')")
-    @GetMapping("/remover/{id}")
-    public String removerUsuario(@PathVariable("id") Long id) {
-        usuarioRepositorio.deleteById(id);
-        return "redirect:/administrativo/usuarios";
-    }
+		// Se o ID for null, é um NOVO usuário
+		if (usuario.getId() == null) {
+			String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
+			usuario.setSenha(senhaCriptografada);
+		} else {
+			// Se já tem ID, é uma EDIÇÃO! Busca o usuário antigo no banco
+			Usuario usuarioAntigo = usuarioRepositorio.findById(usuario.getId()).orElse(null);
+
+			if (usuarioAntigo != null) {
+				// Se você digitou uma senha nova na tela, ele criptografa a nova
+				if (usuario.getSenha() != null && !usuario.getSenha().trim().isEmpty()) {
+					usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+				} else {
+					// Se você deixou a senha em branco na tela, ele mantém a senha antiga que
+					// estava no banco
+					usuario.setSenha(usuarioAntigo.getSenha());
+				}
+			}
+		}
+
+		usuarioRepositorio.save(usuario);
+		return "redirect:/administrativo/usuarios";
+	}
+
+	@PreAuthorize("hasAuthority('USUARIO_EDITAR')")
+	@GetMapping("/editar/{id}")
+	public ModelAndView editarUsuario(@PathVariable("id") Long id) {
+		ModelAndView mv = new ModelAndView("administrativo/usuarios/cadastro");
+
+		mv.addObject("usuario", usuarioRepositorio.findById(id).orElse(new Usuario()));
+		mv.addObject("listaPerfis", perfilRepositorio.findAll());
+
+		// ADICIONE ESTA LINHA TAMBÉM:
+		mv.addObject("listaEmpresas", empresaService.listarTodas());
+
+		mv.addObject("paginaAtiva", "usuarios");
+
+		return mv;
+	}
+
+	// FECHADURA: Apenas quem tem permissão para EXCLUIR
+	@PreAuthorize("hasAuthority('USUARIO_EXCLUIR')")
+	@GetMapping("/remover/{id}")
+	public String removerUsuario(@PathVariable("id") Long id) {
+		usuarioRepositorio.deleteById(id);
+		return "redirect:/administrativo/usuarios";
+	}
 }
