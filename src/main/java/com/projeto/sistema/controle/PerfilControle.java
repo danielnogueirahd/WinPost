@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
+import java.util.Map;
+import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import com.projeto.sistema.modelos.Perfil;
 import com.projeto.sistema.modelos.Permissao;
 import com.projeto.sistema.repositorios.PerfilRepositorio;
@@ -31,18 +34,23 @@ public class PerfilControle {
 	}
 
 	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN CRIAR O PRIMEIRO
-	// @PreAuthorize("hasAuthority('PERFIL_CRIAR')") <-- AQUI ESTAVA O BLOQUEIO!
+	// @PreAuthorize("hasAuthority('PERFIL_CRIAR')")
 	@GetMapping("/novo")
 	public ModelAndView novoPerfil() {
 		ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
 		mv.addObject("perfil", new Perfil());
-		mv.addObject("todasPermissoes", Permissao.values());
+		
+		// Lógica de agrupamento por Módulo adicionada aqui
+		Map<String, List<Permissao>> permissoesAgrupadas = Arrays.stream(Permissao.values())
+				.collect(Collectors.groupingBy(Permissao::getModulo));
+		mv.addObject("permissoesAgrupadas", permissoesAgrupadas);
+		
 		mv.addObject("paginaAtiva", "perfis");
 		return mv;
 	}
 
 	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN SALVAR
-	// @PreAuthorize("hasAnyAuthority('PERFIL_CRIAR', 'PERFIL_EDITAR')") <-- AQUI TAMBÉM!
+	// @PreAuthorize("hasAnyAuthority('PERFIL_CRIAR', 'PERFIL_EDITAR')")
 	@PostMapping("/salvar")
 	public String salvarPerfil(Perfil perfil) {
 		perfilRepositorio.save(perfil);
@@ -56,7 +64,12 @@ public class PerfilControle {
 		ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
 
 		mv.addObject("perfil", perfilRepositorio.findById(id).orElse(new Perfil()));
-		mv.addObject("todasPermissoes", Permissao.values());
+		
+		// Lógica de agrupamento por Módulo adicionada aqui também
+		Map<String, List<Permissao>> permissoesAgrupadas = Arrays.stream(Permissao.values())
+				.collect(Collectors.groupingBy(Permissao::getModulo));
+		mv.addObject("permissoesAgrupadas", permissoesAgrupadas);
+		
 		mv.addObject("paginaAtiva", "perfis");
 
 		return mv;

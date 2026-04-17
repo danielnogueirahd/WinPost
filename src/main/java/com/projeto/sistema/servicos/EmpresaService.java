@@ -18,6 +18,12 @@ public class EmpresaService {
     private EmpresaRepositorio empresaRepositorio;
 
     public Empresa salvar(Empresa empresa) {
+        // CORREÇÃO: Se o CNPJ vier vazio do formulário, transformamos em nulo.
+        // O SQL Server permite vários valores "null", mas bloqueia vários valores vazios ("").
+        if (empresa.getCnpj() != null && empresa.getCnpj().trim().isEmpty()) {
+            empresa.setCnpj(null);
+        }
+        
         return empresaRepositorio.save(empresa);
     }
 
@@ -25,14 +31,12 @@ public class EmpresaService {
         return empresaRepositorio.findAll();
     }
     
-    // MÉTODO NOVO: Buscar para poder Editar
     public Empresa buscarPorId(Long id) {
         Optional<Empresa> empresa = empresaRepositorio.findById(id);
         return empresa.orElse(null);
     }
 
-    // MÉTODO NOVO: Excluir
     public void excluir(Long id) {
         empresaRepositorio.deleteById(id);
     }
-    }
+}
