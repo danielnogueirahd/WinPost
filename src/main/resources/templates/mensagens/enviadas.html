@@ -205,7 +205,6 @@ body {
 }
 </style>
 
-<head>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
@@ -546,7 +545,7 @@ body {
 					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
-				<form action="/mensagens/salvarModelo" method="post">
+				<form th:action="@{/mensagens/salvarModelo}" method="post">
 					<div class="modal-body p-4">
 						<div class="row g-3">
 							<div class="col-md-5">

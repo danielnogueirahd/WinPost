@@ -15,13 +15,21 @@ public class Empresa implements Serializable {
     private String razaoSocial;
     
     @Column(unique = true)
-    private String cnpj; // Caso precise identificar a empresa
+    private String cnpj;
 
-    // Getters e Setters
+ // NOVO CAMPO: Controla a exclusão lógica (Soft Delete)
+    @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
+    private boolean ativo = true;
+
+    // Getters e Setters originais...
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getRazaoSocial() { return razaoSocial; }
     public void setRazaoSocial(String razaoSocial) { this.razaoSocial = razaoSocial; }
     public String getCnpj() { return cnpj; }
     public void setCnpj(String cnpj) { this.cnpj = cnpj; }
+
+    // NOVOS Getters e Setters para o campo 'ativo'
+    public boolean isAtivo() { return ativo; }
+    public void setAtivo(boolean ativo) { this.ativo = ativo; }
 }
