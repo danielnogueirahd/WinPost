@@ -1,87 +1,101 @@
 package com.projeto.sistema.controle;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import java.util.Map;
-import java.util.List;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import com.projeto.sistema.modelos.Perfil;
-import com.projeto.sistema.modelos.Permissao;
-import com.projeto.sistema.repositorios.PerfilRepositorio;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.projeto.sistema.modelos.Usuario;
+import com.projeto.sistema.modelos.UsuarioLogado;
+import com.projeto.sistema.repositorios.UsuarioRepositorio;
 
 @Controller
-@RequestMapping("/administrativo/perfis")
 public class PerfilControle {
 
-	@Autowired
-	private PerfilRepositorio perfilRepositorio;
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
 
-	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN ENTRAR
-	// @PreAuthorize("hasAuthority('PERFIL_VISUALIZAR')")
-	@GetMapping
-	public ModelAndView listarPerfis() {
-		ModelAndView mv = new ModelAndView("administrativo/perfis/lista");
-		mv.addObject("listaPerfis", perfilRepositorio.findAll());
-		mv.addObject("paginaAtiva", "perfis");
-		return mv;
-	}
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN CRIAR O PRIMEIRO
-	// @PreAuthorize("hasAuthority('PERFIL_CRIAR')")
-	@GetMapping("/novo")
-	public ModelAndView novoPerfil() {
-		ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
-		mv.addObject("perfil", new Perfil());
-		
-		// Lógica de agrupamento por Módulo adicionada aqui
-		Map<String, List<Permissao>> permissoesAgrupadas = Arrays.stream(Permissao.values())
-				.collect(Collectors.groupingBy(Permissao::getModulo));
-		mv.addObject("permissoesAgrupadas", permissoesAgrupadas);
-		
-		mv.addObject("paginaAtiva", "perfis");
-		return mv;
-	}
+    // =======================================================================
+    // 1. VISUALIZAÇÃO DO PERFIL (GET)
+    // =======================================================================
+    @GetMapping("/perfil")
+    public ModelAndView exibirPerfil(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        ModelAndView mv = new ModelAndView("administrativo/perfil");
+        
+        // CORRIGIDO: getIdUsuario() em vez de getId()
+        Usuario usuario = usuarioRepositorio.findById(usuarioLogado.getIdUsuario()).orElse(null);
+        mv.addObject("usuario", usuario);
+        
+        return mv;
+    }
 
-	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN SALVAR
-	// @PreAuthorize("hasAnyAuthority('PERFIL_CRIAR', 'PERFIL_EDITAR')")
-	@PostMapping("/salvar")
-	public String salvarPerfil(Perfil perfil) {
-		perfilRepositorio.save(perfil);
-		return "redirect:/administrativo/perfis";
-	}
+    // =======================================================================
+    // 2. ATUALIZAR DADOS PESSOAIS (POST)
+    // =======================================================================
+    @PostMapping("/perfil/salvar")
+    public String salvarPerfil(@RequestParam("nome") String nome, 
+                               @RequestParam("email") String email,
+                               @AuthenticationPrincipal UsuarioLogado usuarioLogado, 
+                               RedirectAttributes attributes) {
+        
+        // CORRIGIDO: getIdUsuario() em vez de getId()
+        Usuario usuario = usuarioRepositorio.findById(usuarioLogado.getIdUsuario()).orElse(null);
+        
+        if (usuario != null) {
+            usuario.setNome(nome);
+            usuario.setEmail(email);
+            usuarioRepositorio.save(usuario);
+            
+            attributes.addFlashAttribute("mensagem", "Dados pessoais atualizados com sucesso!");
+            attributes.addFlashAttribute("tipoMensagem", "success");
+        } else {
+            attributes.addFlashAttribute("mensagem", "Erro ao encontrar o usuário no sistema.");
+            attributes.addFlashAttribute("tipoMensagem", "danger");
+        }
+        
+        return "redirect:/perfil";
+    }
 
-	// FECHADURA TEMPORARIAMENTE DESLIGADA PARA O ADMIN EDITAR
-	// @PreAuthorize("hasAuthority('PERFIL_EDITAR')")
-	@GetMapping("/editar/{id}")
-	public ModelAndView editarPerfil(@PathVariable("id") Long id) {
-		ModelAndView mv = new ModelAndView("administrativo/perfis/cadastro");
+    // =======================================================================
+    // 3. SEGURANÇA: ALTERAÇÃO DE SENHA (POST)
+    // =======================================================================
+    @PostMapping("/perfil/senha")
+    public String alterarSenha(@RequestParam("senhaAtual") String senhaAtual, 
+                               @RequestParam("novaSenha") String novaSenha,
+                               @AuthenticationPrincipal UsuarioLogado usuarioLogado, 
+                               RedirectAttributes attributes) {
+        
+        // CORRIGIDO: getIdUsuario() em vez de getId()
+        Usuario usuario = usuarioRepositorio.findById(usuarioLogado.getIdUsuario()).orElse(null);
+        
+        if (usuario == null) {
+            attributes.addFlashAttribute("mensagem", "Erro crítico: Usuário não localizado.");
+            attributes.addFlashAttribute("tipoMensagem", "danger");
+            return "redirect:/perfil";
+        }
 
-		mv.addObject("perfil", perfilRepositorio.findById(id).orElse(new Perfil()));
-		
-		// Lógica de agrupamento por Módulo adicionada aqui também
-		Map<String, List<Permissao>> permissoesAgrupadas = Arrays.stream(Permissao.values())
-				.collect(Collectors.groupingBy(Permissao::getModulo));
-		mv.addObject("permissoesAgrupadas", permissoesAgrupadas);
-		
-		mv.addObject("paginaAtiva", "perfis");
+        // Validação: A senha atual digitada precisa bater com o hash do banco
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
+            attributes.addFlashAttribute("mensagem", "A senha atual informada está incorreta.");
+            attributes.addFlashAttribute("tipoMensagem", "danger");
+            return "redirect:/perfil";
+        }
 
-		return mv;
-	}
+        // Sucesso: Criptografa a nova senha antes de persistir
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuarioRepositorio.save(usuario);
 
-	// FECHADURA: Apenas quem pode EXCLUIR
-	// @PreAuthorize("hasAuthority('PERFIL_EXCLUIR')") 
-	@GetMapping("/remover/{id}")
-	public String removerPerfil(@PathVariable("id") Long id) {
-		
-		// O SQL Server vai bloquear automaticamente se houver essa dependência.
-		perfilRepositorio.deleteById(id);
-		return "redirect:/administrativo/perfis";
-	}
+        attributes.addFlashAttribute("mensagem", "Senha alterada com sucesso! Utilize-a no próximo login.");
+        attributes.addFlashAttribute("tipoMensagem", "success");
+        
+        return "redirect:/perfil";
+    }
 }

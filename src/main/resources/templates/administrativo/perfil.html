@@ -11,96 +11,90 @@
 <link rel="stylesheet" href="/css/estilo.css">
 </head>
 
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100" style="background-color: #f4f7fe;">
 
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="sidebarMenu" style="width: 280px;">
-        <div class="offcanvas-header sidebar-header">
-            <h5 class="offcanvas-title fw-bold text-white">
+        <div class="offcanvas-header bg-primary text-white">
+            <h5 class="offcanvas-title fw-bold">
                 <i class="fa-solid fa-layer-group me-2"></i> Navegação
             </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="/administrativo" class="list-group-item list-group-item-action sidebar-item">
+                <a href="/administrativo" class="list-group-item list-group-item-action border-0 py-3 text-secondary fw-bold">
                     <i class="fa-solid fa-house me-2"></i> Dashboard
                 </a>
-                <a href="/cadastroContatos" class="list-group-item list-group-item-action sidebar-item">
-                    <i class="fa-solid fa-user-plus me-2"></i> Cadastros
-                </a>
-                <a href="/listarContatos" class="list-group-item list-group-item-action sidebar-item">
-                    <i class="fa-solid fa-list me-2"></i> Consultas
+                <a href="/contatos/lista" class="list-group-item list-group-item-action border-0 py-3 text-secondary fw-bold">
+                    <i class="fa-solid fa-users me-2"></i> Contatos
                 </a>
             </div>
-             <div class="mt-auto p-4 text-center text-muted small" style="opacity: 0.7;">
+            <div class="mt-auto p-4 text-center text-muted small">
                 <hr>
-                <p class="mb-0">Sistema WinPost v1.0</p>
+                <p class="mb-0 fw-bold">WinPost ERP v1.0</p>
             </div>
         </div>
     </div>
 
     <main class="flex-grow-1">
-        
-
-        <div class="container py-4 mb-5">
+        <div class="container py-5 mb-5">
             
-            <div th:if="${mensagem}" th:classappend="${'alert-' + tipoMensagem}" class="alert alert-dismissible fade show" role="alert">
+            <div th:if="${mensagem}" th:classappend="${'alert-' + tipoMensagem}" class="alert alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
                 <i th:if="${tipoMensagem == 'success'}" class="fa-solid fa-check-circle me-2"></i>
                 <i th:if="${tipoMensagem == 'danger'}" class="fa-solid fa-triangle-exclamation me-2"></i>
-                <span th:text="${mensagem}"></span>
+                <span class="fw-bold" th:text="${mensagem}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div class="row justify-content-center mb-4">
-                <div class="col-lg-10">
-                    <div class="d-flex justify-content-between align-items-center">
+            <div class="row mb-4 align-items-center">
+                <div class="col-lg-10 mx-auto d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-white shadow-sm border d-lg-none rounded-circle" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                            <i class="fa-solid fa-bars text-primary"></i>
+                        </button>
                         <div>
-                            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-                                <i class="fa-solid fa-bars"></i>
-                            </button>
-                            <h3 class="fw-bold text-secondary mb-0">Meu Perfil</h3>
-                            <p class="text-muted small mb-0">Gerencie suas informações e preferências de segurança.</p>
+                            <h3 class="fw-bolder text-dark mb-0" style="letter-spacing: -0.5px;">Configurações de Conta</h3>
+                            <p class="text-secondary small mb-0">Gerencie suas informações pessoais e de segurança.</p>
                         </div>
-                        <nav aria-label="breadcrumb" class="d-none d-md-block">
-                            <ol class="breadcrumb mb-0 small bg-white p-2 rounded shadow-sm">
-                                <li class="breadcrumb-item"><a href="/administrativo" class="text-decoration-none">Home</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Perfil</li>
-                            </ol>
-                        </nav>
                     </div>
                 </div>
             </div>
 
-            <div class="row justify-content-center">
-                <div class="col-lg-3 mb-4">
-                    <div class="card card-modern h-100 text-center">
-                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+            <div class="row justify-content-center g-4">
+                
+                <div class="col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+                            
                             <div class="position-relative mb-3">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 120px; height: 120px; font-size: 3rem;">
-                                    <i class="fa-solid fa-user"></i>
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 110px; height: 110px; font-size: 3.5rem;">
+                                    <span th:text="${#strings.substring(usuario.nome,0,1).toUpperCase()}">U</span>
                                 </div>
-                                <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle p-2" title="Online">
-                                    <span class="visually-hidden">Online</span>
+                                <span class="position-absolute bottom-0 end-0 bg-success border border-white border-3 rounded-circle" style="width: 20px; height: 20px;" title="Online"></span>
+                            </div>
+                            
+                            <h5 class="fw-bold text-dark mb-1 text-center" th:text="${usuario.nome}">Nome do Usuário</h5>
+                            
+                            <div class="d-flex flex-column align-items-center gap-2 mt-2 w-100">
+                                <span class="badge bg-primary bg-opacity-10 text-light border border-primary-subtle rounded-pill px-3 py-2 w-100">
+                                    <i class="fa-solid fa-id-badge me-1"></i>
+                                    <span th:text="${usuario.perfil != null ? usuario.perfil.nome : 'Sem Perfil'}">Nível de Acesso</span>
+                                </span>
+                                
+                                <span class="badge bg-secondary bg-opacity-10 text-ligth border border-secondary-subtle rounded-pill px-3 py-2 w-100 text-truncate">
+                                    <i class="fa-solid fa-building me-1"></i>
+                                    <span th:text="${usuario.empresa != null ? usuario.empresa.razaoSocial: 'Acesso Global (Admin)'}">Nome da Empresa</span>
                                 </span>
                             </div>
-                            <h5 class="fw-bold mb-1" th:text="${usuario.nome}">Usuário</h5>
-                            <p class="text-muted small mb-3" th:text="${usuario.cargo}">Função</p>
-                            
-                            <div class="d-grid gap-2 w-100">
-                                <button class="btn btn-outline-primary btn-sm rounded-pill" disabled><i class="fa-solid fa-camera me-2"></i>Alterar Foto</button>
-                            </div>
 
-                            <hr class="w-100 my-4 text-muted opacity-25">
+                            <hr class="w-100 my-4 border-light">
 
-                            <div class="w-100 text-start">
-                                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Status da Conta</small>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <span class="badge bg-success bg-opacity-10 text-white px-3 py-2 rounded-pill">
-                                        <i class="fa-solid fa-check-circle me-1"></i> Ativo
-                                    </span>
-                                    <small class="text-muted">WinPost 1.0</small>
+                            <div class="w-100 text-start bg-light p-3 rounded-3">
+                                <p class="text-uppercase text-muted fw-bolder mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">Status da Conta</p>
+                                <div class="d-flex align-items-center text-success fw-bold small">
+                                    <i class="fa-solid fa-circle-check me-2"></i> Conta Ativa
                                 </div>
                             </div>
                         </div>
@@ -109,41 +103,36 @@
 
                 <div class="col-lg-7">
                     
-                    <div class="card card-modern mb-4">
-                        <div class="card-header border-bottom-0 d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-white">
-                                <i class="fa-regular fa-address-card fs-5"></i>
-                            </div>
-                            <h6 class="mb-0 fw-bold text-dark">Informações Pessoais</h6>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h6 class="fw-bold text-dark mb-0 d-flex align-items-center">
+                                <i class="fa-regular fa-address-card text-primary me-2 fs-5"></i>
+                                Informações Pessoais
+                            </h6>
                         </div>
-                        <div class="card-body pt-0">
+                        <div class="card-body p-4">
                             <form th:action="@{/perfil/salvar}" method="post">
-                                <div class="row g-3">
+                                <div class="row g-4">
                                     <div class="col-md-6">
-                                        <label class="form-label-modern">Nome Completo</label>
+                                        <label class="form-label fw-bold small text-secondary">NOME COMPLETO</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-user text-muted"></i></span>
-                                            <input type="text" name="nome" class="form-control border-start-0 ps-0" th:value="${usuario.nome}" required>
+                                            <span class="input-group-text bg-light border-0"><i class="fa-regular fa-user text-muted"></i></span>
+                                            <input type="text" name="nome" class="form-control bg-light border-0 py-2 fw-medium text-dark" th:value="${usuario.nome}" required>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-md-6">
-                                        <label class="form-label-modern">E-mail</label>
+                                        <label class="form-label fw-bold small text-secondary">E-MAIL / LOGIN</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-white border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
-                                            <input type="email" name="email" class="form-control border-start-0 ps-0" th:value="${usuario.email}" required>
+                                            <span class="input-group-text bg-light border-0"><i class="fa-regular fa-envelope text-muted"></i></span>
+                                            <input type="email" name="email" class="form-control bg-light border-0 py-2 fw-medium text-dark" th:value="${usuario.email}" required>
                                         </div>
+                                        <div class="form-text small"><i class="fa-solid fa-circle-info me-1"></i>Este e-mail é usado para acessar o sistema.</div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label-modern">Telefone</label>
-                                        <input type="text" class="form-control" value="(11) 99999-9999" disabled title="Em breve">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label-modern">Cargo / Departamento</label>
-                                        <input type="text" class="form-control" th:value="${usuario.cargo}" readonly>
-                                    </div>
-                                    <div class="col-12 text-end mt-4">
-                                        <button type="submit" class="btn btn-primary btn-modern">
-                                            <i class="fa-regular fa-floppy-disk me-2"></i> Salvar Alterações
+                                    
+                                    <div class="col-12 text-end mt-4 pt-2 border-top">
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                                            <i class="fa-regular fa-floppy-disk me-2"></i> Atualizar Dados
                                         </button>
                                     </div>
                                 </div>
@@ -151,27 +140,27 @@
                         </div>
                     </div>
 
-                    <div class="card card-modern border-danger border-opacity-25">
-                        <div class="card-header border-bottom-0 d-flex align-items-center">
-                             <div class="bg-danger bg-opacity-10 p-2 rounded me-3 text-white">
-                                <i class="fa-solid fa-shield-halved fs-5"></i>
-                            </div>
-                            <h6 class="mb-0 fw-bold text-dark">Segurança & Senha</h6>
+                    <div class="card border-0 shadow-sm rounded-4 border-start border-warning border-4">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h6 class="fw-bold text-dark mb-0 d-flex align-items-center">
+                                <i class="fa-solid fa-shield-halved text-warning me-2 fs-5"></i>
+                                Segurança e Credenciais
+                            </h6>
                         </div>
-                        <div class="card-body pt-0">
+                        <div class="card-body p-4">
                             <form th:action="@{/perfil/senha}" method="post">
                                 <div class="row g-3 align-items-end">
                                     <div class="col-md-4">
-                                        <label class="form-label-modern">Senha Atual</label>
-                                        <input type="password" name="senhaAtual" class="form-control" placeholder="••••••" required>
+                                        <label class="form-label fw-bold small text-secondary">SENHA ATUAL</label>
+                                        <input type="password" name="senhaAtual" class="form-control bg-light border-0 py-2" placeholder="••••••••" required>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label-modern">Nova Senha</label>
-                                        <input type="password" name="novaSenha" class="form-control" placeholder="Nova senha" required>
+                                        <label class="form-label fw-bold small text-secondary">NOVA SENHA</label>
+                                        <input type="password" name="novaSenha" class="form-control bg-light border-0 py-2" placeholder="Sua nova senha" required>
                                     </div>
                                     <div class="col-md-4">
-                                        <button type="submit" class="btn btn-outline-danger w-100 btn-modern">
-                                            Alterar Senha
+                                        <button type="submit" class="btn btn-warning text-dark rounded-pill px-4 fw-bold w-100 shadow-sm">
+                                            <i class="fa-solid fa-key me-2"></i> Mudar Senha
                                         </button>
                                     </div>
                                 </div>
@@ -184,25 +173,9 @@
         </div>
     </main>
 
-    <div class="footer" th:replace="~{fragments/footer :: footer}"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function toggleMenu(menuId, iconId) {
-            var menu = document.getElementById(menuId);
-            var icon = document.getElementById(iconId);
-            if (menu && icon) {
-                if (menu.classList.contains('d-none')) {
-                    menu.classList.remove('d-none');
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                } else {
-                    menu.classList.add('d-none');
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                }
-            }
-        }
-    </script>
 </body>
 </html>

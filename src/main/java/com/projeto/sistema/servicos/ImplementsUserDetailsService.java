@@ -25,25 +25,26 @@ public class ImplementsUserDetailsService implements UserDetailsService {
 	private UsuarioRepositorio usuarioRepositorio;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// 1. Busca o usuário no banco pelo username
-		Usuario usuario = usuarioRepositorio.findByUsername(username);
+	public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+		// Agora passamos o que a pessoa digitou para os dois parâmetros (Username OU
+		// Email)
+		Usuario usuario = usuarioRepositorio.findByUsernameOrEmail(login, login);
 
 		if (usuario == null) {
 			throw new UsernameNotFoundException("Usuário não encontrado!");
 		}
 
-		// 2. Traduz as permissões do seu Perfil para os "Crachás" do Spring Security
+		// Traduz as permissões do seu Perfil para os "Crachás" do Spring Security
 		List<GrantedAuthority> autoridades = new ArrayList<>();
-		
+
 		if (usuario.getPerfil() != null && usuario.getPerfil().getPermissoes() != null) {
 			for (Permissao permissao : usuario.getPerfil().getPermissoes()) {
 				autoridades.add(new SimpleGrantedAuthority(permissao.name()));
 			}
 		}
 
-		// 3. Retorna o nosso UsuarioLogado (Crachá VIP) numa única linha para evitar erros
-		// Retorna o nosso UsuarioLogado adicionando o usuario.getNome() no final
-		return new UsuarioLogado(usuario.getUsername(), usuario.getSenha(), autoridades, usuario.getEmpresa(), usuario.getId(), usuario.getNome());
+		// Retorna o nosso UsuarioLogado
+		return new UsuarioLogado(usuario.getUsername(), usuario.getSenha(), autoridades, usuario.getEmpresa(),
+				usuario.getId(), usuario.getNome());
 	}
 }

@@ -1,6 +1,5 @@
 package com.projeto.sistema.controle;
 
-import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,14 +10,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal; // 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.UF;
-import com.projeto.sistema.modelos.Usuario;
 import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
@@ -79,55 +74,5 @@ public class PrincipalControle {
         mv.addObject("listaGrupos", grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa())); 
         
         return mv;
-    }
-    
-    // --- PERFIL (Exibir) ---
-    @GetMapping("/perfil")
-    public ModelAndView perfil(Principal principal) {
-        ModelAndView mv = new ModelAndView("administrativo/perfil");
-        Usuario usuario = usuarioRepositorio.findByUsername(principal.getName());
-        mv.addObject("usuario", usuario);
-        return mv;
-    }
-
-    // --- PERFIL (Salvar Dados) ---
-    @PostMapping("/perfil/salvar")
-    public String salvarPerfil(Usuario usuarioForm, Principal principal, RedirectAttributes attributes) {
-        Usuario usuarioBanco = usuarioRepositorio.findByUsername(principal.getName());
-        
-        // Atualiza apenas nome e email, mantendo a senha antiga e a empresa intacta
-        usuarioBanco.setNome(usuarioForm.getNome());
-        usuarioBanco.setEmail(usuarioForm.getEmail());
-        
-        usuarioRepositorio.save(usuarioBanco);
-        
-        attributes.addFlashAttribute("mensagem", "Dados atualizados com sucesso!");
-        attributes.addFlashAttribute("tipoMensagem", "success");
-        return "redirect:/perfil";
-    }
-
-    // --- PERFIL (Alterar Senha) ---
-    @PostMapping("/perfil/senha")
-    public String alterarSenha(@RequestParam("senhaAtual") String senhaAtual,
-                               @RequestParam("novaSenha") String novaSenha,
-                               Principal principal, 
-                               RedirectAttributes attributes) {
-        
-        Usuario usuario = usuarioRepositorio.findByUsername(principal.getName());
-        
-        // Verifica se a senha atual confere
-        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
-            attributes.addFlashAttribute("mensagem", "Senha atual incorreta!");
-            attributes.addFlashAttribute("tipoMensagem", "danger");
-            return "redirect:/perfil";
-        }
-        
-        // Criptografa e salva a nova senha
-        usuario.setSenha(passwordEncoder.encode(novaSenha));
-        usuarioRepositorio.save(usuario);
-        
-        attributes.addFlashAttribute("mensagem", "Senha alterada com sucesso!");
-        attributes.addFlashAttribute("tipoMensagem", "success");
-        return "redirect:/perfil";
     }
 }

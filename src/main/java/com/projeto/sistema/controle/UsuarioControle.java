@@ -22,6 +22,8 @@ public class UsuarioControle {
 
 	@Autowired
 	private UsuarioRepositorio usuarioRepositorio;
+	
+	
 
 	@Autowired
 	private PerfilRepositorio perfilRepositorio;
