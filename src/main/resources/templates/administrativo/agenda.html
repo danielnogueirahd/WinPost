@@ -229,7 +229,7 @@
 
 				<button class="btn btn-primary shadow-sm fw-bold rounded-pill px-4"
 					sec:authorize="hasAuthority('AGENDA_CRIAR')"
-					th:onclick="abrirModalNovoEvento(...)">
+					onclick="abrirModalNovoEvento()">
 					<i class="fa-solid fa-plus me-2"></i>Novo Evento
 				</button>
 			</div>
@@ -382,7 +382,7 @@
 								for="tipoTarefa" style="min-width: 120px;">
 								<div class="d-flex flex-column align-items-center text-center">
 									<div
-										class="icon-box bg-info bg-opacity-10 text-info rounded-circle mb-1 d-flex align-items-center justify-content-center"
+										class="icon-box bg-info bg-opacity-10 text-dark rounded-circle mb-1 d-flex align-items-center justify-content-center"
 										style="width: 30px; height: 30px;">
 										<i class="fa-solid fa-list-check" style="font-size: 0.85rem;"></i>
 									</div>
@@ -397,7 +397,7 @@
 								for="tipoReuniao" style="min-width: 120px;">
 								<div class="d-flex flex-column align-items-center text-center">
 									<div
-										class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle mb-1 d-flex align-items-center justify-content-center"
+										class="icon-box bg-primary bg-opacity-10 text-dark rounded-circle mb-1 d-flex align-items-center justify-content-center"
 										style="width: 30px; height: 30px;">
 										<i class="fa-solid fa-users" style="font-size: 0.85rem;"></i>
 									</div>
@@ -412,14 +412,14 @@
 								for="tipoImportante" style="min-width: 120px;">
 								<div class="d-flex flex-column align-items-center text-center">
 									<div
-										class="icon-box bg-danger bg-opacity-10 text-danger rounded-circle mb-1 d-flex align-items-center justify-content-center"
+										class="icon-box bg-danger bg-opacity-10 text-dark rounded-circle mb-1 d-flex align-items-center justify-content-center"
 										style="width: 30px; height: 30px;">
 										<i class="fa-solid fa-triangle-exclamation"
 											style="font-size: 0.85rem;"></i>
 									</div>
 									<div class="fw-bold text-dark" style="font-size: 0.8rem;">Urgente</div>
 								</div>
-								<div class="check-indicator text-danger">
+								<div class="check-indicator text-dark">
 									<i class="fa-solid fa-circle-check"></i>
 								</div>
 							</label>
@@ -625,27 +625,31 @@
 	<script th:src="@{/js/agenda.js}"></script>
 
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
-			const inputData = document.getElementById("tempData");
-			const inputHora = document.getElementById("tempHora");
-			const inputFinal = document.getElementById("inputDataHoraCompleta");
-			const formNovoEvento = document.querySelector("#modalNovoEvento form");
+		document.addEventListener("DOMContentLoaded",
+				function() {
+					const inputData = document.getElementById("tempData");
+					const inputHora = document.getElementById("tempHora");
+					const inputFinal = document
+							.getElementById("inputDataHoraCompleta");
+					const formNovoEvento = document
+							.querySelector("#modalNovoEvento form");
 
-			function atualizarHidden() {
-				if (inputData.value && inputHora.value) {
-					inputFinal.value = inputData.value + "T" + inputHora.value;
-				}
-			}
+					function atualizarHidden() {
+						if (inputData.value && inputHora.value) {
+							inputFinal.value = inputData.value + "T"
+									+ inputHora.value;
+						}
+					}
 
-			inputData.addEventListener("input", atualizarHidden);
-			inputHora.addEventListener("input", atualizarHidden);
+					inputData.addEventListener("input", atualizarHidden);
+					inputHora.addEventListener("input", atualizarHidden);
 
-			if (formNovoEvento) {
-				formNovoEvento.addEventListener("submit", function() {
-					atualizarHidden();
+					if (formNovoEvento) {
+						formNovoEvento.addEventListener("submit", function() {
+							atualizarHidden();
+						});
+					}
 				});
-			}
-		});
 	</script>
 
 </body>
