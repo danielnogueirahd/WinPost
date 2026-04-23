@@ -1,4 +1,4 @@
-// --- agenda.js (Versão Final - Modal Safe) ---
+// --- agenda.js (Versão Final Limpa e Sincronizada) ---
 
 /**
  * Função Auxiliar: Fecha o modal de lista para evitar travamento
@@ -76,19 +76,33 @@ function verDetalhesDia(dia, mes, ano) {
                 var bgIcone = 'bg-light';
                 var botoesAcao = '';
 
-                // Verifica se o ID veio nulo (para debug)
-                if (!item.idRef && item.tipo === 'ENVIO') {
-                    console.error("ERRO: Item de ENVIO sem ID recebido!", item);
+                // --- DETECÇÃO INTELIGENTE DE DISPAROS ---
+                var isLembreteEnvio = false;
+                if (item.titulo) {
+                    var t = item.titulo.toLowerCase();
+                    isLembreteEnvio = t.includes('enviar') || t.includes('disparo') || t.includes('mensagem') || t.includes('campanha');
                 }
 
-                // CONFIGURAÇÃO DE CORES SÓLIDAS E ÍCONES BRANCOS PARA MÁXIMA VISIBILIDADE
+                // --- LÓGICA DE ROTA DINÂMICA ---
+                var rotaDisparo = '/mensagens/enviadas';
+                if (item.tipo === 'ENVIO' && item.idRef) {
+                    rotaDisparo = '/mensagens/preparar-envio/' + item.idRef;
+                }
+
+                var atalhoDisparo = `<a href="${rotaDisparo}" class="btn btn-sm btn-primary rounded-circle shadow-sm" title="Ir para Tela de Disparo"><i class="fa-solid fa-rocket"></i></a>`;
+
                 if (item.tipo === 'NIVER') {
                     icone = 'fa-cake-candles'; corIcone = 'text-white'; bgIcone = 'bg-success';
                 }
                 else if (item.tipo === 'ENVIO') {
                     icone = 'fa-paper-plane'; corIcone = 'text-white'; bgIcone = 'bg-primary';
-                    // BOTÃO OLHO (Usa item.idRef)
-                    botoesAcao = `<button onclick="verMensagem(${item.idRef})" class="btn btn-sm btn-outline-primary rounded-circle" title="Ler Mensagem"><i class="fa-solid fa-eye"></i></button>`;
+                    item.subtitulo = `<span class="badge bg-success mb-1 fw-normal"><i class="fa-solid fa-check-double"></i> Enviado</span><br>` + (item.subtitulo || '');
+                    botoesAcao = `
+                        <div class="d-flex gap-2">
+                            <button onclick="verMensagem(${item.idRef})" class="btn btn-sm btn-outline-primary rounded-circle" title="Ler Mensagem"><i class="fa-solid fa-eye"></i></button>
+                            ${atalhoDisparo}
+                        </div>
+                    `;
                 }
                 else if (item.tipo === 'FERIADO') {
                     icone = 'fa-calendar-check'; corIcone = 'text-white'; bgIcone = 'bg-danger';
@@ -97,14 +111,29 @@ function verDetalhesDia(dia, mes, ano) {
                     if (item.tipo === 'REUNIAO') { icone = 'fa-users'; corIcone = 'text-white'; bgIcone = 'bg-info'; }
                     else if (item.tipo === 'IMPORTANTE') { icone = 'fa-triangle-exclamation'; corIcone = 'text-white'; bgIcone = 'bg-danger'; }
                     else if (item.tipo === 'TAREFA') { icone = 'fa-list-check'; corIcone = 'text-white'; bgIcone = 'bg-secondary'; }
-                    else { icone = 'fa-tag'; corIcone = 'text-dark'; bgIcone = 'bg-warning'; } // Amarelo precisa de ícone escuro para aparecer bem
+                    else { icone = 'fa-tag'; corIcone = 'text-dark'; bgIcone = 'bg-warning'; }
+
+                    if (isLembreteEnvio) {
+                        var dataEvento = new Date(ano, mes - 1, dia);
+                        var hoje = new Date();
+                        hoje.setHours(0, 0, 0, 0);
+
+                        if (dataEvento < hoje) {
+                            item.subtitulo = `<span class="badge bg-danger mb-1 fw-normal"><i class="fa-solid fa-xmark"></i> Atrasado</span><br>` + (item.subtitulo || '');
+                        } else if (dataEvento.getTime() === hoje.getTime()) {
+                            item.subtitulo = `<span class="badge bg-warning text-dark mb-1 fw-normal"><i class="fa-solid fa-clock"></i> Fazer Hoje</span><br>` + (item.subtitulo || '');
+                        } else {
+                            item.subtitulo = `<span class="badge bg-secondary mb-1 fw-normal"><i class="fa-solid fa-calendar-days"></i> Agendado</span><br>` + (item.subtitulo || '');
+                        }
+                    }
 
                     botoesAcao = `
-				                        <div class="d-flex gap-2">
-				                            <button class="btn btn-outline-warning btn-sm rounded-circle" onclick="editarEvento(${item.idRef})" title="Editar"><i class="fa-solid fa-pen"></i></button>
-				                            <button class="btn btn-outline-danger btn-sm rounded-circle" onclick="confirmarExclusao(${item.idRef})" title="Excluir"><i class="fas fa-times"></i></button>
-				                        </div>
-				                    `;
+                        <div class="d-flex gap-2 align-items-center">
+                            ${isLembreteEnvio ? atalhoDisparo : ''}
+                            <button class="btn btn-outline-warning btn-sm rounded-circle" onclick="editarEvento(${item.idRef})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-outline-danger btn-sm rounded-circle" onclick="confirmarExclusao(${item.idRef})" title="Excluir"><i class="fas fa-times"></i></button>
+                        </div>
+                    `;
                 }
 
                 html += `
@@ -131,15 +160,11 @@ function verDetalhesDia(dia, mes, ano) {
 }
 
 /**
- * 3. Ver Mensagem (O "OLHO")
+ * 3. Ver Mensagem
  */
 function verMensagem(id) {
-    if (!id) {
-        alert("Erro: ID da mensagem não encontrado. Verifique o Java.");
-        return;
-    }
-
-    fecharModalLista(); // Fecha a lista
+    if (!id) return;
+    fecharModalLista();
 
     setTimeout(() => {
         var el = document.getElementById('modalLeitura');
@@ -167,7 +192,6 @@ function verMensagem(id) {
 
             $('#modalConteudo').html(data.conteudo);
             $('#modalConteudo img').addClass('img-fluid rounded shadow-sm');
-
         }).fail(function() {
             $('#modalConteudo').html('<p class="text-danger text-center">Erro ao carregar mensagem. Tente novamente.</p>');
         });
@@ -175,16 +199,14 @@ function verMensagem(id) {
 }
 
 /**
- * 4. Editar Evento (O "LÁPIS")
+ * 4. Editar Evento
  */
 function editarEvento(id) {
     if (!id) return;
-
-    fecharModalLista(); // Fecha a lista
+    fecharModalLista();
 
     setTimeout(() => {
         $.get('/administrativo/agenda/buscar/' + id, function(evento) {
-
             $('#inputId').val(evento.id);
             $('#inputTitulo').val(evento.titulo);
             $('#modalNovoEvento textarea[name="descricao"]').val(evento.descricao);
@@ -205,10 +227,8 @@ function editarEvento(id) {
 
             var modalNovo = new bootstrap.Modal(document.getElementById('modalNovoEvento'));
             modalNovo.show();
-
         }).fail(function() {
             alert("Erro ao buscar dados do evento.");
-            // Reabre a lista se falhar
             var el = document.getElementById('modalDetalhesDia');
             if (el) new bootstrap.Modal(el).show();
         });
@@ -222,25 +242,16 @@ function confirmarExclusao(id) {
     fecharModalLista();
 
     Swal.fire({
-        title: 'Tem certeza?',
-        text: "Deseja remover este item da agenda?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Sim, excluir',
-        cancelButtonText: 'Cancelar'
+        title: 'Tem certeza?', text: "Deseja remover este item da agenda?", icon: 'warning',
+        showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sim, excluir', cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '/administrativo/agenda/remover/' + id,
-                type: 'GET',
+                url: '/administrativo/agenda/remover/' + id, type: 'GET',
                 success: function() {
                     Swal.fire({ title: 'Excluído!', icon: 'success', timer: 1500, showConfirmButton: false })
                         .then(() => location.reload());
-                },
-                error: function() {
-                    Swal.fire('Erro', 'Não foi possível excluir.', 'error');
                 }
             });
         } else {
@@ -250,7 +261,6 @@ function confirmarExclusao(id) {
     });
 }
 
-// Funções de Criação de Tipo (mantidas)
 function alternarModoCriacao(mostrar) {
     if (mostrar) {
         $('#areaSelecaoTipos').addClass('d-none');
@@ -301,3 +311,43 @@ function salvarNovoTipo() {
         complete: function() { btn.innerHTML = textoOriginal; btn.disabled = false; }
     });
 }
+
+// ==========================================================
+// SINCRONIZAÇÃO DE DATA E HORA (LADO DE FORA DE FORMA CORRETA)
+// ==========================================================
+$(document).ready(function() {
+
+    // Função que une a Data e Hora temporárias no formato ISO pro Spring
+    function atualizarDataHoraOculta() {
+        var data = $('#tempData').val();
+        var hora = $('#tempHora').val();
+
+        if (data && hora && data !== "" && hora !== "") {
+            var dataHoraUnificada = data + 'T' + hora;
+            
+            // Força a atualização do input hidden que vai pro Java
+            $('#inputDataHoraCompleta').val(dataHoraUnificada);
+            $('input[name="dataHora"]').val(dataHoraUnificada);
+            
+            console.log("Data/Hora sincronizada via JS:", dataHoraUnificada);
+        }
+    }
+
+    // Escuta qualquer mudança nos inputs visíveis
+    $('#tempData, #tempHora').on('change input blur', function() {
+        atualizarDataHoraOculta();
+    });
+
+    // Como garantia de segurança, antes de disparar o submit do formulário:
+    $('#modalNovoEvento form').on('submit', function(e) {
+        atualizarDataHoraOculta();
+        
+        var valorOculto = $('input[name="dataHora"]').val();
+        if (!valorOculto || !valorOculto.includes('T')) {
+            console.warn("Forçando preenchimento de fallback na data/hora");
+            var fallbackData = $('#tempData').val() || new Date().toISOString().split('T')[0];
+            var fallbackHora = $('#tempHora').val() || "09:00";
+            $('input[name="dataHora"]').val(fallbackData + 'T' + fallbackHora);
+        }
+    });
+});

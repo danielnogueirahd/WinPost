@@ -1,16 +1,17 @@
 package com.projeto.sistema.modelos;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class EventoAgenda {
 
-    private LocalDate data;
-    private String tipo; // Vamos usar "NIVER" ou "ENVIO"
-    private String titulo; // Ex: "Aniversário de João", "Promoção de Natal"
-    private String cor; // "success" (verde) ou "primary" (azul)
-    private Empresa empresa; // O CARIMBO DA EMPRESA (Multi-Tenant)
+    // AGORA USA LocalDateTime PARA GUARDAR A HORA!
+    private LocalDateTime data; 
+    private String tipo; 
+    private String titulo; 
+    private String cor; 
+    private Empresa empresa; 
 
-    public EventoAgenda(LocalDate data, String tipo, String titulo, String cor) {
+    public EventoAgenda(LocalDateTime data, String tipo, String titulo, String cor) {
         this.data = data;
         this.tipo = tipo;
         this.titulo = titulo;
@@ -18,8 +19,8 @@ public class EventoAgenda {
     }
 
     // --- Getters e Setters ---
-    public LocalDate getData() { return data; }
-    public void setData(LocalDate data) { this.data = data; }
+    public LocalDateTime getData() { return data; }
+    public void setData(LocalDateTime data) { this.data = data; }
 
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
