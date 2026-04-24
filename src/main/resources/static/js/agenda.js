@@ -324,11 +324,11 @@ $(document).ready(function() {
 
         if (data && hora && data !== "" && hora !== "") {
             var dataHoraUnificada = data + 'T' + hora;
-            
+
             // Força a atualização do input hidden que vai pro Java
             $('#inputDataHoraCompleta').val(dataHoraUnificada);
             $('input[name="dataHora"]').val(dataHoraUnificada);
-            
+
             console.log("Data/Hora sincronizada via JS:", dataHoraUnificada);
         }
     }
@@ -341,7 +341,7 @@ $(document).ready(function() {
     // Como garantia de segurança, antes de disparar o submit do formulário:
     $('#modalNovoEvento form').on('submit', function(e) {
         atualizarDataHoraOculta();
-        
+
         var valorOculto = $('input[name="dataHora"]').val();
         if (!valorOculto || !valorOculto.includes('T')) {
             console.warn("Forçando preenchimento de fallback na data/hora");
@@ -351,3 +351,106 @@ $(document).ready(function() {
         }
     });
 });
+
+// ==========================================================
+// LÓGICA DE FILTROS E PESQUISA DA AGENDA
+// ==========================================================
+$(document).ready(function() {
+
+    // 1. Função principal que aplica os filtros
+    function aplicarFiltrosAgenda() {
+        // Pega o texto do botão que está ativo no momento
+        var textoFiltro = $('.filter-btn.active').text().trim().toLowerCase();
+
+        // Pega o que o usuário digitou no campo de busca
+        var termoBusca = $('#buscaAgenda').val().toLowerCase();
+
+        // Mapeia o texto do botão para a classe CSS correta do evento
+        var filtroClasse = "TODOS";
+        if (textoFiltro.includes("disparos")) filtroClasse = "ENVIO";
+        else if (textoFiltro.includes("reuniões")) filtroClasse = "REUNIAO";
+        else if (textoFiltro.includes("urgentes")) filtroClasse = "IMPORTANTE";
+        else if (textoFiltro.includes("tarefas")) filtroClasse = "TAREFA";
+
+        // Percorre todos os eventos do calendário
+        $('.event-badge').each(function() {
+            var badge = $(this);
+            var tituloEvento = badge.text().toLowerCase();
+
+            // Verifica se o evento bate com o botão de filtro clicado
+            var atendeFiltroBotao = (filtroClasse === "TODOS" || badge.hasClass(filtroClasse));
+
+            // Verifica se o evento bate com o texto digitado na pesquisa
+            var atendeFiltroBusca = (termoBusca === "" || tituloEvento.includes(termoBusca));
+
+            // Mostra ou esconde o evento com base nas duas condições
+            if (atendeFiltroBotao && atendeFiltroBusca) {
+                badge.fadeIn(150); // Efeito suave ao aparecer
+            } else {
+                badge.fadeOut(150); // Efeito suave ao sumir
+            }
+        });
+    }
+
+    // 2. Evento de clique nos botões de filtro
+    $('.filter-btn').on('click', function() {
+        // Remove a classe 'active' de todos os botões e coloca apenas no clicado
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+
+        // Dispara a função de filtro
+        aplicarFiltrosAgenda();
+    });
+
+    // 3. Evento de digitação no campo de pesquisa
+    $('#buscaAgenda').on('input', function() {
+        // Dispara a função de filtro toda vez que o usuário digitar algo
+        aplicarFiltrosAgenda();
+    });
+
+});
+
+// ==========================================================
+// MARCAÇÃO DE TAREFAS CONCLUÍDAS (COM PROTEÇÃO CONTRA ERROS)
+// ==========================================================
+
+/**
+ * Marca uma tarefa como concluída na barra lateral
+ */
+function concluirTarefa(idTarefa, elemento) {
+    // PROTEÇÃO: Se o ID for 0, é uma tarefa fantasma/antiga na tela
+    if (idTarefa === 0) {
+        Swal.fire('Atenção', 'Esta tarefa é antiga e está sem ID. Atualize a página (F5) ou crie uma tarefa nova para testar.', 'warning');
+        return;
+    }
+
+    var $btn = $(elemento);
+    var $icone = $btn.find('i');
+    var $textos = $btn.closest('.mini-event-item').find('h6, p');
+
+    // Impede duplo clique se já estiver concluída
+    if ($btn.hasClass('task-done')) return;
+
+    // 1. Efeito visual instantâneo
+    $icone.removeClass('fa-regular fa-circle text-muted').addClass('fa-solid fa-circle-check text-success');
+    $textos.css({'text-decoration': 'line-through', 'opacity': '0.5', 'transition': 'all 0.3s'});
+    $btn.addClass('task-done');
+
+    // 2. Avisar o Spring Boot via GET
+    $.get('/administrativo/agenda/concluir/' + idTarefa)
+        .done(function() {
+            console.log("Tarefa " + idTarefa + " concluída com sucesso!");
+        })
+        .fail(function(jqXHR) {
+            // Se falhar, desfaz a animação visual
+            $icone.removeClass('fa-solid fa-circle-check text-success').addClass('fa-regular fa-circle text-muted');
+            $textos.css({'text-decoration': 'none', 'opacity': '1'});
+            $btn.removeClass('task-done');
+            
+            // Pega o erro exato que o Java mandou de volta
+            var msgErro = jqXHR.responseText || "Erro desconhecido no servidor";
+            var status = jqXHR.status;
+            
+            Swal.fire('Ops!', 'O servidor recusou. Status: ' + status + '<br>Motivo: ' + msgErro, 'error');
+        });
+}

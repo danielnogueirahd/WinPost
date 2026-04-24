@@ -501,7 +501,8 @@
 									</div>
 									<div th:if="${evento.tipo == 'TAREFA'}"
 										class="align-self-center ms-2 text-muted check-task-btn"
-										title="Marcar como concluída">
+										title="Marcar como concluída"
+										th:onclick="|concluirTarefa(${evento.id != null ? evento.id : 0}, this)|">
 										<i class="fa-regular fa-circle fs-5"></i>
 									</div>
 								</div>
@@ -786,27 +787,31 @@
 	<script th:src="@{/js/agenda.js}"></script>
 
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
-			const inputData = document.getElementById("tempData");
-			const inputHora = document.getElementById("tempHora");
-			const inputFinal = document.getElementById("inputDataHoraCompleta");
-			const formNovoEvento = document.querySelector("#modalNovoEvento form");
+		document.addEventListener("DOMContentLoaded",
+				function() {
+					const inputData = document.getElementById("tempData");
+					const inputHora = document.getElementById("tempHora");
+					const inputFinal = document
+							.getElementById("inputDataHoraCompleta");
+					const formNovoEvento = document
+							.querySelector("#modalNovoEvento form");
 
-			function atualizarHidden() {
-				if (inputData.value && inputHora.value) {
-					inputFinal.value = inputData.value + "T" + inputHora.value;
-				}
-			}
+					function atualizarHidden() {
+						if (inputData.value && inputHora.value) {
+							inputFinal.value = inputData.value + "T"
+									+ inputHora.value;
+						}
+					}
 
-			inputData.addEventListener("input", atualizarHidden);
-			inputHora.addEventListener("input", atualizarHidden);
+					inputData.addEventListener("input", atualizarHidden);
+					inputHora.addEventListener("input", atualizarHidden);
 
-			if (formNovoEvento) {
-				formNovoEvento.addEventListener("submit", function() {
-					atualizarHidden();
+					if (formNovoEvento) {
+						formNovoEvento.addEventListener("submit", function() {
+							atualizarHidden();
+						});
+					}
 				});
-			}
-		});
 	</script>
 
 </body>
