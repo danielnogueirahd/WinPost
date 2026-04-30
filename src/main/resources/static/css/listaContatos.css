@@ -1,0 +1,109 @@
+/* ==========================================================================
+   13. AGENDA - MODAL DE DETALHES E BOTÕES DE AÇÃO
+   ========================================================================== */
+.agenda-modal-container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+}
+
+.agenda-modal-header {
+    padding: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.agenda-modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.agenda-modal-header span { color: var(--primary); }
+.agenda-modal-body { padding: 24px; }
+.agenda-modal-footer {
+    padding: 16px 24px;
+    background: #f9fafb;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Botões de Ação da Agenda (Lápis, Lixeira, Disparo) */
+.btn-acao {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px; 
+    border: none;
+    background: transparent;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-acao.editar { color: #0d6efd; }
+.btn-acao.editar:hover { background-color: rgba(13, 110, 253, 0.1); transform: scale(1.05); }
+
+.btn-acao.excluir { color: #dc3545; }
+.btn-acao.excluir:hover { background-color: rgba(220, 53, 69, 0.1); transform: scale(1.05); }
+
+.btn-acao.disparar { color: #198754; } 
+.btn-acao.disparar:hover { background-color: rgba(25, 135, 84, 0.1); transform: scale(1.05); }
+
+
+/* ==========================================================================
+   14. CONTATOS - MODAL DE EXPORTAÇÃO PREMIUM
+   ========================================================================== */
+.export-modal-content {
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.export-option-card {
+	border: 1px solid #eaedf1;
+	border-radius: 12px;
+	padding: 1.25rem;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	text-decoration: none;
+	color: inherit;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	background: #fff;
+}
+
+.export-option-card:hover {
+	border-color: #0d6efd;
+	background-color: #f8fbff;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(13, 110, 253, 0.08);
+	color: inherit; 
+}
+
+.export-icon-box {
+	width: 48px;
+	height: 48px;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+	flex-shrink: 0;
+}
+
+.icon-pdf { background-color: #fff0f1; color: #dc3545; }
+.icon-excel { background-color: #f0fdf4; color: #198754; }
+.icon-tags { background-color: #f8f9fa; color: #6c757d; }

@@ -4,17 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.UF;
-import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
+import com.projeto.sistema.modelos.UsuarioLogado; 
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;

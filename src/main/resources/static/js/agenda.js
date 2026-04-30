@@ -1,4 +1,4 @@
-// --- agenda.js (Versão Final Limpa e Sincronizada) ---
+// --- agenda.js (Versão Final Corrigida e Sincronizada) ---
 
 /**
  * Função Auxiliar: Fecha o modal de lista para evitar travamento
@@ -75,85 +75,101 @@ function verDetalhesDia(dia, mes, ano) {
                 var corIcone = 'text-secondary';
                 var bgIcone = 'bg-light';
                 var botoesAcao = '';
+                var badgeStatus = '';
 
-                // --- DETECÇÃO INTELIGENTE DE DISPAROS ---
-                var isLembreteEnvio = false;
-                if (item.titulo) {
-                    var t = item.titulo.toLowerCase();
-                    isLembreteEnvio = t.includes('enviar') || t.includes('disparo') || t.includes('mensagem') || t.includes('campanha');
-                }
+                // 1. Limpeza do Título (Remove o "[CONCLUÍDA]" do texto e transforma em visual)
+                var isConcluida = item.titulo.includes('[CONCLUÍDA]');
+                var tituloExibicao = item.titulo.replace(' [CONCLUÍDA]', '').replace('[CONCLUÍDA]', '').trim();
+                var classeTitulo = isConcluida ? 'text-muted text-decoration-line-through' : 'text-dark';
+                var opacidadeIcone = isConcluida ? 'opacity-50' : '';
 
-                // --- LÓGICA DE ROTA DINÂMICA ---
+                // 2. Detecção Inteligente
+                var t = item.titulo.toLowerCase();
+                var isLembreteEnvio = t.includes('enviar') || t.includes('disparo') || t.includes('mensagem') || t.includes('campanha');
+
                 var rotaDisparo = '/mensagens/enviadas';
-                if (item.tipo === 'ENVIO' && item.idRef) {
-                    rotaDisparo = '/mensagens/preparar-envio/' + item.idRef;
+                if (item.tipo === 'ENVIO' && item.idRef) { rotaDisparo = '/mensagens/preparar-envio/' + item.idRef; }
+                var atalhoDisparo = `<a href="${rotaDisparo}" class="btn-acao disparar" title="Ir para Tela de Disparo"><i class="fa-solid fa-paper-plane"></i></a>`;
+
+                // 3. Tags de Status (Atrasado, Hoje, Enviado, Concluída)
+                if (item.tipo === 'ENVIO') {
+                    badgeStatus = `<span class="badge bg-success text-white fw-normal"><i class="fa-solid fa-check-double"></i> Enviado</span>`;
+                } else if (isLembreteEnvio) {
+                    var dataEvento = new Date(ano, mes - 1, dia);
+                    var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+
+                    if (dataEvento < hoje && !isConcluida) {
+                        badgeStatus = `<span class="badge bg-danger text-white fw-normal"><i class="fa-solid fa-xmark"></i> Atrasado</span>`;
+                    } else if (dataEvento.getTime() === hoje.getTime() && !isConcluida) {
+                        badgeStatus = `<span class="badge bg-warning text-dark fw-normal"><i class="fa-solid fa-clock"></i> Fazer Hoje</span>`;
+                    }
                 }
 
-                var atalhoDisparo = `<a href="${rotaDisparo}" class="btn btn-sm btn-primary rounded-circle shadow-sm" title="Ir para Tela de Disparo"><i class="fa-solid fa-rocket"></i></a>`;
-
-                if (item.tipo === 'NIVER') {
-                    icone = 'fa-cake-candles'; corIcone = 'text-white'; bgIcone = 'bg-success';
+                if (isConcluida) {
+                    badgeStatus += `<span class="badge bg-light text-success border border-success fw-bold ms-1"><i class="fa-solid fa-check"></i> Concluída</span>`;
                 }
+
+                // 4. Ícones e Cores
+                if (item.tipo === 'NIVER') { icone = 'fa-cake-candles'; corIcone = 'text-white'; bgIcone = 'bg-success'; }
                 else if (item.tipo === 'ENVIO') {
                     icone = 'fa-paper-plane'; corIcone = 'text-white'; bgIcone = 'bg-primary';
-                    item.subtitulo = `<span class="badge bg-success mb-1 fw-normal"><i class="fa-solid fa-check-double"></i> Enviado</span><br>` + (item.subtitulo || '');
-                    botoesAcao = `
-                        <div class="d-flex gap-2">
-                            <button onclick="verMensagem(${item.idRef})" class="btn btn-sm btn-outline-primary rounded-circle" title="Ler Mensagem"><i class="fa-solid fa-eye"></i></button>
-                            ${atalhoDisparo}
-                        </div>
-                    `;
+                    botoesAcao = `<div class="d-flex gap-1 align-items-center"><button onclick="verMensagem(${item.idRef})" class="btn-acao editar" title="Ler Mensagem"><i class="fa-solid fa-eye"></i></button>${atalhoDisparo}</div>`;
                 }
-                else if (item.tipo === 'FERIADO') {
-                    icone = 'fa-calendar-check'; corIcone = 'text-white'; bgIcone = 'bg-danger';
-                }
+                else if (item.tipo === 'FERIADO') { icone = 'fa-calendar-check'; corIcone = 'text-white'; bgIcone = 'bg-danger'; }
                 else {
                     if (item.tipo === 'REUNIAO') { icone = 'fa-users'; corIcone = 'text-white'; bgIcone = 'bg-info'; }
                     else if (item.tipo === 'IMPORTANTE') { icone = 'fa-triangle-exclamation'; corIcone = 'text-white'; bgIcone = 'bg-danger'; }
                     else if (item.tipo === 'TAREFA') { icone = 'fa-list-check'; corIcone = 'text-white'; bgIcone = 'bg-secondary'; }
                     else { icone = 'fa-tag'; corIcone = 'text-dark'; bgIcone = 'bg-warning'; }
 
-                    if (isLembreteEnvio) {
-                        var dataEvento = new Date(ano, mes - 1, dia);
-                        var hoje = new Date();
-                        hoje.setHours(0, 0, 0, 0);
-
-                        if (dataEvento < hoje) {
-                            item.subtitulo = `<span class="badge bg-danger mb-1 fw-normal"><i class="fa-solid fa-xmark"></i> Atrasado</span><br>` + (item.subtitulo || '');
-                        } else if (dataEvento.getTime() === hoje.getTime()) {
-                            item.subtitulo = `<span class="badge bg-warning text-dark mb-1 fw-normal"><i class="fa-solid fa-clock"></i> Fazer Hoje</span><br>` + (item.subtitulo || '');
-                        } else {
-                            item.subtitulo = `<span class="badge bg-secondary mb-1 fw-normal"><i class="fa-solid fa-calendar-days"></i> Agendado</span><br>` + (item.subtitulo || '');
-                        }
-                    }
-
                     botoesAcao = `
-                        <div class="d-flex gap-2 align-items-center">
-                            ${isLembreteEnvio ? atalhoDisparo : ''}
-                            <button class="btn btn-outline-warning btn-sm rounded-circle" onclick="editarEvento(${item.idRef})" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn btn-outline-danger btn-sm rounded-circle" onclick="confirmarExclusao(${item.idRef})" title="Excluir"><i class="fas fa-times"></i></button>
+                        <div class="d-flex gap-1 align-items-center">
+                            ${isLembreteEnvio && !isConcluida ? atalhoDisparo : ''}
+                            <button class="btn-acao editar" onclick="editarEvento(${item.idRef})" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="btn-acao excluir" onclick="confirmarExclusao(${item.idRef})" title="Excluir"><i class="fa-regular fa-trash-can"></i></button>
                         </div>
                     `;
                 }
 
+                // 5. Tratamento de Descrição (Evita repetição e quebra textos bizarros)
+                var descHtml = '';
+                var descLimpa = item.subtitulo ? item.subtitulo.trim() : '';
+
+                // Só mostra se tiver texto e se for DIFERENTE do título!
+                if (descLimpa !== '' && descLimpa.toLowerCase() !== tituloExibicao.toLowerCase()) {
+                    descHtml = `<div class="text-muted mt-1" style="font-size: 0.8rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word;">${descLimpa}</div>`;
+                }
+
+                // 6. Monta o HTML com estrutura flexível
                 html += `
-                    <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle p-2 me-3 d-flex align-items-center justify-content-center ${bgIcone} ${corIcone}" style="width: 40px; height: 40px;">
-                                <i class="fa-solid ${icone} fs-5"></i>
+                    <div class="list-group-item d-flex justify-content-between align-items-start py-3 border-0 border-bottom px-2 bg-transparent">
+                        
+                        <div class="d-flex align-items-start w-100 pe-3" style="min-width: 0;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 me-3 ${bgIcone} ${corIcone} ${opacidadeIcone}" style="width: 40px; height: 40px; margin-top: 2px;">
+                                <i class="fa-solid ${icone} fs-6"></i>
                             </div>
-                            <div>
-                                <h6 class="mb-0 fw-bold text-dark">${item.titulo}</h6>
-                                <small class="text-muted" style="font-size: 0.8rem;">
-                                    <span class="badge bg-light text-secondary border me-1">${item.tipo}</span>
-                                    ${item.subtitulo || ''}
-                                </small>
+                            
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <h6 class="mb-1 fw-bold ${classeTitulo} text-truncate" title="${tituloExibicao}">${tituloExibicao}</h6>
+                                
+                                <div class="d-flex flex-wrap gap-1 align-items-center">
+                                    <span class="badge bg-light text-secondary border" style="font-size: 0.65rem;">${item.tipo}</span>
+                                    ${badgeStatus}
+                                </div>
+                                
+                                ${descHtml}
                             </div>
                         </div>
-                        <div class="ms-2">${botoesAcao}</div>
+                        
+                        <div class="ms-auto flex-shrink-0 mt-1">
+                            ${botoesAcao}
+                        </div>
+                        
                     </div>
                 `;
             });
+            
+            // ESSAS DUAS LINHAS ESTAVAM FALTANDO NO SEU CÓDIGO!
             $('#listaDetalhes').html(html);
         }
     });
@@ -291,18 +307,18 @@ function salvarNovoTipo() {
         success: function(novoTipo) {
             const novoId = 'tipo' + novoTipo.id;
             const htmlCard = `
-                <input type="radio" class="btn-check" name="tipo" id="${novoId}" value="${novoTipo.nome}" checked>
-                <label class="btn btn-outline-light text-start p-3 flex-fill border shadow-sm position-relative type-card fade-in" 
-                       for="${novoId}" style="min-width: 140px; --cor-personalizada: ${novoTipo.corHex};">
-                    <div class="d-flex flex-column align-items-center text-center">
-                        <div class="icon-box bg-opacity-10 rounded-circle mb-2 d-flex align-items-center justify-content-center" 
-                             style="width: 35px; height: 35px; background-color: ${novoTipo.corHex}20; color: ${novoTipo.corHex}">
-                            <i class="fa-solid ${novoTipo.icone}"></i>
-                        </div>
-                        <div class="fw-bold text-dark small">${novoTipo.nome}</div>
-                    </div>
-                    <div class="check-indicator" style="color: ${novoTipo.corHex};"><i class="fa-solid fa-circle-check"></i></div>
-                </label>`;
+        <input type="radio" class="btn-check" name="tipo" id="${novoId}" value="${novoTipo.nome}" checked>
+        <label class="btn btn-outline-light text-start p-3 flex-fill border shadow-sm position-relative type-card fade-in" 
+               for="${novoId}" style="min-width: 140px; --cor-personalizada: ${novoTipo.corHex};">
+            <div class="d-flex flex-column align-items-center text-center">
+                <div class="icon-box bg-opacity-10 rounded-circle mb-2 d-flex align-items-center justify-content-center" 
+                     style="width: 35px; height: 35px; background-color: ${novoTipo.corHex}20; color: ${novoTipo.corHex}">
+                    <i class="fa-solid ${novoTipo.icone}"></i>
+                </div>
+                <div class="fw-bold text-dark small">${novoTipo.nome}</div>
+            </div>
+            <div class="check-indicator" style="color: ${novoTipo.corHex};"><i class="fa-solid fa-circle-check"></i></div>
+        </label>`;
             $('#areaSelecaoTipos').append(htmlCard);
             alternarModoCriacao(false);
             $('#novoTipoNome').val('');
@@ -328,8 +344,6 @@ $(document).ready(function() {
             // Força a atualização do input hidden que vai pro Java
             $('#inputDataHoraCompleta').val(dataHoraUnificada);
             $('input[name="dataHora"]').val(dataHoraUnificada);
-
-            console.log("Data/Hora sincronizada via JS:", dataHoraUnificada);
         }
     }
 
@@ -357,68 +371,47 @@ $(document).ready(function() {
 // ==========================================================
 $(document).ready(function() {
 
-    // 1. Função principal que aplica os filtros
     function aplicarFiltrosAgenda() {
-        // Pega o texto do botão que está ativo no momento
         var textoFiltro = $('.filter-btn.active').text().trim().toLowerCase();
-
-        // Pega o que o usuário digitou no campo de busca
         var termoBusca = $('#buscaAgenda').val().toLowerCase();
 
-        // Mapeia o texto do botão para a classe CSS correta do evento
         var filtroClasse = "TODOS";
         if (textoFiltro.includes("disparos")) filtroClasse = "ENVIO";
         else if (textoFiltro.includes("reuniões")) filtroClasse = "REUNIAO";
         else if (textoFiltro.includes("urgentes")) filtroClasse = "IMPORTANTE";
         else if (textoFiltro.includes("tarefas")) filtroClasse = "TAREFA";
 
-        // Percorre todos os eventos do calendário
         $('.event-badge').each(function() {
             var badge = $(this);
             var tituloEvento = badge.text().toLowerCase();
 
-            // Verifica se o evento bate com o botão de filtro clicado
             var atendeFiltroBotao = (filtroClasse === "TODOS" || badge.hasClass(filtroClasse));
-
-            // Verifica se o evento bate com o texto digitado na pesquisa
             var atendeFiltroBusca = (termoBusca === "" || tituloEvento.includes(termoBusca));
 
-            // Mostra ou esconde o evento com base nas duas condições
             if (atendeFiltroBotao && atendeFiltroBusca) {
-                badge.fadeIn(150); // Efeito suave ao aparecer
+                badge.fadeIn(150);
             } else {
-                badge.fadeOut(150); // Efeito suave ao sumir
+                badge.fadeOut(150);
             }
         });
     }
 
-    // 2. Evento de clique nos botões de filtro
     $('.filter-btn').on('click', function() {
-        // Remove a classe 'active' de todos os botões e coloca apenas no clicado
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
-
-        // Dispara a função de filtro
         aplicarFiltrosAgenda();
     });
 
-    // 3. Evento de digitação no campo de pesquisa
     $('#buscaAgenda').on('input', function() {
-        // Dispara a função de filtro toda vez que o usuário digitar algo
         aplicarFiltrosAgenda();
     });
 
 });
 
 // ==========================================================
-// MARCAÇÃO DE TAREFAS CONCLUÍDAS (COM PROTEÇÃO CONTRA ERROS)
+// MARCAÇÃO DE TAREFAS CONCLUÍDAS
 // ==========================================================
-
-/**
- * Marca uma tarefa como concluída na barra lateral
- */
 function concluirTarefa(idTarefa, elemento) {
-    // PROTEÇÃO: Se o ID for 0, é uma tarefa fantasma/antiga na tela
     if (idTarefa === 0) {
         Swal.fire('Atenção', 'Esta tarefa é antiga e está sem ID. Atualize a página (F5) ou crie uma tarefa nova para testar.', 'warning');
         return;
@@ -428,29 +421,24 @@ function concluirTarefa(idTarefa, elemento) {
     var $icone = $btn.find('i');
     var $textos = $btn.closest('.mini-event-item').find('h6, p');
 
-    // Impede duplo clique se já estiver concluída
     if ($btn.hasClass('task-done')) return;
 
-    // 1. Efeito visual instantâneo
     $icone.removeClass('fa-regular fa-circle text-muted').addClass('fa-solid fa-circle-check text-success');
-    $textos.css({'text-decoration': 'line-through', 'opacity': '0.5', 'transition': 'all 0.3s'});
+    $textos.css({ 'text-decoration': 'line-through', 'opacity': '0.5', 'transition': 'all 0.3s' });
     $btn.addClass('task-done');
 
-    // 2. Avisar o Spring Boot via GET
     $.get('/administrativo/agenda/concluir/' + idTarefa)
         .done(function() {
             console.log("Tarefa " + idTarefa + " concluída com sucesso!");
         })
         .fail(function(jqXHR) {
-            // Se falhar, desfaz a animação visual
             $icone.removeClass('fa-solid fa-circle-check text-success').addClass('fa-regular fa-circle text-muted');
-            $textos.css({'text-decoration': 'none', 'opacity': '1'});
+            $textos.css({ 'text-decoration': 'none', 'opacity': '1' });
             $btn.removeClass('task-done');
-            
-            // Pega o erro exato que o Java mandou de volta
+
             var msgErro = jqXHR.responseText || "Erro desconhecido no servidor";
             var status = jqXHR.status;
-            
+
             Swal.fire('Ops!', 'O servidor recusou. Status: ' + status + '<br>Motivo: ' + msgErro, 'error');
         });
 }

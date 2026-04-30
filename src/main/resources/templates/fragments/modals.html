@@ -2,202 +2,366 @@
 <html xmlns:th="https://thymeleaf.org">
 
 <div th:fragment="modalNovaMensagem">
-    <div class="modal fade" id="modalNovaMensagem" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content shadow-lg border-0">
+	<div class="modal fade" id="modalNovaMensagem" tabindex="-1"
+		aria-hidden="true" data-bs-backdrop="static">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content shadow-lg border-0">
 
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold">
-                        <i class="fa-regular fa-paper-plane me-2"></i>Nova Campanha
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title fw-bold">
+						<i class="fa-regular fa-paper-plane me-2"></i>Nova Campanha
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal"></button>
+				</div>
 
-                <form action="/grupos/disparar" method="post" enctype="multipart/form-data">
-                    <div class="modal-body">
-                        
-                        <div class="row">
-                            <div class="col-md-7 mb-3">
-                                <label class="form-label small fw-bold text-secondary">PARA O GRUPO</label> 
-                                <select class="form-select" name="grupoId" required>
-                                    <option value="" selected disabled>Selecione um grupo...</option>
-                                    <th:block th:if="${listaGruposGlobal != null}">
-                                        <option th:each="g : ${listaGruposGlobal}" th:value="${g.id}"
-                                            th:text="${g.nome} + ' (' + ${#lists.size(g.contatos)} + ' membros)'">
-                                        </option>
-                                    </th:block>
-                                </select>
-                            </div>
-                            
-                            <div class="col-md-5 mb-3">
-                                <label class="form-label small fw-bold text-secondary">
-                                    <i class="fa-regular fa-clock me-1"></i>AGENDAR ENVIO (Opcional)
-                                </label>
-                                <input type="datetime-local" class="form-control" name="dataEnvio">
-                                <div class="form-text small text-end">Deixe vazio para enviar agora.</div>
-                            </div>
-                        </div>
+				<form action="/grupos/disparar" method="post"
+					enctype="multipart/form-data">
+					<div class="modal-body">
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">ASSUNTO</label>
-                            <input type="text" class="form-control fw-bold" name="assunto" placeholder="Ex: Oferta Imperdível" required>
-                        </div>
+						<div class="row">
+							<div class="col-md-7 mb-3">
+								<label class="form-label small fw-bold text-secondary">PARA
+									O GRUPO</label> <select class="form-select" name="grupoId" required>
+									<option value="" selected disabled>Selecione um
+										grupo...</option>
+									<th:block th:if="${listaGruposGlobal != null}">
+										<option th:each="g : ${listaGruposGlobal}" th:value="${g.id}"
+											th:text="${g.nome} + ' (' + ${#lists.size(g.contatos)} + ' membros)'">
+										</option>
+									</th:block>
+								</select>
+							</div>
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">MENSAGEM</label>
-                            <textarea id="summernoteMensagem" class="form-control" name="mensagem" rows="6"></textarea>
-                            <div class="form-text small">
-                                <i class="fa-solid fa-circle-info me-1"></i> Você pode colar imagens diretamente aqui ou usar o botão de imagem.
-                            </div>
-                        </div>
+							<div class="col-md-5 mb-3">
+								<label class="form-label small fw-bold text-secondary">
+									<i class="fa-regular fa-clock me-1"></i>AGENDAR ENVIO
+									(Opcional)
+								</label> <input type="datetime-local" class="form-control"
+									name="dataEnvio">
+								<div class="form-text small text-end">Deixe vazio para
+									enviar agora.</div>
+							</div>
+						</div>
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">
-                                <i class="fa-solid fa-paperclip me-1"></i>ANEXAR DOCUMENTOS
-                            </label>
-                            <input type="file" class="form-control" name="anexos" multiple>
-                        </div>
-                    </div>
+						<div class="mb-3">
+							<label class="form-label small fw-bold text-secondary">ASSUNTO</label>
+							<input type="text" class="form-control fw-bold" name="assunto"
+								placeholder="Ex: Oferta Imperdível" required>
+						</div>
 
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary fw-bold px-4 rounded-pill">
-                            <i class="fa-solid fa-rocket me-2"></i> Confirmar Envio
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+						<div class="mb-3">
+							<label class="form-label small fw-bold text-secondary">MENSAGEM</label>
+							<textarea id="summernoteMensagem" class="form-control"
+								name="mensagem" rows="6"></textarea>
+							<div class="form-text small">
+								<i class="fa-solid fa-circle-info me-1"></i> Você pode colar
+								imagens diretamente aqui ou usar o botão de imagem.
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label small fw-bold text-secondary"> <i
+								class="fa-solid fa-paperclip me-1"></i>ANEXAR DOCUMENTOS
+							</label> <input type="file" class="form-control" name="anexos" multiple>
+						</div>
+					</div>
+
+					<div class="modal-footer bg-light">
+						<button type="button"
+							class="btn btn-link text-secondary text-decoration-none"
+							data-bs-dismiss="modal">Cancelar</button>
+						<button type="submit"
+							class="btn btn-primary fw-bold px-4 rounded-pill">
+							<i class="fa-solid fa-rocket me-2"></i> Confirmar Envio
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div th:fragment="modalRelatorio">
-    <div class="modal fade" id="modalRelatorio" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0">
-                
-                <div class="modal-header bg-primary text-white border-0">
-                    <h5 class="modal-title fw-bold" id="modalLabel">
-                        <i class="fa-solid fa-file-pdf me-2"></i>Gerar Relatório de Contatos
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+	<div class="modal fade" id="modalRelatorio" tabindex="-1"
+		aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div
+				class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
 
-                <form action="/relatorio/pdf" method="get" target="_blank">
-                    <div class="modal-body p-4">
-                        
-                        <div class="alert alert-light border shadow-sm small mb-4 text-center text-muted">
-                            <i class="fa-solid fa-circle-info me-1 text-primary"></i> Deixe os campos em branco para trazer todos os registros.
-                        </div>
+				<div class="modal-header bg-primary text-white border-0 px-4 py-3">
+					<h5 class="modal-title fw-bold" id="modalLabel">
+						<i class="fa-solid fa-file-export me-2"></i>Exportar Base e
+						Etiquetas
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
 
-                        <div class="mb-3">
-                            <label for="filtroNome" class="form-label fw-bold small text-secondary">NOME</label> 
-                            <input type="text" class="form-control" name="nome" id="filtroNome" placeholder="Ex: João da Silva">
-                        </div>
+				<form action="/relatorio/pdf" method="get" target="_blank">
+					<div class="modal-body p-4 bg-light">
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-8">
-                                <label for="filtroCidade" class="form-label fw-bold small text-secondary">CIDADE</label>
-                                <input type="text" class="form-control" name="cidade" id="filtroCidade" placeholder="Ex: São Paulo">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="filtroEstado" class="form-label fw-bold small text-secondary">UF</label> 
-                                <select class="form-select" name="estado" id="filtroEstado">
-                                    <option value="">Todas</option>
-                                    <th:block th:if="${listaEstados != null}">
-                                        <option th:each="uf : ${listaEstados}" th:value="${uf.name()}" th:text="${uf.descricao} ?: ${uf.name()}"></option>
-                                    </th:block>
-                                </select>
-                            </div>
-                        </div>
+						<div
+							class="alert alert-primary bg-primary bg-opacity-10 border-0 text-light small fw-medium mb-4 d-flex align-items-center">
+							<i class="fa-solid fa-circle-info fs-5 me-2"></i> Deixe os campos
+							de filtro em branco para exportar a base completa de registros.
+						</div>
 
-                        <div class="mb-4">
-                            <label for="filtroGrupo" class="form-label fw-bold small text-secondary">GRUPO</label> 
-                            <select class="form-select" name="grupoId" id="filtroGrupo">
-                                <option value="">Todos os Grupos</option>
-                                <th:block th:if="${listaGrupos != null}">
-                                    <option th:each="g : ${listaGrupos}" th:value="${g.id}" th:text="${g.nome}"></option>
-                                </th:block>
-                            </select>
-                        </div>
+						<!-- Card de Filtros com Grid Limpo -->
+						<div class="card border-0 shadow-sm rounded-3 mb-4">
+							<div class="card-body p-4">
+								<h6 class="fw-bold text-dark mb-3">
+									<i class="fa-solid fa-filter text-muted me-2"></i>Filtros
+									Avançados
+								</h6>
 
-                        <div class="p-3 bg-light rounded border">
-                            <p class="small fw-bold text-secondary mb-2">
-                                <i class="fa-regular fa-calendar me-1"></i>PERÍODO DE CADASTRO
-                            </p>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <label class="form-label small text-muted mb-1">De:</label>
-                                    <input type="date" class="form-control form-control-sm" name="dataInicio">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label small text-muted mb-1">Até:</label>
-                                    <input type="date" class="form-control form-control-sm" name="dataFim">
-                                </div>
-                            </div>
-                        </div>
+								<div class="row g-3">
+									<div class="col-md-6">
+										<label for="filtroNome" class="form-label fw-bold text-muted"
+											style="font-size: 0.75rem;">NOME DO CONTATO</label> <input
+											type="text"
+											class="form-control bg-light border-0 shadow-none"
+											name="nome" id="filtroNome" placeholder="Ex: João da Silva">
+									</div>
+									<div class="col-md-6">
+										<label for="filtroGrupo" class="form-label fw-bold text-muted"
+											style="font-size: 0.75rem;">GRUPO</label> <select
+											class="form-select bg-light border-0 shadow-none"
+											name="grupoId" id="filtroGrupo">
+											<option value="">Todos os Grupos</option>
+											<th:block th:if="${listaGrupos != null}">
+												<option th:each="g : ${listaGrupos}" th:value="${g.id}"
+													th:text="${g.nome}"></option>
+											</th:block>
+										</select>
+									</div>
+								</div>
 
-                    </div>
-                    
-                    <div class="modal-footer bg-light border-0">
-                        <button type="button" class="btn btn-link text-secondary text-decoration-none fw-bold" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary fw-bold px-4 rounded-pill shadow-sm">
-                            <i class="fa-solid fa-print me-2"></i> Gerar PDF
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+								<div class="row g-3 mt-1">
+									<div class="col-md-8">
+										<label for="filtroCidade"
+											class="form-label fw-bold text-muted"
+											style="font-size: 0.75rem;">CIDADE</label> <input type="text"
+											class="form-control bg-light border-0 shadow-none"
+											name="cidade" id="filtroCidade" placeholder="Ex: São Paulo">
+									</div>
+									<div class="col-md-4">
+										<label for="filtroEstado"
+											class="form-label fw-bold text-muted"
+											style="font-size: 0.75rem;">ESTADO (UF)</label> <select
+											class="form-select bg-light border-0 shadow-none"
+											name="estado" id="filtroEstado">
+											<option value="">Todos</option>
+											<th:block th:if="${listaEstados != null}">
+												<option th:each="uf : ${listaEstados}"
+													th:value="${uf.name()}"
+													th:text="${uf.descricao} ?: ${uf.name()}"></option>
+											</th:block>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Card de Período Limpo -->
+						<div class="card border-0 shadow-sm rounded-3 mb-4">
+							<div class="card-body p-4">
+								<h6 class="fw-bold text-dark mb-3">
+									<i class="fa-regular fa-calendar text-muted me-2"></i>Período
+									de Cadastro
+								</h6>
+								<div class="row g-3">
+									<div class="col-md-6">
+										<label class="form-label fw-bold text-muted"
+											style="font-size: 0.75rem;">DATA INICIAL (A partir
+											de)</label> <input type="date"
+											class="form-control bg-light border-0 shadow-none"
+											name="dataInicio">
+									</div>
+									<div class="col-md-6">
+										<label class="form-label fw-bold text-muted"
+											style="font-size: 0.75rem;">DATA FINAL (Até)</label> <input
+											type="date"
+											class="form-control bg-light border-0 shadow-none"
+											name="dataFim">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- ========================================== -->
+						<!-- AQUI ESTÁ O CARD DE ETIQUETAS ENCAIXADO! -->
+						<!-- ========================================== -->
+						<div
+							class="card border border-ligth bg-ligth bg-opacity-10 shadow-sm rounded-3">
+							<div class="card-body p-4">
+								<h6 class="fw-bold text-primary mb-3">
+									<i class="fa-solid fa-tags me-2"></i>Configuração Exclusiva
+									para Etiquetas
+								</h6>
+								<div class="row g-3">
+									<div class="col-md-8">
+										<label class="form-label fw-bold text-dark"
+											style="font-size: 0.75rem;">MODELO DA FOLHA</label> <select
+											class="form-select border-0 shadow-none"
+											name="modeloEtiqueta">
+											<option value="6180">Pimaco 6180 (3 colunas x 10
+												linhas - 30/folha)</option>
+											<option value="6182">Pimaco 6182 (2 colunas x 7
+												linhas - 14/folha)</option>
+											<option value="6081">Pimaco 6081 (2 colunas x 10
+												linhas - 20/folha)</option>
+										</select>
+									</div>
+									<div class="col-md-4">
+										<label class="form-label fw-bold text-dark"
+											style="font-size: 0.75rem;">INICIAR NA POSIÇÃO</label> <input
+											type="number" class="form-control border-0 shadow-none"
+											name="posicaoInicial" value="1" min="1" max="30">
+										<div class="form-text text-muted" style="font-size: 0.7rem;">Útil
+											se a folha já foi iniciada.</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!-- Fim do Modal Body -->
+
+					<div
+						class="modal-footer bg-white border-top px-4 py-3 d-flex justify-content-between align-items-center">
+						<button type="button"
+							class="btn btn-outline-secondary fw-bold rounded-pill px-4"
+							data-bs-dismiss="modal">Cancelar</button>
+
+						<div class="d-flex gap-2">
+							<!-- Botão de Etiquetas (Usa o formaction para mandar para a rota certa) -->
+							<button type="button" id="btnGerarEtiquetasDireto"
+								class="btn btn-light border fw-bold px-4 rounded-pill text-dark shadow-sm hover-bg-light">
+								<i class="fa-solid fa-tags text-secondary me-2"></i> Gerar
+								Etiquetas
+							</button>
+
+							<!-- Botão de PDF normal -->
+							<button type="submit"
+								class="btn btn-primary fw-bold px-4 rounded-pill shadow-sm">
+								<i class="fa-solid fa-file-pdf me-2"></i> Gerar Relatório PDF
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
+
 <div th:fragment="modalExclusao">
-    <div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-danger text-white border-0">
-                    <h5 class="modal-title fw-bold">
-                        <i class="fa-solid fa-triangle-exclamation me-2"></i>Tem certeza?
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center py-4">
-                    <p class="mb-0 text-secondary fs-5">Você está prestes a excluir este item.</p>
-                    <p class="text-muted small">Esta ação não poderá ser desfeita.</p>
-                </div>
-                <div class="modal-footer bg-light border-0 justify-content-center">
-                    <button type="button" class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
-                    <a href="#" id="btnConfirmarExclusao" class="btn btn-danger px-4 fw-bold">Sim, Excluir</a>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="modal fade" id="modalConfirmarExclusao" tabindex="-1"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg">
+				<div class="modal-header bg-danger text-white border-0">
+					<h5 class="modal-title fw-bold">
+						<i class="fa-solid fa-triangle-exclamation me-2"></i>Tem certeza?
+					</h5>
+					<button type="button" class="btn-close btn-close-white"
+						data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body text-center py-4">
+					<p class="mb-0 text-secondary fs-5">Você está prestes a excluir
+						este item.</p>
+					<p class="text-muted small">Esta ação não poderá ser desfeita.</p>
+				</div>
+				<div class="modal-footer bg-light border-0 justify-content-center">
+					<button type="button" class="btn btn-secondary px-4 fw-bold"
+						data-bs-dismiss="modal">Cancelar</button>
+					<a href="#" id="btnConfirmarExclusao"
+						class="btn btn-danger px-4 fw-bold">Sim, Excluir</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
-    $(document).ready(function() {
-        // Inicializa o Summernote quando o modal de Nova Mensagem abrir
-        $('#modalNovaMensagem').on('shown.bs.modal', function() {
-            // Se já estiver inicializado, não recria para evitar bugs
-            if ($('#summernoteMensagem').next('.note-editor').length > 0) {
-                return; 
-            }
-            
-            $('#summernoteMensagem').summernote({
-                height: 250,
-                lang: 'pt-BR',
-                placeholder: 'Escreva sua mensagem aqui...',
-                dialogsInBody: true, // ESSENCIAL: Permite que popups de imagem/link apareçam sobre o modal
-                toolbar: [
-                    ['style', ['style']],
-                    ['font', ['bold', 'underline', 'clear']],
-                    ['color', ['color']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video', 'hr']], // Botões de imagem e link garantidos aqui
-                    ['view', ['fullscreen', 'codeview', 'help']]
-                ]
-            });
-        });
-    });
+	$(document)
+			.ready(
+					function() {
+
+						// ---------------------------------------------------------
+						// 1. SCRIPT DO BOTAO FORÇA BRUTA - GERAR ETIQUETAS
+						// ---------------------------------------------------------
+						$('#btnGerarEtiquetasDireto').on('click', function() {
+							var $form = $(this).closest('form');
+
+							// Força a mudança da rota
+							$form.attr('action', '/relatorio/etiquetas');
+
+							// Submete o formulário
+							$form.submit();
+
+							// Devolve a rota para o padrão após 1 segundo 
+							// (para não atrapalhar se o cara quiser gerar o PDF normal depois sem recarregar a tela)
+							setTimeout(function() {
+								$form.attr('action', '/relatorio/pdf');
+							}, 1000);
+						});
+
+						// ---------------------------------------------------------
+						// 2. SCRIPT ORIGINAL DO SUMMERNOTE
+						// ---------------------------------------------------------
+						$('#modalNovaMensagem')
+								.on(
+										'shown.bs.modal',
+										function() {
+											if ($('#summernoteMensagem').next(
+													'.note-editor').length > 0) {
+												return;
+											}
+
+											$('#summernoteMensagem')
+													.summernote(
+															{
+																height : 250,
+																lang : 'pt-BR',
+																placeholder : 'Escreva sua mensagem aqui...',
+																dialogsInBody : true,
+																toolbar : [
+																		[
+																				'style',
+																				[ 'style' ] ],
+																		[
+																				'font',
+																				[
+																						'bold',
+																						'underline',
+																						'clear' ] ],
+																		[
+																				'color',
+																				[ 'color' ] ],
+																		[
+																				'para',
+																				[
+																						'ul',
+																						'ol',
+																						'paragraph' ] ],
+																		[
+																				'insert',
+																				[
+																						'link',
+																						'picture',
+																						'video',
+																						'hr' ] ],
+																		[
+																				'view',
+																				[
+																						'fullscreen',
+																						'codeview',
+																						'help' ] ] ]
+															});
+										});
+
+					});
 </script>
 
 </html>

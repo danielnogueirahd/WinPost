@@ -93,14 +93,10 @@ public class ContatosControle {
 	@PreAuthorize("hasAuthority('CONTATO_EXCLUIR')")
 	@GetMapping("/removerContatos/{id}")
 	public ModelAndView remover(@PathVariable("id") Long id, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		Optional<Contatos> contato = contatosRepositorio.findById(id);
 
-		if (contato.isPresent()) {
-			// SEGURANÇA: Garante que o utilizador só apaga contatos da própria empresa
-			if (contato.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
-				contatosRepositorio.delete(contato.get());
-			}
-		}
+		// O Controller só manda o ID e a empresa do usuário para o Service se virar!
+		contatosService.excluirComSeguranca(id, usuarioLogado.getEmpresa());
+
 		return new ModelAndView("redirect:/listarContatos");
 	}
 
@@ -108,16 +104,14 @@ public class ContatosControle {
 	@PreAuthorize("hasAnyAuthority('CONTATO_CRIAR', 'CONTATO_EDITAR')")
 	@PostMapping("/salvarContato")
 	public ModelAndView salvar(@Valid @ModelAttribute("contato") Contatos contatos, BindingResult result,
-			RedirectAttributes attributes, @AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- LÊ O CRACHÁ
+			RedirectAttributes attributes, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
 		if (result.hasErrors()) {
 			return cadastrar(contatos); // Volta para a tela de erro
 		}
 
-		// <-- ANTES DE GRAVAR, CARIMBA A EMPRESA DO USUÁRIO LOGADO NO CONTATO
-		contatos.setEmpresa(usuarioLogado.getEmpresa());
-
-		contatosRepositorio.saveAndFlush(contatos);
+		// O Service assume o controle e aplica todas as regras de negócio!
+		contatosService.salvar(contatos);
 
 		attributes.addFlashAttribute("mensagemSucesso", "Contato cadastrado com sucesso!");
 
