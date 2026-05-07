@@ -53,9 +53,9 @@ public class AgendaControle {
 	@PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
 	@GetMapping("/administrativo/agenda")
 	public ModelAndView acessarAgenda(@RequestParam(required = false) Integer mes,
-			@RequestParam(required = false) Integer ano, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+	        @RequestParam(required = false) Integer ano, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-		ModelAndView mv = new ModelAndView("administrativo/agenda");
+	    ModelAndView mv = new ModelAndView("administrativo/agenda"); 
 
 		LocalDate hoje = LocalDate.now();
 		int mesAtual = (mes != null) ? mes : hoje.getMonthValue();

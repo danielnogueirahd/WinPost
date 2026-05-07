@@ -10,11 +10,13 @@
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <link rel="stylesheet" href="/css/estilo.css">
 <link rel="stylesheet" href="/css/navbar.css">
 
 <style>
-/* Ajustes finos para um visual SaaS mais limpo e corporativo */
 .saas-container {
 	background-color: #ffffff;
 	border-radius: 8px;
@@ -179,14 +181,14 @@
 
 					// Atualiza o href do botão com a rota correta do seu Controller
 					// Ajuste a rota abaixo se a URL do seu EmpresaControle for diferente
-					btnConfirmar.href = '/administrativo/empresas/remover/' + idEmpresa; 
-	            });
+					btnConfirmar.href = '/administrativo/empresas/remover/'
+							+ idEmpresa;
+				});
 
-					// Se a sua rota for /administrativo/empresas/remover/1, ajuste para:
-					// btnConfirmar.href = '/administrativo/empresas/remover/' + idEmpresa;
-            }
-			});
-		
+				// Se a sua rota for /administrativo/empresas/remover/1, ajuste para:
+				// btnConfirmar.href = '/administrativo/empresas/remover/' + idEmpresa;
+			}
+		});
 	</script>
 </body>
 </html>
