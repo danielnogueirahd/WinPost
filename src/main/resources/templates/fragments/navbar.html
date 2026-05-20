@@ -27,40 +27,64 @@
 				<ul
 					class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center navbar-center-pill">
 
+					<li class="nav-item"><a class="nav-link"
+						href="/administrativo"
+						th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
+					</li>
+
 					<li class="nav-item"
 						sec:authorize="hasAuthority('AGENDA_VISUALIZAR')"><a
 						class="nav-link" href="/administrativo/agenda"
 						th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
 					</li>
 
-					<li class="nav-item"><a class="nav-link"
-						href="/administrativo"
-						th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
-					</li>
-
 					<li class="nav-item dropdown"
 						sec:authorize="hasAnyAuthority('CONTATO_VISUALIZAR', 'GRUPO_VISUALIZAR')">
-						<a class="nav-link dropdown-toggle" href="#" id="dropContatos"
+						<a class="nav-link dropdown-toggle" href="#" id="dropGestao"
 						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Contato</a>
+						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Gestão</a>
+
 						<ul class="dropdown-menu shadow border-0 mt-2"
-							aria-labelledby="dropContatos">
-							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/listarContatos"
-								th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-list me-2"
-									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>Listar
-									Contatos
-							</a></li>
+							aria-labelledby="dropGestao">
 							<li sec:authorize="hasAuthority('GRUPO_VISUALIZAR')"><a
 								class="dropdown-item py-2" href="/grupos/gerenciar"
 								th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'bg-primary text-white' : ''">
 									<i class="fa-solid fa-layer-group me-2"
-									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>Listar
+									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>
 									Grupos
 							</a></li>
+							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')"><a
+								class="dropdown-item py-2" href="/listarContatos"
+								th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-list me-2"
+									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>
+									Contatos
+							</a></li>
+
 						</ul>
 					</li>
+
+					<li class="nav-item dropdown"><a
+						class="nav-link dropdown-toggle" href="#" id="dropRelatorios"
+						role="button" data-bs-toggle="dropdown"
+						th:classappend="${paginaAtiva == 'relatoriosPdf' || paginaAtiva == 'etiquetas'} ? 'active'">Relatórios</a>
+
+						<ul class="dropdown-menu shadow border-0 mt-2"
+							aria-labelledby="dropRelatorios">
+							<li><a class="dropdown-item py-2" href="#"
+								id="btnExportarPdf"
+								th:classappend="${paginaAtiva == 'relatoriosPdf'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-file-pdf me-2"
+									th:classappend="${paginaAtiva == 'relatoriosPdf'} ? 'text-white' : 'text-muted'"></i>Exportar
+									em PDF
+							</a></li>
+							<li><a class="dropdown-item py-2" href="#"
+								id="btnExportarEtiquetas"
+								th:classappend="${paginaAtiva == 'etiquetas'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-tags me-2"
+									th:classappend="${paginaAtiva == 'etiquetas'} ? 'text-white' : 'text-muted'"></i>Etiquetas
+							</a></li>
+						</ul></li>
 
 					<li class="nav-item"
 						sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')"><a
@@ -77,7 +101,6 @@
 
 						<ul class="dropdown-menu shadow border-0 mt-2"
 							aria-labelledby="dropAdmin">
-
 							<li sec:authorize="hasAuthority('CONFIGURACOES_SISTEMA')">
 								<h6 class="dropdown-header text-muted fw-bold small">SISTEMA</h6>
 							</li>
@@ -103,7 +126,6 @@
 									<i class="fa-solid fa-users me-2"
 									th:classappend="${paginaAtiva == 'usuarios'} ? 'text-white' : 'text-muted'"></i>Usuários
 							</a></li>
-
 							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')"><a
 								class="dropdown-item py-2" href="/administrativo/perfis"
 								th:classappend="${paginaAtiva == 'perfis'} ? 'bg-primary text-white' : ''">
@@ -324,5 +346,39 @@
                 if(msgVazia) msgVazia.classList.remove('d-none');
             }
         }
+        
     </script>
+    <script>
+    // Inteligência do Botão de PDF
+    document.getElementById('btnExportarPdf').addEventListener('click', function(e) {
+        e.preventDefault(); // Evita que a página recarregue
+        const urlAtual = window.location.pathname; // Descobre onde o usuário está
+
+        if (urlAtual.includes('/listarContatos') || urlAtual.includes('/grupos/gerenciar')) {
+            // Se estiver na tela de contatos ou grupos, chama o PDF de contatos
+            window.open('/relatorio/pdf', '_blank'); 
+            
+        } else if (urlAtual.includes('/administrativo/agenda')) {
+            // Se estiver na agenda, chama o PDF da agenda
+            window.open('/relatorio/agenda/pdf', '_blank'); 
+            
+        } else {
+            // Avisa de forma amigável se a tela não tiver relatório configurado
+            alert('A exportação em PDF ainda não está disponível para esta tela específica.');
+        }
+    });
+
+    // Inteligência do Botão de Etiquetas
+    document.getElementById('btnExportarEtiquetas').addEventListener('click', function(e) {
+        e.preventDefault();
+        const urlAtual = window.location.pathname;
+
+        if (urlAtual.includes('/listarContatos') || urlAtual.includes('/grupos/gerenciar')) {
+            // Etiquetas fazem sentido na área de contatos
+            window.open('/relatorio/etiquetas', '_blank'); 
+        } else {
+            alert('A geração de etiquetas está disponível apenas na área de Gestão de Contatos.');
+        }
+    });
+</script>
 </div>

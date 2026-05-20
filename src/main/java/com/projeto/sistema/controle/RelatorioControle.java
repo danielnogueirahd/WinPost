@@ -23,111 +23,136 @@ import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.servicos.RelatorioService;
 import com.projeto.sistema.servicos.EtiquetaService; // <-- NOVO IMPORT
 
-
 @Controller
 @PreAuthorize("hasAuthority('RELATORIO_VISUALIZAR')")
 public class RelatorioControle {
 
-    @Autowired
-    private ContatosRepositorio contatosRepositorio;
-    
-    @Autowired
-    private RelatorioService relatorioService;
+	@Autowired
+	private ContatosRepositorio contatosRepositorio;
 
-    @Autowired
-    private EtiquetaService etiquetaService; // <-- INJETAMOS O NOSSO NOVO SERVIÇO AQUI
+	@Autowired
+	private RelatorioService relatorioService;
 
-    // =========================================================================
-    // MÉTODO: FILTRA PELA DATA DE CADASTRO
-    // =========================================================================
-    private List<Contatos> filtrarPorPeriodoCadastro(List<Contatos> contatos, LocalDate dataInicio, LocalDate dataFim) {
-        if (dataInicio == null && dataFim == null) {
-            return contatos; 
-        }
+	@Autowired
+	private EtiquetaService etiquetaService; // <-- INJETAMOS O NOSSO NOVO SERVIÇO AQUI
 
-        List<Contatos> filtrados = new ArrayList<>();
+	// =========================================================================
+	// MÉTODO: FILTRA PELA DATA DE CADASTRO
+	// =========================================================================
+	private List<Contatos> filtrarPorPeriodoCadastro(List<Contatos> contatos, LocalDate dataInicio, LocalDate dataFim) {
+		if (dataInicio == null && dataFim == null) {
+			return contatos;
+		}
 
-        for(Contatos c : contatos) {
-            LocalDate cadastro = c.getDataCadastro();
-            if (cadastro != null) {
-                boolean validoInicio = (dataInicio == null) || !cadastro.isBefore(dataInicio);
-                boolean validoFim = (dataFim == null) || !cadastro.isAfter(dataFim);
+		List<Contatos> filtrados = new ArrayList<>();
 
-                if (validoInicio && validoFim) {
-                    filtrados.add(c);
-                }
-            }
-        }
-        return filtrados;
-    }
+		for (Contatos c : contatos) {
+			LocalDate cadastro = c.getDataCadastro();
+			if (cadastro != null) {
+				boolean validoInicio = (dataInicio == null) || !cadastro.isBefore(dataInicio);
+				boolean validoFim = (dataFim == null) || !cadastro.isAfter(dataFim);
 
-    // =========================================================================
-    // RELATÓRIO NORMAL (PDF EM LISTA)
-    // =========================================================================
-    @GetMapping("/relatorio/pdf")
-    public ResponseEntity<InputStreamResource> relatorioContatosPdf(
-            @RequestParam(value = "nome", required = false) String nome,
-            @RequestParam(value = "cidade", required = false) String cidade,
-            @RequestParam(value = "estado", required = false) String estado,
-            @RequestParam(value = "grupoId", required = false) Long grupoId,
-            @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
-        
-        if (nome != null && nome.isEmpty()) nome = null;
-        if (cidade != null && cidade.isEmpty()) cidade = null;
-        if (estado != null && estado.isEmpty()) estado = null;
+				if (validoInicio && validoFim) {
+					filtrados.add(c);
+				}
+			}
+		}
+		return filtrados;
+	}
 
-        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId, usuarioLogado.getEmpresa());
-        contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);
-        
-        ByteArrayInputStream bis = relatorioService.gerarRelatorioContatos(contatos);
+	// =========================================================================
+	// RELATÓRIO NORMAL (PDF EM LISTA)
+	// =========================================================================
+	@GetMapping("/relatorio/pdf")
+	public ResponseEntity<InputStreamResource> relatorioContatosPdf(
+			@RequestParam(value = "nome", required = false) String nome,
+			@RequestParam(value = "cidade", required = false) String cidade,
+			@RequestParam(value = "estado", required = false) String estado,
+			@RequestParam(value = "grupoId", required = false) Long grupoId,
+			@RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+			@RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=relatorio_contatos.pdf");
+		if (nome != null && nome.isEmpty())
+			nome = null;
+		if (cidade != null && cidade.isEmpty())
+			cidade = null;
+		if (estado != null && estado.isEmpty())
+			estado = null;
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
-    }
-    
-    // =========================================================================
-    // NOVO MÉTODO: GERAÇÃO DE ETIQUETAS (NA RAÇA!)
-    // =========================================================================
-    @GetMapping("/relatorio/etiquetas")
-    public ResponseEntity<InputStreamResource> etiquetasContatosPdf(
-            @RequestParam(value = "nome", required = false) String nome,
-            @RequestParam(value = "cidade", required = false) String cidade,
-            @RequestParam(value = "estado", required = false) String estado,
-            @RequestParam(value = "grupoId", required = false) Long grupoId,
-            @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
-            
-            // <-- NOSSOS NOVOS CAMPOS CAPTURADOS DO FRONT-END -->
-            @RequestParam(value = "modeloEtiqueta", defaultValue = "6180") String modeloEtiqueta,
-            @RequestParam(value = "posicaoInicial", defaultValue = "1") Integer posicaoInicial,
-            
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
-        
-        if (nome != null && nome.isEmpty()) nome = null;
-        if (cidade != null && cidade.isEmpty()) cidade = null;
-        if (estado != null && estado.isEmpty()) estado = null;
+		List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId,
+				usuarioLogado.getEmpresa());
+		contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);
 
-        List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId, usuarioLogado.getEmpresa());
-        contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);
-        
-        // <-- CHAMA O NOVO SERVIÇO PASSANDO OS PARÂMETROS -->
-        ByteArrayInputStream bis = etiquetaService.gerarPdfEtiquetas(contatos, modeloEtiqueta, posicaoInicial);
+		ByteArrayInputStream bis = relatorioService.gerarRelatorioContatos(contatos);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=etiquetas_contatos.pdf");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=relatorio_contatos.pdf");
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
-    }
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+				.body(new InputStreamResource(bis));
+	}
+
+	// =========================================================================
+	// NOVO MÉTODO: GERAÇÃO DE ETIQUETAS (NA RAÇA!)
+	// =========================================================================
+	@GetMapping("/relatorio/etiquetas")
+	public ResponseEntity<InputStreamResource> etiquetasContatosPdf(
+			@RequestParam(value = "nome", required = false) String nome,
+			@RequestParam(value = "cidade", required = false) String cidade,
+			@RequestParam(value = "estado", required = false) String estado,
+			@RequestParam(value = "grupoId", required = false) Long grupoId,
+			@RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+			@RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+
+			// <-- NOSSOS NOVOS CAMPOS CAPTURADOS DO FRONT-END -->
+			@RequestParam(value = "modeloEtiqueta", defaultValue = "6180") String modeloEtiqueta,
+			@RequestParam(value = "posicaoInicial", defaultValue = "1") Integer posicaoInicial,
+
+			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+
+		if (nome != null && nome.isEmpty())
+			nome = null;
+		if (cidade != null && cidade.isEmpty())
+			cidade = null;
+		if (estado != null && estado.isEmpty())
+			estado = null;
+
+		List<Contatos> contatos = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId,
+				usuarioLogado.getEmpresa());
+		contatos = filtrarPorPeriodoCadastro(contatos, dataInicio, dataFim);
+
+		// <-- CHAMA O NOVO SERVIÇO PASSANDO OS PARÂMETROS -->
+		ByteArrayInputStream bis = etiquetaService.gerarPdfEtiquetas(contatos, modeloEtiqueta, posicaoInicial);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=etiquetas_contatos.pdf");
+
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+				.body(new InputStreamResource(bis));
+	}
+
+	// =========================================================================
+	// NOVO MÉTODO: RELATÓRIO DE PRODUTIVIDADE DA AGENDA
+	// =========================================================================
+	@GetMapping("/relatorio/agenda/pdf")
+	public ResponseEntity<InputStreamResource> relatorioAgendaPdf(
+			@RequestParam(value = "mesAno", required = false, defaultValue = "Mês Atual") String mesAno,
+			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+
+		// DICA: Aqui você vai precisar chamar o seu repositório da agenda para buscar
+		// os eventos do banco de dados referentes à empresa do usuário logado.
+		// Como exemplo, estou criando uma lista vazia, mas você deve substituir pela
+		// busca real:
+		List<com.projeto.sistema.modelos.EventoAgenda> eventos = new ArrayList<>();
+
+		// Chama o serviço que você já construiu!
+		ByteArrayInputStream bis = relatorioService.gerarRelatorioAgenda(eventos, mesAno);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=relatorio_agenda.pdf");
+
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+				.body(new InputStreamResource(bis));
+	}
 }

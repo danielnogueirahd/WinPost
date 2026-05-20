@@ -167,38 +167,29 @@ $(document).ready(function() {
     });
     atualizarVisual();
 
-    // ==========================================================================
-    // 3. SUBMISSÃO DO FORMULÁRIO
-    // ==========================================================================
-    $('#formGrupo').on('submit', function(e) {
-        var form = this;
-        
-        // Limpa inputs hidden antigos para evitar duplicação ou conflitos
-        $('#idsContatos').remove();
-        $(form).find('input[name="idsContatos"]').remove();
+	// ==========================================================================
+	    // 3. SUBMISSÃO DO FORMULÁRIO
+	    // ==========================================================================
+	    $('#formGrupo').on('submit', function(e) {
+	        var form = this;
+	        
+	        // Limpa inputs hidden antigos para evitar duplicação ou conflitos
+	        $('#idsContatos').remove();
+	        $(form).find('input[name="idsContatos"]').remove();
 
-        if (idsSelecionados.size === 0) {
-            e.preventDefault();
-            alert('Por favor, selecione pelo menos um contato para criar o grupo.');
-            return false;
-        }
-
-        // Transforma o Set de volta em um formato suportado pelo seu Controller (Vírgula)
-        var idsString = Array.from(idsSelecionados).join(',');
-        
-        $(form).append(
-            $('<input>')
-                .attr('type', 'hidden')
-                .attr('name', 'idsContatos')
-                .attr('value', idsString)
-        );
-    });
-
-});
-
-function prepararFiltro() {
-    var n = document.getElementById('inputNome');
-    var d = document.getElementById('inputDescricao');
-    if(n) document.getElementById('hiddenNome').value = n.value;
-    if(d) document.getElementById('hiddenDescricao').value = d.value;
-}
+	        // Só anexa a lista de contatos ao formulário se houver alguém selecionado.
+	        // Se a lista estiver vazia, o form vai para o Java sem esse campo, 
+	        // e o Java vai tratar como 'null' (o que já está programado para aceitar!).
+	        if (idsSelecionados.size > 0) {
+	            var idsString = Array.from(idsSelecionados).join(',');
+	            
+	            $(form).append(
+	                $('<input>')
+	                    .attr('type', 'hidden')
+	                    .attr('name', 'idsContatos')
+	                    .attr('value', idsString)
+	            );
+	         }
+			         });
+					 });
+					 
