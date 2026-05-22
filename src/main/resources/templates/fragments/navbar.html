@@ -1,138 +1,92 @@
-<div th:fragment="navbar"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 	<link rel="stylesheet" href="/css/navbar.css">
 
-	<nav
-		class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top"
-		style="z-index: 1040;">
+	<nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top" style="z-index: 1040;">
 		<div class="container-fluid">
 
-			<a href="javascript:history.back()"
-				class="text-white me-3 d-flex align-items-center text-decoration-none btn-voltar-nav"
-				title="Voltar"> <i class="fa-solid fa-chevron-left fs-5"></i>
-			</a> <a class="navbar-brand d-flex align-items-center me-lg-4"
-				href="/administrativo"> <img src="/img/logoInput.png"
-				alt="Logótipo WINPOST" title="Página Inicial WINPOST" height="32"
-				class="me-2 bg-primary rounded px-2 shadow-sm">
+			<a href="javascript:history.back()" class="text-white me-3 d-flex align-items-center text-decoration-none btn-voltar-nav" title="Voltar"> 
+                <i class="fa-solid fa-chevron-left fs-5"></i>
+			</a> 
+            <a class="navbar-brand d-flex align-items-center me-lg-4" href="/administrativo"> 
+                <img src="/img/logoInput.png" alt="Logótipo WINPOST" title="Página Inicial WINPOST" height="32" class="me-2 bg-primary rounded px-2 shadow-sm">
 			</a>
 
-			<button class="navbar-toggler border-0" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarMain">
+			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
 			<div class="collapse navbar-collapse w-100" id="navbarMain">
 
-				<ul
-					class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center navbar-center-pill">
+				<ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center navbar-center-pill">
 
-					<li class="nav-item"><a class="nav-link"
-						href="/administrativo"
-						th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
+					<li class="nav-item">
+                        <a class="nav-link" href="/administrativo" th:classappend="${paginaAtiva == 'dashboard'} ? 'active'">Home</a>
 					</li>
 
-					<li class="nav-item"
-						sec:authorize="hasAuthority('AGENDA_VISUALIZAR')"><a
-						class="nav-link" href="/administrativo/agenda"
-						th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
+					<li class="nav-item" sec:authorize="hasAuthority('AGENDA_VISUALIZAR')">
+                        <a class="nav-link" href="/administrativo/agenda" th:classappend="${paginaAtiva == 'agenda'} ? 'active'">Agenda</a>
 					</li>
 
-					<li class="nav-item dropdown"
-						sec:authorize="hasAnyAuthority('CONTATO_VISUALIZAR', 'GRUPO_VISUALIZAR')">
-						<a class="nav-link dropdown-toggle" href="#" id="dropGestao"
-						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Gestão</a>
+					<li class="nav-item dropdown" sec:authorize="hasAnyAuthority('CONTATO_VISUALIZAR', 'GRUPO_VISUALIZAR')">
+						<a class="nav-link dropdown-toggle" href="#" id="dropGestao" role="button" data-bs-toggle="dropdown" th:classappend="${paginaAtiva == 'lista' || paginaAtiva == 'cadastro' || paginaAtiva == 'cadastroGrupo' || paginaAtiva == 'gerenciarGrupo'} ? 'active'">Gestão</a>
 
-						<ul class="dropdown-menu shadow border-0 mt-2"
-							aria-labelledby="dropGestao">
-							<li sec:authorize="hasAuthority('GRUPO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/grupos/gerenciar"
-								th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-layer-group me-2"
-									th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i>
-									Grupos
-							</a></li>
-							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/listarContatos"
-								th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-list me-2"
-									th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i>
-									Contatos
-							</a></li>
-
+						<ul class="dropdown-menu shadow border-0 mt-2" aria-labelledby="dropGestao">
+							<li sec:authorize="hasAuthority('GRUPO_VISUALIZAR')">
+                                <a class="dropdown-item py-2" href="/grupos/gerenciar" th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-layer-group me-2" th:classappend="${paginaAtiva == 'gerenciarGrupo'} ? 'text-white' : 'text-muted'"></i> Grupos
+							    </a>
+                            </li>
+							<li sec:authorize="hasAuthority('CONTATO_VISUALIZAR')">
+                                <a class="dropdown-item py-2" href="/listarContatos" th:classappend="${paginaAtiva == 'lista'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-list me-2" th:classappend="${paginaAtiva == 'lista'} ? 'text-white' : 'text-muted'"></i> Contatos
+							    </a>
+                            </li>
 						</ul>
 					</li>
 
-					<li class="nav-item dropdown"><a
-						class="nav-link dropdown-toggle" href="#" id="dropRelatorios"
-						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'relatoriosPdf' || paginaAtiva == 'etiquetas'} ? 'active'">Relatórios</a>
+					<li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalRelatorios" title="Abrir Central de Relatórios" th:classappend="${paginaAtiva == 'relatoriosPdf' || paginaAtiva == 'etiquetas'} ? 'active'">
+							Relatórios 
+                        </a>
+                    </li>
 
-						<ul class="dropdown-menu shadow border-0 mt-2"
-							aria-labelledby="dropRelatorios">
-							<li><a class="dropdown-item py-2" href="#"
-								id="btnExportarPdf"
-								th:classappend="${paginaAtiva == 'relatoriosPdf'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-file-pdf me-2"
-									th:classappend="${paginaAtiva == 'relatoriosPdf'} ? 'text-white' : 'text-muted'"></i>Exportar
-									em PDF
-							</a></li>
-							<li><a class="dropdown-item py-2" href="#"
-								id="btnExportarEtiquetas"
-								th:classappend="${paginaAtiva == 'etiquetas'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-tags me-2"
-									th:classappend="${paginaAtiva == 'etiquetas'} ? 'text-white' : 'text-muted'"></i>Etiquetas
-							</a></li>
-						</ul></li>
-
-					<li class="nav-item"
-						sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')"><a
-						class="nav-link" href="/mensagens/enviadas"
-						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
+					<li class="nav-item" sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')">
+                        <a class="nav-link" href="/mensagens/enviadas" th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
 					</li>
 
-					<li class="nav-item dropdown"
-						sec:authorize="hasAnyAuthority('CONFIGURACOES_SISTEMA', 'USUARIO_VISUALIZAR', 'PERFIL_VISUALIZAR')">
-						<a class="nav-link dropdown-toggle" href="#" id="dropAdmin"
-						role="button" data-bs-toggle="dropdown"
-						th:classappend="${paginaAtiva == 'empresas' || paginaAtiva == 'usuarios' || paginaAtiva == 'perfis'} ? 'active'">
-							Administrativo </a>
+					<li class="nav-item dropdown" sec:authorize="hasAnyAuthority('CONFIGURACOES_SISTEMA', 'USUARIO_VISUALIZAR', 'PERFIL_VISUALIZAR')">
+						<a class="nav-link dropdown-toggle" href="#" id="dropAdmin" role="button" data-bs-toggle="dropdown" th:classappend="${paginaAtiva == 'empresas' || paginaAtiva == 'usuarios' || paginaAtiva == 'perfis'} ? 'active'">
+							Administrativo 
+                        </a>
 
-						<ul class="dropdown-menu shadow border-0 mt-2"
-							aria-labelledby="dropAdmin">
+						<ul class="dropdown-menu shadow border-0 mt-2" aria-labelledby="dropAdmin">
 							<li sec:authorize="hasAuthority('CONFIGURACOES_SISTEMA')">
 								<h6 class="dropdown-header text-muted fw-bold small">SISTEMA</h6>
 							</li>
-							<li sec:authorize="hasAuthority('CONFIGURACOES_SISTEMA')"><a
-								class="dropdown-item py-2" href="/administrativo/empresas"
-								th:classappend="${paginaAtiva == 'empresas'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-building me-2"
-									th:classappend="${paginaAtiva == 'empresas'} ? 'text-white' : 'text-muted'"></i>Empresas
-							</a></li>
+							<li sec:authorize="hasAuthority('CONFIGURACOES_SISTEMA')">
+                                <a class="dropdown-item py-2" href="/administrativo/empresas" th:classappend="${paginaAtiva == 'empresas'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-building me-2" th:classappend="${paginaAtiva == 'empresas'} ? 'text-white' : 'text-muted'"></i>Empresas
+							    </a>
+                            </li>
 
-							<li
-								sec:authorize="hasAnyAuthority('CONFIGURACOES_SISTEMA', 'USUARIO_VISUALIZAR')">
+							<li sec:authorize="hasAnyAuthority('CONFIGURACOES_SISTEMA', 'USUARIO_VISUALIZAR')">
 								<hr class="dropdown-divider">
 							</li>
 
-							<li
-								sec:authorize="hasAnyAuthority('USUARIO_VISUALIZAR', 'PERFIL_VISUALIZAR')">
+							<li sec:authorize="hasAnyAuthority('USUARIO_VISUALIZAR', 'PERFIL_VISUALIZAR')">
 								<h6 class="dropdown-header text-muted fw-bold small">ACESSOS</h6>
 							</li>
-							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/administrativo/usuarios"
-								th:classappend="${paginaAtiva == 'usuarios'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-users me-2"
-									th:classappend="${paginaAtiva == 'usuarios'} ? 'text-white' : 'text-muted'"></i>Usuários
-							</a></li>
-							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')"><a
-								class="dropdown-item py-2" href="/administrativo/perfis"
-								th:classappend="${paginaAtiva == 'perfis'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-id-card-clip me-2"
-									th:classappend="${paginaAtiva == 'perfis'} ? 'text-white' : 'text-muted'"></i>Perfis
-									de Acesso
-							</a></li>
+							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')">
+                                <a class="dropdown-item py-2" href="/administrativo/usuarios" th:classappend="${paginaAtiva == 'usuarios'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-users me-2" th:classappend="${paginaAtiva == 'usuarios'} ? 'text-white' : 'text-muted'"></i>Usuários
+							    </a>
+                            </li>
+							<li sec:authorize="hasAuthority('USUARIO_VISUALIZAR')">
+                                <a class="dropdown-item py-2" href="/administrativo/perfis" th:classappend="${paginaAtiva == 'perfis'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-id-card-clip me-2" th:classappend="${paginaAtiva == 'perfis'} ? 'text-white' : 'text-muted'"></i>Perfis de Acesso
+							    </a>
+                            </li>
 						</ul>
 					</li>
 				</ul>
@@ -141,114 +95,90 @@
 
 					<li class="nav-item d-lg-none my-2"><hr class="text-white-50"></li>
 
-					<li class="nav-item"><a
-						class="nav-link d-flex align-items-center" href="#"
-						data-bs-toggle="modal" data-bs-target="#modalLembretes"
-						title="Ver Lembretes"> <i
-							class="fa-solid fa-calendar-day fs-5"></i> <span
-							class="d-lg-none ms-3">Lembretes e Aniversários</span>
-					</a></li>
+					<li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#modalLembretes" title="Ver Lembretes"> 
+                            <i class="fa-solid fa-calendar-day fs-5"></i> 
+                            <span class="d-lg-none ms-3">Lembretes e Aniversários</span>
+					    </a>
+                    </li>
 
-					<li class="nav-item dropdown ms-lg-2"><a
-						class="nav-link d-flex align-items-center" href="#"
-						id="dropNotificacoes" role="button" data-bs-toggle="dropdown"
-						aria-expanded="false" title="Notificações">
+					<li class="nav-item dropdown ms-lg-2">
+                        <a class="nav-link d-flex align-items-center" href="#" id="dropNotificacoes" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notificações">
 							<div class="position-relative d-inline-block">
-								<i class="fa-solid fa-bell fs-5"></i> <span id="badgeGeral"
-									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
-									style="font-size: 0.55rem; padding: 0.25em 0.4em;"> <span
-									id="contadorTexto">1</span>
+								<i class="fa-solid fa-bell fs-5"></i> 
+                                <span id="badgeGeral" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm" style="font-size: 0.55rem; padding: 0.25em 0.4em;"> 
+                                    <span id="contadorTexto">1</span>
 								</span>
-							</div> <span class="d-lg-none ms-3">Notificações</span>
-					</a>
+							</div> 
+                            <span class="d-lg-none ms-3">Notificações</span>
+					    </a>
 
-						<div id="listaNotificacoesContainer"
-							class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-0"
-							aria-labelledby="dropNotificacoes"
-							style="min-width: 280px; max-width: 95vw;">
+						<div id="listaNotificacoesContainer" class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-0" aria-labelledby="dropNotificacoes" style="min-width: 280px; max-width: 95vw;">
 							<div class="p-3 bg-light border-bottom text-center rounded-top">
 								<h6 class="mb-0 fw-bold text-dark">
 									<i class="fa-regular fa-bell me-2"></i>Notificações
 								</h6>
 							</div>
-
-							<div id="notificacao-1"
-								class="dropdown-item p-3 border-bottom notificacao-item"
-								style="white-space: normal;">
+							<div id="notificacao-1" class="dropdown-item p-3 border-bottom notificacao-item" style="white-space: normal;">
 								<div class="d-flex w-100 justify-content-between mb-1">
-									<strong class="text-dark small">Nova mensagem de
-										sistema</strong> <small class="text-muted ms-2">Agora</small>
+									<strong class="text-dark small">Nova mensagem de sistema</strong> 
+                                    <small class="text-muted ms-2">Agora</small>
 								</div>
-								<p class="mb-2 small text-muted">Bem-vindo ao sistema
-									WINPOST! Esta é uma notificação de teste.</p>
+								<p class="mb-2 small text-muted">Bem-vindo ao sistema WINPOST! Esta é uma notificação de teste.</p>
 								<div class="text-end">
-									<button class="btn btn-sm btn-outline-primary"
-										onclick="marcarEFechar(1, event)">
+									<button class="btn btn-sm btn-outline-primary" onclick="marcarEFechar(1, event)">
 										<i class="fa-solid fa-check me-1"></i>Lida
 									</button>
 								</div>
 							</div>
-
-							<div id="msgSemNotificacaoJS"
-								class="d-none text-center p-4 text-muted small">
+							<div id="msgSemNotificacaoJS" class="d-none text-center p-4 text-muted small">
 								<i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
 								<p class="mb-0">Nenhuma notificação nova</p>
 							</div>
-						</div></li>
+						</div>
+                    </li>
 
-					<li
-						class="nav-item dropdown ms-lg-3 border-start border-light ps-lg-3"
-						style="border-color: rgba(255, 255, 255, 0.2) !important;"><a
-						class="nav-link d-flex align-items-center" href="#"
-						id="dropUsuario" role="button" data-bs-toggle="dropdown"
-						aria-expanded="false" title="Minha Conta"> <i
-							class="fa-solid fa-circle-user fs-4"></i> <span
-							class="d-lg-none ms-3">Minha Conta</span>
-					</a>
+					<li class="nav-item dropdown ms-lg-3 border-start border-light ps-lg-3" style="border-color: rgba(255, 255, 255, 0.2) !important;">
+                        <a class="nav-link d-flex align-items-center" href="#" id="dropUsuario" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Minha Conta"> 
+                            <i class="fa-solid fa-circle-user fs-4"></i> 
+                            <span class="d-lg-none ms-3">Minha Conta</span>
+					    </a>
 
-						<ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"
-							aria-labelledby="dropUsuario">
-							<li><a class="dropdown-item py-2" href="/perfil"
-								th:classappend="${paginaAtiva == 'perfil'} ? 'bg-primary text-white' : ''">
-									<i class="fa-solid fa-user-gear me-2"
-									th:classappend="${paginaAtiva == 'perfil'} ? 'text-white' : 'text-muted'"></i>Meu
-									Perfil
-							</a></li>
+						<ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="dropUsuario">
+							<li>
+                                <a class="dropdown-item py-2" href="/perfil" th:classappend="${paginaAtiva == 'perfil'} ? 'bg-primary text-white' : ''">
+									<i class="fa-solid fa-user-gear me-2" th:classappend="${paginaAtiva == 'perfil'} ? 'text-white' : 'text-muted'"></i>Meu Perfil
+							    </a>
+                            </li>
 							<li><hr class="dropdown-divider"></li>
 							<li>
 								<form th:action="@{/logout}" method="post" class="m-0">
-									<button type="submit"
-										class="dropdown-item py-2 text-danger fw-bold">
+									<button type="submit" class="dropdown-item py-2 text-danger fw-bold">
 										<i class="fa-solid fa-right-from-bracket me-2"></i>Sair
 									</button>
 								</form>
 							</li>
-						</ul></li>
+						</ul>
+                    </li>
 				</ul>
 
 			</div>
 		</div>
 	</nav>
 
-	<div class="modal fade" id="modalLembretes" tabindex="-1"
-		aria-hidden="true" data-bs-backdrop="false">
-		<div
-			class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
+	<div class="modal fade" id="modalLembretes" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+		<div class="modal-dialog modal-notificacao-posicao modal-dialog-scrollable">
 			<div class="modal-content shadow-lg border-0">
-				<div
-					class="modal-header bg-warning text-dark py-2 border-bottom-0 rounded-top">
+				<div class="modal-header bg-warning text-dark py-2 border-bottom-0 rounded-top">
 					<h6 class="modal-title fw-bold small">
 						<i class="fa-solid fa-clock me-2"></i>Lembretes Futuros
 					</h6>
-					<button type="button" class="btn-close btn-sm"
-						data-bs-dismiss="modal"></button>
+					<button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
 				</div>
 				<div class="modal-body p-0">
 					<div class="list-group list-group-flush">
-						<div th:if="${#lists.isEmpty(listaLembretes)}"
-							class="text-center py-5">
-							<i
-								class="fa-regular fa-calendar-check fs-2 text-muted opacity-25 mb-2"></i>
+						<div th:if="${#lists.isEmpty(listaLembretes)}" class="text-center py-5">
+							<i class="fa-regular fa-calendar-check fs-2 text-muted opacity-25 mb-2"></i>
 							<p class="text-muted small fw-bold mb-0">Tudo em dia!</p>
 						</div>
 
@@ -257,128 +187,197 @@
 							class="list-group-item list-group-item-action p-3 notificacao-item"
 							style="border-left-color: #ffc107 !important;">
 
-							<div
-								class="d-flex w-100 justify-content-between align-items-center mb-1">
-								<strong class="text-dark small" style="font-size: 0.85rem;"
-									th:text="${lembrete.titulo}">Título</strong> <span
-									class="badge bg-light text-secondary border">Amanhã</span>
+							<div class="d-flex w-100 justify-content-between align-items-center mb-1">
+								<strong class="text-dark small" style="font-size: 0.85rem;" th:text="${lembrete.titulo}">Título</strong> 
+                                <span class="badge bg-light text-secondary border">Amanhã</span>
 							</div>
 
 							<p class="mb-1 text-muted small" th:text="${lembrete.descricao}">Descrição...</p>
 
 							<div class="mt-2" th:if="${lembrete.tipo == 'NIVER'}">
-								<span
-									class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2">
+								<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2">
 									<i class="fa-solid fa-gift me-1"></i> Ver Contato
 								</span>
 							</div>
 						</a>
 					</div>
 				</div>
-				<div
-					class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
-					<a href="/administrativo/agenda"
-						class="btn btn-link btn-sm text-decoration-none fw-bold text-secondary">Ver
-						agenda completa</a>
+				<div class="modal-footer bg-light p-1 justify-content-center rounded-bottom">
+					<a href="/administrativo/agenda" class="btn btn-link btn-sm text-decoration-none fw-bold text-secondary">Ver agenda completa</a>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<script>
-        function marcarEFechar(id, event) {
-            if(event) event.stopPropagation(); 
-            fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
-            .then(response => {
-                if(response.ok) {
-                    removerItemVisualmente(id);
-                    atualizarContadorBadge();
-                }
-            })
-            .catch(console.error);
-        }
+	<div class="modal fade" id="modalRelatorios" tabindex="-1" aria-labelledby="modalRelatoriosLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg">
 
-        function lerENavegar(id, url, event) {
-            if(event) event.preventDefault(); 
+				<div class="modal-header bg-primary text-white py-3">
+					<h5 class="modal-title fw-bold fs-5" id="modalRelatoriosLabel">
+						<i class="fa-solid fa-chart-pie me-2"></i>Central de Exportação e Relatórios
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+				</div>
+
+				<div class="modal-body bg-light p-4">
+
+					<div class="alert alert-primary border-0 bg-primary bg-opacity-10 text-light small fw-bold mb-4 d-flex align-items-center">
+						<i class="fa-solid fa-circle-info fs-5 me-2"></i> Selecione a área desejada para configurar o seu documento.
+					</div>
+
+					<div class="row g-4">
+
+						<div class="col-md-6">
+							<div class="card h-100 border-0 shadow-sm rounded-3">
+								<div class="card-body p-4 d-flex flex-column">
+									<h6 class="fw-bold text-dark mb-2">
+										<i class="fa-solid fa-users me-2 text-primary"></i>Gestão de Contatos
+									</h6>
+									<p class="small text-muted mb-4 flex-grow-1">Configure filtros e personalize os grupos antes de gerar a listagem em PDF ou emitir as etiquetas.</p>
+
+									<div class="d-grid mt-auto">
+										<button type="button" class="btn btn-primary fw-bold py-2 btn-sm shadow-sm" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalRelatorio">
+											<i class="fa-solid fa-sliders me-1"></i> Personalizar e Exportar
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="card h-100 border-0 shadow-sm rounded-3">
+								<div class="card-body p-4 d-flex flex-column">
+									<h6 class="fw-bold text-dark mb-2">
+										<i class="fa-solid fa-calendar-days me-2 text-primary"></i>Produtividade da Agenda
+									</h6>
+									<p class="small text-muted mb-3">Exporte o histórico consolidado de compromissos filtrando pelo mês de referência.</p>
+
+									<div class="mb-4">
+										<label for="selectMesRelatorio" class="form-label small fw-bold text-secondary">Escolha o Mês:</label> 
+                                        <select class="form-select bg-light border-2" id="selectMesRelatorio" style="border-radius: 8px;">
+											<option value="Mês Atual">Mês Atual</option>
+											<option value="Janeiro">Janeiro</option>
+											<option value="Fevereiro">Fevereiro</option>
+											<option value="Março">Março</option>
+											<option value="Abril">Abril</option>
+											<option value="Maio">Maio</option>
+											<option value="Junho">Junho</option>
+											<option value="Julho">Julho</option>
+											<option value="Agosto">Agosto</option>
+											<option value="Setembro">Setembro</option>
+											<option value="Outubro">Outubro</option>
+											<option value="Novembro">Novembro</option>
+											<option value="Dezembro">Dezembro</option>
+										</select>
+									</div>
+
+									<div class="d-grid mt-auto">
+										<button type="button" id="btnGerarRelatorioAgenda" class="btn btn-primary fw-bold py-2 btn-sm shadow-sm">
+											<i class="fa-solid fa-gears me-1"></i> Gerar Relatório da Agenda
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/modals :: modalRelatorio}"></div>
+
+	<script>
+        // LÓGICA DO FILTRO DA AGENDA
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnAgenda = document.getElementById('btnGerarRelatorioAgenda');
+            if(btnAgenda) {
+                btnAgenda.addEventListener('click', function() {
+                    const mesSelecionado = document.getElementById('selectMesRelatorio').value;
+                    const url = '/relatorio/agenda/pdf?mesAno=' + encodeURIComponent(mesSelecionado);
+                    window.open(url, '_blank');
+                });
+            }
+        });
+
+        // LÓGICA DO BOTÃO DE ETIQUETAS
+        document.addEventListener('click', function(e) {
+            const btnEtiquetas = e.target.closest('#btnGerarEtiquetasDireto');
+            if (btnEtiquetas) {
+                e.preventDefault(); 
+                const form = btnEtiquetas.closest('form');
+                if (form) {
+                    form.action = '/relatorio/etiquetas'; 
+                    form.submit(); 
+                    
+                    setTimeout(() => {
+                        form.action = '/relatorio/pdf'; 
+                    }, 1000);
+                }
+            }
+        });
+
+        // FUNÇÕES DE NOTIFICAÇÕES GERAIS
+        function marcarEFechar(id, event) { 
+            if(event) event.stopPropagation();
+            fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
+            .then(response => { 
+                if(response.ok) { 
+                    removerItemVisualmente(id);
+                    atualizarContadorBadge(); 
+                } 
+            })
+            .catch(console.error); 
+        } 
+        
+        function lerENavegar(id, url, event) { 
+            if(event) event.preventDefault();
             fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
             .then(() => {
-                atualizarContadorBadge();
+                atualizarContadorBadge(); 
                 window.location.href = url; 
             })
             .catch(() => {
                 window.location.href = url; 
-            });
-        }
-
+            }); 
+        } 
+        
         function removerItemVisualmente(id) {
-            const elemento = document.getElementById('notificacao-' + id);
-            if (elemento) {
-                elemento.style.opacity = '0';
-                elemento.style.transform = 'translateX(50px)';
-                setTimeout(() => {
+            const elemento = document.getElementById('notificacao-' + id); 
+            if (elemento) { 
+                elemento.style.opacity = '0'; 
+                elemento.style.transform = 'translateX(50px)'; 
+                setTimeout(() => { 
                     elemento.remove();
-                    verificarListaVazia();
-                }, 300);
-            }
-        }
-
+                    verificarListaVazia(); 
+                }, 300); 
+            } 
+        } 
+        
         function atualizarContadorBadge() {
-            const badge = document.getElementById('badgeGeral');
-            const contador = document.getElementById('contadorTexto');
-
-            if(badge && contador) {
-                let valorAtual = parseInt(contador.innerText);
-                let novoValor = valorAtual - 1;
-                if (novoValor <= 0) {
+            const badge = document.getElementById('badgeGeral'); 
+            const contador = document.getElementById('contadorTexto'); 
+            if(badge && contador) { 
+                let valorAtual = parseInt(contador.innerText); 
+                let novoValor = valorAtual - 1; 
+                if (novoValor <= 0) { 
                     badge.style.display = 'none'; 
                 } else {
-                    contador.innerText = novoValor;
-                }
-            }
-        }
-
+                    contador.innerText = novoValor; 
+                } 
+            } 
+        } 
+        
         function verificarListaVazia() {
             const container = document.getElementById('listaNotificacoesContainer');
             if(!container) return; 
-            const itens = container.querySelectorAll('[id^="notificacao-"]');
-            if (itens.length === 0) {
+            const itens = container.querySelectorAll('[id^="notificacao-"]'); 
+            if (itens.length === 0) { 
                 const msgVazia = document.getElementById('msgSemNotificacaoJS');
-                if(msgVazia) msgVazia.classList.remove('d-none');
-            }
+                if(msgVazia) msgVazia.classList.remove('d-none'); 
+            } 
         }
-        
     </script>
-    <script>
-    // Inteligência do Botão de PDF
-    document.getElementById('btnExportarPdf').addEventListener('click', function(e) {
-        e.preventDefault(); // Evita que a página recarregue
-        const urlAtual = window.location.pathname; // Descobre onde o usuário está
-
-        if (urlAtual.includes('/listarContatos') || urlAtual.includes('/grupos/gerenciar')) {
-            // Se estiver na tela de contatos ou grupos, chama o PDF de contatos
-            window.open('/relatorio/pdf', '_blank'); 
-            
-        } else if (urlAtual.includes('/administrativo/agenda')) {
-            // Se estiver na agenda, chama o PDF da agenda
-            window.open('/relatorio/agenda/pdf', '_blank'); 
-            
-        } else {
-            // Avisa de forma amigável se a tela não tiver relatório configurado
-            alert('A exportação em PDF ainda não está disponível para esta tela específica.');
-        }
-    });
-
-    // Inteligência do Botão de Etiquetas
-    document.getElementById('btnExportarEtiquetas').addEventListener('click', function(e) {
-        e.preventDefault();
-        const urlAtual = window.location.pathname;
-
-        if (urlAtual.includes('/listarContatos') || urlAtual.includes('/grupos/gerenciar')) {
-            // Etiquetas fazem sentido na área de contatos
-            window.open('/relatorio/etiquetas', '_blank'); 
-        } else {
-            alert('A geração de etiquetas está disponível apenas na área de Gestão de Contatos.');
-        }
-    });
-</script>
 </div>
