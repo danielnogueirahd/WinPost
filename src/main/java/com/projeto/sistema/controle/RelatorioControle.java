@@ -13,124 +13,127 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.EventoAgenda;
 import com.projeto.sistema.modelos.UsuarioLogado;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
-import com.projeto.sistema.repositorios.AgendaRepositorio; // Ajuste para o nome correto do seu repositório
 import com.projeto.sistema.servicos.RelatorioService;
+import com.projeto.sistema.servicos.EtiquetaService; // NOVO: Importar o serviço correto!
 
 @Controller
 @RequestMapping("/relatorio")
 public class RelatorioControle {
 
-    @Autowired
-    private RelatorioService relatorioService;
+	@Autowired
+	private RelatorioService relatorioService;
 
-    @Autowired
-    private ContatosRepositorio contatosRepositorio;
-    
-    // Adicione o repositório da agenda se ainda não tiver
-    // @Autowired
-    // private AgendaRepositorio agendaRepositorio;
+	// NOVO: Trazer o teu serviço especialista em etiquetas para o controlador
+	@Autowired
+	private EtiquetaService etiquetaService;
 
-    // =========================================================================
-    // 1. EXPORTAR LISTA DE CONTATOS (PDF)
-    // =========================================================================
-    @PostMapping("/pdf")
-    public ResponseEntity<InputStreamResource> exportarContatosPdf(
-            @RequestParam(value = "idsSelecionados", required = false) List<Long> idsSelecionados,
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+	@Autowired
+	private ContatosRepositorio contatosRepositorio;
 
-        List<Contatos> contatosParaExportar;
+	// =========================================================================
+	// 1. EXPORTAR LISTA DE CONTATOS (PDF)
+	// =========================================================================
+	@RequestMapping(value = "/pdf", method = { RequestMethod.GET, RequestMethod.POST })
+	public ResponseEntity<InputStreamResource> exportarContatosPdf(
+			@RequestParam(value = "idsSelecionados", required = false) List<Long> idsSelecionados,
+			@RequestParam(value = "nome", required = false) String nome,
+			@RequestParam(value = "cidade", required = false) String cidade,
+			@RequestParam(value = "estado", required = false) String estado,
+			@RequestParam(value = "grupoId", required = false) Long grupoId,
+			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-        // INTELIGÊNCIA: Se não veio ID nenhum (ex: clicou pelo Navbar global), busca todos da empresa!
-        if (idsSelecionados == null || idsSelecionados.isEmpty()) {
-            contatosParaExportar = contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
-        } else {
-            // Se vieram IDs (ex: selecionou na tabela), busca só aqueles
-            contatosParaExportar = contatosRepositorio.findAllById(idsSelecionados);
-        }
+		// DICA: Transformando textos vazios do formulário em 'null' para a Query do
+		// banco funcionar certinho
+		if (nome != null && nome.trim().isEmpty())
+			nome = null;
+		if (cidade != null && cidade.trim().isEmpty())
+			cidade = null;
+		if (estado != null && estado.trim().isEmpty())
+			estado = null;
 
-        // Chama o seu serviço para gerar o PDF
-        ByteArrayInputStream bis = relatorioService.gerarRelatorioContatos(contatosParaExportar);
+		List<Contatos> contatosParaExportar;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=relatorio_contatos.pdf");
+		if (idsSelecionados != null && !idsSelecionados.isEmpty()) {
+			contatosParaExportar = contatosRepositorio.findAllById(idsSelecionados);
+		} else {
+			contatosParaExportar = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId,
+					usuarioLogado.getEmpresa());
+		}
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
-    }
+		ByteArrayInputStream bis = relatorioService.gerarRelatorioContatos(contatosParaExportar);
 
-    // =========================================================================
-    // 2. EXPORTAR ETIQUETAS
-    // =========================================================================
-    @PostMapping("/etiquetas")
-    public ResponseEntity<InputStreamResource> exportarEtiquetas(
-            @RequestParam(value = "idsSelecionados", required = false) List<Long> idsSelecionados,
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=relatorio_contatos.pdf");
 
-        List<Contatos> contatosParaExportar;
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+				.body(new InputStreamResource(bis));
+	}
 
-        if (idsSelecionados == null || idsSelecionados.isEmpty()) {
-            contatosParaExportar = contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
-        } else {
-            contatosParaExportar = contatosRepositorio.findAllById(idsSelecionados);
-        }
+	// =========================================================================
+	// 2. EXPORTAR ETIQUETAS
+	// =========================================================================
+	@RequestMapping(value = "/etiquetas", method = { RequestMethod.GET, RequestMethod.POST })
+	public ResponseEntity<InputStreamResource> exportarEtiquetas(
+			@RequestParam(value = "idsSelecionados", required = false) List<Long> idsSelecionados,
+			@RequestParam(value = "nome", required = false) String nome,
+			@RequestParam(value = "cidade", required = false) String cidade,
+			@RequestParam(value = "estado", required = false) String estado,
+			@RequestParam(value = "grupoId", required = false) Long grupoId,
+			@RequestParam(value = "modeloEtiqueta", defaultValue = "6180") String modeloEtiqueta,
+			@RequestParam(value = "posicaoInicial", defaultValue = "1") int posicaoInicial,
+			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-        ByteArrayInputStream bis = relatorioService.gerarEtiquetas(contatosParaExportar);
+		// Mesma limpeza de variáveis para as etiquetas
+		if (nome != null && nome.trim().isEmpty())
+			nome = null;
+		if (cidade != null && cidade.trim().isEmpty())
+			cidade = null;
+		if (estado != null && estado.trim().isEmpty())
+			estado = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=etiquetas_correios.pdf");
+		List<Contatos> contatosParaExportar;
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
-    }
+		if (idsSelecionados != null && !idsSelecionados.isEmpty()) {
+			contatosParaExportar = contatosRepositorio.findAllById(idsSelecionados);
+		} else {
+			contatosParaExportar = contatosRepositorio.filtrarRelatorio(nome, cidade, estado, grupoId,
+					usuarioLogado.getEmpresa());
+		}
 
-    // =========================================================================
-    // 3. EXPORTAR PRODUTIVIDADE DA AGENDA (MÊS)
-    // =========================================================================
-    @GetMapping("/agenda/pdf")
-    public ResponseEntity<InputStreamResource> exportarAgendaPdf(
-            @RequestParam(value = "mesAno", defaultValue = "Mês Atual") String mesAno,
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+		ByteArrayInputStream bis = etiquetaService.gerarPdfEtiquetas(contatosParaExportar, modeloEtiqueta,
+				posicaoInicial);
 
-        // DICA: Como a sua Agenda depende do mês selecionado lá no modal do Navbar, 
-        // aqui você recebe a String "Janeiro", "Fevereiro", ou "Mês Atual".
-        // Você vai usar esse parâmetro para fazer um `if` ou `switch` e buscar os eventos corretos no banco.
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=etiquetas_correios.pdf");
 
-        /* EXEMPLO DE BUSCA NO BANCO:
-        List<EventoAgenda> eventos;
-        if (mesAno.equals("Mês Atual")) {
-             eventos = agendaRepositorio.findByEmpresaAndMesAtual(usuarioLogado.getEmpresa());
-        } else {
-             int numeroMes = converterNomeMesParaNumero(mesAno);
-             eventos = agendaRepositorio.findByEmpresaAndMes(usuarioLogado.getEmpresa(), numeroMes);
-        }
-        */
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+				.body(new InputStreamResource(bis));
+	}
 
-        // Para não quebrar o seu código atual, estou passando null, mas você deve substituir pela lista de eventos real do banco:
-        List<EventoAgenda> eventosDaEmpresa = null; 
+	// =========================================================================
+	// 3. EXPORTAR PRODUTIVIDADE DA AGENDA (MÊS)
+	// =========================================================================
+	@GetMapping("/agenda/pdf")
+	public ResponseEntity<InputStreamResource> exportarAgendaPdf(
+			@RequestParam(value = "mesAno", defaultValue = "Mês Atual") String mesAno,
+			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-        // Chama o seu serviço que gera o layout do PDF da agenda
-        ByteArrayInputStream bis = relatorioService.gerarRelatorioAgenda(eventosDaEmpresa, mesAno);
+		// ... o teu código da agenda continua aqui normalmente ...
+		List<EventoAgenda> eventosDaEmpresa = null;
 
-        HttpHeaders headers = new HttpHeaders();
-        // O "inline" faz o PDF abrir no navegador em vez de forçar o download direto
-        headers.add("Content-Disposition", "inline; filename=relatorio_agenda_" + mesAno.toLowerCase() + ".pdf");
+		ByteArrayInputStream bis = relatorioService.gerarRelatorioAgenda(eventosDaEmpresa, mesAno);
 
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=relatorio_agenda_" + mesAno.toLowerCase() + ".pdf");
+
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
+				.body(new InputStreamResource(bis));
+	}
 }
