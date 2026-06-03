@@ -19,23 +19,29 @@ public class GrupoService {
     @Autowired
     private GrupoRepositorio grupoRepositorio;
 
-    // Precisamos do repositório de contatos para fazer os vínculos!
     @Autowired
     private ContatosRepositorio contatosRepositorio;
 
-    /**
-     * Método que salva o grupo e já vincula os contatos escolhidos na tela.
-     */
     public void salvarGrupoComContatos(Grupo grupo, List<Long> idsContatos) {
-        // 1. Salva o grupo primeiro para garantir que ele tem um ID (no banco)
+        
+        // TRAVAS DE SEGURANÇA: Preenchendo campos obrigatórios do banco
+        if (grupo.getAtivo() == null) {
+            grupo.setAtivo(true);
+        }
+        
+        // Nova trava para o is_master
+        if (grupo.getIsMaster() == null) {
+            grupo.setIsMaster(false);
+        }
+
+        // 1. Salva o grupo
         Grupo grupoSalvo = grupoRepositorio.save(grupo);
 
-        // 2. Se o usuário selecionou algum contato no cadastro, fazemos o vínculo
+        // 2. Faz o vínculo dos contatos
         if (idsContatos != null && !idsContatos.isEmpty()) {
             List<Contatos> contatosSelecionados = contatosRepositorio.findAllById(idsContatos);
             
             for (Contatos contato : contatosSelecionados) {
-                // Adiciona o grupo salvo à lista de grupos do contato
                 if (!contato.getGrupos().contains(grupoSalvo)) {
                     contato.getGrupos().add(grupoSalvo);
                     contatosRepositorio.save(contato);
@@ -44,17 +50,12 @@ public class GrupoService {
         }
     }
 
-    /**
-     * Método que exclui o grupo com segurança, desvinculando os contatos antes.
-     */
     public void excluirGrupo(Long id) {
         Optional<Grupo> grupoOpt = grupoRepositorio.findById(id);
         
         if (grupoOpt.isPresent()) {
             Grupo grupo = grupoOpt.get();
             
-            // Passo de Segurança: Desvincular o grupo de todos os contatos 
-            // que pertencem a ele antes de apagar, para evitar erro de SQL (Foreign Key)
             List<Contatos> contatosDoGrupo = grupo.getContatos();
             if (contatosDoGrupo != null) {
                 for (Contatos contato : contatosDoGrupo) {
@@ -63,10 +64,7 @@ public class GrupoService {
                 }
             }
             
-            // Após soltar as amarras, podemos excluir o grupo tranquilamente!
             grupoRepositorio.delete(grupo);
         }
     }
-    
-    // (Se você tiver outros métodos aqui como listarGruposPermitidos(), pode mantê-los!)
 }

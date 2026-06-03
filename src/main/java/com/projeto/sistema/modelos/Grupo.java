@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,13 +30,18 @@ public class Grupo implements Serializable {
 
     private String descricao;
 
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    // NOVO CAMPO ADICIONADO: Avisando o Java que a coluna is_master existe no banco
+    @Column(name = "is_master", nullable = false)
+    private Boolean isMaster = false;
+
     // --- RELACIONAMENTOS ---
 
-    // 1. Relacionamento com Contatos
     @ManyToMany(mappedBy = "grupos")
     private List<Contatos> contatos = new ArrayList<>();
 
-    // 2. Relacionamento com Empresa (O CARIMBO MULTI-TENANT)
     @ManyToOne
     @JoinColumn(name = "empresa_id", nullable = true) 
     private Empresa empresa;
@@ -66,6 +72,23 @@ public class Grupo implements Serializable {
         this.descricao = descricao;
     }
 
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    // GETTER E SETTER DO NOVO CAMPO IS_MASTER
+    public Boolean getIsMaster() {
+        return isMaster;
+    }
+
+    public void setIsMaster(Boolean isMaster) {
+        this.isMaster = isMaster;
+    }
+
     public List<Contatos> getContatos() {
         return contatos;
     }
@@ -74,7 +97,6 @@ public class Grupo implements Serializable {
         this.contatos = contatos;
     }
     
-    // Getters e Setters da Empresa
     public Empresa getEmpresa() {
         return empresa;
     }

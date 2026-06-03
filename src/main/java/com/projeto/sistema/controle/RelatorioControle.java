@@ -117,23 +117,4 @@ public class RelatorioControle {
 				.body(new InputStreamResource(bis));
 	}
 
-	// =========================================================================
-	// 3. EXPORTAR PRODUTIVIDADE DA AGENDA (MÊS)
-	// =========================================================================
-	@GetMapping("/agenda/pdf")
-	public ResponseEntity<InputStreamResource> exportarAgendaPdf(
-			@RequestParam(value = "mesAno", defaultValue = "Mês Atual") String mesAno,
-			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-
-		// ... o teu código da agenda continua aqui normalmente ...
-		List<EventoAgenda> eventosDaEmpresa = null;
-
-		ByteArrayInputStream bis = relatorioService.gerarRelatorioAgenda(eventosDaEmpresa, mesAno);
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", "inline; filename=relatorio_agenda_" + mesAno.toLowerCase() + ".pdf");
-
-		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF)
-				.body(new InputStreamResource(bis));
-	}
 }

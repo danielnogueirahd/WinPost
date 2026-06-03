@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- IMPORT DO CRACHÁ
+import org.springframework.security.core.annotation.AuthenticationPrincipal; 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.LembreteDTO;
-import com.projeto.sistema.modelos.UsuarioLogado; // <-- IMPORT DO CRACHÁ
+import com.projeto.sistema.modelos.UsuarioLogado;
+import com.projeto.sistema.modelos.UF; // <-- NOVO IMPORT
+import com.projeto.sistema.modelos.Grupo; // <-- NOVO IMPORT
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
@@ -31,24 +33,28 @@ public class GlobalAtributos {
 	@Autowired
 	private GrupoRepositorio grupoRepositorio;
 
-	// --- Carrega os Grupos Globalmente para o Modal ---
-	@ModelAttribute("listaGruposGlobal")
-	public List<?> carregarGruposGlobais() {
-		// (Futuramente vamos blindar o GrupoRepositorio também. Por enquanto mantemos o
-		// findAll)
-		return grupoRepositorio.findAll();
+	// --- 1. NOVA PARTE: Carrega os Estados (UF) para o Modal ---
+	@ModelAttribute("listaEstados")
+	public UF[] getListaEstados() {
+		return UF.values();
 	}
-	// -------------------------------------------------------------
 
+	// --- 2. ATUALIZADO: Carrega os Grupos Globalmente e Blindado por Empresa ---
+	@ModelAttribute("listaGrupos") // ATENÇÃO: Confirme se o seu HTML no modal usa "listaGrupos" ou "listaGruposGlobal"
+	public List<Grupo> carregarGruposGlobais(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+		// TRAVA DE SEGURANÇA
+		if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
+			return grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
+		}
+		return new ArrayList<>();
+	}
+
+	// -------------------------------------------------------------
 	@ModelAttribute("listaLembretes")
-	public List<LembreteDTO> carregarLembretesFuturos(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <--
-																												// RECEBE
-																												// O
-																												// CRACHÁ
+	public List<LembreteDTO> carregarLembretesFuturos(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
 		List<LembreteDTO> lembretes = new ArrayList<>();
 
-		// TRAVA DE SEGURANÇA: Se não houver ninguém logado (ex: tela de Login), devolve
-		// a lista vazia
+		// TRAVA DE SEGURANÇA: Se não houver ninguém logado (ex: tela de Login), devolve a lista vazia
 		if (usuarioLogado == null) {
 			return lembretes;
 		}
@@ -56,11 +62,9 @@ public class GlobalAtributos {
 		// Data alvo: AMANHÃ
 		LocalDate amanha = LocalDate.now().plusDays(1);
 
-		// --- 1. Busca Aniversariantes de Amanhã (AJUSTADO PARA O NOVO FORMATO DD/MM)
-		// ---
+		// --- 1. Busca Aniversariantes de Amanhã ---
 		String diaMesAmanha = String.format("%02d/%02d", amanha.getDayOfMonth(), amanha.getMonthValue());
 
-		// <-- AQUI ACONTECE A MÁGICA: Passamos a empresa do usuário logado na busca!
 		List<Contatos> aniversariantesAmanha = contatosRepositorio.findByDiaEMesAniversario(diaMesAmanha,
 				usuarioLogado.getEmpresa());
 
@@ -87,8 +91,7 @@ public class GlobalAtributos {
 	}
 
 	@ModelAttribute("qtdLembretes")
-	public int contarLembretes(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { // <-- RECEBE O CRACHÁ
-		return carregarLembretesFuturos(usuarioLogado).size(); // <-- REPASSA O CRACHÁ PARA O MÉTODO DE CIMA
+	public int contarLembretes(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
+		return carregarLembretesFuturos(usuarioLogado).size(); 
 	}
-
 }

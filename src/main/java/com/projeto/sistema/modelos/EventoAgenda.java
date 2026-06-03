@@ -1,16 +1,31 @@
 package com.projeto.sistema.modelos;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
+@Entity // 1. Indica que esta classe é uma entidade do banco de dados
 public class EventoAgenda {
 
-    private Long id; // ID adicionado para o Thymeleaf e JS funcionarem!
+    @Id // 2. Indica que este campo é a chave primária
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 3. Gera o ID automaticamente (auto-incremento)
+    private Long id; 
+    
     private LocalDateTime data; 
     private String tipo; 
     private String titulo; 
     private String classeCor; 
     private String cor; 
+    
+    @ManyToOne // 4. Você precisará mapear a relação com Empresa (ajuste conforme a regra do seu negócio)
     private Empresa empresa; 
+
+    // Construtor vazio exigido pelo JPA/Hibernate
+    public EventoAgenda() {
+    }
 
     // Construtor atualizado para casar perfeitamente com o AgendaControle
     public EventoAgenda(LocalDateTime data, String tipo, String titulo, String classeCor) {
