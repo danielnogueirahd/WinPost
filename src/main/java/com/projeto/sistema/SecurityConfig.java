@@ -18,12 +18,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/css/**", "/js/**", "/img/**").permitAll() 
+                // AQUI ADICIONAMOS O "/" E O "/error"
+                .requestMatchers("/", "/error", "/css/**", "/js/**", "/img/**").permitAll() 
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                // AQUI ESTÁ A CORREÇÃO: O caminho exato da sua home!
                 .defaultSuccessUrl("/administrativo/agenda", true) 
                 .permitAll()
             )
@@ -34,7 +34,6 @@ public class SecurityConfig {
                 .clearAuthentication(true) 
                 .permitAll()
             );
-        
             
         return http.build();
     }
@@ -43,5 +42,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
 }
