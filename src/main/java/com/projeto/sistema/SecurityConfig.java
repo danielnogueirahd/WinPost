@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .clearAuthentication(true) 
                 .permitAll()
             );
+        
             
         return http.build();
     }
@@ -42,4 +43,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
 }

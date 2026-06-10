@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>WinPost – Gerencie Contatos. Dispare Mensagens.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:   #0D1B3E;
+            --blue:   #1A56DB;
+            --blue-lt:#3B82F6;
+            --accent: #EFF6FF;
+            --gray-1: #F8F9FB;
+            --gray-2: #E5E7EB;
+            --gray-3: #9CA3AF;
+            --gray-4: #6B7280;
+            --text:   #111827;
+            --white:  #FFFFFF;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background: var(--white);
+            line-height: 1.6;
+        }
+
+        /* ─── NAV ─────────────────────────────── */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--gray-2);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 0 6vw; height: 62px;
+        }
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900; font-size: 1.3rem;
+            color: var(--navy); letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+        .nav-logo span { color: var(--blue); }
+        .nav-links {
+            display: flex; align-items: center; gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none; font-size: 0.875rem;
+            color: var(--gray-4); font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--navy); }
+        .btn-nav {
+            background: var(--navy);
+            color: var(--white) !important;
+            padding: 0.45rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            transition: background 0.2s !important;
+            text-decoration: none;
+        }
+        .btn-nav:hover { background: var(--blue) !important; }
+
+        /* ─── HERO ────────────────────────────── */
+        .hero {
+            padding: 7rem 6vw 5rem;
+            max-width: 1160px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr;
+            align-items: center; gap: 4rem;
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--blue);
+            font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 0.35rem 0.9rem; border-radius: 100px;
+            margin-bottom: 1.25rem; border: 1px solid #BFDBFE;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900; font-size: clamp(2.4rem, 4vw, 3.6rem);
+            line-height: 1.1; color: var(--navy);
+            letter-spacing: -1.5px;
+            margin-bottom: 1.25rem;
+        }
+        .hero h1 em {
+            font-style: normal; color: var(--blue);
+        }
+        .hero-desc {
+            color: var(--gray-4);
+            font-size: 1.05rem; line-height: 1.75;
+            max-width: 430px;
+            margin-bottom: 2rem;
+        }
+        .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .btn-primary {
+            background: var(--blue);
+            color: var(--white);
+            padding: 0.8rem 2rem;
+            border-radius: 7px;
+            font-weight: 600; font-size: 0.95rem;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+            display: inline-block;
+        }
+        .btn-primary:hover { background: #1246BF; transform: translateY(-1px); }
+        .btn-ghost {
+            color: var(--navy);
+            font-weight: 600; font-size: 0.95rem;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border: 1.5px solid var(--gray-2);
+            border-radius: 7px;
+            transition: border-color 0.2s, background 0.2s;
+            display: inline-block;
+        }
+        .btn-ghost:hover { border-color: var(--navy); background: var(--gray-1); }
+
+        /* hero visual */
+        .hero-visual {
+            background: var(--gray-1);
+            border: 1px solid var(--gray-2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 24px rgba(13,27,62,0.07);
+        }
+        .visual-topbar {
+            display: flex; align-items: center; gap: 6px;
+            margin-bottom: 1.25rem;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-r { background: #FC5151; }
+        .dot-y { background: #FDBD41; }
+        .dot-g { background: #34C748; }
+        .visual-label {
+            margin-left: auto;
+            font-size: 0.72rem; color: var(--gray-3);
+            background: var(--white); border: 1px solid var(--gray-2);
+            padding: 0.2rem 0.6rem; border-radius: 4px;
+        }
+        .contact-row {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white);
+            border: 1px solid var(--gray-2);
+            border-radius: 8px; padding: 0.7rem 1rem;
+            margin-bottom: 0.6rem;
+        }
+        .avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700; color: var(--blue);
+            flex-shrink: 0;
+        }
+        .contact-info { flex: 1; min-width: 0; }
+        .contact-name { font-size: 0.82rem; font-weight: 600; color: var(--navy); }
+        .contact-email { font-size: 0.72rem; color: var(--gray-3); }
+        .tag {
+            font-size: 0.68rem; font-weight: 600;
+            padding: 0.18rem 0.55rem; border-radius: 100px;
+        }
+        .tag-blue { background: #DBEAFE; color: #1D4ED8; }
+        .tag-green { background: #D1FAE5; color: #065F46; }
+        .tag-amber { background: #FEF3C7; color: #92400E; }
+        .visual-send {
+            margin-top: 1rem;
+            background: var(--navy);
+            color: var(--white);
+            border-radius: 8px; padding: 0.8rem 1rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .send-text { font-size: 0.78rem; color: #94A3B8; }
+        .send-text strong { color: var(--white); display: block; font-size: 0.85rem; }
+        .send-badge {
+            background: var(--blue);
+            color: var(--white);
+            font-size: 0.72rem; font-weight: 700;
+            padding: 0.3rem 0.7rem; border-radius: 6px;
+        }
+
+        /* ─── TICKER ──────────────────────────── */
+        .ticker-wrap {
+            border-top: 1px solid var(--gray-2);
+            border-bottom: 1px solid var(--gray-2);
+            background: var(--gray-1);
+            overflow: hidden; padding: 0.9rem 0;
+        }
+        .ticker-track {
+            display: flex; gap: 3rem;
+            animation: ticker 22s linear infinite;
+            width: max-content;
+        }
+        .ticker-item {
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--gray-3); white-space: nowrap;
+        }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* ─── STATS ───────────────────────────── */
+        .stats {
+            padding: 4.5rem 6vw;
+            max-width: 1160px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+            border-bottom: 1px solid var(--gray-2);
+        }
+        .stat-item { text-align: left; }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem; font-weight: 900;
+            color: var(--navy); line-height: 1;
+        }
+        .stat-num span { color: var(--blue); }
+        .stat-label {
+            font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--gray-3); margin-top: 0.4rem;
+        }
+
+        /* ─── FEATURES ────────────────────────── */
+        .features {
+            padding: 6rem 6vw;
+            max-width: 1160px; margin: 0 auto;
+        }
+        .section-head {
+            display: grid; grid-template-columns: 1fr 1fr;
+            align-items: end; gap: 2rem; margin-bottom: 3.5rem;
+        }
+        .section-eyebrow {
+            font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--blue); margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900; font-size: clamp(1.8rem, 3vw, 2.5rem);
+            color: var(--navy); line-height: 1.15; letter-spacing: -0.5px;
+        }
+        .section-desc {
+            color: var(--gray-4); font-size: 0.95rem; line-height: 1.75;
+            max-width: 380px;
+        }
+        .feature-list { display: flex; flex-direction: column; gap: 0; }
+        .feature-item {
+            display: grid; grid-template-columns: 56px 1fr;
+            gap: 1.25rem; padding: 1.75rem 0;
+            border-top: 1px solid var(--gray-2);
+            align-items: start;
+        }
+        .feature-item:last-child { border-bottom: 1px solid var(--gray-2); }
+        .feature-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem; font-weight: 900;
+            color: var(--gray-2); padding-top: 3px;
+        }
+        .feature-title {
+            font-size: 1.05rem; font-weight: 700;
+            color: var(--navy); margin-bottom: 0.35rem;
+        }
+        .feature-desc { font-size: 0.88rem; color: var(--gray-4); line-height: 1.65; }
+        .learn-more {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.8rem; font-weight: 700;
+            color: var(--blue); text-decoration: none; margin-top: 0.6rem;
+            letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        .learn-more:hover { text-decoration: underline; }
+
+        /* ─── HOW IT WORKS ────────────────────── */
+        .how {
+            background: var(--navy);
+            padding: 6rem 6vw;
+        }
+        .how-inner { max-width: 1160px; margin: 0 auto; }
+        .how .section-title { color: var(--white); }
+        .how .section-eyebrow { color: var(--blue-lt); }
+        .how-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; margin-top: 3rem;
+        }
+        .how-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 1.75rem;
+        }
+        .how-icon {
+            width: 42px; height: 42px; border-radius: 8px;
+            background: rgba(26,86,219,0.25);
+            border: 1px solid rgba(59,130,246,0.4);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.25rem; font-size: 1.3rem;
+        }
+        .how-step { font-size: 0.7rem; color: var(--blue-lt); font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+        .how-card h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+        .how-card p { font-size: 0.85rem; color: #94A3B8; line-height: 1.65; }
+
+        /* ─── CTA ─────────────────────────────── */
+        .cta-section {
+            padding: 7rem 6vw;
+            max-width: 760px; margin: 0 auto;
+            text-align: center;
+        }
+        .cta-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900; font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--navy); line-height: 1.15; letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+        .cta-section h2 em { font-style: normal; color: var(--blue); }
+        .cta-section p { color: var(--gray-4); font-size: 1rem; margin-bottom: 2rem; }
+
+        /* ─── FOOTER ──────────────────────────── */
+        footer {
+            border-top: 1px solid var(--gray-2);
+            padding: 2.5rem 6vw;
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 1160px; margin: 0 auto;
+        }
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900; font-size: 1.1rem;
+            color: var(--navy); text-decoration: none;
+        }
+        .footer-logo span { color: var(--blue); }
+        footer p { font-size: 0.8rem; color: var(--gray-3); }
+
+        /* ─── RESPONSIVE ──────────────────────── */
+        @media (max-width: 768px) {
+            .hero { grid-template-columns: 1fr; padding-top: 4rem; }
+            .hero-visual { display: none; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .section-head { grid-template-columns: 1fr; }
+            .how-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ─────────────────────────────── -->
+<nav>
+    <a class="nav-logo" href="#">Win<span>Post</span></a>
+    <ul class="nav-links">
+        <li><a href="#recursos">Recursos</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="/login" class="btn-nav">Acessar sistema →</a></li>
+    </ul>
+</nav>
+
+<!-- ─── HERO ──────────────────────────────────── -->
+<section style="max-width:1160px; margin:0 auto;">
+    <div class="hero">
+        <div class="hero-content">
+            <span class="hero-eyebrow">Gestão de contatos &amp; disparo de mensagens</span>
+            <h1>Seus contatos.<br/>Suas mensagens.<br/><em>Seu controle.</em></h1>
+            <p class="hero-desc">
+                Cadastre contatos, organize em grupos e dispare comunicações de forma
+                rápida e rastreável. Tudo em um único sistema.
+            </p>
+            <div class="hero-actions">
+                <a href="/login" class="btn-primary">Entrar no sistema</a>
+                <a href="#recursos" class="btn-ghost">Ver recursos</a>
+            </div>
+        </div>
+
+        <!-- mini-mockup do sistema -->
+        <div class="hero-visual" aria-hidden="true">
+            <div class="visual-topbar">
+                <div class="dot dot-r"></div>
+                <div class="dot dot-y"></div>
+                <div class="dot dot-g"></div>
+                <span class="visual-label">Grupo: Clientes SP</span>
+            </div>
+
+            <div class="contact-row">
+                <div class="avatar">CM</div>
+                <div class="contact-info">
+                    <div class="contact-name">Carlos Mendes</div>
+                    <div class="contact-email">carlos@email.com</div>
+                </div>
+                <span class="tag tag-blue">Clientes SP</span>
+            </div>
+
+            <div class="contact-row">
+                <div class="avatar">AF</div>
+                <div class="contact-info">
+                    <div class="contact-name">Ana Figueiredo</div>
+                    <div class="contact-email">ana@empresa.com</div>
+                </div>
+                <span class="tag tag-green">Parceiros</span>
+            </div>
+
+            <div class="contact-row">
+                <div class="avatar">RP</div>
+                <div class="contact-info">
+                    <div class="contact-name">Rafael Pinto</div>
+                    <div class="contact-email">rafael@negocio.com</div>
+                </div>
+                <span class="tag tag-amber">Leads</span>
+            </div>
+
+            <div class="visual-send">
+                <div class="send-text">
+                    <strong>Disparo agendado</strong>
+                    Grupo Clientes SP · 3 destinatários
+                </div>
+                <span class="send-badge">Enviando →</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── TICKER ────────────────────────────────── -->
+<div class="ticker-wrap">
+    <div class="ticker-track">
+        <span class="ticker-item">Cadastro de contatos</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Grupos personalizados</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Disparo de mensagens</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Histórico completo</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Controle de acesso</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Relatórios</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Agenda integrada</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Perfis e permissões</span>
+        <span class="ticker-item">·</span>
+        <!-- duplicate for seamless loop -->
+        <span class="ticker-item">Cadastro de contatos</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Grupos personalizados</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Disparo de mensagens</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Histórico completo</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Controle de acesso</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Relatórios</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Agenda integrada</span>
+        <span class="ticker-item">·</span>
+        <span class="ticker-item">Perfis e permissões</span>
+    </div>
+</div>
+
+<!-- ─── STATS ─────────────────────────────────── -->
+<div class="stats">
+    <div class="stat-item">
+        <div class="stat-num">100<span>%</span></div>
+        <div class="stat-label">Controle dos seus dados</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">Multi<span>-</span>grupo</div>
+        <div class="stat-label">Um contato, vários grupos</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">Log<span>s</span></div>
+        <div class="stat-label">Histórico de cada envio</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">0<span>x</span></div>
+        <div class="stat-label">Papelada desnecessária</div>
+    </div>
+</div>
+
+<!-- ─── FEATURES ──────────────────────────────── -->
+<section id="recursos" class="features">
+    <div class="section-head">
+        <div>
+            <div class="section-eyebrow">Nossos recursos</div>
+            <h2 class="section-title">Tudo que você precisa para se comunicar</h2>
+        </div>
+        <p class="section-desc">
+            Ferramentas pensadas para quem gerencia contatos no dia a dia e precisa
+            de comunicação ágil, organizada e com histórico rastreável.
+        </p>
+    </div>
+
+    <div class="feature-list">
+        <div class="feature-item">
+            <div class="feature-num">01</div>
+            <div>
+                <div class="feature-title">Cadastro e gestão de contatos</div>
+                <p class="feature-desc">
+                    Mantenha um cadastro centralizado com nome, e-mail, empresa, etiquetas
+                    e muito mais. Edite, filtre e pesquise em segundos.
+                </p>
+                <a href="/login" class="learn-more">Acessar →</a>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-num">02</div>
+            <div>
+                <div class="feature-title">Grupos inteligentes</div>
+                <p class="feature-desc">
+                    Organize seus contatos em grupos e subgrupos. Um mesmo contato pode
+                    pertencer a múltiplos grupos, facilitando disparos segmentados.
+                </p>
+                <a href="/login" class="learn-more">Acessar →</a>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-num">03</div>
+            <div>
+                <div class="feature-title">Disparo de mensagens por grupo</div>
+                <p class="feature-desc">
+                    Selecione um grupo e envie mensagens para todos os contatos de uma
+                    só vez. Acompanhe o status de cada envio no histórico.
+                </p>
+                <a href="/login" class="learn-more">Acessar →</a>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-num">04</div>
+            <div>
+                <div class="feature-title">Histórico e caixa de mensagens</div>
+                <p class="feature-desc">
+                    Toda comunicação fica registrada. Filtre por pasta, data, assunto
+                    ou destinatário. Marque como favorito ou importante para encontrar rápido.
+                </p>
+                <a href="/login" class="learn-more">Acessar →</a>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-num">05</div>
+            <div>
+                <div class="feature-title">Perfis, permissões e multi-empresa</div>
+                <p class="feature-desc">
+                    Controle quem pode ver, criar ou enviar mensagens. Cada empresa
+                    tem seus próprios dados isolados e seus próprios usuários.
+                </p>
+                <a href="/login" class="learn-more">Acessar →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── HOW IT WORKS ───────────────────────────── -->
+<section id="como-funciona" class="how">
+    <div class="how-inner">
+        <div class="section-eyebrow">Como funciona</div>
+        <h2 class="section-title">Três passos para comunicar melhor</h2>
+
+        <div class="how-grid">
+            <div class="how-card">
+                <div class="how-icon">👤</div>
+                <div class="how-step">Passo 01</div>
+                <h3>Cadastre seus contatos</h3>
+                <p>Adicione contatos manualmente com nome, e-mail, empresa e etiquetas. Mantenha seu cadastro sempre atualizado.</p>
+            </div>
+
+            <div class="how-card">
+                <div class="how-icon">📂</div>
+                <div class="how-step">Passo 02</div>
+                <h3>Organize em grupos</h3>
+                <p>Crie grupos para segmentar sua base — clientes, parceiros, leads, times internos. Um contato pode estar em vários grupos.</p>
+            </div>
+
+            <div class="how-card">
+                <div class="how-icon">✉️</div>
+                <div class="how-step">Passo 03</div>
+                <h3>Dispare mensagens</h3>
+                <p>Escreva sua mensagem, escolha o grupo e envie. O sistema registra tudo no histórico para você acompanhar cada envio.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CTA ────────────────────────────────────── -->
+<section class="cta-section">
+    <h2>Pronto para <em>começar?</em></h2>
+    <p>Faça login e acesse o painel completo de gestão de contatos e mensagens.</p>
+    <a href="/login" class="btn-primary" style="font-size: 1rem; padding: 0.9rem 2.5rem;">
+        Entrar no sistema →
+    </a>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────── -->
+<div style="border-top: 1px solid #E5E7EB;">
+    <footer>
+        <a class="footer-logo" href="#">Win<span>Post</span></a>
+        <p>Sistema de gestão de contatos e mensagens</p>
+    </footer>
+</div>
+
+</body>
+</html>

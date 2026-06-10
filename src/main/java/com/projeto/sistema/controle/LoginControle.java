@@ -9,4 +9,9 @@ public class LoginControle {
     public String login() {
         return "login"; // Deve retornar o nome do arquivo HTML (login.html)
     }
+    
+    @GetMapping("/")
+    public String landing() {
+        return "landing";
+    }
 }
