@@ -13,6 +13,8 @@ public class Empresa implements Serializable {
     private Long id;
 
     private String razaoSocial;
+    private String email;
+    private String telefone;
     
     @Column(unique = true)
     private String cnpj;
@@ -22,6 +24,21 @@ public class Empresa implements Serializable {
     private boolean ativo = true;
 
     // Getters e Setters originais...
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getRazaoSocial() { return razaoSocial; }

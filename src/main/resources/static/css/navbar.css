@@ -1,14 +1,15 @@
-/* --- NAVBAR CUSTOMIZADA (Efeito Glassmorphism) --- */
+/* =========================================================================
+   NAVBAR — WinPost Design System (Glassmorphism navy/blue)
+   ========================================================================= */
+
+/* --- NAVBAR CUSTOMIZADA --- */
 .navbar-custom {
-    /* Azul Primary com 95% de opacidade em vez de sólido */
-    background-color: rgba(13, 110, 253, 0.95) !important; 
-    /* Efeito de vidro desfocado no fundo (Apple style) */
-    backdrop-filter: blur(10px); 
+    background: linear-gradient(135deg, rgba(26, 47, 110, 0.96), rgba(43, 82, 192, 0.94));
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    /* Sombra mais difusa e elegante */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(13, 26, 64, 0.18);
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     transition: all 0.3s ease;
 }
 
@@ -18,17 +19,32 @@
     letter-spacing: 0.5px;
 }
 
-/* --- LINKS DA NAVBAR (Estilo Minimalista) --- */
+.navbar-brand img {
+    background-color: rgba(26, 47, 110, 0.96) !important;
+}
+
+/* Botão voltar */
+.btn-voltar-nav {
+    opacity: 0.85;
+    transition: all 0.2s ease;
+}
+.btn-voltar-nav:hover {
+    opacity: 1;
+    transform: translateX(-2px);
+    color: #fff !important;
+}
+
+/* --- LINKS DA NAVBAR --- */
 .nav-link {
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
     font-weight: 500;
     font-size: 0.95rem;
-    margin: 0 10px; 
-    padding: 0.5rem 0; 
+    margin: 0 10px;
+    padding: 0.5rem 0;
     position: relative;
-    display: flex; 
+    display: flex;
     align-items: center;
-    gap: 5px; 
+    gap: 5px;
     transition: color 0.3s ease;
 }
 
@@ -36,17 +52,17 @@
     color: #ffffff !important;
 }
 
-/* --- A LINHA MINIMALISTA (Animação do Centro) --- */
+/* Linha de destaque animada */
 .nav-link::after {
     content: '';
     position: absolute;
-    bottom: 2px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    width: 0%; 
-    height: 2px; 
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0%;
+    height: 2px;
     border-radius: 2px;
-    background-color: #cffafe; 
+    background-color: #93c5fd;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -61,12 +77,12 @@
 
 .nav-link.active::after {
     width: 100%;
-    background-color: #ffffff; 
+    background-color: #ffffff;
 }
 
-/* --- SETA DO DROPDOWN (Contatos) --- */
+/* --- SETA DO DROPDOWN --- */
 .dropdown-toggle::after {
-    display: none !important; 
+    display: none !important;
 }
 
 .dropdown-toggle::before {
@@ -76,10 +92,10 @@
     height: 6px;
     border-right: 2px solid rgba(255,255,255,0.7);
     border-bottom: 2px solid rgba(255,255,255,0.7);
-    transform: rotate(45deg); 
+    transform: rotate(45deg);
     margin-left: 4px;
     transition: transform 0.3s ease, border-color 0.3s;
-    order: 2; 
+    order: 2;
 }
 
 .dropdown-toggle:hover::before {
@@ -87,33 +103,52 @@
 }
 
 .dropdown-toggle.show::before {
-    transform: rotate(225deg) translate(-2px, -2px); 
+    transform: rotate(225deg) translate(-2px, -2px);
 }
 
-/* --- ANIMAÇÃO DE ENTRADA DOS MENUS DROPDOWN --- */
+/* --- DROPDOWN MENUS --- */
 .dropdown-menu {
-    border-radius: 12px; /* Cantos mais arredondados */
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
-    animation: fadeInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    border-radius: 12px;
+    border: 1px solid #eaecf0;
+    box-shadow: 0 10px 30px rgba(26,47,110,0.12) !important;
+    animation: fadeInDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transform-origin: top center;
+    padding: 0.4rem;
 }
 
 @keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-15px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    from { opacity: 0; transform: translateY(-12px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+.dropdown-item {
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #374151;
+    transition: all 0.15s;
+}
+.dropdown-item:hover {
+    background-color: #eef2ff;
+    color: #1a2f6e;
+}
+.dropdown-item.bg-primary {
+    background: linear-gradient(135deg, #2b52c0, #1a2f6e) !important;
+}
+.dropdown-header {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #9ca3af !important;
+    font-weight: 700;
+    padding: 0.5rem 0.75rem 0.25rem;
+}
+.dropdown-divider { border-color: #f3f4f6; }
 
 /* --- BOTÃO DE AÇÃO "ESCREVER" --- */
 .btn-light-action {
     background-color: #ffffff;
-    color: #0d6efd;
+    color: #2b52c0;
     font-weight: 700;
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -126,17 +161,17 @@
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* --- MODAL NOTIFICAÇÃO (Posicionamento e Estilo) --- */
+/* --- MODAL NOTIFICAÇÃO --- */
 .modal-notificacao-posicao {
-    margin-right: 15px; 
-    margin-top: 75px; /* Ajustei um pouco para baixo para compensar a sombra da navbar */
-    margin-left: auto; 
-    max-width: 380px; 
+    margin-right: 15px;
+    margin-top: 75px;
+    margin-left: auto;
+    max-width: 380px;
 }
 
 .modal-backdrop.show {
-    opacity: 0; 
-    pointer-events: none; 
+    opacity: 0;
+    pointer-events: none;
 }
 
 .notificacao-item {
@@ -146,23 +181,31 @@
 }
 
 .notificacao-item:hover {
-    background-color: #f8f9fa;
-    border-left-color: #0d6efd; 
+    background-color: #f8faff;
+    border-left-color: #2b52c0;
 }
 
-/* --- MODAL MODERNO AGENDA --- */
+/* --- BADGES DE NOTIFICAÇÃO --- */
+.badge.bg-danger {
+    background-color: #e11d48 !important;
+}
+.badge.bg-warning {
+    background-color: #f59e0b !important;
+}
+
+/* --- MODAL MODERNO AGENDA (type-card) --- */
 .type-card {
     border: 1px solid #eef0f2;
     transition: all 0.2s ease-in-out;
     background-color: #fff;
-    opacity: 0.6; /* Deixei um pouco mais transparente para dar mais destaque ao selecionado */
+    opacity: 0.7;
 }
 
 .type-card:hover {
     transform: translateY(-2px);
-    opacity: 0.9;
-    background-color: #f8f9fa;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    opacity: 1;
+    background-color: #f8faff;
+    box-shadow: 0 4px 10px rgba(43,82,192,0.06);
 }
 
 .check-indicator {
@@ -171,17 +214,17 @@
     right: 10px;
     font-size: 1.2rem;
     opacity: 0;
-    transform: scale(0.5); /* Animação de "pop" no ícone de check */
+    transform: scale(0.5);
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .btn-check:checked + .type-card {
     background-color: #fff;
-    border-color: currentColor; 
+    border-color: currentColor;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
     opacity: 1;
     border-width: 2px;
-    transform: translateY(-2px); /* Mantém levantado quando selecionado */
+    transform: translateY(-2px);
 }
 
 .btn-check:checked + .type-card .check-indicator {
@@ -189,40 +232,41 @@
     transform: scale(1);
 }
 
-#tipoTarefa:checked + .type-card { border-color: #0dcaf0; }
-#tipoReuniao:checked + .type-card { border-color: #0d6efd; }
-#tipoImportante:checked + .type-card { border-color: #dc3545; }
+#tipoTarefa:checked + .type-card { border-color: #0891b2; }
+#tipoReuniao:checked + .type-card { border-color: #2b52c0; }
+#tipoImportante:checked + .type-card { border-color: #dc2626; }
 
 #inputTitulo:focus {
-    border-bottom: 2px solid #0d6efd !important;
-    background-color: rgba(13, 110, 253, 0.03) !important;
-    box-shadow: none !important; /* Remove aquela sombra feia padrão do bootstrap no foco */
+    border-bottom: 2px solid #2b52c0 !important;
+    background-color: #f8faff !important;
+    box-shadow: none !important;
 }
 
+/* --- MODAL RELATÓRIOS (header) --- */
+#modalRelatorios .modal-header.bg-primary {
+    background: linear-gradient(135deg, #2b52c0, #1a2f6e) !important;
+}
 
-/* --- EFEITO PÍLULA CENTRAL (Minimalista) --- */
-/* --- EFEITO PÍLULA CENTRAL (Minimalista - Centro Absoluto) --- */
+/* --- EFEITO PÍLULA CENTRAL --- */
 @media (min-width: 992px) {
     .navbar-center-pill {
-        /* O SEGREDO DO CENTRO ABSOLUTO */
         position: absolute !important;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        z-index: 1050; /* Garante que nada passe por cima */
+        z-index: 1050;
 
-        /* Design da pílula */
-        background: rgba(255, 255, 255, 0.15); 
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 50px;
         padding: 0.15rem 1rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
     }
-    
+
     .navbar-center-pill .nav-link {
-        margin: 0 8px; 
+        margin: 0 8px;
         padding: 0.5rem 0.5rem;
     }
 }

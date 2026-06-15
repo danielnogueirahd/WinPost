@@ -1,6 +1,7 @@
 /* ==========================================================================
    WINPOST - ARQUIVO DE ESTILOS MESTRE
    ==========================================================================
+   PALETA WINPOST: navy #1a2f6e | blue #2b52c0 | surface #f9fafb | border #eaecf0
    ÍNDICE:
    1.  Base & Reset (Body, Fontes)
    2.  Utilitários & Scrollbar
@@ -19,13 +20,34 @@
 /* ==========================================================================
    1. BASE & RESET
    ========================================================================== */
+:root {
+    --wp-navy: #1a2f6e;
+    --wp-blue: #2b52c0;
+    --wp-blue-hover: #1f3b8c;
+    --wp-surface: #f9fafb;
+    --wp-border: #eaecf0;
+    --wp-blue-soft: #eff6ff;
+    --wp-gradient: linear-gradient(135deg, #2b52c0, #1a2f6e);
+
+    /* Compatibilidade com nomes legados usados no CSS */
+    --primary: #2b52c0;
+    --primary-hover: #1f3b8c;
+    --primary-ultra-light: #eff6ff;
+    --slate-50: #f9fafb;
+    --slate-100: #f3f4f6;
+    --slate-200: #eaecf0;
+    --slate-500: #6b7280;
+    --slate-700: #374151;
+    --shadow-soft: 0 1px 4px rgba(0,0,0,0.05);
+}
+
 body {
-    padding-top: 80px; /* Ajuste moderno */
-    background: linear-gradient(180deg, #F0F8FF 0%, #ffffff 100%) no-repeat fixed !important;
+    padding-top: 80px;
+    background: linear-gradient(180deg, #f4f7ff 0%, #ffffff 100%) no-repeat fixed !important;
     background-attachment: fixed;
     min-height: 100vh;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #444; /* Cor de texto suavizada */
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #444;
 }
 
 a {
@@ -36,52 +58,47 @@ a {
 /* ==========================================================================
    2. UTILITÁRIOS & SCROLLBAR
    ========================================================================== */
-/* Scrollbar Global Padrão */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: #f1f1f1; 
+    background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-    background: #c1c1c1; 
+    background: #c1c1c1;
     border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8; 
+    background: #a8a8a8;
 }
 
-/* Scrollbar Horizontal Fina (para áreas de seleção) */
 #areaSelecaoTipos::-webkit-scrollbar,
 .mobile-nav-container::-webkit-scrollbar {
-    height: 4px; /*/ Height para horizontal */
+    height: 4px;
 }
 
-
 /* ==========================================================================
-   NOVO ESTILO: INBOX MODERNA (Substitui a Tabela)
+   INBOX MODERNA
    ========================================================================== */
-
 .email-list-wrapper {
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    border: 1px solid var(--wp-border);
+    box-shadow: var(--shadow-soft);
     overflow: hidden;
 }
 
-/* Cabeçalho da Lista (Apenas Desktop) */
 .email-list-header {
-    background: #f8f9fa;
-    border-bottom: 1px solid #eee;
-    font-size: 0.75rem;
+    background: var(--wp-surface);
+    border-bottom: 1px solid var(--wp-border);
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6c757d;
+    letter-spacing: 0.6px;
+    color: var(--slate-500);
     font-weight: 700;
 }
 
-/* Linha da Mensagem (O Card/Linha individual) */
 .email-row {
     position: relative;
     border-bottom: 1px solid #f1f3f5;
@@ -95,15 +112,13 @@ a {
 }
 
 .email-row:hover {
-    background-color: #fdfdfd;
+    background-color: #f8faff;
     z-index: 10;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transform: scale(1.002);
+    box-shadow: 0 4px 16px rgba(43,82,192,0.06);
 }
 
-/* Tipografia da Mensagem */
 .email-subject {
-    color: #2c3e50;
+    color: #1f2937;
     font-weight: 600;
     font-size: 0.95rem;
 }
@@ -114,23 +129,25 @@ a {
     font-weight: 400;
 }
 
-/* Badges de Grupo (Estilo Pílula Suave) */
+/* Badges de Grupo */
 .badge-soft {
     padding: 6px 12px;
     border-radius: 30px;
     font-weight: 600;
     font-size: 0.75rem;
     letter-spacing: 0.3px;
+    background-color: var(--slate-100);
+    color: var(--slate-700);
 }
 
-.badge-soft-primary { background: #e7f1ff; color: #0d6efd; }
-.badge-soft-success { background: #d1e7dd; color: #0f5132; }
-.badge-soft-info    { background: #cff4fc; color: #055160; }
-.badge-soft-warning { background: #fff3cd; color: #664d03; }
-.badge-soft-danger  { background: #f8d7da; color: #842029; }
-.badge-soft-secondary { background: #e2e3e5; color: #41464b; }
+.badge-soft-primary  { background: #eff6ff; color: #1d4ed8; }
+.badge-soft-success  { background: #f0fdf4; color: #15803d; }
+.badge-soft-info     { background: #ecfeff; color: #0e7490; }
+.badge-soft-warning  { background: #fffbeb; color: #b45309; }
+.badge-soft-danger   { background: #fff1f2; color: #be123c; }
+.badge-soft-secondary{ background: #f3f4f6; color: #4b5563; }
 
-/* Ações Flutuantes (Hover) */
+/* Ações Flutuantes */
 .email-actions {
     opacity: 0;
     transition: opacity 0.2s ease;
@@ -140,7 +157,6 @@ a {
     opacity: 1;
 }
 
-/* Botões de Ação Redondos */
 .btn-icon-hover {
     width: 32px;
     height: 32px;
@@ -153,12 +169,12 @@ a {
 }
 
 .btn-icon-hover:hover {
-    background-color: #f1f3f5;
-    color: #495057;
+    background-color: var(--wp-blue-soft);
+    color: var(--wp-blue);
 }
 
 .btn-icon-hover.text-danger:hover {
-    background-color: #fce8e6;
+    background-color: #fff1f2;
     color: #dc3545;
 }
 
@@ -166,22 +182,19 @@ a {
    RESPONSIVIDADE (MOBILE CARD VIEW)
    ========================================================================== */
 @media (max-width: 768px) {
-    /* Esconde o cabeçalho no mobile */
     .d-md-flex { display: none !important; }
-    
+
     .email-row {
         padding: 1.25rem !important;
-        display: block !important; /* Quebra o flexbox horizontal */
+        display: block !important;
     }
 
-    /* Reorganiza para visual de Card */
     .email-row .row-layout {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
     }
 
-    /* Cabeçalho do Card Mobile (Grupo + Data) */
     .mobile-card-header {
         display: flex;
         justify-content: space-between;
@@ -189,15 +202,13 @@ a {
         margin-bottom: 0.5rem;
     }
 
-    /* Assunto e Snippet */
     .email-content-block {
         margin-bottom: 0.8rem;
     }
-    
+
     .email-subject { font-size: 1rem; margin-bottom: 4px; display: block;}
     .email-snippet { font-size: 0.9rem; -webkit-line-clamp: 2; }
 
-    /* Ações sempre visíveis no mobile */
     .email-actions {
         opacity: 1 !important;
         display: flex;
@@ -231,12 +242,12 @@ a {
 .page-header h2 {
     font-weight: 700;
     letter-spacing: -0.5px;
+    color: #1f2937;
 }
 
-.fade-in { animation: fadeIn 0.3s ease-in-out; } 
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Animação Flutuante */
 @keyframes float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -246,18 +257,18 @@ a {
 /* ==========================================================================
    3. COMPONENTES: CARDS
    ========================================================================== */
-/* Base Card */
 .card {
-    border: none;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
-    border-radius: 10px;
+    border: 1px solid var(--wp-border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 12px;
 }
 
 .card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #f0f2f5 !important;
-    padding: 1.2rem 1.5rem !important;
+    background-color: var(--wp-surface);
+    border-bottom: 1px solid var(--wp-border) !important;
+    padding: 1rem 1.5rem !important;
     font-weight: bold;
+    color: var(--wp-navy);
 }
 
 .card-body {
@@ -267,46 +278,48 @@ a {
 /* Card Moderno */
 .card-modern {
     background: #fff;
-    border: 1px solid #f0f0f0;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid var(--wp-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
     overflow: hidden;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-modern:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
-/* Card Pro (Usado em Grupos/Dash) */
+/* Card Pro */
 .card-pro {
-    border: 1px solid #eef0f2;
+    border: 1px solid var(--wp-border);
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-soft);
     background: #fff;
     transition: all 0.2s ease-in-out;
 }
 .card-pro:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
 /* Card Modelo (Templates) */
 .card-modelo {
-    border: 1px solid #f0f2f5;
+    border: 1px solid var(--wp-border);
+    border-radius: 12px;
     transition: all 0.2s ease;
 }
 .card-modelo:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
-    border-color: #e0e4e8;
+    border-color: #c7d2fe;
 }
 
 /* KPIs */
 .card-kpi {
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     color: white;
+    background: var(--wp-gradient);
 }
 .icon-kpi {
     font-size: 3rem;
@@ -316,17 +329,26 @@ a {
 /* ==========================================================================
    4. COMPONENTES: BOTÕES & AÇÕES
    ========================================================================== */
-/* Botão Base */
 .btn {
     border-radius: 8px;
     font-weight: 600;
     letter-spacing: 0.3px;
-    padding: 0.5rem 1rem; 
-    box-shadow: none !important; 
+    padding: 0.5rem 1rem;
+    box-shadow: none !important;
     transition: all 0.2s;
 }
 
-/* Botão Moderno */
+.btn-primary {
+    background: var(--wp-gradient) !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(43,82,192,0.22) !important;
+    color: #fff !important;
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #1a2f6e, #0f1d45) !important;
+    box-shadow: 0 4px 12px rgba(43,82,192,0.32) !important;
+}
+
 .btn-modern {
     border-radius: 10px;
     padding: 0.6rem 1rem;
@@ -337,29 +359,38 @@ a {
     transform: translateY(-2px);
     box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
 }
-.btn-primary.btn-modern { background-color: #0d6efd; }
+.btn-primary.btn-modern { background: var(--wp-gradient); }
 
 /* Botão Secundário Outline */
 .btn-outline-secondary {
-    border-color: #dee2e6;
-    color: #6c757d;
+    border-color: var(--wp-border);
+    color: #6b7280;
 }
 .btn-outline-secondary:hover {
-    background-color: #f8f9fa;
-    color: #495057;
-    border-color: #cdd4da;
+    background-color: var(--wp-surface);
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.btn-outline-primary {
+    border-color: var(--wp-blue);
+    color: var(--wp-blue);
+}
+.btn-outline-primary:hover {
+    background-color: var(--wp-blue);
+    border-color: var(--wp-blue);
+    color: #fff;
 }
 
 /* Botão Ação (Lista Lateral Dashboard) */
 .btn-action {
-    transition: all 0.25s ease;
-    border-color: #e9ecef !important;
+    transition: all 0.2s ease;
+    border-color: var(--wp-border) !important;
 }
 .btn-action:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important;
-    background-color: #fff !important;
-    border-color: #dee2e6 !important;
+    transform: translateX(2px);
+    background-color: #eef2ff !important;
+    border-color: #c7d2fe !important;
 }
 .btn-action:hover .fa-chevron-right {
     transform: translateX(3px);
@@ -371,7 +402,7 @@ a {
 .btn-tile {
 	transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 	background-color: #fff;
-	border: 1px solid #e9ecef !important;
+	border: 1px solid var(--wp-border) !important;
 }
 .btn-tile:hover {
 	transform: translateY(-4px);
@@ -385,18 +416,18 @@ a {
 
 /* Botão Escrever (Compose) */
 .btn-compose {
-    background-color: #c2e7ff; 
-    color: #001d35; 
+    background-color: var(--wp-blue-soft);
+    color: var(--wp-navy);
     border: none;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 .btn-compose:hover {
-    background-color: #b3d7ef;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+    background-color: #dbeafe;
+    box-shadow: 0 4px 8px rgba(43,82,192,0.12) !important;
     transform: translateY(-1px);
 }
 
-/* Ícones de Ação (Estrela, Flag, Editar) */
+/* Ícones de Ação */
 .action-icon {
     cursor: pointer;
     color: #ccc;
@@ -405,7 +436,7 @@ a {
 }
 .action-icon:hover { transform: scale(1.2); }
 .star-active { color: #f4b400; }
-.flag-active { color: #0b57d0; }
+.flag-active { color: var(--wp-blue); }
 
 /* ==========================================================================
    5. COMPONENTES: FORMULÁRIOS & INPUTS
@@ -413,60 +444,59 @@ a {
 .form-label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #6c757d;
+    color: #6b7280;
     margin-bottom: 0.4rem;
 }
 
 .form-label-modern {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    color: #555;
-    letter-spacing: 0.5px;
+    color: #6b7280;
+    letter-spacing: 0.6px;
     margin-bottom: 0.4rem;
     display: block;
 }
 
-.form-control, 
+.form-control,
 .form-select {
     border-radius: 8px;
-    border: 1px solid #dee2e6;
+    border: 1px solid #e5e7eb;
     padding: 0.5rem 0.85rem;
     font-size: 0.95rem;
-    background-color: #fff;
+    background-color: var(--wp-surface);
     box-shadow: none !important;
     transition: all 0.2s ease-in-out;
 }
 
-.form-control:focus, 
+.form-control:focus,
 .form-select:focus {
     background-color: #fff;
-    border-color: #0d6efd;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1) !important;
+    border-color: var(--wp-blue);
+    box-shadow: 0 0 0 3px rgba(43,82,192,0.1) !important;
     outline: none;
-    }
- 
+}
 
 .form-control[readonly] {
-    background-color: #f8f9fa;
+    background-color: var(--wp-surface);
     border-color: #eee;
-    color: #6c757d;
+    color: #9ca3af;
 }
 
 /* Input Groups (Datas) */
 .input-group-text {
     border-radius: 8px;
-    border: 1px solid #dee2e6;
-    background-color: #fff;
-    color: #adb5bd;
+    border: 1px solid #e5e7eb;
+    background-color: var(--wp-surface);
+    color: #9ca3af;
 }
-.input-group > .form-control:not(:first-child), 
+.input-group > .form-control:not(:first-child),
 .input-group > .form-select:not(:first-child),
 .input-group > .input-group-text:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
-.input-group > .form-control:not(:last-child), 
+.input-group > .form-control:not(:last-child),
 .input-group > .input-group-text:not(:last-child) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -479,22 +509,22 @@ a {
     max-width: 350px;
 }
 .search-modern .form-control {
-    background-color: #f1f3f5;
+    background-color: var(--wp-surface);
     border: 1px solid transparent;
     border-radius: 50px;
     padding-left: 2.5rem;
 }
 .search-modern .form-control:focus {
     background-color: #ffffff;
-    border-color: #0d6efd;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1) !important;
+    border-color: var(--wp-blue);
+    box-shadow: 0 0 0 3px rgba(43,82,192,0.1) !important;
 }
 .search-modern .search-icon {
     position: absolute;
     left: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: #adb5bd;
+    color: #9ca3af;
     z-index: 5;
     pointer-events: none;
 }
@@ -504,24 +534,25 @@ a {
     cursor: pointer;
     width: 1.1em;
     height: 1.1em;
-    border-color: #dce3eb;
+    border-color: #d1d5db;
 }
 .form-check-input:checked {
-    background-color: rgb(0, 128, 0);
-    border-color: rgb(255, 255, 255);
+    background-color: var(--wp-blue);
+    border-color: var(--wp-blue);
 }
 
 .type-card {
-    border: 1px solid #eef0f2;
+    border: 1px solid var(--wp-border);
     transition: all 0.2s ease-in-out;
     background-color: #fff;
-    opacity: 0.7;
+    opacity: 0.75;
     position: relative;
 }
 .type-card:hover {
     transform: translateY(-2px);
     opacity: 1;
-    background-color: #f8f9fa;
+    background-color: var(--wp-surface);
+    border-color: #c7d2fe;
 }
 .check-indicator {
     position: absolute;
@@ -538,27 +569,13 @@ a {
     border-width: 2px;
 }
 .btn-check:checked + .type-card .check-indicator { opacity: 1; }
-/* Cores específicas type-card */
-#tipoTarefa:checked + .type-card { border-color: #0dcaf0; }
-#tipoReuniao:checked + .type-card { border-color: #0d6efd; }
+#tipoTarefa:checked + .type-card { border-color: #0891b2; }
+#tipoReuniao:checked + .type-card { border-color: var(--wp-blue); }
 .btn-check:checked + .type-card[style*="--cor-personalizada"] { border-color: var(--cor-personalizada) !important; }
 
 /* ==========================================================================
    DESIGN SYSTEM: MODERN SAAS
    ========================================================================== */
-:root {
-    /* Usando o azul padrão do seu sistema */
-    --primary: #0d6efd; 
-    --primary-hover: #0a58ca;
-    /* Versão ultra-suave do azul para fundos de seleção */
-    --primary-ultra-light: rgba(13, 110, 253, 0.05); 
-    
-    --slate-200: #e2e8f0;
-    --slate-500: #64748b;
-    --shadow-soft: 0 2px 15px rgba(0,0,0,0.04);
-}
-
-/* Cards & Containers */
 .card-modern {
     background: #ffffff;
     border: 1px solid var(--slate-200) !important;
@@ -585,16 +602,16 @@ a {
 
 .form-control-modern:focus {
     border-color: var(--primary) !important;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(43,82,192,0.1) !important;
 }
 
 .form-label-modern {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.025em;
+    letter-spacing: 0.6px;
     color: var(--slate-500);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 /* Tabela Estilo Dashboard */
@@ -603,9 +620,10 @@ a {
 #tabelaSelecao thead th {
     background-color: var(--slate-50);
     color: var(--slate-500);
-    font-weight: 600;
-    font-size: 0.75rem;
+    font-weight: 700;
+    font-size: 0.72rem;
     text-transform: uppercase;
+    letter-spacing: 0.6px;
     padding: 1rem;
     border-bottom: 1px solid var(--slate-200);
 }
@@ -621,10 +639,9 @@ a {
     color: var(--slate-700);
 }
 
-/* Seleção Minimalista (Sem azul agressivo) */
+/* Seleção Minimalista */
 .row-selected {
-    /* Um azul tão clarinho que quase parece cinza, mas mantém a identidade */
-    background-color: var(--primary-ultra-light) !important; 
+    background-color: var(--primary-ultra-light) !important;
 }
 
 .row-selected td {
@@ -633,9 +650,9 @@ a {
 }
 
 .row-selected td:first-child {
-    /* Marcador lateral com o azul firme do sistema */
     border-left: 3px solid var(--primary) !important;
-} /* <--- ADICIONE ESTA CHAVE AQUI */
+}
+
 /* Avatares e Badges */
 .avatar-modern {
     width: 38px;
@@ -647,7 +664,7 @@ a {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    border: 1px solid rgba(13, 110, 253, 0.1);
+    border: 1px solid rgba(43,82,192,0.12);
 }
 
 .badge-soft {
@@ -667,7 +684,7 @@ a {
 }
 
 .btn-primary-modern {
-    background-color: var(--primary);
+    background: var(--wp-gradient);
     border: none;
     color: white;
     border-radius: 8px;
@@ -676,22 +693,22 @@ a {
 }
 
 .btn-primary-modern:hover {
-    background-color: var(--primary-hover);
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    box-shadow: 0 4px 12px rgba(43,82,192,0.25);
     transform: translateY(-1px);
 }
+
 /* ==========================================================================
    7. COMPONENTES: MODALS & ALERTS
    ========================================================================== */
-.modal-content-custom { border-radius: 1.2rem; border: none; overflow: hidden; }
-.modal-header-custom { background: #f8f9fa; border-bottom: 1px solid #eee; padding: 1.5rem; }
-.modal-header-clean { background-color: #fff; border-bottom: 1px solid #f0f2f5; padding: 1.5rem; }
+.modal-content-custom { border-radius: 14px; border: none; overflow: hidden; }
+.modal-header-custom { background: var(--wp-surface); border-bottom: 1px solid var(--wp-border); padding: 1.5rem; }
+.modal-header-clean { background-color: #fff; border-bottom: 1px solid var(--wp-border); padding: 1.5rem; }
 
 .alert-modern {
-    border-radius: 15px;
+    border-radius: 12px;
     border: none;
-    background-color: #e7f1ff;
-    color: #084298;
+    background-color: var(--wp-blue-soft);
+    color: var(--wp-navy);
 }
 
 /* ==========================================================================
@@ -703,19 +720,19 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f0f2f5;
+    background: linear-gradient(180deg, #f4f7ff 0%, #ffffff 100%);
     margin: 0;
     padding: 0;
 }
 .login-container {
     background: white;
     width: 100%;
-    max-width: 1100px; 
-    height: 650px;    
-    border-radius: 15px; 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    max-width: 1100px;
+    height: 650px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(26,47,110,0.12);
     overflow: hidden;
-    display: flex;   
+    display: flex;
     position: relative;
 }
 .login-image-section {
@@ -727,9 +744,9 @@ a {
 .login-bg-img {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
+    object-fit: cover;
     object-position: center;
-    opacity: 0.6; 
+    opacity: 0.6;
 }
 .login-content-overlay {
     position: absolute;
@@ -737,31 +754,33 @@ a {
     display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center;
     color: white; padding: 40px; z-index: 2;
+    background: linear-gradient(135deg, rgba(26,47,110,0.55), rgba(43,82,192,0.35));
 }
 .login-form-section {
     width: 50%;
     height: 100%;
     background-color: white;
     display: flex; flex-direction: column;
-    align-items: center; justify-content: center; 
+    align-items: center; justify-content: center;
     padding: 40px;
 }
 .form-wrapper { width: 100%; max-width: 380px; }
 .btn-custom {
-    background-color: #2b52c0;
+    background: var(--wp-gradient);
     color: white;
     width: 100%;
-    padding: 12px; 
-    border-radius: 6px;
+    padding: 12px;
+    border-radius: 8px;
     border: none;
     font-weight: 600;
     margin-top: 15px;
     font-size: 1rem;
+    transition: all 0.2s;
 }
-.btn-custom:hover { 
-    background-color: #1f3b8c; 
-    transform: translateY(-2px); 
-    box-shadow: 0 4px 10px rgba(43, 82, 192, 0.3); 
+.btn-custom:hover {
+    background: linear-gradient(135deg, #1a2f6e, #0f1d45);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(43,82,192,0.3);
 }
 
 /* ==========================================================================
@@ -771,21 +790,22 @@ a {
     background-color: #fff;
     border-radius: 12px 12px 0 0;
     padding: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--wp-border);
 }
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background-color: #dee2e6;
+    background-color: var(--wp-border);
     gap: 1px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--wp-border);
 }
 .calendar-day-header {
-    background-color: #f8f9fa;
-    color: #6c757d;
+    background-color: var(--wp-surface);
+    color: #9ca3af;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.75rem;
+    letter-spacing: 0.7px;
+    font-size: 0.72rem;
     text-align: center;
     padding: 10px;
 }
@@ -798,23 +818,27 @@ a {
     gap: 4px;
     transition: background-color 0.2s;
 }
-.calendar-day:hover { background-color: #fcfcfc; }
-.day-empty { background-color: #f9f9f9; }
+.calendar-day:hover { background-color: #f8faff; }
+.day-empty { background-color: #fafbfc; }
 .day-number {
-    font-weight: 600;
-    color: #333;
+    font-weight: 700;
+    color: #374151;
     margin-bottom: 4px;
     width: 28px; height: 28px;
     display: flex; align-items: center; justify-content: center;
     border-radius: 50%;
 }
-.day-today .day-number { background-color: #0d6efd; color: white; }
+.day-today .day-number {
+    background: var(--wp-gradient);
+    color: white;
+    box-shadow: 0 2px 6px rgba(43,82,192,0.3);
+}
 
 /* Eventos Badges */
 .event-badge {
     display: flex; align-items: center;
     padding: 4px 8px; border-radius: 6px;
-    font-size: 0.75rem; font-weight: 500;
+    font-size: 0.75rem; font-weight: 600;
     text-decoration: none; white-space: nowrap;
     overflow: hidden; cursor: pointer;
     transition: transform 0.1s;
@@ -822,122 +846,116 @@ a {
 .event-badge:hover { transform: scale(1.02); opacity: 0.9; color: inherit; }
 
 /* Cores Eventos */
-.event-niver { background-color: #d1e7dd; color: #0f5132; border-left: 3px solid #198754; }
-.event-envio { background-color: #cfe2ff; color: #084298; border-left: 3px solid #0d6efd; }
-.event-feriado { background-color: #f8d7da; color: #842029; border-left: 3px solid #dc3545; }
-.event-tarefa { background-color: #cff4fc; color: #055160; border-left: 3px solid #0dcaf0; }
-.event-reuniao { background-color: #e0cffc; color: #4c0bce; border-left: 3px solid #6f42c1; }
-.event-importante { background-color: #ffcccd; color: #a00; border-left: 3px solid #dc3545; }
+.event-niver      { background-color: #f0fdf4; color: #15803d; border-left: 3px solid #16a34a; }
+.event-envio      { background-color: #f5f3ff; color: #6d28d9; border-left: 3px solid #7c3aed; }
+.event-feriado    { background-color: #fffbeb; color: #b45309; border-left: 3px solid #d97706; }
+.event-tarefa     { background-color: #f1f5f9; color: #475569; border-left: 3px solid #64748b; }
+.event-reuniao    { background-color: #eff6ff; color: #1d4ed8; border-left: 3px solid #2b52c0; }
+.event-importante { background-color: #fff1f2; color: #be123c; border-left: 3px solid #e11d48; }
 
 /* ==========================================================================
    10. MENSAGENS (LAYOUT & FILTROS)
    ========================================================================== */
-/* Navegação Lateral */
-.nav-link-custom { 
-    color: #444746; 
-    font-weight: 500; 
-    padding: 10px 24px 10px 20px; 
-    border-radius: 0 24px 24px 0; 
-    display: flex; align-items: center; justify-content: space-between; 
+.nav-link-custom {
+    color: #444746;
+    font-weight: 500;
+    padding: 10px 24px 10px 20px;
+    border-radius: 0 24px 24px 0;
+    display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 4px;
     transition: all 0.2s ease;
     text-decoration: none;
 }
-.nav-link-custom:hover { background-color: #e1e5ea; color: #1f1f1f; }
-.nav-link-custom.active { background-color: #d3e3fd; color: #001d35; font-weight: 700; }
+.nav-link-custom:hover { background-color: var(--wp-blue-soft); color: var(--wp-navy); }
+.nav-link-custom.active { background-color: var(--wp-blue-soft); color: var(--wp-navy); font-weight: 700; }
 .menu-badge { font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 10px; }
-.nav-link-custom.active .menu-badge { background: rgba(255,255,255,0.4); }
+.nav-link-custom.active .menu-badge { background: rgba(43,82,192,0.15); color: var(--wp-blue); }
 
 /* Filtros Toolbar */
 .btn-filter {
     background-color: #fff;
-    border: 1px solid #dadce0;
-    color: #3c4043;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 20px;
     padding: 5px 15px;
     transition: all 0.2s;
 }
-.btn-filter:hover { background-color: #f1f3f4; color: #202124; }
-.btn-filter.active { background-color: #e8f0fe; color: #1967d2; border-color: transparent; }
+.btn-filter:hover { background-color: var(--wp-surface); color: #1f2937; }
+.btn-filter.active { background-color: var(--wp-blue); color: #fff; border-color: var(--wp-blue); }
 
 /* Conteúdo Email */
 .email-sender { width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .email-content-wrapper { display: flex; align-items: center; gap: 10px; overflow: hidden; }
-.email-snippet { color: #5f6368; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; font-size: 0.9rem;}
-.email-date { width: 100px; text-align: right; font-size: 0.8rem; color: #5f6368; font-weight: 500; }
+.email-snippet { color: #8898aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; font-size: 0.9rem;}
+.email-date { width: 100px; text-align: right; font-size: 0.8rem; color: #8898aa; font-weight: 500; }
 .attachment-chip {
     display: inline-flex; align-items: center;
     padding: 2px 8px; border-radius: 12px;
-    border: 1px solid #dadce0; background-color: #fff;
-    font-size: 0.75rem; color: #3c4043; font-weight: 500;
+    border: 1px solid #e5e7eb; background-color: #fff;
+    font-size: 0.75rem; color: #4b5563; font-weight: 500;
     white-space: nowrap; margin-left: 8px;
 }
-.badge-attachment { background-color: #f1f3f4; color: #5f6368; border: 1px solid #dadce0; font-weight: 400; font-size: 0.75rem; }
+.badge-attachment { background-color: var(--wp-surface); color: #6b7280; border: 1px solid #e5e7eb; font-weight: 400; font-size: 0.75rem; }
 
 /* Visualização Detalhada */
-.message-container { 
-    background: #ffffff; 
-    border: 1px solid #eef0f2; 
-    border-radius: 12px; 
-    padding: 2rem; 
+.message-container {
+    background: #ffffff;
+    border: 1px solid var(--wp-border);
+    border-radius: 12px;
+    padding: 2rem;
     min-height: 250px;
-    line-height: 1.7; color: #3c4043;
+    line-height: 1.7; color: #374151;
 }
 .attachment-card {
-    background: #fff; border: 1px solid #dadce0;
+    background: #fff; border: 1px solid #e5e7eb;
     border-radius: 8px; padding: 10px 15px;
     text-decoration: none !important; display: flex;
     align-items: center; width: fit-content; min-width: 200px;
     transition: all 0.2s;
 }
-.attachment-card:hover { border-color: #0d6efd; background: #f8fbff; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+.attachment-card:hover { border-color: var(--wp-blue); background: var(--wp-blue-soft); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(43,82,192,0.08); }
 
 /* ==========================================================================
    11. PLUGINS & CUSTOMIZAÇÕES (Select2, Summernote)
    ========================================================================== */
-/* Summernote */
 .note-editor.note-frame { border: none !important; box-shadow: none !important; }
 .note-toolbar { border-bottom: 1px solid #eee !important; background: #fff !important; }
 .note-statusbar { display: none !important; }
 
-/* Select2 Custom */
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__option { padding: 8px 12px; }
 .select2-item-contato { display: flex; align-items: center; line-height: 1.2; }
 .avatar-mini {
     width: 32px; height: 32px;
-    background-color: #e9ecef; color: #495057;
+    background-color: var(--wp-surface); color: #4b5563;
     border-radius: 50%; display: flex;
     align-items: center; justify-content: center;
     font-weight: 700; font-size: 14px;
     margin-right: 10px; text-transform: uppercase;
-    flex-shrink: 0; 
+    flex-shrink: 0;
 }
 .avatar-small {
     width: 32px; height: 32px;
     font-size: 0.9rem; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    background-color: #f0f2f5; color: #0d6efd;
+    background-color: var(--wp-blue-soft); color: var(--wp-blue);
     font-weight: bold; flex-shrink: 0;
 }
-.select2-results__option--highlighted .avatar-mini { background-color: #fff; color: #0d6efd; }
+.select2-results__option--highlighted .avatar-mini { background-color: #fff; color: var(--wp-blue); }
 
 /* ==========================================================================
    12. RESPONSIVIDADE GLOBAL
    ========================================================================== */
-@media (max-width: 992px) { 
-    /* Ajustes Gerais */
+@media (max-width: 992px) {
     body { padding-top: 100px; }
     .main-content-area { margin-top: 70px; }
-    
-    /* Login */
+
     .login-container { flex-direction: column; height: auto; max-width: 90%; }
     .login-image-section, .login-form-section { width: 100%; height: auto; }
-    .login-image-section { height: 250px; } 
+    .login-image-section { height: 250px; }
     .login-form-section { padding: 50px 20px; }
 
-    /* Layout */
     .sidebar-sticky { position: static; height: auto; }
     .page-header-actions { flex-direction: column; align-items: stretch; }
     .search-modern { max-width: 100%; }
@@ -945,8 +963,7 @@ a {
 
 @media (max-width: 768px) {
     .login-container { flex-direction: column; min-height: auto; }
-    
-    /* Mensagens */
+
     .assunto-responsivo { max-width: 180px; }
 }
 
@@ -957,41 +974,37 @@ a {
 /* Navegação Mobile Horizontal */
 .mobile-nav-container {
     overflow-x: auto; white-space: nowrap;
-    -webkit-overflow-scrolling: touch; 
+    -webkit-overflow-scrolling: touch;
     padding-bottom: 5px;
 }
 .mobile-nav-link {
     display: inline-block; padding: 8px 16px;
     margin-right: 8px; border-radius: 20px;
     background-color: #fff; color: #555;
-    border: 1px solid #e0e0e0; text-decoration: none;
+    border: 1px solid #e5e7eb; text-decoration: none;
     font-size: 0.9rem; font-weight: 600;
 }
 .mobile-nav-link.active {
-    background-color: #0d6efd; color: #fff;
-    border-color: #0d6efd;
+    background: var(--wp-gradient); color: #fff;
+    border-color: transparent;
 }
-
-
-/* --- Adicione ao final do seu arquivo estilo.css --- */
 
 /* Cursor pointer para ícones de ação */
 .cursor-pointer {
     cursor: pointer;
 }
 
-/* Estilo do Card de Notas dentro do Modal */
+/* Card de Notas dentro do Modal */
 .card-nota {
-    background-color: #fff9c4; /* Amarelo post-it suave */
+    background-color: #fff9c4;
     border: none;
     transition: all 0.2s;
 }
 
 .card-nota:focus-within {
-    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25); /* Foco amarelo */
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.25);
 }
 
-/* Estilo do Textarea da Nota */
 .textarea-nota {
     resize: none;
     font-size: 0.9rem;
@@ -1010,7 +1023,6 @@ a {
     border-color: #ffc107;
 }
 
-/* Animaçãozinha ao salvar */
 @keyframes savePulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
@@ -1021,9 +1033,8 @@ a {
     animation: savePulse 0.3s ease-in-out;
 }
 
-
-/* Efeito de hover vermelho para o botão da lixeira na tela de mensagens */
+/* Hover vermelho lixeira (mensagens) */
 .btn-icon-hover.lixeira-hover:hover {
     color: #dc3545 !important;
-    background-color: #fce8e6 !important;
+    background-color: #fff1f2 !important;
 }

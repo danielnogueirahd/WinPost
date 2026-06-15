@@ -1,21 +1,82 @@
 <div th:fragment="footer">
-    
+
     <style>
+        /* =========================================================================
+           FOOTER — WinPost Design System
+           ========================================================================= */
+
         .footer-custom {
-            background-color: #0d6efd; /* Azul Sólido (Igual Navbar) */
-            border-top: 1px solid rgba(255, 255, 255, 0.1); /* Linha sutil de separação */
-            color: rgba(255, 255, 255, 0.85); /* Texto branco suave */
+            background: linear-gradient(
+                135deg,
+                rgba(26, 47, 110, 0.96),
+                rgba(43, 82, 192, 0.94)
+            );
+
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+            box-shadow: 0 -4px 20px rgba(13, 26, 64, 0.18);
+
+            color: rgba(255, 255, 255, 0.82);
+
             padding: 1rem 0;
-            font-size: 0.9rem; /* Tamanho discreto e profissional */
+
+            font-size: 0.9rem;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        /* brilho sutil */
+        .footer-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -20%;
+            width: 140%;
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.35),
+                transparent
+            );
+        }
+
+        .footer-custom strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .footer-custom p {
+            margin: 0;
+            letter-spacing: 0.2px;
+        }
+
+        /* Links futuros */
+        .footer-custom a {
+            color: rgba(255,255,255,0.82);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .footer-custom a:hover {
+            color: #ffffff;
         }
     </style>
 
     <footer class="footer-custom mt-auto">
         <div class="container text-center">
-            <p class="mb-0">
-    &copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span> <strong class="text-white">Input Tecnologia</strong>.
-    Todos os direitos reservados.
-</p>
+            <p>
+                &copy;
+                <span th:text="${#dates.year(#dates.createNow())}">2026</span>
+                <strong>Input Tecnologia</strong>.
+                Todos os direitos reservados.
+            </p>
         </div>
     </footer>
 

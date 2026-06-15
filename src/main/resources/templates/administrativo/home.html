@@ -4,358 +4,314 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title> Visão Geral | WinPost </title>
+<title>Visão Geral | WinPost</title>
 
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link
-	href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-	rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/estilo.css">
 
 <style>
-body {
-	font-family: 'Inter', sans-serif;
-	/* Background removido para usar o padrão bg-light na tag body */
-}
+/* =========================================================================
+   VISÃO GERAL — WinPost Design System
+   navy #1a2f6e | blue #2b52c0 | surface #f9fafb | border #eaecf0
+   ========================================================================= */
+body { font-family: 'Inter', sans-serif; }
 
-.card {
-	border-radius: 10px;
+/* STAT CARDS */
+.stat-card {
+    border-radius: 12px;
+    border: 1px solid #eaecf0;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.18s, transform 0.18s;
+    overflow: hidden;
+    position: relative;
 }
-/* Efeito de hover suave nas linhas da tabela */
-.table-hover tbody tr:hover {
-	background-color: #f0f4f8;
-	transition: 0.2s;
-}
+.stat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.stat-card .card-body { padding: 1.35rem 1.4rem; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.stat-card.accent-blue::before  { background: linear-gradient(90deg, #2b52c0, #1a2f6e); }
+.stat-card.accent-cyan::before  { background: linear-gradient(90deg, #06b6d4, #0284c7); }
+.stat-card.accent-green::before { background: linear-gradient(90deg, #16a34a, #15803d); }
+.stat-card.accent-amber::before { background: linear-gradient(90deg, #d97706, #b45309); }
+
+.stat-label { font-size:0.70rem; font-weight:700; text-transform:uppercase; letter-spacing:0.7px; color:#6b7280; }
+.stat-value { font-size:2rem; font-weight:700; color:#111827; line-height:1; }
+.stat-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.stat-icon.blue  { background:#eff6ff; color:#2b52c0; }
+.stat-icon.cyan  { background:#ecfeff; color:#0891b2; }
+.stat-icon.green { background:#f0fdf4; color:#16a34a; }
+.stat-icon.amber { background:#fffbeb; color:#d97706; }
+
+/* CONTENT CARDS */
+.content-card { border-radius:12px; border:1px solid #eaecf0; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.05); overflow:hidden; }
+.content-card .card-head { background:#f9fafb; border-bottom:1px solid #eaecf0; padding:13px 20px; display:flex; justify-content:space-between; align-items:center; }
+.content-card .card-head h6 { margin:0; font-size:0.78rem; font-weight:700; color:#1a2f6e; text-transform:uppercase; letter-spacing:0.4px; }
+.content-card .card-head a { font-size:0.78rem; font-weight:600; color:#2b52c0; text-decoration:none; }
+.content-card .card-head a:hover { text-decoration:underline; }
+
+/* TABLE */
+.table thead th { background:#f9fafb; color:#6b7280; font-size:0.70rem; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; border-bottom:1px solid #eaecf0 !important; padding:11px 16px; }
+.table tbody td { padding:12px 16px; border-color:#f3f4f6; vertical-align:middle; }
+.table-hover tbody tr:hover { background-color:#f8faff; }
+.table tbody tr:last-child td { border-bottom:none; }
+.contact-name { font-weight:600; font-size:0.88rem; color:#111827; }
+.contact-meta { font-size:0.73rem; color:#9ca3af; margin-top:2px; }
+.btn-edit { width:30px; height:30px; border-radius:7px; border:none; background:transparent; color:#2b52c0; display:inline-flex; align-items:center; justify-content:center; transition:background 0.15s; font-size:0.85rem; }
+.btn-edit:hover { background:#eff6ff; }
+
+/* AÇÕES RÁPIDAS */
+.btn-action { display:flex; align-items:center; text-decoration:none; background:#f9fafb; border:1px solid #eaecf0 !important; border-radius:10px; padding:13px 15px; transition:all 0.18s; gap:13px; }
+.btn-action:hover { background:#eef2ff; border-color:#c7d2fe !important; transform:translateX(2px); }
+.action-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.action-icon.blue { background:#eff6ff; color:#2b52c0; }
+.action-icon.cyan { background:#ecfeff; color:#0891b2; }
+.btn-action h6 { margin:0; font-size:0.87rem; font-weight:700; color:#111827; }
+.btn-action small { font-size:0.72rem; color:#9ca3af; }
+
+/* AGENDA DO DIA */
+.agenda-item { padding:12px 18px; border-bottom:1px solid #f3f4f6; border-left:3px solid #d97706; transition:background 0.15s; }
+.agenda-item:hover { background:#fffbeb; }
+.agenda-item:last-child { border-bottom:none; }
+.agenda-item h6 { font-size:0.87rem; font-weight:700; color:#111827; margin:0 0 2px; }
+.agenda-item p { font-size:0.73rem; color:#9ca3af; margin:0; }
+.badge-hora { background:#fffbeb; color:#b45309; border:1px solid #fcd34d; border-radius:20px; font-size:0.70rem; font-weight:700; padding:3px 9px; white-space:nowrap; }
+.empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; color:#9ca3af; text-align:center; }
+.empty-state i { font-size:1.8rem; margin-bottom:8px; opacity:0.4; }
+.empty-state span { font-size:0.82rem; }
+
+/* BTN PRIMÁRIO */
+.btn-primary { background: linear-gradient(135deg, #2b52c0, #1a2f6e) !important; border:none !important; box-shadow:0 2px 8px rgba(43,82,192,0.22) !important; }
+.btn-primary:hover { background: linear-gradient(135deg, #1a2f6e, #0f1d45) !important; }
 </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-	<div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-	<div class="container-fluid px-4 mt-4 mb-5 flex-grow-1">
-		<div class="row justify-content-center">
-			<div class="col-xl-10 col-12">
+    <div class="container-fluid px-4 mt-4 mb-5 flex-grow-1">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-12">
 
-				<div
-					class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-					<div
-						class="d-flex align-items-center ps-3 border-start border-4 border-primary">
-						<div>
-							<h2 class="fw-bold text-dark mb-0 h3">Página Inicial</h2>
-							<p class="text-muted mb-0 small">Visão geral e métricas do
-								WinPost.</p>
-						</div>
-					</div>
-				</div>
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div class="d-flex align-items-center ps-3 border-start border-4 border-primary">
+                        <div>
+                            <h2 class="fw-bold text-dark mb-0 h3">Página Inicial</h2>
+                            <p class="text-muted mb-0 small">Visão geral e métricas do WinPost.</p>
+                        </div>
+                    </div>
+                </div>
 
-				<div class="row mb-4 g-3">
-					<div class="col-xl-3 col-md-6">
-						<div
-							class="card shadow-sm border-0 h-100 border-bottom border-primary border-3">
-							<div class="card-body p-4">
-								<div
-									class="d-flex justify-content-between align-items-start mb-2">
-									<h6 class="text-muted fw-bold mb-0 text-uppercase"
-										style="font-size: 0.75rem;">Total Contatos</h6>
-									<div
-										class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-light rounded"
-										style="width: 38px; height: 38px;">
-										<i class="fa-solid fa-users fs-6"></i>
-									</div>
-								</div>
-								<h3 class="fw-bold text-dark mb-0"
-									th:text="${totalContatos} ?: '0'">0</h3>
-							</div>
-						</div>
-					</div>
+                <!-- STAT CARDS -->
+                <div class="row mb-4 g-3">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card accent-blue h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <p class="stat-label mb-0">Total Contatos</p>
+                                    <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+                                </div>
+                                <div class="stat-value" th:text="${totalContatos} ?: '0'">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card accent-cyan h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <p class="stat-label mb-0">Grupos Ativos</p>
+                                    <div class="stat-icon cyan"><i class="fa-solid fa-layer-group"></i></div>
+                                </div>
+                                <div class="stat-value" th:text="${totalGrupos} ?: '0'">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card accent-green h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <p class="stat-label mb-0">Mensagens Enviadas</p>
+                                    <div class="stat-icon green"><i class="fa-solid fa-paper-plane"></i></div>
+                                </div>
+                                <div class="stat-value" th:text="${mensagensEnviadas} ?: '0'">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card accent-amber h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <p class="stat-label mb-0">Lembretes Hoje</p>
+                                    <div class="stat-icon amber"><i class="fa-solid fa-bell"></i></div>
+                                </div>
+                                <div class="stat-value" th:text="${lembretesHoje} ?: '0'">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-					<div class="col-xl-3 col-md-6">
-						<div
-							class="card shadow-sm border-0 h-100 border-bottom border-info border-3">
-							<div class="card-body p-4">
-								<div
-									class="d-flex justify-content-between align-items-start mb-2">
-									<h6 class="text-muted fw-bold mb-0 text-uppercase"
-										style="font-size: 0.75rem;">Grupos Ativos</h6>
-									<div
-										class="d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-light rounded"
-										style="width: 38px; height: 38px;">
-										<i class="fa-solid fa-layer-group fs-6"></i>
-									</div>
-								</div>
-								<h3 class="fw-bold text-dark mb-0"
-									th:text="${totalGrupos} ?: '0'">0</h3>
-							</div>
-						</div>
-					</div>
+                <!-- MAIN CONTENT -->
+                <div class="row g-4">
 
-					<div class="col-xl-3 col-md-6">
-						<div
-							class="card shadow-sm border-0 h-100 border-bottom border-success border-3">
-							<div class="card-body p-4">
-								<div
-									class="d-flex justify-content-between align-items-start mb-2">
-									<h6 class="text-muted fw-bold mb-0 text-uppercase"
-										style="font-size: 0.75rem;">Mensagens Enviadas</h6>
-									<div
-										class="d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-light rounded"
-										style="width: 38px; height: 38px;">
-										<i class="fa-solid fa-paper-plane fs-6"></i>
-									</div>
-								</div>
-								<h3 class="fw-bold text-dark mb-0"
-									th:text="${mensagensEnviadas} ?: '0'">0</h3>
-							</div>
-						</div>
-					</div>
+                    <!-- ÚLTIMOS CADASTRADOS -->
+                    <div class="col-lg-8">
+                        <div class="content-card h-100">
+                            <div class="card-head">
+                                <h6><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Últimos Cadastrados</h6>
+                                <a href="/listarContatos">Ver todos</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-4" style="width:45%;">Nome / Cadastro</th>
+                                            <th style="width:45%;">Contato</th>
+                                            <th class="text-end pe-4" style="width:10%;">Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:if="${ultimosContatos == null or #lists.isEmpty(ultimosContatos)}">
+                                            <td colspan="3" class="text-center py-5 text-muted small">Nenhum contato recente encontrado.</td>
+                                        </tr>
+                                        <tr th:each="contato : ${ultimosContatos}">
+                                            <td class="ps-4">
+                                                <div class="contact-name text-truncate" style="max-width:200px;" th:text="${contato.nome}">Nome</div>
+                                                <div class="contact-meta">
+                                                    <i class="far fa-calendar me-1"></i>
+                                                    <span th:text="${contato.dataNascimento != null && contato.dataNascimento != '' ? contato.dataNascimento : '-'}">01/01</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="text-dark small mb-1 text-truncate" style="max-width:220px;">
+                                                    <i class="far fa-envelope me-1 text-primary" style="font-size:0.75rem;"></i>
+                                                    <span th:text="${contato.email} ?: 'Sem e-mail'">email@exemplo.com</span>
+                                                </div>
+                                                <div class="contact-meta">
+                                                    <i class="fas fa-phone me-1 text-success" style="font-size:0.73rem;"></i>
+                                                    <span th:text="${contato.telefone} ?: 'Sem telefone'"></span>
+                                                </div>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a th:href="@{/editarContatos/{id}(id=${contato.id})}" class="btn-edit" title="Editar">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
-					<div class="col-xl-3 col-md-6">
-						<div
-							class="card shadow-sm border-0 h-100 border-bottom border-warning border-3">
-							<div class="card-body p-4">
-								<div
-									class="d-flex justify-content-between align-items-start mb-2">
-									<h6 class="text-muted fw-bold mb-0 text-uppercase"
-										style="font-size: 0.75rem;">Lembretes Hoje</h6>
-									<div
-										class="d-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-light rounded"
-										style="width: 38px; height: 38px;">
-										<i class="fa-solid fa-bell fs-6"></i>
-									</div>
-								</div>
-								<h3 class="fw-bold text-dark mb-0"
-									th:text="${lembretesHoje} ?: '0'">0</h3>
-							</div>
-						</div>
-					</div>
-				</div>
+                    <!-- SIDEBAR -->
+                    <div class="col-lg-4 d-flex flex-column gap-4">
 
-				<div class="row g-4">
+                        <!-- AÇÕES RÁPIDAS -->
+                        <div class="content-card">
+                            <div class="card-head">
+                                <h6><i class="fa-solid fa-bolt text-primary me-2"></i>Ações Rápidas</h6>
+                            </div>
+                            <div class="p-3 d-grid gap-2">
+                                <a href="/cadastroContatos" class="btn-action">
+                                    <div class="action-icon blue"><i class="fa-solid fa-user-plus"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h6>Cadastrar Contato</h6>
+                                        <small>Adicionar novo cliente</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
+                                </a>
+                                <a href="/grupos/cadastro" class="btn-action">
+                                    <div class="action-icon cyan"><i class="fa-solid fa-folder-plus"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h6>Cadastrar Grupo</h6>
+                                        <small>Segmentar contatos</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
+                                </a>
+                            </div>
+                        </div>
 
-					<div class="col-lg-8">
-						<div class="card shadow-sm border-0 h-100">
-							<div
-								class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
-								<h6 class="m-0 fw-bold text-dark">
-									<i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Últimos
-									Cadastrados
-								</h6>
-								<a href="/listarContatos"
-									class="text-decoration-none small text-primary fw-bold">Ver
-									todos</a>
-							</div>
-							<div class="card-body p-0">
-								<div class="table-responsive">
-									<table class="table table-hover align-middle mb-0 border-white">
-										<thead class="bg-light text-secondary">
-											<tr>
-												<th class="ps-4 small fw-bold py-3 border-bottom-0"
-													style="width: 45%;">Nome / Cadastro</th>
-												<th class="small fw-bold py-3 border-bottom-0"
-													style="width: 45%;">Contato</th>
-												<th class="text-end pe-4 small fw-bold py-3 border-bottom-0"
-													style="width: 10%;">Ação</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr
-												th:if="${ultimosContatos == null or #lists.isEmpty(ultimosContatos)}">
-												<td colspan="3" class="text-center py-5 text-muted">Nenhum
-													contato recente encontrado.</td>
-											</tr>
-											<tr th:each="contato : ${ultimosContatos}">
+                        <!-- AGENDA DO DIA -->
+                        <div class="content-card flex-grow-1 d-flex flex-column overflow-hidden">
+                            <div class="card-head flex-shrink-0">
+                                <h6><i class="fa-regular fa-calendar-check me-2" style="color:#d97706;"></i>Agenda do Dia</h6>
+                                <a href="/administrativo/agenda">Ver agenda</a>
+                            </div>
+                            <div style="height:450px; overflow-y:auto;">
+                                <div th:if="${#lists.isEmpty(agendaHoje)}" class="empty-state">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                    <span>Livre por hoje!</span>
+                                </div>
+                                <div th:each="evento : ${agendaHoje}" class="agenda-item">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="text-truncate" style="max-width:70%;" th:text="${evento.titulo}">Reunião</h6>
+                                        <span class="badge-hora" th:text="${#temporals.format(evento.dataHora, 'HH:mm')}">10:00</span>
+                                    </div>
+                                    <p th:text="${evento.descricao}">Descrição do evento</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-												<td class="ps-4">
-													<div class="fw-bold text-dark text-truncate"
-														style="max-width: 200px;" th:text="${contato.nome}">Nome</div>
-													<div class="text-muted mt-1" style="font-size: 0.75rem;">
-														<i class="far fa-calendar me-1"></i> Nascimento: <span
-															th:text="${contato.dataNascimento != null && contato.dataNascimento != '' ? contato.dataNascimento : '-'}">01/01</span>
-													</div>
-												</td>
+            </div>
+        </div>
+    </div>
 
-												<td>
-													<div class="text-dark small mb-1 text-truncate"
-														style="max-width: 220px;">
-														<i class="far fa-envelope me-1 text-primary small"></i> <span
-															th:text="${contato.email} ?: 'Sem e-mail'">email@exemplo.com</span>
-													</div>
-													<div class="text-muted" style="font-size: 0.80rem;">
-														<i class="fas fa-phone me-1 text-success small"></i> <span
-															th:text="${contato.telefone} ?: 'Sem telefone'"></span>
-													</div>
-												</td>
+    <!-- MODAL RELATÓRIO -->
+    <div class="modal fade" id="modalRelatorio" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow" style="border-radius:14px; overflow:hidden;">
+                <div class="modal-header" style="background:#f9fafb; border-bottom:1px solid #eaecf0;">
+                    <h5 class="modal-title fw-bold" id="modalLabel" style="font-size:0.95rem; color:#1a2f6e;">
+                        <i class="fa-solid fa-file-pdf text-danger me-2"></i>Gerar Relatório
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/relatorio/pdf" method="get" target="_blank">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-dark">Nome do Contato</label>
+                            <input type="text" class="form-control" name="nome" id="filtroNome">
+                        </div>
+                        <div class="row g-3 mb-3" th:if="${listaEstados != null}">
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold small text-dark">Cidade</label>
+                                <input type="text" class="form-control" name="cidade" id="filtroCidade">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-dark">UF</label>
+                                <select class="form-select" name="estado" id="filtroEstado">
+                                    <option value="">Todas</option>
+                                    <option th:each="uf : ${listaEstados}" th:value="${uf.name()}" th:text="${uf.descricao} ?: ${uf.name()}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-2 mt-3" style="font-size:0.78rem; text-transform:uppercase; letter-spacing:0.4px;">Período de Cadastro</h6>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label small text-muted">Data Inicial</label>
+                                <input type="date" class="form-control" name="dataInicio">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small text-muted">Data Final</label>
+                                <input type="date" class="form-control" name="dataFim">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background:#f9fafb; border-top:1px solid #eaecf0;">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4">Download PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-												<td class="text-end pe-4"><a
-													th:href="@{/editarContatos/{id}(id=${contato.id})}"
-													class="btn btn-sm btn-outline-primary border-0"
-													title="Editar"> <i class="fa-solid fa-pen-to-square"></i>
-												</a></td>
-
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
-
-
-					<div class="col-lg-4 d-flex flex-column gap-4">
-
-						<div class="card shadow-sm border-0">
-							<div class="card-body p-4">
-								<h6 class="fw-bold text-dark mb-3">
-									<i class="fa-solid fa-bolt text-info me-2"></i>Ações Rápidas
-								</h6>
-								<div class="d-grid gap-3">
-									<a href="/cadastroContatos"
-										class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
-										<div
-											class="icon-box bg-white text-primary shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
-											style="width: 48px; height: 48px;">
-											<i class="fa-solid fa-user-plus fs-5"></i>
-										</div>
-										<div class="flex-grow-1">
-											<h6 class="mb-0 fw-bold text-dark">Cadastrar Contato</h6>
-											<small class="text-muted" style="font-size: 0.75rem;">Adicionar
-												novo cliente</small>
-										</div> <i
-										class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
-									</a> <a href="/grupos/cadastro"
-										class="btn-action p-3 rounded-3 border bg-light d-flex align-items-center text-decoration-none">
-										<div
-											class="icon-box bg-white text-info shadow-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
-											style="width: 48px; height: 48px;">
-											<i class="fa-solid fa-folder-plus fs-5"></i>
-										</div>
-										<div class="flex-grow-1">
-											<h6 class="mb-0 fw-bold text-dark">Cadastrar Grupo</h6>
-											<small class="text-muted" style="font-size: 0.75rem;">Segmentar
-												contatos</small>
-										</div> <i
-										class="fa-solid fa-chevron-right text-muted opacity-50 small"></i>
-									</a>
-								</div>
-							</div>
-						</div>
-
-						<div
-							class="card shadow-sm border-0 flex-grow-1 d-flex flex-column overflow-hidden">
-							<div
-								class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-shrink-0">
-								<h6 class="m-0 fw-bold text-dark">
-									<i class="fa-regular fa-calendar-check text-warning me-2"></i>Agenda
-									do Dia
-								</h6>
-								<a href="/administrativo/agenda"
-									class="text-decoration-none small text-primary fw-bold">Ver
-									agenda</a>
-							</div>
-
-							<div class="card-body p-0 custom-scroll"
-								style="height: 450px; overflow-y: auto;">
-
-								<div class="list-group list-group-flush h-100">
-
-									<div th:if="${#lists.isEmpty(agendaHoje)}"
-										class="list-group-item px-4 py-5 text-center text-muted h-100 d-flex flex-column justify-content-center align-items-center border-0">
-										<i
-											class="fa-regular fa-face-smile mb-2 fs-4 d-block opacity-50"></i>
-										<span class="small">Livre por hoje!</span>
-									</div>
-
-									<div th:each="evento : ${agendaHoje}"
-										class="list-group-item px-4 py-3 border-bottom border-light border-start border-4 border-warning action-hover">
-										<div
-											class="d-flex w-100 justify-content-between align-items-center mb-1">
-											<h6 class="mb-0 fw-bold text-dark fs-6 text-truncate"
-												style="max-width: 70%;" th:text="${evento.titulo}">Reunião</h6>
-											<span class="badge bg-warning text-dark rounded-pill fw-bold"
-												style="font-size: 0.7rem;"
-												th:text="${#temporals.format(evento.dataHora, 'HH:mm')}">10:00</span>
-										</div>
-										<p class="mb-0 small text-muted text-truncate"
-											th:text="${evento.descricao}">Descrição do evento</p>
-									</div>
-
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade" id="modalRelatorio" tabindex="-1"
-		aria-labelledby="modalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content border-0 shadow">
-				<div class="modal-header bg-white border-bottom">
-					<h5 class="modal-title fw-bold text-dark" id="modalLabel">
-						<i class="fa-solid fa-file-pdf text-danger me-2"></i>Gerar
-						Relatório
-					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
-				</div>
-				<form action="/relatorio/pdf" method="get" target="_blank">
-					<div class="modal-body p-4">
-						<div class="mb-3">
-							<label class="form-label fw-bold small text-dark">Nome do
-								Contato</label> <input type="text" class="form-control" name="nome"
-								id="filtroNome">
-						</div>
-
-						<div class="row g-3 mb-3" th:if="${listaEstados != null}">
-							<div class="col-md-8">
-								<label class="form-label fw-bold small text-dark">Cidade</label>
-								<input type="text" class="form-control" name="cidade"
-									id="filtroCidade">
-							</div>
-							<div class="col-md-4">
-								<label class="form-label fw-bold small text-dark">UF</label> <select
-									class="form-select" name="estado" id="filtroEstado">
-									<option value="">Todas</option>
-									<option th:each="uf : ${listaEstados}" th:value="${uf.name()}"
-										th:text="${uf.descricao} ?: ${uf.name()}"></option>
-								</select>
-							</div>
-						</div>
-
-						<h6 class="fw-bold text-dark mb-2 mt-4">Período de Cadastro</h6>
-						<div class="row g-3">
-							<div class="col-6">
-								<label class="form-label small text-muted">Data Inicial</label>
-								<input type="date" class="form-control" name="dataInicio">
-							</div>
-							<div class="col-6">
-								<label class="form-label small text-muted">Data Final</label> <input
-									type="date" class="form-control" name="dataFim">
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer bg-light border-top-0">
-						<button type="button" class="btn btn-outline-secondary bg-white"
-							data-bs-dismiss="modal">Cancelar</button>
-						<button type="submit" class="btn btn-primary fw-bold">Download
-							PDF</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-	<div class="footer mt-auto" th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="footer mt-auto" th:replace="~{fragments/footer :: footer}"></div>
 
 </body>
 </html>

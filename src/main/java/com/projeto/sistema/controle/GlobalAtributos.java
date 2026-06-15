@@ -15,11 +15,13 @@ import com.projeto.sistema.modelos.Contatos;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.LembreteDTO;
 import com.projeto.sistema.modelos.UsuarioLogado;
-import com.projeto.sistema.modelos.UF; // <-- NOVO IMPORT
-import com.projeto.sistema.modelos.Grupo; // <-- NOVO IMPORT
+import com.projeto.sistema.modelos.UF; 
+import com.projeto.sistema.modelos.Grupo; 
+import com.projeto.sistema.modelos.MensagemLog; // <-- IMPORT NECESSÁRIO
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
+import com.projeto.sistema.repositorios.MensagemLogRepositorio; // <-- IMPORT NECESSÁRIO
 
 @ControllerAdvice
 public class GlobalAtributos {
@@ -33,36 +35,32 @@ public class GlobalAtributos {
 	@Autowired
 	private GrupoRepositorio grupoRepositorio;
 
-	// --- 1. NOVA PARTE: Carrega os Estados (UF) para o Modal ---
+    // --- REPOSITÓRIO DE MENSAGENS INJETADO ---
+	@Autowired
+	private MensagemLogRepositorio mensagemLogRepositorio; 
+
 	@ModelAttribute("listaEstados")
 	public UF[] getListaEstados() {
 		return UF.values();
 	}
 
-	// --- 2. ATUALIZADO: Carrega os Grupos Globalmente e Blindado por Empresa ---
-	@ModelAttribute("listaGrupos") // ATENÇÃO: Confirme se o seu HTML no modal usa "listaGrupos" ou "listaGruposGlobal"
+	@ModelAttribute("listaGrupos") 
 	public List<Grupo> carregarGruposGlobais(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		// TRAVA DE SEGURANÇA
 		if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
 			return grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
 		}
 		return new ArrayList<>();
 	}
 
-	// -------------------------------------------------------------
 	@ModelAttribute("listaLembretes")
 	public List<LembreteDTO> carregarLembretesFuturos(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
 		List<LembreteDTO> lembretes = new ArrayList<>();
 
-		// TRAVA DE SEGURANÇA: Se não houver ninguém logado (ex: tela de Login), devolve a lista vazia
 		if (usuarioLogado == null) {
 			return lembretes;
 		}
 
-		// Data alvo: AMANHÃ
 		LocalDate amanha = LocalDate.now().plusDays(1);
-
-		// --- 1. Busca Aniversariantes de Amanhã ---
 		String diaMesAmanha = String.format("%02d/%02d", amanha.getDayOfMonth(), amanha.getMonthValue());
 
 		List<Contatos> aniversariantesAmanha = contatosRepositorio.findByDiaEMesAniversario(diaMesAmanha,
@@ -73,7 +71,6 @@ public class GlobalAtributos {
 					amanha, c.getId()));
 		}
 
-		// --- 2. Busca Tarefas/Lembretes da Agenda para Amanhã ---
 		LocalDateTime inicioDia = amanha.atStartOfDay();
 		LocalDateTime fimDia = amanha.atTime(LocalTime.MAX);
 
@@ -82,16 +79,35 @@ public class GlobalAtributos {
 
 		for (Lembrete l : tarefasAmanha) {
 			Long idReferencia = (l.getContato() != null) ? l.getContato().getId() : 0L;
-
 			lembretes.add(new LembreteDTO(l.getTitulo(), l.getDescricao() != null ? l.getDescricao() : "Sem descrição",
 					l.getTipo(), amanha, idReferencia));
 		}
-
 		return lembretes;
 	}
 
 	@ModelAttribute("qtdLembretes")
 	public int contarLembretes(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
 		return carregarLembretesFuturos(usuarioLogado).size(); 
+	}
+
+    // --- NOVA PARTE: NOTIFICAÇÕES DINÂMICAS ---
+    
+	@ModelAttribute("qtdNotificacoes")
+	public int contarNotificacoesNaoLidas(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+		if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
+            // Fazemos o cast (int) porque o count do Spring Data retorna um 'long'
+            // O contador reflete rigorosamente apenas as mensagens não lidas
+			return (int) mensagemLogRepositorio.countByLidaFalseAndEmpresa(usuarioLogado.getEmpresa());
+		}
+		return 0;
+	}
+
+	@ModelAttribute("listaNotificacoes")
+	public List<MensagemLog> carregarNotificacoesNaoLidas(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+		if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
+            // Utilizamos o método que já traz o Top 5 ordenado pela data mais recente
+			return mensagemLogRepositorio.findTop5ByLidaFalseAndEmpresaOrderByDataEnvioDesc(usuarioLogado.getEmpresa());
+		}
+		return new ArrayList<>();
 	}
 }

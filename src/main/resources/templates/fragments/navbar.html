@@ -125,11 +125,14 @@
 					<li class="nav-item d-lg-none my-2"><hr class="text-white-50"></li>
 
 					<li class="nav-item"><a
-						class="nav-link d-flex align-items-center" href="#"
-						data-bs-toggle="modal" data-bs-target="#modalLembretes"
+						class="nav-link d-flex align-items-center position-relative"
+						href="#" data-bs-toggle="modal" data-bs-target="#modalLembretes"
 						title="Ver Lembretes"> <i
 							class="fa-solid fa-calendar-day fs-5"></i> <span
-							class="d-lg-none ms-3">Lembretes e Aniversários</span>
+							th:if="${qtdLembretes > 0}" th:text="${qtdLembretes}"
+							class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark shadow-sm"
+							style="font-size: 0.55rem; padding: 0.25em 0.4em; margin-left: 2px;">
+						</span> <span class="d-lg-none ms-3">Lembretes e Aniversários</span>
 					</a></li>
 
 					<li class="nav-item dropdown ms-lg-2"><a
@@ -138,9 +141,10 @@
 						aria-expanded="false" title="Notificações">
 							<div class="position-relative d-inline-block">
 								<i class="fa-solid fa-bell fs-5"></i> <span id="badgeGeral"
+									th:if="${qtdNotificacoes > 0}"
 									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
 									style="font-size: 0.55rem; padding: 0.25em 0.4em;"> <span
-									id="contadorTexto">1</span>
+									id="contadorTexto" th:text="${qtdNotificacoes}"></span>
 								</span>
 							</div> <span class="d-lg-none ms-3">Notificações</span>
 					</a>
@@ -154,24 +158,28 @@
 									<i class="fa-regular fa-bell me-2"></i>Notificações
 								</h6>
 							</div>
-							<div id="notificacao-1"
+
+							<div th:each="notif : ${listaNotificacoes}"
+								th:id="'notificacao-' + ${notif.id}"
 								class="dropdown-item p-3 border-bottom notificacao-item"
 								style="white-space: normal;">
 								<div class="d-flex w-100 justify-content-between mb-1">
-									<strong class="text-dark small">Nova mensagem de
-										sistema</strong> <small class="text-muted ms-2">Agora</small>
+									<strong class="text-dark small">Nova notificação</strong> <small
+										class="text-muted ms-2">Agora</small>
 								</div>
-								<p class="mb-2 small text-muted">Bem-vindo ao sistema
-									WINPOST! Esta é uma notificação de teste.</p>
+								<p class="mb-2 small text-muted" th:text="${notif.assunto}">Mensagem
+									de notificação...</p>
 								<div class="text-end">
 									<button class="btn btn-sm btn-outline-primary"
-										onclick="marcarEFechar(1, event)">
+										th:onclick="'marcarEFechar(' + ${notif.id} + ', event)'">
 										<i class="fa-solid fa-check me-1"></i>Lida
 									</button>
 								</div>
 							</div>
+
 							<div id="msgSemNotificacaoJS"
-								class="d-none text-center p-4 text-muted small">
+								th:classappend="${qtdNotificacoes > 0} ? 'd-none' : ''"
+								class="text-center p-4 text-muted small">
 								<i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
 								<p class="mb-0">Nenhuma notificação nova</p>
 							</div>
@@ -206,7 +214,6 @@
 							</li>
 						</ul></li>
 				</ul>
-
 			</div>
 		</div>
 	</nav>
@@ -281,9 +288,10 @@
 				</div>
 
 				<div class="modal-body bg-light p-4">
-
 					<div
-						class="alert alert-primary border-0 bg-primary bg-opacity-10 text-light small fw-bold mb-4 d-flex align-items-center">
+						class="alert border-0 text-light small fw-bold mb-4 d-flex align-items-center"
+						style="background: linear-gradient(135deg, #2b52c0, #1a2f6e) !important; border-radius: 14px; box-shadow: 0 4px 12px rgba(26, 47, 110, 0.15);">
+
 						<i class="fa-solid fa-circle-info fs-5 me-2"></i> Selecione a área
 						desejada para configurar o seu documento.
 					</div>
