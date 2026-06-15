@@ -1,18 +1,25 @@
 package com.projeto.sistema.repositorios;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import com.projeto.sistema.modelos.Empresa;
 import com.projeto.sistema.modelos.Grupo;
 
 public interface GrupoRepositorio extends JpaRepository<Grupo, Long> {
-    
-    // 1. Busca todos os grupos da empresa
+
+    // Busca grupos da empresa
     List<Grupo> findByEmpresa(Empresa empresa);
-    
-    // 2. Usado na tela de gerenciar para a barra de pesquisa
+
+    // Busca com filtro de nome para gerenciar (tenant)
     List<Grupo> findByNomeContainingIgnoreCaseAndEmpresaOrderByNomeAsc(String pesquisa, Empresa empresa);
 
-    // 3. O MÉTODO QUE ESTAVA A FALTAR PARA O ROBÔ DO EMAIL SERVICE!
+    // Usado pelo EmailService (robô agendado)
     List<Grupo> findByNomeContainingIgnoreCaseAndEmpresa(String nome, Empresa empresa);
+
+    // Super Admin: busca grupo por ID garantindo que é da empresa do usuário (ou sem filtro para SA)
+    @Query("SELECT g FROM Grupo g WHERE g.id = :id AND (:empresaId IS NULL OR g.empresa.id = :empresaId)")
+    Optional<Grupo> findByIdAndEmpresaOptional(@Param("id") Long id, @Param("empresaId") Long empresaId);
 }

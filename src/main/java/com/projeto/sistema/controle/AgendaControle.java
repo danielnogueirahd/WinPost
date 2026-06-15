@@ -37,315 +37,280 @@ import com.projeto.sistema.repositorios.MensagemLogRepositorio;
 @Controller
 public class AgendaControle {
 
-	@Autowired
-	private ContatosRepositorio contatosRepositorio;
+    @Autowired
+    private ContatosRepositorio contatosRepositorio;
 
-	@Autowired
-	private MensagemLogRepositorio mensagemRepositorio;
+    @Autowired
+    private MensagemLogRepositorio mensagemRepositorio;
 
-	@Autowired
-	private LembreteRepositorio lembreteRepositorio;
+    @Autowired
+    private LembreteRepositorio lembreteRepositorio;
 
-	@Autowired
-	private com.projeto.sistema.servicos.RelatorioService relatorioService;
+    @Autowired
+    private com.projeto.sistema.servicos.RelatorioService relatorioService;
 
-	// FECHADURA: Apenas quem pode VER a agenda
-	@PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
-	@GetMapping("/administrativo/agenda")
-	public ModelAndView acessarAgenda(@RequestParam(required = false) Integer mes,
-	        @RequestParam(required = false) Integer ano, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+    @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
+    @GetMapping("/administrativo/agenda")
+    public ModelAndView acessarAgenda(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = false) Integer ano,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-	    ModelAndView mv = new ModelAndView("administrativo/agenda"); 
+        ModelAndView mv = new ModelAndView("administrativo/agenda");
 
-		LocalDate hoje = LocalDate.now();
-		int mesAtual = (mes != null) ? mes : hoje.getMonthValue();
-		int anoAtual = (ano != null) ? ano : hoje.getYear();
+        LocalDate hoje = LocalDate.now();
+        int mesAtual = (mes != null) ? mes : hoje.getMonthValue();
+        int anoAtual = (ano != null) ? ano : hoje.getYear();
 
-		YearMonth anoMes = YearMonth.of(anoAtual, mesAtual);
-		LocalDateTime inicioMes = anoMes.atDay(1).atStartOfDay();
-		LocalDateTime fimMes = anoMes.atEndOfMonth().atTime(LocalTime.MAX);
+        YearMonth anoMes = YearMonth.of(anoAtual, mesAtual);
+        LocalDateTime inicioMes = anoMes.atDay(1).atStartOfDay();
+        LocalDateTime fimMes = anoMes.atEndOfMonth().atTime(LocalTime.MAX);
+        String mesFormatadoBanco = String.format("/%02d", mesAtual);
 
-		String mesFormatadoBanco = String.format("/%02d", mesAtual);
+        List<Contatos> aniversariantes = contatosRepositorio
+                .findByMesAniversario(mesFormatadoBanco, usuarioLogado.getEmpresa());
+        List<MensagemLog> envios = mensagemRepositorio
+                .findByDataEnvioBetweenAndEmpresa(inicioMes, fimMes, usuarioLogado.getEmpresa());
+        List<Lembrete> lembretes = lembreteRepositorio
+                .findByDataHoraBetweenAndEmpresa(inicioMes, fimMes, usuarioLogado.getEmpresa());
 
-		List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco,
-				usuarioLogado.getEmpresa());
-		List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetweenAndEmpresa(inicioMes, fimMes,
-				usuarioLogado.getEmpresa());
-		List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetweenAndEmpresa(inicioMes, fimMes,
-				usuarioLogado.getEmpresa());
+        List<EventoAgenda> eventos = new ArrayList<>();
+        eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
 
-		List<EventoAgenda> eventos = new ArrayList<>();
-		eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
+        for (Contatos c : aniversariantes) {
+            if (!c.getExibirNaAgenda()) continue;
+            if (c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
+                try {
+                    int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
+                    try {
+                        LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, diaNiver);
+                        eventos.add(new EventoAgenda(dataNiver.atStartOfDay(), "NIVER", c.getNome(), "event-niver"));
+                    } catch (DateTimeException e) { /* ignora */ }
+                } catch (NumberFormatException e) { /* ignora */ }
+            }
+        }
 
-		// 1. PROCESSAR ANIVERSARIANTES
-		for (Contatos c : aniversariantes) {
-			if (!c.getExibirNaAgenda()) {
-				continue;
-			}
+        for (MensagemLog log : envios) {
+            eventos.add(new EventoAgenda(log.getDataEnvio(), "ENVIO", log.getAssunto(), "event-envio"));
+        }
 
-			if (c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
-				try {
-					int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
-					try {
-						// Niver não tem hora, forçamos meia noite (atStartOfDay)
-						LocalDate dataNiver = LocalDate.of(anoAtual, mesAtual, diaNiver);
-						eventos.add(new EventoAgenda(dataNiver.atStartOfDay(), "NIVER", c.getNome(), "event-niver"));
-					} catch (DateTimeException e) {
-					}
-				} catch (NumberFormatException e) {
-				}
-			}
-		}
+        for (Lembrete l : lembretes) {
+            String corClasse = "event-tarefa";
+            if ("REUNIAO".equalsIgnoreCase(l.getTipo())) corClasse = "event-reuniao";
+            else if ("IMPORTANTE".equalsIgnoreCase(l.getTipo())) corClasse = "event-importante";
 
-		// 2. PROCESSAR ENVIOS (Mantém a HORA agora)
-		for (MensagemLog log : envios) {
-			eventos.add(new EventoAgenda(log.getDataEnvio(), "ENVIO", log.getAssunto(), "event-envio"));
-		}
+            EventoAgenda evento = new EventoAgenda(l.getDataHora(), l.getTipo(), l.getTitulo(), corClasse);
+            evento.setId(l.getId());
+            eventos.add(evento);
+        }
 
-		// 3. PROCESSAR LEMBRETES (Mantém a HORA agora)
-		for (Lembrete l : lembretes) {
-			String corClasse = "event-tarefa";
-			if ("REUNIAO".equalsIgnoreCase(l.getTipo()))
-				corClasse = "event-reuniao";
-			else if ("IMPORTANTE".equalsIgnoreCase(l.getTipo()))
-				corClasse = "event-importante";
+        eventos.sort(Comparator.comparing(EventoAgenda::getData));
 
-			// Criamos o evento primeiro
-			EventoAgenda evento = new EventoAgenda(l.getDataHora(), l.getTipo(), l.getTitulo(), corClasse);
+        mv.addObject("listaEventos", eventos);
+        mv.addObject("paginaAtiva", "agenda");
+        mv.addObject("mesExibicao", mesAtual);
+        mv.addObject("anoExibicao", anoAtual);
+        mv.addObject("totalDiasMes", anoMes.lengthOfMonth());
+        mv.addObject("todosContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
+        mv.addObject("novoLembrete", new Lembrete());
+        mv.addObject("diaSemanaInicio", anoMes.atDay(1).getDayOfWeek().getValue());
 
-			// A MÁGICA ACONTECE AQUI: Passamos o ID do banco para o evento da tela!
-			evento.setId(l.getId());
+        return mv;
+    }
 
-			// Agora sim adicionamos na lista
-			eventos.add(evento);
-		}
+    @PreAuthorize("hasAnyAuthority('AGENDA_CRIAR', 'AGENDA_EDITAR')")
+    @PostMapping("/administrativo/agenda/salvar")
+    public String salvarLembrete(Lembrete lembrete,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        lembrete.setEmpresa(usuarioLogado.getEmpresa());
+        lembreteRepositorio.save(lembrete);
+        return "redirect:/administrativo/agenda";
+    }
 
-		eventos.sort(Comparator.comparing(EventoAgenda::getData));
+    @PreAuthorize("hasAuthority('AGENDA_EXCLUIR')")
+    @GetMapping("/administrativo/agenda/remover/{id}")
+    public ResponseEntity<?> removerEvento(@PathVariable Long id,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        try {
+            Lembrete lembrete = lembreteRepositorio.findById(id).orElse(null);
+            if (lembrete != null) {
+                boolean temAcesso = usuarioLogado.isSuperAdmin() ||
+                        (lembrete.getEmpresa() != null &&
+                                lembrete.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId()));
+                if (temAcesso) {
+                    lembreteRepositorio.deleteById(id);
+                    return ResponseEntity.ok().body("Evento excluído com sucesso.");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento não encontrado ou sem permissão.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir: " + e.getMessage());
+        }
+    }
 
-		mv.addObject("listaEventos", eventos);
-		mv.addObject("paginaAtiva", "agenda");
-		mv.addObject("mesExibicao", mesAtual);
-		mv.addObject("anoExibicao", anoAtual);
-		mv.addObject("totalDiasMes", anoMes.lengthOfMonth());
-		mv.addObject("todosContatos", contatosRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
-		mv.addObject("novoLembrete", new Lembrete());
+    @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
+    @GetMapping("/administrativo/agenda/buscar/{id}")
+    @ResponseBody
+    public Lembrete buscarEventoParaEdicao(@PathVariable Long id,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        Lembrete lembrete = lembreteRepositorio.findById(id).orElse(null);
+        if (lembrete != null) {
+            boolean temAcesso = usuarioLogado.isSuperAdmin() ||
+                    (lembrete.getEmpresa() != null &&
+                            lembrete.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId()));
+            if (temAcesso) return lembrete;
+        }
+        return null;
+    }
 
-		int diaSemanaPrimeiroDia = anoMes.atDay(1).getDayOfWeek().getValue();
-		mv.addObject("diaSemanaInicio", diaSemanaPrimeiroDia);
+    @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
+    @GetMapping("/administrativo/agenda/detalhes")
+    @ResponseBody
+    public List<DetalheAgendaDTO> obterDetalhesDia(
+            @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-		return mv;
-	}
+        List<DetalheAgendaDTO> detalhes = new ArrayList<>();
 
-	// FECHADURA: Apenas quem pode CRIAR ou EDITAR na agenda
-	@PreAuthorize("hasAnyAuthority('AGENDA_CRIAR', 'AGENDA_EDITAR')")
-	@PostMapping("/administrativo/agenda/salvar")
-	public String salvarLembrete(Lembrete lembrete, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		lembrete.setEmpresa(usuarioLogado.getEmpresa());
-		lembreteRepositorio.save(lembrete);
-		return "redirect:/administrativo/agenda";
-	}
+        String diaMesFormatado = String.format("%02d/%02d", data.getDayOfMonth(), data.getMonthValue());
+        List<Contatos> nivers = contatosRepositorio
+                .findByDiaEMesAniversario(diaMesFormatado, usuarioLogado.getEmpresa());
+        for (Contatos c : nivers) {
+            detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
+        }
 
-	// FECHADURA: Apenas quem pode EXCLUIR na agenda
-	@PreAuthorize("hasAuthority('AGENDA_EXCLUIR')")
-	@GetMapping("/administrativo/agenda/remover/{id}")
-	public ResponseEntity<?> removerEvento(@PathVariable Long id,
-			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		try {
-			Lembrete lembrete = lembreteRepositorio.findById(id).orElse(null);
-			if (lembrete != null && lembrete.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
-				lembreteRepositorio.deleteById(id);
-				return ResponseEntity.ok().body("Evento excluído com sucesso.");
-			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento não encontrado ou sem permissão.");
-			}
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao excluir: " + e.getMessage());
-		}
-	}
+        LocalDateTime inicio = data.atStartOfDay();
+        LocalDateTime fim = data.atTime(LocalTime.MAX);
 
-	// FECHADURA: Quem pode VER a agenda também precisa poder ver os detalhes para
-	// edição
-	@PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
-	@GetMapping("/administrativo/agenda/buscar/{id}")
-	@ResponseBody
-	public Lembrete buscarEventoParaEdicao(@PathVariable Long id,
-			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		Lembrete lembrete = lembreteRepositorio.findById(id).orElse(null);
-		if (lembrete != null && lembrete.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
-			return lembrete;
-		}
-		return null;
-	}
+        List<MensagemLog> msgs = mensagemRepositorio
+                .findByDataEnvioBetweenAndEmpresa(inicio, fim, usuarioLogado.getEmpresa());
+        for (MensagemLog m : msgs) {
+            String horaFormatada = m.getDataEnvio().toLocalTime().toString();
+            if (horaFormatada.length() > 5) horaFormatada = horaFormatada.substring(0, 5);
+            String nomeGrupo = (m.getNomeGrupoDestino() != null) ? m.getNomeGrupoDestino() : "Sem grupo";
+            detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), horaFormatada + " - " + nomeGrupo, m.getId()));
+        }
 
-	// FECHADURA: Apenas quem pode VER a agenda pode clicar num dia e ver os
-	// detalhes
-	@PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
-	@GetMapping("/administrativo/agenda/detalhes")
-	@ResponseBody
-	public List<DetalheAgendaDTO> obterDetalhesDia(
-			@RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
-			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        List<Lembrete> lembretesDia = lembreteRepositorio
+                .findByDataHoraBetweenAndEmpresa(inicio, fim, usuarioLogado.getEmpresa());
+        for (Lembrete l : lembretesDia) {
+            String subtitulo = (l.getContato() != null) ? "Com: " + l.getContato().getNome() : l.getDescricao();
+            detalhes.add(new DetalheAgendaDTO(l.getTipo(), l.getTitulo(), subtitulo, l.getId()));
+        }
 
-		List<DetalheAgendaDTO> detalhes = new ArrayList<>();
+        List<EventoAgenda> feriados = getFeriadosDoMes(data.getMonthValue(), data.getYear());
+        for (EventoAgenda f : feriados) {
+            if (f.getData().toLocalDate().isEqual(data)) {
+                detalhes.add(new DetalheAgendaDTO("FERIADO", f.getTitulo(), "Feriado Nacional", null));
+            }
+        }
 
-		// 1. Aniversários
-		String diaMesFormatado = String.format("%02d/%02d", data.getDayOfMonth(), data.getMonthValue());
-		List<Contatos> nivers = contatosRepositorio.findByDiaEMesAniversario(diaMesFormatado,
-				usuarioLogado.getEmpresa());
+        return detalhes;
+    }
 
-		for (Contatos c : nivers) {
-			detalhes.add(new DetalheAgendaDTO("NIVER", c.getNome(), c.getEmail(), c.getId()));
-		}
+    @PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
+    @GetMapping("/administrativo/agenda/exportar")
+    public ResponseEntity<org.springframework.core.io.InputStreamResource> exportarAgendaPdf(
+            @RequestParam(required = false) Integer mes,
+            @RequestParam(required = false) Integer ano,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
-		// 2. Envios
-		LocalDateTime inicio = data.atStartOfDay();
-		LocalDateTime fim = data.atTime(LocalTime.MAX);
+        LocalDate hoje = LocalDate.now();
+        int mesAtual = (mes != null) ? mes : hoje.getMonthValue();
+        int anoAtual = (ano != null) ? ano : hoje.getYear();
 
-		List<MensagemLog> msgs = mensagemRepositorio.findByDataEnvioBetweenAndEmpresa(inicio, fim,
-				usuarioLogado.getEmpresa());
+        YearMonth anoMes = YearMonth.of(anoAtual, mesAtual);
+        LocalDateTime inicioMes = anoMes.atDay(1).atStartOfDay();
+        LocalDateTime fimMes = anoMes.atEndOfMonth().atTime(LocalTime.MAX);
+        String mesFormatadoBanco = String.format("/%02d", mesAtual);
 
-		for (MensagemLog m : msgs) {
-			String horaFormatada = m.getDataEnvio().toLocalTime().toString();
-			if (horaFormatada.length() > 5) {
-				horaFormatada = horaFormatada.substring(0, 5);
-			}
+        List<Contatos> aniversariantes = contatosRepositorio
+                .findByMesAniversario(mesFormatadoBanco, usuarioLogado.getEmpresa());
+        List<MensagemLog> envios = mensagemRepositorio
+                .findByDataEnvioBetweenAndEmpresa(inicioMes, fimMes, usuarioLogado.getEmpresa());
+        List<Lembrete> lembretes = lembreteRepositorio
+                .findByDataHoraBetweenAndEmpresa(inicioMes, fimMes, usuarioLogado.getEmpresa());
 
-			String nomeGrupo = (m.getNomeGrupoDestino() != null) ? m.getNomeGrupoDestino() : "Sem grupo";
-			String subtitulo = horaFormatada + " - " + nomeGrupo;
+        List<EventoAgenda> eventos = new ArrayList<>();
+        eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
 
-			detalhes.add(new DetalheAgendaDTO("ENVIO", m.getAssunto(), subtitulo, m.getId()));
-		}
+        for (Contatos c : aniversariantes) {
+            if (c.getExibirNaAgenda() && c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
+                try {
+                    int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
+                    eventos.add(new EventoAgenda(
+                            LocalDate.of(anoAtual, mesAtual, diaNiver).atStartOfDay(),
+                            "NIVER", c.getNome(), "event-niver"));
+                } catch (Exception e) { /* ignora */ }
+            }
+        }
+        for (MensagemLog log : envios) {
+            eventos.add(new EventoAgenda(log.getDataEnvio(), "ENVIO", log.getAssunto(), "event-envio"));
+        }
+        for (Lembrete l : lembretes) {
+            eventos.add(new EventoAgenda(l.getDataHora(), l.getTipo(), l.getTitulo(), "event-tarefa"));
+        }
 
-		// 3. Lembretes
-		List<Lembrete> lembretesDia = lembreteRepositorio.findByDataHoraBetweenAndEmpresa(inicio, fim,
-				usuarioLogado.getEmpresa());
-		for (Lembrete l : lembretesDia) {
-			String subtitulo = (l.getContato() != null) ? "Com: " + l.getContato().getNome() : l.getDescricao();
-			detalhes.add(new DetalheAgendaDTO(l.getTipo(), l.getTitulo(), subtitulo, l.getId()));
-		}
+        eventos.sort(Comparator.comparing(EventoAgenda::getData));
 
-		// 4. Feriados
-		List<EventoAgenda> feriados = getFeriadosDoMes(data.getMonthValue(), data.getYear());
-		for (EventoAgenda f : feriados) {
-			if (f.getData().toLocalDate().isEqual(data)) {
-				detalhes.add(new DetalheAgendaDTO("FERIADO", f.getTitulo(), "Feriado Nacional", null));
-			}
-		}
+        String mesAnoStr = String.format("%02d/%d", mesAtual, anoAtual);
+        ByteArrayInputStream bis = relatorioService.gerarRelatorioAgenda(eventos, mesAnoStr);
 
-		return detalhes;
-	}
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=produtividade_" + mesAtual + "_" + anoAtual + ".pdf");
 
-	private List<EventoAgenda> getFeriadosDoMes(int mes, int ano) {
-		List<EventoAgenda> feriados = new ArrayList<>();
-		int[][] datasFixas = { { 1, 1 }, { 21, 4 }, { 1, 5 }, { 7, 9 }, { 12, 10 }, { 2, 11 }, { 15, 11 }, { 25, 12 } };
-		String[] nomesFixos = { "Ano Novo", "Tiradentes", "Dia do Trabalho", "Independência", "N. Sra. Aparecida",
-				"Finados", "Proc. República", "Natal" };
-		for (int i = 0; i < datasFixas.length; i++) {
-			if (datasFixas[i][1] == mes) {
-				// Adiciona os feriados com 00:00 de hora
-				feriados.add(new EventoAgenda(LocalDate.of(ano, mes, datasFixas[i][0]).atStartOfDay(), "FERIADO",
-						nomesFixos[i], "event-feriado"));
-			}
-		}
-		return feriados;
-	}
+        return ResponseEntity.ok().headers(headers)
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(new org.springframework.core.io.InputStreamResource(bis));
+    }
 
-	// FECHADURA: Apenas quem pode VER a agenda pode exportar
-	@PreAuthorize("hasAuthority('AGENDA_VISUALIZAR')")
-	@GetMapping("/administrativo/agenda/exportar")
-	public ResponseEntity<org.springframework.core.io.InputStreamResource> exportarAgendaPdf(
-			@RequestParam(required = false) Integer mes, @RequestParam(required = false) Integer ano,
-			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+    @PreAuthorize("hasAuthority('AGENDA_EDITAR')")
+    @GetMapping("/administrativo/agenda/concluir/{id}")
+    @ResponseBody
+    public ResponseEntity<String> concluirTarefaBackend(@PathVariable Long id,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        try {
+            Lembrete tarefa = lembreteRepositorio.findById(id).orElse(null);
 
-		// 1. Descobrir de qual mês estamos falando
-		LocalDate hoje = LocalDate.now();
-		int mesAtual = (mes != null) ? mes : hoje.getMonthValue();
-		int anoAtual = (ano != null) ? ano : hoje.getYear();
+            if (tarefa == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Tarefa não encontrada no banco (ID " + id + ").");
+            }
 
-		YearMonth anoMes = YearMonth.of(anoAtual, mesAtual);
-		LocalDateTime inicioMes = anoMes.atDay(1).atStartOfDay();
-		LocalDateTime fimMes = anoMes.atEndOfMonth().atTime(LocalTime.MAX);
-		String mesFormatadoBanco = String.format("/%02d", mesAtual);
+            boolean temAcesso = usuarioLogado.isSuperAdmin() ||
+                    (tarefa.getEmpresa() != null &&
+                            tarefa.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId()));
 
-		// 2. Buscar TUDO no banco (igual a tela faz)
-		List<Contatos> aniversariantes = contatosRepositorio.findByMesAniversario(mesFormatadoBanco,
-				usuarioLogado.getEmpresa());
-		List<MensagemLog> envios = mensagemRepositorio.findByDataEnvioBetweenAndEmpresa(inicioMes, fimMes,
-				usuarioLogado.getEmpresa());
-		List<Lembrete> lembretes = lembreteRepositorio.findByDataHoraBetweenAndEmpresa(inicioMes, fimMes,
-				usuarioLogado.getEmpresa());
+            if (!temAcesso) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Você não tem permissão para concluir esta tarefa.");
+            }
 
-		// 3. Juntar tudo na mesma lista e organizar
-		List<EventoAgenda> eventos = new ArrayList<>();
-		eventos.addAll(getFeriadosDoMes(mesAtual, anoAtual));
+            if (!tarefa.getTitulo().contains("[CONCLUÍDA]")) {
+                tarefa.setTitulo(tarefa.getTitulo() + " [CONCLUÍDA]");
+            }
 
-		for (Contatos c : aniversariantes) {
-			if (c.getExibirNaAgenda() && c.getDataNascimento() != null && c.getDataNascimento().length() >= 5) {
-				try {
-					int diaNiver = Integer.parseInt(c.getDataNascimento().substring(0, 2));
-					eventos.add(new EventoAgenda(LocalDate.of(anoAtual, mesAtual, diaNiver).atStartOfDay(), "NIVER",
-							c.getNome(), "event-niver"));
-				} catch (Exception e) {
-				}
-			}
-		}
-		for (MensagemLog log : envios) {
-			eventos.add(new EventoAgenda(log.getDataEnvio(), "ENVIO", log.getAssunto(), "event-envio"));
-		}
-		for (Lembrete l : lembretes) {
-			eventos.add(new EventoAgenda(l.getDataHora(), l.getTipo(), l.getTitulo(), "event-tarefa"));
-		}
+            lembreteRepositorio.save(tarefa);
+            return ResponseEntity.ok("Tarefa concluída com sucesso!");
 
-		// Ordena os eventos por data para o PDF ficar certinho cronologicamente
-		eventos.sort(Comparator.comparing(EventoAgenda::getData));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno: " + e.getMessage());
+        }
+    }
 
-		// 4. Gerar o PDF!
-		String mesAnoStr = String.format("%02d/%d", mesAtual, anoAtual);
-		ByteArrayInputStream bis = relatorioService.gerarRelatorioAgenda(eventos, mesAnoStr);
-
-		org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-		// "inline" abre no navegador. Se quiser que baixe direto pro PC, troque para
-		// "attachment"
-		headers.add("Content-Disposition", "inline; filename=produtividade_" + mesAtual + "_" + anoAtual + ".pdf");
-
-		return ResponseEntity.ok().headers(headers).contentType(org.springframework.http.MediaType.APPLICATION_PDF)
-				.body(new org.springframework.core.io.InputStreamResource(bis));
-	}
-
-	// FECHADURA: Apenas quem pode EDITAR na agenda
-	@PreAuthorize("hasAuthority('AGENDA_EDITAR')")
-	@GetMapping("/administrativo/agenda/concluir/{id}")
-	@ResponseBody
-	public ResponseEntity<String> concluirTarefaBackend(@PathVariable Long id,
-			@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		try {
-			// Procura a tarefa no banco pelo ID
-			Lembrete tarefa = lembreteRepositorio.findById(id).orElse(null);
-
-			// 1. Verifica se a tarefa existe
-			if (tarefa == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND)
-						.body("Tarefa não encontrada no banco (ID " + id + ").");
-			}
-
-			// 2. Proteção contra NullPointerException (tarefas antigas sem empresa)
-			if (tarefa.getEmpresa() == null
-					|| !tarefa.getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN)
-						.body("Você não tem permissão ou a tarefa está sem empresa vinculada.");
-			}
-
-			// 3. Marca como concluída
-			if (!tarefa.getTitulo().contains("[CONCLUÍDA]")) {
-				tarefa.setTitulo(tarefa.getTitulo() + " [CONCLUÍDA]");
-			}
-
-			lembreteRepositorio.save(tarefa);
-			return ResponseEntity.ok("Tarefa concluída com sucesso!");
-
-		} catch (Exception e) {
-			e.printStackTrace(); // Imprime o erro no console do Eclipse/VSCode para ajudar
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno: " + e.getMessage());
-		}
-	}
+    private List<EventoAgenda> getFeriadosDoMes(int mes, int ano) {
+        List<EventoAgenda> feriados = new ArrayList<>();
+        int[][] datasFixas = {{1,1},{21,4},{1,5},{7,9},{12,10},{2,11},{15,11},{25,12}};
+        String[] nomesFixos = {"Ano Novo","Tiradentes","Dia do Trabalho","Independência",
+                "N. Sra. Aparecida","Finados","Proc. República","Natal"};
+        for (int i = 0; i < datasFixas.length; i++) {
+            if (datasFixas[i][1] == mes) {
+                feriados.add(new EventoAgenda(
+                        LocalDate.of(ano, mes, datasFixas[i][0]).atStartOfDay(),
+                        "FERIADO", nomesFixos[i], "event-feriado"));
+            }
+        }
+        return feriados;
+    }
 }

@@ -7,107 +7,121 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal; 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.projeto.sistema.modelos.Contatos;
+import com.projeto.sistema.modelos.Grupo;
 import com.projeto.sistema.modelos.Lembrete;
 import com.projeto.sistema.modelos.LembreteDTO;
+import com.projeto.sistema.modelos.MensagemLog;
+import com.projeto.sistema.modelos.UF;
 import com.projeto.sistema.modelos.UsuarioLogado;
-import com.projeto.sistema.modelos.UF; 
-import com.projeto.sistema.modelos.Grupo; 
-import com.projeto.sistema.modelos.MensagemLog; // <-- IMPORT NECESSÁRIO
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.repositorios.LembreteRepositorio;
-import com.projeto.sistema.repositorios.MensagemLogRepositorio; // <-- IMPORT NECESSÁRIO
+import com.projeto.sistema.repositorios.MensagemLogRepositorio;
 
 @ControllerAdvice
 public class GlobalAtributos {
 
-	@Autowired
-	private ContatosRepositorio contatosRepositorio;
+    @Autowired
+    private ContatosRepositorio contatosRepositorio;
 
-	@Autowired
-	private LembreteRepositorio lembreteRepositorio;
+    @Autowired
+    private LembreteRepositorio lembreteRepositorio;
 
-	@Autowired
-	private GrupoRepositorio grupoRepositorio;
+    @Autowired
+    private GrupoRepositorio grupoRepositorio;
 
-    // --- REPOSITÓRIO DE MENSAGENS INJETADO ---
-	@Autowired
-	private MensagemLogRepositorio mensagemLogRepositorio; 
+    @Autowired
+    private MensagemLogRepositorio mensagemLogRepositorio;
 
-	@ModelAttribute("listaEstados")
-	public UF[] getListaEstados() {
-		return UF.values();
-	}
+    @ModelAttribute("listaEstados")
+    public UF[] getListaEstados() {
+        return UF.values();
+    }
 
-	@ModelAttribute("listaGrupos") 
-	public List<Grupo> carregarGruposGlobais(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
-			return grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
-		}
-		return new ArrayList<>();
-	}
+    @ModelAttribute("listaGrupos")
+    public List<Grupo> carregarGruposGlobais(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        if (usuarioLogado == null) return new ArrayList<>();
 
-	@ModelAttribute("listaLembretes")
-	public List<LembreteDTO> carregarLembretesFuturos(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
-		List<LembreteDTO> lembretes = new ArrayList<>();
+        if (usuarioLogado.isSuperAdmin()) {
+            return grupoRepositorio.findAll();
+        }
 
-		if (usuarioLogado == null) {
-			return lembretes;
-		}
+        if (usuarioLogado.getEmpresa() != null) {
+            return grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa());
+        }
 
-		LocalDate amanha = LocalDate.now().plusDays(1);
-		String diaMesAmanha = String.format("%02d/%02d", amanha.getDayOfMonth(), amanha.getMonthValue());
+        return new ArrayList<>();
+    }
 
-		List<Contatos> aniversariantesAmanha = contatosRepositorio.findByDiaEMesAniversario(diaMesAmanha,
-				usuarioLogado.getEmpresa());
+    @ModelAttribute("listaLembretes")
+    public List<LembreteDTO> carregarLembretesFuturos(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        List<LembreteDTO> lembretes = new ArrayList<>();
 
-		for (Contatos c : aniversariantesAmanha) {
-			lembretes.add(new LembreteDTO("Aniversário Amanhã", "Não esqueça de parabenizar " + c.getNome(), "NIVER",
-					amanha, c.getId()));
-		}
+        if (usuarioLogado == null) return lembretes;
 
-		LocalDateTime inicioDia = amanha.atStartOfDay();
-		LocalDateTime fimDia = amanha.atTime(LocalTime.MAX);
+        // Super Admin sem empresa não carrega lembretes globais
+        if (usuarioLogado.getEmpresa() == null) return lembretes;
 
-		List<Lembrete> tarefasAmanha = lembreteRepositorio.findByDataHoraBetweenAndEmpresa(inicioDia, fimDia,
-				usuarioLogado.getEmpresa());
+        LocalDate amanha = LocalDate.now().plusDays(1);
+        String diaMesAmanha = String.format("%02d/%02d", amanha.getDayOfMonth(), amanha.getMonthValue());
 
-		for (Lembrete l : tarefasAmanha) {
-			Long idReferencia = (l.getContato() != null) ? l.getContato().getId() : 0L;
-			lembretes.add(new LembreteDTO(l.getTitulo(), l.getDescricao() != null ? l.getDescricao() : "Sem descrição",
-					l.getTipo(), amanha, idReferencia));
-		}
-		return lembretes;
-	}
+        List<Contatos> aniversariantesAmanha = contatosRepositorio
+                .findByDiaEMesAniversario(diaMesAmanha, usuarioLogado.getEmpresa());
 
-	@ModelAttribute("qtdLembretes")
-	public int contarLembretes(@AuthenticationPrincipal UsuarioLogado usuarioLogado) { 
-		return carregarLembretesFuturos(usuarioLogado).size(); 
-	}
+        for (Contatos c : aniversariantesAmanha) {
+            lembretes.add(new LembreteDTO("Aniversário Amanhã",
+                    "Não esqueça de parabenizar " + c.getNome(), "NIVER", amanha, c.getId()));
+        }
 
-    // --- NOVA PARTE: NOTIFICAÇÕES DINÂMICAS ---
-    
-	@ModelAttribute("qtdNotificacoes")
-	public int contarNotificacoesNaoLidas(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
-            // Fazemos o cast (int) porque o count do Spring Data retorna um 'long'
-            // O contador reflete rigorosamente apenas as mensagens não lidas
-			return (int) mensagemLogRepositorio.countByLidaFalseAndEmpresa(usuarioLogado.getEmpresa());
-		}
-		return 0;
-	}
+        LocalDateTime inicioDia = amanha.atStartOfDay();
+        LocalDateTime fimDia = amanha.atTime(LocalTime.MAX);
 
-	@ModelAttribute("listaNotificacoes")
-	public List<MensagemLog> carregarNotificacoesNaoLidas(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-		if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
-            // Utilizamos o método que já traz o Top 5 ordenado pela data mais recente
-			return mensagemLogRepositorio.findTop5ByLidaFalseAndEmpresaOrderByDataEnvioDesc(usuarioLogado.getEmpresa());
-		}
-		return new ArrayList<>();
-	}
+        List<Lembrete> tarefasAmanha = lembreteRepositorio
+                .findByDataHoraBetweenAndEmpresa(inicioDia, fimDia, usuarioLogado.getEmpresa());
+
+        for (Lembrete l : tarefasAmanha) {
+            Long idReferencia = (l.getContato() != null) ? l.getContato().getId() : 0L;
+            lembretes.add(new LembreteDTO(l.getTitulo(),
+                    l.getDescricao() != null ? l.getDescricao() : "Sem descrição",
+                    l.getTipo(), amanha, idReferencia));
+        }
+
+        return lembretes;
+    }
+
+    @ModelAttribute("qtdLembretes")
+    public int contarLembretes(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        return carregarLembretesFuturos(usuarioLogado).size();
+    }
+
+    @ModelAttribute("qtdNotificacoes")
+    public int contarNotificacoesNaoLidas(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
+            return (int) mensagemLogRepositorio.countByLidaFalseAndEmpresa(usuarioLogado.getEmpresa());
+        }
+        return 0;
+    }
+
+    @ModelAttribute("listaNotificacoes")
+    public List<MensagemLog> carregarNotificacoesNaoLidas(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        if (usuarioLogado != null && usuarioLogado.getEmpresa() != null) {
+            return mensagemLogRepositorio
+                    .findTop5ByLidaFalseAndEmpresaOrderByDataEnvioDesc(usuarioLogado.getEmpresa());
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Expõe flag isSuperAdmin para todos os templates Thymeleaf.
+     * Usado para mostrar/esconder campos de seleção de empresa nos formulários.
+     */
+    @ModelAttribute("isSuperAdmin")
+    public boolean isSuperAdmin(@AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+        return usuarioLogado != null && usuarioLogado.isSuperAdmin();
+    }
 }

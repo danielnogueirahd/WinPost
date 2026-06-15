@@ -3,6 +3,8 @@ package com.projeto.sistema.controle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projeto.sistema.modelos.Usuario;
+import com.projeto.sistema.modelos.UsuarioLogado;
 import com.projeto.sistema.repositorios.PerfilRepositorio;
 import com.projeto.sistema.repositorios.UsuarioRepositorio;
 import com.projeto.sistema.servicos.EmpresaService;
@@ -23,107 +26,128 @@ public class UsuarioControle {
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
-    
+
     @Autowired
     private PerfilRepositorio perfilRepositorio;
 
     @Autowired
     private EmpresaService empresaService;
 
-    // A NOSSA MÁQUINA DE CRIPTOGRAFAR SENHAS
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // FECHADURA: Apenas quem tem permissão para VISUALIZAR
+    // --- LISTAR ---
     @PreAuthorize("hasAuthority('USUARIO_VISUALIZAR')")
     @GetMapping
-    public ModelAndView listarUsuarios() {
+    public ModelAndView listarUsuarios(@AuthenticationPrincipal UsuarioLogado logado) {
         ModelAndView mv = new ModelAndView("administrativo/usuarios/lista");
-        mv.addObject("listaUsuarios", usuarioRepositorio.findAll());
+
+        if (logado.isSuperAdmin()) {
+            mv.addObject("listaUsuarios", usuarioRepositorio.findAll());
+        } else {
+            // Tenant Admin: vê apenas usuários da própria empresa
+            mv.addObject("listaUsuarios", usuarioRepositorio.findByEmpresa(logado.getEmpresa()));
+        }
+
         mv.addObject("paginaAtiva", "usuarios");
         return mv;
     }
 
+    // --- NOVO USUÁRIO (formulário) ---
     @PreAuthorize("hasAuthority('USUARIO_CRIAR')")
     @GetMapping("/novo")
-    public ModelAndView novoUsuario() {
+    public ModelAndView novoUsuario(@AuthenticationPrincipal UsuarioLogado logado) {
         ModelAndView mv = new ModelAndView("administrativo/usuarios/cadastro");
         mv.addObject("usuario", new Usuario());
-        mv.addObject("listaPerfis", perfilRepositorio.findAll());
-        
-        // Esta linha é obrigatória para o dropdown de empresas aparecer!
-        mv.addObject("listaEmpresas", empresaService.listarTodas()); 
-        
+
+        // Perfis: Super Admin vê todos; Tenant Admin vê os da sua empresa + globais
+        if (logado.isSuperAdmin()) {
+            mv.addObject("listaPerfis", perfilRepositorio.findAll());
+            mv.addObject("listaEmpresas", empresaService.listarTodas());
+            mv.addObject("isSuperAdmin", true);
+        } else {
+            mv.addObject("listaPerfis", perfilRepositorio.findByEmpresaOrGlobal(logado.getEmpresa()));
+            // Tenant Admin NÃO vê campo empresa — o backend impõe a sua empresa
+            mv.addObject("isSuperAdmin", false);
+        }
+
         mv.addObject("paginaAtiva", "usuarios");
         return mv;
     }
 
-    // FECHADURA: Tanto quem CRIA quanto quem EDITA pode salvar
+    // --- SALVAR (criar + editar) ---
     @PreAuthorize("hasAnyAuthority('USUARIO_CRIAR', 'USUARIO_EDITAR')")
     @PostMapping("/salvar")
-    public String salvarUsuario(Usuario usuario, RedirectAttributes attributes) {
-        
+    public String salvarUsuario(Usuario usuario, RedirectAttributes attributes,
+            @AuthenticationPrincipal UsuarioLogado logado) {
+
         try {
-            // 1. Validação: empresa não selecionada
+            // === TRAVA MULTI-TENANT ===
+            if (!logado.isSuperAdmin()) {
+                // Tenant Admin nunca pode escolher a empresa — forçamos a sua
+                usuario.setEmpresa(logado.getEmpresa());
+            }
+
+            // Validações básicas
             if (usuario.getEmpresa() == null || usuario.getEmpresa().getId() == null) {
-                attributes.addFlashAttribute("mensagemErro", 
-                    "❌ Erro: Você precisa selecionar uma empresa válida para o usuário.");
+                attributes.addFlashAttribute("mensagemErro",
+                        "❌ Erro: Você precisa selecionar uma empresa válida para o usuário.");
                 return "redirect:/administrativo/usuarios/novo";
             }
 
-            // 2. Validação: nome vazio
-            if (usuario.getNome() == null || usuario.getNome().trim().isEmpty()) {
-                attributes.addFlashAttribute("mensagemErro", 
-                    "❌ Erro: O nome completo é obrigatório.");
+            if (isBlank(usuario.getNome())) {
+                attributes.addFlashAttribute("mensagemErro", "❌ Erro: O nome completo é obrigatório.");
                 return "redirect:/administrativo/usuarios/novo";
             }
 
-            // 3. Validação: username vazio
-            if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty()) {
-                attributes.addFlashAttribute("mensagemErro", 
-                    "❌ Erro: O nome de login é obrigatório.");
+            if (isBlank(usuario.getUsername())) {
+                attributes.addFlashAttribute("mensagemErro", "❌ Erro: O nome de login é obrigatório.");
                 return "redirect:/administrativo/usuarios/novo";
             }
 
-            // 4. Validação: email vazio
-            if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
-                attributes.addFlashAttribute("mensagemErro", 
-                    "❌ Erro: O e-mail é obrigatório.");
+            if (isBlank(usuario.getEmail())) {
+                attributes.addFlashAttribute("mensagemErro", "❌ Erro: O e-mail é obrigatório.");
                 return "redirect:/administrativo/usuarios/novo";
             }
 
-            // 5. Validação: perfil não selecionado
             if (usuario.getPerfil() == null || usuario.getPerfil().getId() == null) {
-                attributes.addFlashAttribute("mensagemErro", 
-                    "❌ Erro: Você precisa selecionar um perfil de acesso.");
+                attributes.addFlashAttribute("mensagemErro", "❌ Erro: Você precisa selecionar um perfil de acesso.");
                 return "redirect:/administrativo/usuarios/novo";
             }
 
-            // 6. Lógica de criptografia de senha
+            // === LÓGICA DE SENHA ===
             if (usuario.getId() == null) {
-                // Novo Usuário - senha obrigatória
-                if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
-                    attributes.addFlashAttribute("mensagemErro", 
-                        "❌ Erro: A palavra-passe é obrigatória para novos usuários.");
+                // Novo usuário
+                if (isBlank(usuario.getSenha())) {
+                    attributes.addFlashAttribute("mensagemErro",
+                            "❌ Erro: A senha é obrigatória para novos usuários.");
                     return "redirect:/administrativo/usuarios/novo";
                 }
-                
                 if (usuario.getSenha().length() < 6) {
-                    attributes.addFlashAttribute("mensagemErro", 
-                        "❌ Erro: A palavra-passe deve ter no mínimo 6 caracteres.");
+                    attributes.addFlashAttribute("mensagemErro",
+                            "❌ Erro: A senha deve ter no mínimo 6 caracteres.");
                     return "redirect:/administrativo/usuarios/novo";
                 }
-                
-                String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
-                usuario.setSenha(senhaCriptografada);
+                usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
             } else {
-                // Edição: Busca o atual para preservar senha se o campo vier vazio
+                // Edição
+                // Garante que o Tenant Admin não edita usuário de outra empresa
+                if (!logado.isSuperAdmin()) {
+                    Usuario usuarioExistente = usuarioRepositorio.findById(usuario.getId()).orElse(null);
+                    if (usuarioExistente == null ||
+                            !usuarioExistente.getEmpresa().getId().equals(logado.getEmpresa().getId())) {
+                        attributes.addFlashAttribute("mensagemErro",
+                                "❌ Acesso negado: Você não pode editar usuários de outra empresa.");
+                        return "redirect:/administrativo/usuarios";
+                    }
+                }
+
                 Usuario usuarioAntigo = usuarioRepositorio.findById(usuario.getId()).orElse(null);
                 if (usuarioAntigo != null) {
-                    if (usuario.getSenha() != null && !usuario.getSenha().trim().isEmpty()) {
+                    if (!isBlank(usuario.getSenha())) {
                         if (usuario.getSenha().length() < 6) {
-                            attributes.addFlashAttribute("mensagemErro", 
-                                "❌ Erro: A palavra-passe deve ter no mínimo 6 caracteres.");
+                            attributes.addFlashAttribute("mensagemErro",
+                                    "❌ Erro: A senha deve ter no mínimo 6 caracteres.");
                             return "redirect:/administrativo/usuarios/novo";
                         }
                         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
@@ -133,52 +157,80 @@ public class UsuarioControle {
                 }
             }
 
-            // 7. Salva no banco
             usuarioRepositorio.save(usuario);
-            attributes.addFlashAttribute("mensagemSucesso", 
-                "✅ Usuário salvo com sucesso!");
-            
-            // Redireciona para a lista de usuários (não para perfis!)
+            attributes.addFlashAttribute("mensagemSucesso", "✅ Usuário salvo com sucesso!");
             return "redirect:/administrativo/usuarios";
 
         } catch (DataIntegrityViolationException e) {
-            // Erro de Foreign Key - empresa não existe
-            attributes.addFlashAttribute("mensagemErro", 
-                "❌ Erro: A empresa selecionada não existe no sistema. Contate o administrador.");
-            System.err.println("Erro de Foreign Key: " + e.getMessage());
-            e.printStackTrace();
+            attributes.addFlashAttribute("mensagemErro",
+                    "❌ Erro: A empresa selecionada não existe ou ocorreu violação de unicidade.");
             return "redirect:/administrativo/usuarios/novo";
-            
         } catch (Exception e) {
-            attributes.addFlashAttribute("mensagemErro", 
-                "❌ Erro ao salvar usuário: " + e.getMessage());
-            System.err.println("Erro geral ao salvar usuário: " + e.getMessage());
-            e.printStackTrace();
+            attributes.addFlashAttribute("mensagemErro", "❌ Erro ao salvar usuário: " + e.getMessage());
             return "redirect:/administrativo/usuarios/novo";
         }
     }
 
+    // --- EDITAR ---
     @PreAuthorize("hasAuthority('USUARIO_EDITAR')")
     @GetMapping("/editar/{id}")
-    public ModelAndView editarUsuario(@PathVariable("id") Long id) {
+    public ModelAndView editarUsuario(@PathVariable("id") Long id,
+            @AuthenticationPrincipal UsuarioLogado logado) {
+
+        Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
+
+        if (usuario == null) {
+            return new ModelAndView("redirect:/administrativo/usuarios");
+        }
+
+        // Tenant Admin não pode editar usuário de outra empresa
+        if (!logado.isSuperAdmin() && (usuario.getEmpresa() == null ||
+                !usuario.getEmpresa().getId().equals(logado.getEmpresa().getId()))) {
+            return new ModelAndView("redirect:/administrativo/usuarios");
+        }
+
         ModelAndView mv = new ModelAndView("administrativo/usuarios/cadastro");
-
-        mv.addObject("usuario", usuarioRepositorio.findById(id).orElse(new Usuario()));
-        mv.addObject("listaPerfis", perfilRepositorio.findAll());
-
-        // ADICIONE ESTA LINHA TAMBÉM:
-        mv.addObject("listaEmpresas", empresaService.listarTodas());
-
+        mv.addObject("usuario", usuario);
         mv.addObject("paginaAtiva", "usuarios");
+
+        if (logado.isSuperAdmin()) {
+            mv.addObject("listaPerfis", perfilRepositorio.findAll());
+            mv.addObject("listaEmpresas", empresaService.listarTodas());
+            mv.addObject("isSuperAdmin", true);
+        } else {
+            mv.addObject("listaPerfis", perfilRepositorio.findByEmpresaOrGlobal(logado.getEmpresa()));
+            mv.addObject("isSuperAdmin", false);
+        }
 
         return mv;
     }
 
-    // FECHADURA: Apenas quem tem permissão para EXCLUIR
+    // --- REMOVER ---
     @PreAuthorize("hasAuthority('USUARIO_EXCLUIR')")
     @GetMapping("/remover/{id}")
-    public String removerUsuario(@PathVariable("id") Long id) {
+    public String removerUsuario(@PathVariable("id") Long id,
+            @AuthenticationPrincipal UsuarioLogado logado,
+            RedirectAttributes attributes) {
+
+        Usuario usuario = usuarioRepositorio.findById(id).orElse(null);
+        if (usuario == null) {
+            return "redirect:/administrativo/usuarios";
+        }
+
+        // Tenant Admin não pode excluir usuário de outra empresa
+        if (!logado.isSuperAdmin() && (usuario.getEmpresa() == null ||
+                !usuario.getEmpresa().getId().equals(logado.getEmpresa().getId()))) {
+            attributes.addFlashAttribute("mensagemErro",
+                    "❌ Acesso negado: Você não pode excluir usuários de outra empresa.");
+            return "redirect:/administrativo/usuarios";
+        }
+
         usuarioRepositorio.deleteById(id);
+        attributes.addFlashAttribute("mensagemSucesso", "✅ Usuário removido com sucesso.");
         return "redirect:/administrativo/usuarios";
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

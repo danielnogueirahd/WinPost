@@ -21,30 +21,37 @@ import com.projeto.sistema.repositorios.UsuarioRepositorio;
 @Transactional
 public class ImplementsUserDetailsService implements UserDetailsService {
 
-	@Autowired
-	private UsuarioRepositorio usuarioRepositorio;
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
 
-	@Override
-	public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-		// Agora passamos o que a pessoa digitou para os dois parâmetros (Username OU
-		// Email)
-		Usuario usuario = usuarioRepositorio.findByUsernameOrEmail(login, login);
+    @Override
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepositorio.findByUsernameOrEmail(login, login);
 
-		if (usuario == null) {
-			throw new UsernameNotFoundException("Usuário não encontrado!");
-		}
+        if (usuario == null) {
+            throw new UsernameNotFoundException("Usuário não encontrado!");
+        }
 
-		// Traduz as permissões do seu Perfil para os "Crachás" do Spring Security
-		List<GrantedAuthority> autoridades = new ArrayList<>();
+        List<GrantedAuthority> autoridades = new ArrayList<>();
 
-		if (usuario.getPerfil() != null && usuario.getPerfil().getPermissoes() != null) {
-			for (Permissao permissao : usuario.getPerfil().getPermissoes()) {
-				autoridades.add(new SimpleGrantedAuthority(permissao.name()));
-			}
-		}
+        if (usuario.getPerfil() != null && usuario.getPerfil().getPermissoes() != null) {
+            for (Permissao permissao : usuario.getPerfil().getPermissoes()) {
+                autoridades.add(new SimpleGrantedAuthority(permissao.name()));
+            }
+        }
 
-		// Retorna o nosso UsuarioLogado
-		return new UsuarioLogado(usuario.getUsername(), usuario.getSenha(), autoridades, usuario.getEmpresa(),
-				usuario.getId(), usuario.getNome());
-	}
+        // Super Admin: usuário sem empresa vinculada (Admin Master) OU com permissão CONFIGURACOES_SISTEMA
+        boolean isSuperAdmin = (usuario.getEmpresa() == null) ||
+                autoridades.stream().anyMatch(a -> a.getAuthority().equals("CONFIGURACOES_SISTEMA"));
+
+        return new UsuarioLogado(
+                usuario.getUsername(),
+                usuario.getSenha(),
+                autoridades,
+                usuario.getEmpresa(),
+                usuario.getId(),
+                usuario.getNome(),
+                isSuperAdmin
+        );
+    }
 }
