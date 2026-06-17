@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -105,7 +106,6 @@ public class GrupoControle {
         return mv;
     }
 
-    // FECHADURA: Apenas quem pode CRIAR grupos
     @PreAuthorize("hasAuthority('GRUPO_CRIAR')")
     @PostMapping("/salvar")
     public String salvar(@Valid Grupo grupo, BindingResult result,
@@ -117,14 +117,20 @@ public class GrupoControle {
             return "grupos/cadastro";
         }
 
-        // CARIMBA A EMPRESA ANTES DE SALVAR O GRUPO
+        // Carimba a empresa do usuário logado
         grupo.setEmpresa(usuarioLogado.getEmpresa());
 
-        grupoService.salvarGrupoComContatos(grupo, idsContatos);
-
-        attributes.addFlashAttribute("mensagem",
-                "Grupo salvo com sucesso com " + (idsContatos != null ? idsContatos.size() : 0) + " membros!");
-        return "redirect:/grupos/gerenciar";
+        try {
+            grupoService.salvarGrupoComContatos(grupo, idsContatos);
+            attributes.addFlashAttribute("mensagem", "Grupo salvo com sucesso!");
+            return "redirect:/grupos/gerenciar";
+            
+        } catch (DataIntegrityViolationException e) {
+            // Captura o erro de duplicidade e avisa o usuário de forma elegante
+            attributes.addFlashAttribute("mensagemErro", 
+                "Já existe um grupo com o nome '" + grupo.getNome() + "' cadastrado para sua empresa.");
+            return "redirect:/grupos/cadastro";
+        }
     }
 
     // FECHADURA: Apenas quem pode VISUALIZAR grupos

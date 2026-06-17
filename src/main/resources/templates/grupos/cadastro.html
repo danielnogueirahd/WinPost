@@ -5,10 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Novo Grupo | WinPost</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+<link
+	href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+	rel="stylesheet">
 <link rel="stylesheet" href="/css/estilo.css">
 
 <style>
@@ -16,39 +22,63 @@
    NOVO GRUPO — WinPost Design System
    navy #1a2f6e | blue #2b52c0 | surface #f9fafb | border #eaecf0
    ========================================================================= */
-body { font-family: 'Inter', sans-serif; }
+body {
+	font-family: 'Inter', sans-serif;
+}
 
 /* --- HEADER --- */
 .group-header {
 	background: #fff;
 	border: 1px solid #eaecf0;
 	border-radius: 12px;
-	box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 	padding: 1.25rem 1.5rem;
 }
+
 .group-header .header-icon {
-	width: 46px; height: 46px;
+	width: 46px;
+	height: 46px;
 	border-radius: 12px;
 	background: linear-gradient(135deg, #2b52c0, #1a2f6e);
 	color: #fff;
-	display: flex; align-items: center; justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	font-size: 1.2rem;
-	box-shadow: 0 4px 10px rgba(43,82,192,0.25);
+	box-shadow: 0 4px 10px rgba(43, 82, 192, 0.25);
 	flex-shrink: 0;
 }
-.group-header .breadcrumb { margin-bottom: 2px; }
-.group-header .breadcrumb-item { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.6px; color: #9ca3af; }
-.group-header .breadcrumb-item.active { color: #2b52c0; font-weight: 700; }
-.group-header .breadcrumb-item + .breadcrumb-item::before { content: "›"; color: #d1d5db; }
+
+.group-header .breadcrumb {
+	margin-bottom: 2px;
+}
+
+.group-header .breadcrumb-item {
+	font-size: 0.74rem;
+	text-transform: uppercase;
+	letter-spacing: 0.6px;
+	color: #9ca3af;
+}
+
+.group-header .breadcrumb-item.active {
+	color: #2b52c0;
+	font-weight: 700;
+}
+
+.group-header .breadcrumb-item+.breadcrumb-item::before {
+	content: "›";
+	color: #d1d5db;
+}
 
 /* --- SECTION CARDS --- */
 .form-section {
 	background: #fff;
 	border: 1px solid #eaecf0;
 	border-radius: 12px;
-	box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 	overflow: hidden;
 }
+
 .form-section-head {
 	background: #f9fafb;
 	border-bottom: 1px solid #eaecf0;
@@ -58,6 +88,7 @@ body { font-family: 'Inter', sans-serif; }
 	justify-content: space-between;
 	gap: 10px;
 }
+
 .form-section-head h6 {
 	margin: 0;
 	font-size: 0.8rem;
@@ -66,7 +97,10 @@ body { font-family: 'Inter', sans-serif; }
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
 }
-.form-section-body { padding: 1.5rem; }
+
+.form-section-body {
+	padding: 1.5rem;
+}
 
 /* --- LABELS & INPUTS --- */
 .form-label-modern {
@@ -78,15 +112,17 @@ body { font-family: 'Inter', sans-serif; }
 	margin-bottom: 0.45rem;
 	display: block;
 }
+
 .form-control, .form-select {
 	background-color: #f9fafb !important;
 	border: 1px solid #e5e7eb !important;
 	border-radius: 8px !important;
 }
+
 .form-control:focus, .form-select:focus {
 	background-color: #fff !important;
 	border-color: #2b52c0 !important;
-	box-shadow: 0 0 0 3px rgba(43,82,192,0.1) !important;
+	box-shadow: 0 0 0 3px rgba(43, 82, 192, 0.1) !important;
 }
 
 /* --- CONTADOR DE MEMBROS --- */
@@ -100,10 +136,12 @@ body { font-family: 'Inter', sans-serif; }
 	justify-content: space-between;
 	transition: all 0.25s;
 }
+
 .member-counter.has-members {
 	border-color: #93b4ff;
-	box-shadow: 0 2px 10px rgba(43,82,192,0.12);
+	box-shadow: 0 2px 10px rgba(43, 82, 192, 0.12);
 }
+
 .member-counter-label {
 	font-size: 0.72rem;
 	font-weight: 700;
@@ -111,6 +149,7 @@ body { font-family: 'Inter', sans-serif; }
 	letter-spacing: 0.6px;
 	color: #6b7280;
 }
+
 .member-counter-value {
 	font-size: 2rem;
 	font-weight: 700;
@@ -118,26 +157,32 @@ body { font-family: 'Inter', sans-serif; }
 	line-height: 1;
 	transition: transform 0.2s;
 }
+
 .member-counter-icon {
-	width: 44px; height: 44px;
+	width: 44px;
+	height: 44px;
 	border-radius: 10px;
 	background: #fff;
 	color: #2b52c0;
-	display: flex; align-items: center; justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	font-size: 1.2rem;
-	box-shadow: 0 2px 6px rgba(43,82,192,0.15);
+	box-shadow: 0 2px 6px rgba(43, 82, 192, 0.15);
 }
 
 /* --- BOTÕES --- */
 .btn-primary {
 	background: linear-gradient(135deg, #2b52c0, #1a2f6e) !important;
 	border: none !important;
-	box-shadow: 0 2px 8px rgba(43,82,192,0.22) !important;
+	box-shadow: 0 2px 8px rgba(43, 82, 192, 0.22) !important;
 }
+
 .btn-primary:hover {
 	background: linear-gradient(135deg, #1a2f6e, #0f1d45) !important;
-	box-shadow: 0 4px 12px rgba(43,82,192,0.32) !important;
+	box-shadow: 0 4px 12px rgba(43, 82, 192, 0.32) !important;
 }
+
 .btn-primary:disabled {
 	background: #d1d5db !important;
 	box-shadow: none !important;
@@ -164,35 +209,53 @@ body { font-family: 'Inter', sans-serif; }
 	font-weight: 700;
 	padding: 12px 16px;
 }
+
 #tabelaSelecao tbody td {
 	padding: 12px 16px;
 	border-color: #f3f4f6;
 	vertical-align: middle;
 }
+
 #tabelaSelecao tbody tr {
 	cursor: pointer;
 	transition: background-color 0.15s;
 }
-#tabelaSelecao tbody tr:hover { background-color: #f8faff; }
+
+#tabelaSelecao tbody tr:hover {
+	background-color: #f8faff;
+}
+
 #tabelaSelecao tbody tr.row-selected {
 	background-color: #eef2ff !important;
 }
+
 #tabelaSelecao tbody tr.row-selected td:first-child {
 	border-left: 3px solid #2b52c0;
 }
-#tabelaSelecao tbody tr.row-selected .contact-name { color: #1a2f6e; }
+
+#tabelaSelecao tbody tr.row-selected .contact-name {
+	color: #1a2f6e;
+}
 
 .avatar-modern {
-	width: 38px; height: 38px;
+	width: 38px;
+	height: 38px;
 	background: #eff6ff;
 	color: #2b52c0;
 	border-radius: 10px;
-	display: flex; align-items: center; justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	font-weight: 700;
-	border: 1px solid rgba(43,82,192,0.12);
+	border: 1px solid rgba(43, 82, 192, 0.12);
 	flex-shrink: 0;
 }
-.contact-name { font-weight: 600; font-size: 0.9rem; color: #111827; }
+
+.contact-name {
+	font-weight: 600;
+	font-size: 0.9rem;
+	color: #111827;
+}
 
 .badge-soft {
 	background-color: #f3f4f6;
@@ -212,13 +275,19 @@ body { font-family: 'Inter', sans-serif; }
 	border-radius: 8px;
 	transition: all 0.18s;
 }
-#btnToggleAll:hover { background: #eef2ff; border-color: #c7d2fe; color: #1a2f6e; }
+
+#btnToggleAll:hover {
+	background: #eef2ff;
+	border-color: #c7d2fe;
+	color: #1a2f6e;
+}
 
 /* --- SCROLL DA TABELA EM TELAS GRANDES --- */
 .table-scroll-wrap {
 	max-height: 560px;
 	overflow-y: auto;
 }
+
 .table-scroll-wrap thead th {
 	position: sticky;
 	top: 0;
@@ -237,7 +306,8 @@ body { font-family: 'Inter', sans-serif; }
 				<div class="col-xl-11">
 
 					<!-- HEADER -->
-					<div class="group-header d-flex justify-content-between align-items-center mb-4">
+					<div
+						class="group-header d-flex justify-content-between align-items-center mb-4">
 						<div class="d-flex align-items-center gap-3">
 							<div class="header-icon">
 								<i class="fa-solid fa-layer-group"></i>
@@ -252,153 +322,191 @@ body { font-family: 'Inter', sans-serif; }
 								<h3 class="fw-bold text-dark mb-0 h4">Novo Grupo</h3>
 							</div>
 						</div>
-						<a href="/grupos/gerenciar" class="btn btn-outline-secondary fw-bold rounded-pill px-4">
+						<a href="/grupos/gerenciar"
+							class="btn btn-outline-secondary fw-bold rounded-pill px-4">
 							<i class="fa-solid fa-arrow-left me-2"></i>Voltar
 						</a>
 					</div>
+					<div th:if="${mensagemErro}"
+						class="alert alert-danger d-flex align-items-center rounded-3 mb-4"
+						role="alert">
+						<i class="fa-solid fa-circle-exclamation me-3"></i> <span
+							th:text="${mensagemErro}"></span>
+					</div>
 
-					<form th:action="@{/grupos/salvar}" method="post" id="formGrupo" th:object="${grupo}">
-						<input type="hidden" id="idsContatos" name="idsContatos" />
+					<form th:action="@{/grupos/salvar}" method="post" id="formGrupo"
+						th:object="${grupo}">
 
-						<div class="row g-4">
+						<form th:action="@{/grupos/salvar}" method="post" id="formGrupo"
+							th:object="${grupo}">
+							<input type="hidden" id="idsContatos" name="idsContatos" />
 
-							<!-- COLUNA ESQUERDA: INFORMAÇÕES DO GRUPO -->
-							<div class="col-lg-4">
-								<div class="sticky-top" style="top: 90px;">
+							<div class="row g-4">
+
+								<!-- COLUNA ESQUERDA: INFORMAÇÕES DO GRUPO -->
+								<div class="col-lg-4">
+									<div class="sticky-top" style="top: 90px;">
+										<div class="form-section mb-3">
+											<div class="form-section-head">
+												<h6>
+													<i class="fa-solid fa-pen-to-square text-primary me-2"></i>Informações
+													do Grupo
+												</h6>
+											</div>
+											<div class="form-section-body">
+												<div class="mb-3">
+													<label for="inputNome" class="form-label-modern">Nome
+														do Grupo *</label> <input type="text" class="form-control"
+														id="inputNome" th:field="*{nome}"
+														placeholder="Ex: Clientes VIP" required>
+												</div>
+
+												<div class="mb-0">
+													<label for="inputDescricao" class="form-label-modern">Descrição</label>
+													<textarea class="form-control" id="inputDescricao"
+														th:field="*{descricao}" rows="4"
+														placeholder="Para que serve este grupo?"></textarea>
+												</div>
+											</div>
+										</div>
+
+										<!-- CONTADOR DE MEMBROS -->
+										<div class="member-counter mb-3" id="memberCounter">
+											<div>
+												<div class="member-counter-label mb-1">Membros
+													selecionados</div>
+												<div class="member-counter-value" id="contadorSelecao">0</div>
+											</div>
+											<div class="member-counter-icon">
+												<i class="fa-solid fa-users"></i>
+											</div>
+										</div>
+
+										<button type="submit"
+											class="btn btn-primary fw-bold w-100 py-3 rounded-pill"
+											id="btnSalvarGrupo">
+											<i class="fa-solid fa-floppy-disk me-2"></i>Salvar Grupo
+										</button>
+										<p class="text-center text-muted small mt-2 mb-0"
+											id="hintSalvar">
+											<i class="fa-regular fa-circle-question me-1"></i>Selecione
+											ao menos um contato para continuar.
+										</p>
+									</div>
+								</div>
+
+								<!-- COLUNA DIREITA: SELEÇÃO DE MEMBROS -->
+								<div class="col-lg-8">
 									<div class="form-section mb-3">
 										<div class="form-section-head">
-											<h6><i class="fa-solid fa-pen-to-square text-primary me-2"></i>Informações do Grupo</h6>
+											<h6>
+												<i class="fa-solid fa-address-book text-primary me-2"></i>Membros
+												Disponíveis
+											</h6>
+											<button type="button" class="btn btn-sm px-3"
+												id="btnToggleAll">
+												<i class="fa-solid fa-check-double text-primary me-2"></i><span
+													id="txtBtnAll">Selecionar Todos</span>
+											</button>
 										</div>
-										<div class="form-section-body">
-											<div class="mb-3">
-												<label for="inputNome" class="form-label-modern">Nome do Grupo *</label>
-												<input type="text" class="form-control" id="inputNome"
-													th:field="*{nome}" placeholder="Ex: Clientes VIP" required>
+										<div class="form-section-body pb-3">
+											<p class="text-muted small mb-3">Marque os contatos que
+												farão parte deste grupo. Você pode filtrar por data de
+												cadastro para facilitar a busca.</p>
+
+											<div class="filter-toolbar">
+												<form action="/grupos/cadastro" method="get" id="formFiltro"
+													onsubmit="prepararFiltro()" class="row g-2 align-items-end">
+													<input type="hidden" name="nome" id="hiddenNome"> <input
+														type="hidden" name="descricao" id="hiddenDescricao">
+
+													<div class="col-md-4 col-6">
+														<label class="form-label-modern mb-1">Cadastro
+															desde</label> <input type="date"
+															class="form-control form-control-sm" name="dataInicio"
+															th:value="${dataInicio}">
+													</div>
+													<div class="col-md-4 col-6">
+														<label class="form-label-modern mb-1">Até</label> <input
+															type="date" class="form-control form-control-sm"
+															name="dataFim" th:value="${dataFim}">
+													</div>
+													<div class="col-md-4 col-12 d-flex gap-2 mt-2 mt-md-0">
+														<button type="submit"
+															class="btn btn-primary btn-sm fw-bold flex-grow-1 rounded-pill">
+															<i class="fa-solid fa-filter me-1"></i>Filtrar
+														</button>
+														<a th:if="${dataInicio != null or dataFim != null}"
+															href="/grupos/cadastro"
+															class="btn btn-outline-secondary btn-sm fw-bold rounded-pill px-3">Limpar</a>
+													</div>
+												</form>
 											</div>
-
-											<div class="mb-0">
-												<label for="inputDescricao" class="form-label-modern">Descrição</label>
-												<textarea class="form-control" id="inputDescricao"
-													th:field="*{descricao}" rows="4"
-													placeholder="Para que serve este grupo?"></textarea>
-											</div>
 										</div>
 									</div>
 
-									<!-- CONTADOR DE MEMBROS -->
-									<div class="member-counter mb-3" id="memberCounter">
-										<div>
-											<div class="member-counter-label mb-1">Membros selecionados</div>
-											<div class="member-counter-value" id="contadorSelecao">0</div>
-										</div>
-										<div class="member-counter-icon">
-											<i class="fa-solid fa-users"></i>
-										</div>
-									</div>
-
-									<button type="submit" class="btn btn-primary fw-bold w-100 py-3 rounded-pill" id="btnSalvarGrupo">
-										<i class="fa-solid fa-floppy-disk me-2"></i>Salvar Grupo
-									</button>
-									<p class="text-center text-muted small mt-2 mb-0" id="hintSalvar">
-										<i class="fa-regular fa-circle-question me-1"></i>Selecione ao menos um contato para continuar.
-									</p>
-								</div>
-							</div>
-
-							<!-- COLUNA DIREITA: SELEÇÃO DE MEMBROS -->
-							<div class="col-lg-8">
-								<div class="form-section mb-3">
-									<div class="form-section-head">
-										<h6><i class="fa-solid fa-address-book text-primary me-2"></i>Membros Disponíveis</h6>
-										<button type="button" class="btn btn-sm px-3" id="btnToggleAll">
-											<i class="fa-solid fa-check-double text-primary me-2"></i><span id="txtBtnAll">Selecionar Todos</span>
-										</button>
-									</div>
-									<div class="form-section-body pb-3">
-										<p class="text-muted small mb-3">Marque os contatos que farão parte deste grupo. Você pode filtrar por data de cadastro para facilitar a busca.</p>
-
-										<div class="filter-toolbar">
-											<form action="/grupos/cadastro" method="get" id="formFiltro" onsubmit="prepararFiltro()" class="row g-2 align-items-end">
-												<input type="hidden" name="nome" id="hiddenNome">
-												<input type="hidden" name="descricao" id="hiddenDescricao">
-
-												<div class="col-md-4 col-6">
-													<label class="form-label-modern mb-1">Cadastro desde</label>
-													<input type="date" class="form-control form-control-sm" name="dataInicio" th:value="${dataInicio}">
-												</div>
-												<div class="col-md-4 col-6">
-													<label class="form-label-modern mb-1">Até</label>
-													<input type="date" class="form-control form-control-sm" name="dataFim" th:value="${dataFim}">
-												</div>
-												<div class="col-md-4 col-12 d-flex gap-2 mt-2 mt-md-0">
-													<button type="submit" class="btn btn-primary btn-sm fw-bold flex-grow-1 rounded-pill">
-														<i class="fa-solid fa-filter me-1"></i>Filtrar
-													</button>
-													<a th:if="${dataInicio != null or dataFim != null}" href="/grupos/cadastro"
-														class="btn btn-outline-secondary btn-sm fw-bold rounded-pill px-3">Limpar</a>
-												</div>
-											</form>
-										</div>
-									</div>
-								</div>
-
-								<div class="form-section">
-									<div class="table-scroll-wrap">
-										<table class="table align-middle mb-0" id="tabelaSelecao">
-											<thead>
-												<tr>
-													<th class="text-center" style="width: 50px;">
-														<input type="checkbox" class="form-check-input" id="checkAll">
-													</th>
-													<th>Contato</th>
-													<th>Email</th>
-													<th class="text-end px-4">Local</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr th:if="${#lists.isEmpty(listaContatos)}">
-													<td colspan="4" class="text-center py-5 text-muted small">Nenhum contato encontrado para este filtro.</td>
-												</tr>
-												<tr th:each="c : ${listaContatos}" class="row-contato">
-													<td class="text-center">
-														<input type="checkbox" class="form-check-input check-item" th:value="${c.id}">
-													</td>
-													<td>
-														<div class="d-flex align-items-center gap-3">
-															<div class="avatar-modern">
-																<span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
+									<div class="form-section">
+										<div class="table-scroll-wrap">
+											<table class="table align-middle mb-0" id="tabelaSelecao">
+												<thead>
+													<tr>
+														<th class="text-center" style="width: 50px;"><input
+															type="checkbox" class="form-check-input" id="checkAll">
+														</th>
+														<th>Contato</th>
+														<th>Email</th>
+														<th class="text-end px-4">Local</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr th:if="${#lists.isEmpty(listaContatos)}">
+														<td colspan="4" class="text-center py-5 text-muted small">Nenhum
+															contato encontrado para este filtro.</td>
+													</tr>
+													<tr th:each="c : ${listaContatos}" class="row-contato">
+														<td class="text-center"><input type="checkbox"
+															class="form-check-input check-item" th:value="${c.id}">
+														</td>
+														<td>
+															<div class="d-flex align-items-center gap-3">
+																<div class="avatar-modern">
+																	<span th:text="${#strings.substring(c.nome, 0, 1)}">A</span>
+																</div>
+																<div>
+																	<span class="contact-name d-block" th:text="${c.nome}">Nome</span>
+																</div>
 															</div>
-															<div>
-																<span class="contact-name d-block" th:text="${c.nome}">Nome</span>
-															</div>
-														</div>
-													</td>
-													<td class="text-muted small" th:text="${c.email}">email</td>
-													<td class="text-end px-4"><span class="badge-soft" th:text="${c.cidade}">Local</span></td>
-												</tr>
-											</tbody>
-										</table>
+														</td>
+														<td class="text-muted small" th:text="${c.email}">email</td>
+														<td class="text-end px-4"><span class="badge-soft"
+															th:text="${c.cidade}">Local</span></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
 									</div>
 								</div>
+
 							</div>
-
-						</div>
-					</form>
-
+						</form>
 				</div>
 			</div>
 		</div>
 	</main>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-	<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	<script
+		src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 	<script th:src="@{/js/grupos.js}"></script>
 
 	<script>
 		// Feedback visual: linha selecionada + animação do contador
-		document.addEventListener("DOMContentLoaded", function () {
+		document.addEventListener("DOMContentLoaded", function() {
 			const checkItems = document.querySelectorAll('.check-item');
 			const contador = document.getElementById('contadorSelecao');
 			const memberCounter = document.getElementById('memberCounter');
@@ -406,7 +514,7 @@ body { font-family: 'Inter', sans-serif; }
 
 			function atualizarVisual() {
 				let count = 0;
-				checkItems.forEach(function (chk) {
+				checkItems.forEach(function(chk) {
 					const row = chk.closest('tr');
 					if (chk.checked) {
 						row.classList.add('row-selected');
@@ -419,7 +527,9 @@ body { font-family: 'Inter', sans-serif; }
 				if (contador) {
 					contador.textContent = count;
 					contador.style.transform = 'scale(1.15)';
-					setTimeout(function () { contador.style.transform = 'scale(1)'; }, 150);
+					setTimeout(function() {
+						contador.style.transform = 'scale(1)';
+					}, 150);
 				}
 
 				if (memberCounter) {
@@ -427,21 +537,23 @@ body { font-family: 'Inter', sans-serif; }
 				}
 			}
 
-			checkItems.forEach(function (chk) {
+			checkItems.forEach(function(chk) {
 				chk.addEventListener('change', atualizarVisual);
 			});
 
 			// Clique na linha alterna o checkbox (exceto clique direto no input)
-			document.querySelectorAll('#tabelaSelecao tbody tr.row-contato').forEach(function (row) {
-				row.addEventListener('click', function (e) {
-					if (e.target.tagName.toLowerCase() === 'input') return;
-					const chk = row.querySelector('.check-item');
-					if (chk) {
-						chk.checked = !chk.checked;
-						chk.dispatchEvent(new Event('change'));
-					}
-				});
-			});
+			document.querySelectorAll('#tabelaSelecao tbody tr.row-contato')
+					.forEach(function(row) {
+						row.addEventListener('click', function(e) {
+							if (e.target.tagName.toLowerCase() === 'input')
+								return;
+							const chk = row.querySelector('.check-item');
+							if (chk) {
+								chk.checked = !chk.checked;
+								chk.dispatchEvent(new Event('change'));
+							}
+						});
+					});
 
 			atualizarVisual();
 		});

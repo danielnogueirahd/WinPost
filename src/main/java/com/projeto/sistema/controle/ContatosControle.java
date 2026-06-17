@@ -16,11 +16,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.projeto.sistema.modelos.Contatos;
+import com.projeto.sistema.modelos.Empresa;
 import com.projeto.sistema.modelos.UF;
 import com.projeto.sistema.modelos.UsuarioLogado;
 import com.projeto.sistema.repositorios.ContatosRepositorio;
 import com.projeto.sistema.repositorios.GrupoRepositorio;
 import com.projeto.sistema.servicos.ContatosService;
+import com.projeto.sistema.servicos.EmpresaService;
 
 import jakarta.validation.Valid;
 
@@ -36,46 +38,36 @@ public class ContatosControle {
     @Autowired
     private GrupoRepositorio grupoRepositorio;
 
-    // 1. TELA DE CADASTRO
+    // ── NOVO: injeção do EmpresaService ──────────────────────────────────────
+    @Autowired
+    private EmpresaService empresaService;
+
+    // =========================================================================
+    // GET — Formulário de cadastro / edição
+    // =========================================================================
     @PreAuthorize("hasAuthority('CONTATO_CRIAR')")
     @GetMapping("/cadastroContatos")
-    public ModelAndView cadastrar(Contatos contatos, @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+    public ModelAndView cadastrar(Contatos contatos,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+
         ModelAndView mv = new ModelAndView("contatos/cadastroContatos");
         mv.addObject("contato", contatos);
         mv.addObject("listaEstados", UF.values());
-        // Super Admin pode selecionar empresa no formulário
-        mv.addObject("isSuperAdmin", usuarioLogado.isSuperAdmin());
-        return mv;
-    }
 
-    // 2. LISTAR (filtrado por empresa)
-    @PreAuthorize("hasAuthority('CONTATO_VISUALIZAR')")
-    @GetMapping("/listarContatos")
-    public ModelAndView listar(
-            @RequestParam(value = "nome", required = false) String nome,
-            @RequestParam(value = "cidade", required = false) String cidade,
-            @RequestParam(value = "grupoId", required = false) Long grupoId,
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-
-        ModelAndView mv = new ModelAndView("contatos/lista");
-
-        mv.addObject("listaContatos",
-                contatosService.buscar(nome, cidade, grupoId, usuarioLogado.getEmpresa()));
-
-        mv.addObject("listaEstados", UF.values());
-
-        // Grupos filtrados pela empresa do usuário
+        // ── REGRA 1: Super Admin recebe a lista de empresas ativas ──────────
         if (usuarioLogado.isSuperAdmin()) {
-            mv.addObject("listaGrupos", grupoRepositorio.findAll());
-        } else {
-            mv.addObject("listaGrupos", grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
+            mv.addObject("listaEmpresas", empresaService.listarTodas());
         }
+        // isSuperAdmin já é exposto globalmente pelo GlobalAtributos,
+        // mas adicionamos aqui também para garantir disponibilidade local.
+        mv.addObject("isSuperAdmin", usuarioLogado.isSuperAdmin());
 
-        mv.addObject("grupoSelecionado", grupoId);
         return mv;
     }
 
-    // 3. EDITAR
+    // =========================================================================
+    // GET — Editar contato existente
+    // =========================================================================
     @PreAuthorize("hasAuthority('CONTATO_EDITAR')")
     @GetMapping("/editarContatos/{id}")
     public ModelAndView editar(@PathVariable("id") Long id,
@@ -89,8 +81,9 @@ public class ContatosControle {
 
         // Tenant Admin não pode editar contato de outra empresa
         if (!usuarioLogado.isSuperAdmin()) {
-            if (contatos.get().getEmpresa() == null ||
-                    !contatos.get().getEmpresa().getId().equals(usuarioLogado.getEmpresa().getId())) {
+            Empresa empresaDoContato = contatos.get().getEmpresa();
+            Empresa empresaDoUsuario = usuarioLogado.getEmpresa();
+            if (empresaDoContato == null || !empresaDoContato.getId().equals(empresaDoUsuario.getId())) {
                 return new ModelAndView("redirect:/listarContatos");
             }
         }
@@ -98,32 +91,104 @@ public class ContatosControle {
         return cadastrar(contatos.get(), usuarioLogado);
     }
 
-    // 4. REMOVER
+    // =========================================================================
+    // GET — Listar contatos
+    // =========================================================================
+    @PreAuthorize("hasAuthority('CONTATO_VISUALIZAR')")
+    @GetMapping("/listarContatos")
+    public ModelAndView listar(
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "cidade", required = false) String cidade,
+            @RequestParam(value = "grupoId", required = false) Long grupoId,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+
+        ModelAndView mv = new ModelAndView("contatos/lista");
+
+        mv.addObject("listaContatos",
+                contatosService.buscar(nome, cidade, grupoId, usuarioLogado.getEmpresa()));
+        mv.addObject("listaEstados", UF.values());
+
+        if (usuarioLogado.isSuperAdmin()) {
+            mv.addObject("listaGrupos", grupoRepositorio.findAll());
+        } else {
+            mv.addObject("listaGrupos", grupoRepositorio.findByEmpresa(usuarioLogado.getEmpresa()));
+        }
+
+        mv.addObject("grupoSelecionado", grupoId);
+        return mv;
+    }
+
+    // =========================================================================
+    // POST — Salvar (criar + editar)
+    // =========================================================================
+    @PreAuthorize("hasAnyAuthority('CONTATO_CRIAR', 'CONTATO_EDITAR')")
+    @PostMapping("/salvarContato")
+    public ModelAndView salvar(
+            @Valid @ModelAttribute("contato") Contatos contatos,
+            BindingResult result,
+            // ── NOVO: recebe o empresaId apenas quando Super Admin submete ──
+            @RequestParam(value = "empresaId", required = false) Long empresaId,
+            RedirectAttributes attributes,
+            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
+
+        if (result.hasErrors()) {
+            // Recarrega lista de empresas se houver erro de validação e for SA
+            ModelAndView mv = new ModelAndView("contatos/cadastroContatos");
+            mv.addObject("contato", contatos);
+            mv.addObject("listaEstados", UF.values());
+            mv.addObject("isSuperAdmin", usuarioLogado.isSuperAdmin());
+            if (usuarioLogado.isSuperAdmin()) {
+                mv.addObject("listaEmpresas", empresaService.listarTodas());
+            }
+            return mv;
+        }
+
+        // ── REGRA 2: definição da empresa no contato ─────────────────────────
+        if (usuarioLogado.isSuperAdmin()) {
+            // Super Admin DEVE ter selecionado uma empresa na tela
+            if (empresaId == null) {
+                ModelAndView mv = new ModelAndView("contatos/cadastroContatos");
+                mv.addObject("contato", contatos);
+                mv.addObject("listaEstados", UF.values());
+                mv.addObject("isSuperAdmin", true);
+                mv.addObject("listaEmpresas", empresaService.listarTodas());
+                mv.addObject("erroEmpresa", "Selecione a empresa à qual este contato pertence.");
+                return mv;
+            }
+            // Busca a entidade Empresa pelo ID recebido do formulário
+            Empresa empresaSelecionada = empresaService.buscarPorId(empresaId);
+            if (empresaSelecionada == null || !empresaSelecionada.isAtivo()) {
+                ModelAndView mv = new ModelAndView("contatos/cadastroContatos");
+                mv.addObject("contato", contatos);
+                mv.addObject("listaEstados", UF.values());
+                mv.addObject("isSuperAdmin", true);
+                mv.addObject("listaEmpresas", empresaService.listarTodas());
+                mv.addObject("erroEmpresa", "Empresa inválida ou inativa. Selecione outra.");
+                return mv;
+            }
+            contatos.setEmpresa(empresaSelecionada);
+
+        } else {
+            // Tenant: ignora qualquer empresa que possa ter vindo do request
+            // — o backend injeta a empresa do próprio usuário logado
+            contatos.setEmpresa(usuarioLogado.getEmpresa());
+        }
+
+        contatosService.salvar(contatos);
+
+        attributes.addFlashAttribute("mensagemSucesso", "Contato salvo com sucesso!");
+        return new ModelAndView("redirect:/listarContatos");
+    }
+
+    // =========================================================================
+    // GET — Remover
+    // =========================================================================
     @PreAuthorize("hasAuthority('CONTATO_EXCLUIR')")
     @GetMapping("/removerContatos/{id}")
     public ModelAndView remover(@PathVariable("id") Long id,
             @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
 
         contatosService.excluirComSeguranca(id, usuarioLogado.getEmpresa());
-        return new ModelAndView("redirect:/listarContatos");
-    }
-
-    // 5. SALVAR
-    @PreAuthorize("hasAnyAuthority('CONTATO_CRIAR', 'CONTATO_EDITAR')")
-    @PostMapping("/salvarContato")
-    public ModelAndView salvar(
-            @Valid @ModelAttribute("contato") Contatos contatos,
-            BindingResult result,
-            RedirectAttributes attributes,
-            @AuthenticationPrincipal UsuarioLogado usuarioLogado) {
-
-        if (result.hasErrors()) {
-            return cadastrar(contatos, usuarioLogado);
-        }
-
-        contatosService.salvar(contatos);
-
-        attributes.addFlashAttribute("mensagemSucesso", "Contato cadastrado com sucesso!");
         return new ModelAndView("redirect:/listarContatos");
     }
 }
