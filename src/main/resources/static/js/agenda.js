@@ -168,7 +168,7 @@ function verDetalhesDia(dia, mes, ano) {
                     </div>
                 `;
             });
-            
+
             // ESSAS DUAS LINHAS ESTAVAM FALTANDO NO SEU CÓDIGO!
             $('#listaDetalhes').html(html);
         }
@@ -294,40 +294,36 @@ function salvarNovoTipo() {
     const icone = $('#novoTipoIcone').val();
     const cor = $('#novoTipoCor').val();
 
-    if (!nome) { Swal.fire('Atenção', 'Dê um nome ao tipo.', 'warning'); return; }
+    if (!nome) {
+        Swal.fire('Atenção', 'Dê um nome ao tipo.', 'warning');
+        return;
+    }
 
-    const payload = { nome: nome, icone: icone, corHex: cor };
-    const btn = document.querySelector('#areaCriacaoTipo button');
-    const textoOriginal = btn.innerHTML;
-    btn.innerHTML = 'Salvando...'; btn.disabled = true;
+    // 1. Gera um ID único provisório para o HTML não ter conflito de IDs
+    const novoId = 'tipo_novo_' + new Date().getTime();
 
-    $.ajax({
-        url: '/api/tipos-evento', type: 'POST', contentType: 'application/json',
-        data: JSON.stringify(payload),
-        success: function(novoTipo) {
-            const novoId = 'tipo' + novoTipo.id;
-            const htmlCard = `
-        <input type="radio" class="btn-check" name="tipo" id="${novoId}" value="${novoTipo.nome}" checked>
+    // 2. Monta o card visual do novo tipo usando os dados preenchidos
+    const htmlCard = `
+        <input type="radio" class="btn-check" name="tipo" id="${novoId}" value="${nome}" checked>
         <label class="btn btn-outline-light text-start p-3 flex-fill border shadow-sm position-relative type-card fade-in" 
-               for="${novoId}" style="min-width: 140px; --cor-personalizada: ${novoTipo.corHex};">
+               for="${novoId}" style="min-width: 140px; --cor-personalizada: ${cor};">
             <div class="d-flex flex-column align-items-center text-center">
                 <div class="icon-box bg-opacity-10 rounded-circle mb-2 d-flex align-items-center justify-content-center" 
-                     style="width: 35px; height: 35px; background-color: ${novoTipo.corHex}20; color: ${novoTipo.corHex}">
-                    <i class="fa-solid ${novoTipo.icone}"></i>
+                     style="width: 35px; height: 35px; background-color: ${cor}20; color: ${cor}">
+                    <i class="fa-solid ${icone}"></i>
                 </div>
-                <div class="fw-bold text-dark small">${novoTipo.nome}</div>
+                <div class="fw-bold text-dark small">${nome}</div>
             </div>
-            <div class="check-indicator" style="color: ${novoTipo.corHex};"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="check-indicator" style="color: ${cor};"><i class="fa-solid fa-circle-check"></i></div>
         </label>`;
-            $('#areaSelecaoTipos').append(htmlCard);
-            alternarModoCriacao(false);
-            $('#novoTipoNome').val('');
-        },
-        error: function() { Swal.fire('Erro', 'Erro ao criar tipo.', 'error'); },
-        complete: function() { btn.innerHTML = textoOriginal; btn.disabled = false; }
-    });
-}
 
+    // 3. Adiciona o card à tela, já selecionado
+    $('#areaSelecaoTipos').append(htmlCard);
+
+    // 4. Fecha a área de criação e limpa o campo de texto
+    alternarModoCriacao(false);
+    $('#novoTipoNome').val('');
+}
 // ==========================================================
 // SINCRONIZAÇÃO DE DATA E HORA (LADO DE FORA DE FORMA CORRETA)
 // ==========================================================

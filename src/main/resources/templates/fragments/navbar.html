@@ -71,7 +71,8 @@
 
 					<li class="nav-item"
 						sec:authorize="hasAuthority('MENSAGEM_VISUALIZAR')"><a
-						class="nav-link" href="/mensagens/enviadas"
+						class="nav-link" href="#"
+						onclick="mostrarAvisoEmConstrucao(event)"
 						th:classappend="${paginaAtiva == 'mensagens'} ? 'active'">Mensagens</a>
 					</li>
 
@@ -134,56 +135,6 @@
 							style="font-size: 0.55rem; padding: 0.25em 0.4em; margin-left: 2px;">
 						</span> <span class="d-lg-none ms-3">Lembretes e Aniversários</span>
 					</a></li>
-
-					<li class="nav-item dropdown ms-lg-2"><a
-						class="nav-link d-flex align-items-center" href="#"
-						id="dropNotificacoes" role="button" data-bs-toggle="dropdown"
-						aria-expanded="false" title="Notificações">
-							<div class="position-relative d-inline-block">
-								<i class="fa-solid fa-bell fs-5"></i> <span id="badgeGeral"
-									th:if="${qtdNotificacoes > 0}"
-									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
-									style="font-size: 0.55rem; padding: 0.25em 0.4em;"> <span
-									id="contadorTexto" th:text="${qtdNotificacoes}"></span>
-								</span>
-							</div> <span class="d-lg-none ms-3">Notificações</span>
-					</a>
-
-						<div id="listaNotificacoesContainer"
-							class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-0"
-							aria-labelledby="dropNotificacoes"
-							style="min-width: 280px; max-width: 95vw;">
-							<div class="p-3 bg-light border-bottom text-center rounded-top">
-								<h6 class="mb-0 fw-bold text-dark">
-									<i class="fa-regular fa-bell me-2"></i>Notificações
-								</h6>
-							</div>
-
-							<div th:each="notif : ${listaNotificacoes}"
-								th:id="'notificacao-' + ${notif.id}"
-								class="dropdown-item p-3 border-bottom notificacao-item"
-								style="white-space: normal;">
-								<div class="d-flex w-100 justify-content-between mb-1">
-									<strong class="text-dark small">Nova notificação</strong> <small
-										class="text-muted ms-2">Agora</small>
-								</div>
-								<p class="mb-2 small text-muted" th:text="${notif.assunto}">Mensagem
-									de notificação...</p>
-								<div class="text-end">
-									<button class="btn btn-sm btn-outline-primary"
-										th:onclick="'marcarEFechar(' + ${notif.id} + ', event)'">
-										<i class="fa-solid fa-check me-1"></i>Lida
-									</button>
-								</div>
-							</div>
-
-							<div id="msgSemNotificacaoJS"
-								th:classappend="${qtdNotificacoes > 0} ? 'd-none' : ''"
-								class="text-center p-4 text-muted small">
-								<i class="fa-regular fa-bell-slash fs-3 mb-2 opacity-50"></i>
-								<p class="mb-0">Nenhuma notificação nova</p>
-							</div>
-						</div></li>
 
 					<li
 						class="nav-item dropdown ms-lg-3 border-start border-light ps-lg-3"
@@ -373,6 +324,8 @@
 
 	<div th:replace="~{fragments/modals :: modalRelatorio}"></div>
 
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 	<script>
     // LÓGICA DO FILTRO DA AGENDA
     document.addEventListener("DOMContentLoaded", function() {
@@ -381,7 +334,7 @@
             btnAgenda.addEventListener('click', function() {
                 const mesSelecionado = document.getElementById('selectMesRelatorio').value;
                 
-                // MUDANÇA AQUI: Apontando para a rota nova e usando a palavra "mes"
+                // Apontando para a rota nova e usando a palavra "mes"
                 const url = '/administrativo/agenda/exportar?mes=' + encodeURIComponent(mesSelecionado);
                 
                 window.open(url, '_blank');
@@ -406,65 +359,29 @@
         }
     });
 
-    // FUNÇÕES DE NOTIFICAÇÕES GERAIS
-    function marcarEFechar(id, event) { 
-        if(event) event.stopPropagation();
-        fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
-        .then(response => { 
-            if(response.ok) { 
-                removerItemVisualmente(id);
-                atualizarContadorBadge(); 
-            } 
-        })
-        .catch(console.error); 
-    } 
-    
-    function lerENavegar(id, url, event) { 
-        if(event) event.preventDefault();
-        fetch('/mensagens/marcar-lida/' + id, { method: 'POST' })
-        .then(() => {
-            atualizarContadorBadge(); 
-            window.location.href = url; 
-        })
-        .catch(() => {
-            window.location.href = url; 
-        }); 
-    } 
-    
-    function removerItemVisualmente(id) {
-        const elemento = document.getElementById('notificacao-' + id); 
-        if (elemento) { 
-            elemento.style.opacity = '0'; 
-            elemento.style.transform = 'translateX(50px)'; 
-            setTimeout(() => { 
-                elemento.remove();
-                verificarListaVazia(); 
-            }, 300); 
-        } 
-    } 
-    
-    function atualizarContadorBadge() {
-        const badge = document.getElementById('badgeGeral'); 
-        const contador = document.getElementById('contadorTexto'); 
-        if(badge && contador) { 
-            let valorAtual = parseInt(contador.innerText); 
-            let novoValor = valorAtual - 1; 
-            if (novoValor <= 0) { 
-                badge.style.display = 'none'; 
-            } else {
-                contador.innerText = novoValor; 
-            } 
-        } 
-    } 
-    
-    function verificarListaVazia() {
-        const container = document.getElementById('listaNotificacoesContainer');
-        if(!container) return; 
-        const itens = container.querySelectorAll('[id^="notificacao-"]'); 
-        if (itens.length === 0) { 
-            const msgVazia = document.getElementById('msgSemNotificacaoJS');
-            if(msgVazia) msgVazia.classList.remove('d-none'); 
-        } 
+    // LÓGICA DO ALERTA DE MÓDULO EM CONSTRUÇÃO
+    function mostrarAvisoEmConstrucao(event) {
+        if (event) event.preventDefault();
+
+        Swal.fire({
+            title: '🚀 Novidade em Breve!',
+            html: `
+                <span class="text-muted">
+                    O módulo de <b>Mensagens e Disparos</b> está em fase final de desenvolvimento,
+                    recebendo os últimos ajustes de segurança, desempenho e interface.
+                    <br><br>
+                    A funcionalidade estará disponível na próxima atualização do sistema.
+                </span>
+            `,
+            icon: 'info',
+            confirmButtonColor: '#2b52c0',
+            confirmButtonText: 'Entendi',
+            customClass: {
+                popup: 'rounded-4 shadow-lg border-0',
+                confirmButton: 'rounded-pill fw-bold px-4 shadow-sm'
+            }
+        });
     }
-</script>
+	</script>
+</div>
 </div>

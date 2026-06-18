@@ -291,19 +291,10 @@ body { font-family: 'Inter', sans-serif; }
 				<div class="row justify-content-center">
 					<div class="col-lg-10">
 
-						<!-- ================================================================
-						     BLOCO EMPRESA — Visível APENAS para o Admin Master (Super Admin)
-						     O Thymeleaf avalia ${isSuperAdmin} injetado pelo controller/GlobalAtributos.
-						     Para usuários comuns, este bloco não existe no HTML renderizado.
-						     ================================================================ -->
 						<div class="empresa-admin-block" th:if="${isSuperAdmin}">
-
-							<!-- Badge identificador -->
 							<span class="empresa-admin-badge">
 								<i class="fa-solid fa-shield-halved"></i> Painel do Admin Master
 							</span>
-
-							<!-- Label e hint explicativo -->
 							<label for="empresaId" class="empresa-admin-title">
 								Empresa Cliente *
 							</label>
@@ -311,42 +302,26 @@ body { font-family: 'Inter', sans-serif; }
 								Como Admin Master, você está registrando este contato em nome de uma empresa cliente.
 								Selecione abaixo a qual empresa este cadastro pertencerá.
 							</p>
-
-							<!-- Select de empresas ativas -->
 							<select id="empresaId"
 									name="empresaId"
 									class="form-select form-select-empresa"
 									th:classappend="${erroEmpresa != null} ? 'is-invalid'"
 									required>
-
 								<option value="" selected disabled>
 									— Selecione a empresa cliente —
 								</option>
-
-								<!--
-								  th:each itera sobre listaEmpresas (List<Empresa>)
-								  th:value = empresa.id  → enviado no POST como "empresaId"
-								  th:text  = razaoSocial → exibido para o usuário
-								  th:selected: se estiver editando um contato existente (contato.id != null),
-								              pré-seleciona a empresa já vinculada ao contato.
-								-->
 								<option th:each="emp : ${listaEmpresas}"
 										th:value="${emp.id}"
 										th:text="${emp.razaoSocial}"
 										th:selected="${contato.empresa != null and contato.empresa.id == emp.id}">
 								</option>
 							</select>
-
-							<!-- Mensagem de erro (visível quando controller devolve o form com erro) -->
 							<p class="empresa-erro-msg" th:if="${erroEmpresa != null}">
 								<i class="fa-solid fa-triangle-exclamation"></i>
 								<span th:text="${erroEmpresa}"></span>
 							</p>
-
 						</div>
-						<!-- /BLOCO EMPRESA -->
 
-						<!-- DADOS PESSOAIS -->
 						<div class="form-section">
 							<div class="form-section-head">
 								<h6><i class="fa-regular fa-id-card text-primary me-2"></i>Dados Pessoais</h6>
@@ -360,7 +335,7 @@ body { font-family: 'Inter', sans-serif; }
 									<div class="col-md-12">
 										<label for="nome" class="form-label-modern">Nome Completo *</label>
 										<input type="text" class="form-control form-control-lg fs-6" id="nome"
-											th:field="*{nome}" maxlength="50"
+											th:field="*{nome}" maxlength="50" required
 											placeholder="Ex: João da Silva" autofocus
 											th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">
 										<div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
@@ -368,7 +343,7 @@ body { font-family: 'Inter', sans-serif; }
 
 									<div class="col-md-5">
 										<label for="email" class="form-label-modern">E-mail *</label>
-										<input type="email" class="form-control" id="email" th:field="*{email}" maxlength="255"
+										<input type="email" class="form-control" id="email" th:field="*{email}" maxlength="255" required
 											placeholder="exemplo@email.com"
 											th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
 										<div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
@@ -376,7 +351,7 @@ body { font-family: 'Inter', sans-serif; }
 
 									<div class="col-md-4">
 										<label for="telefone" class="form-label-modern">Telefone *</label>
-										<input type="text" class="form-control" id="telefone" th:field="*{telefone}"
+										<input type="text" class="form-control" id="telefone" th:field="*{telefone}" required
 											placeholder="(00) 00000-0000"
 											th:classappend="${#fields.hasErrors('telefone')} ? 'is-invalid'">
 										<div class="invalid-feedback" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
@@ -410,7 +385,6 @@ body { font-family: 'Inter', sans-serif; }
 							</div>
 						</div>
 
-						<!-- ENDEREÇO -->
 						<div class="form-section">
 							<div class="form-section-head">
 								<h6><i class="fa-solid fa-map-location-dot text-primary me-2"></i>Endereço</h6>
@@ -420,7 +394,7 @@ body { font-family: 'Inter', sans-serif; }
 									<div class="col-md-3">
 										<label for="cep" class="form-label-modern">CEP *</label>
 										<div class="input-group">
-											<input type="text" class="form-control" id="cep" th:field="*{cep}" placeholder="00000-000"
+											<input type="text" class="form-control" id="cep" th:field="*{cep}" placeholder="00000-000" required
 												onkeydown="if(event.key === 'Enter'){event.preventDefault(); return false;}"
 												th:classappend="${#fields.hasErrors('cep')} ? 'is-invalid'">
 											<span class="input-group-text" id="btnBuscarCep" style="cursor: pointer;" title="Buscar CEP">
@@ -432,14 +406,14 @@ body { font-family: 'Inter', sans-serif; }
 
 									<div class="col-md-7">
 										<label for="rua" class="form-label-modern">Rua *</label>
-										<input type="text" class="form-control" id="rua" th:field="*{rua}" maxlength="150"
+										<input type="text" class="form-control" id="rua" th:field="*{rua}" maxlength="150" required
 											th:classappend="${#fields.hasErrors('rua')} ? 'is-invalid'">
 										<div class="invalid-feedback" th:if="${#fields.hasErrors('rua')}" th:errors="*{rua}"></div>
 									</div>
 
 									<div class="col-md-2">
 										<label for="numero" class="form-label-modern">Número *</label>
-										<input type="number" class="form-control" id="numero" th:field="*{numero}" max="999999"
+										<input type="number" class="form-control" id="numero" th:field="*{numero}" max="999999" required
 											oninput="if(this.value.length > 6) this.value = this.value.slice(0, 6);"
 											th:classappend="${#fields.hasErrors('numero')} ? 'is-invalid'">
 										<div class="invalid-feedback" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
@@ -452,21 +426,21 @@ body { font-family: 'Inter', sans-serif; }
 
 									<div class="col-md-6">
 										<label for="bairro" class="form-label-modern">Bairro *</label>
-										<input type="text" class="form-control" id="bairro" th:field="*{bairro}" maxlength="100"
+										<input type="text" class="form-control" id="bairro" th:field="*{bairro}" maxlength="100" required
 											th:classappend="${#fields.hasErrors('bairro')} ? 'is-invalid'">
 										<div class="invalid-feedback" th:if="${#fields.hasErrors('bairro')}" th:errors="*{bairro}"></div>
 									</div>
 
 									<div class="col-md-8">
 										<label for="cidade" class="form-label-modern">Cidade *</label>
-										<input type="text" class="form-control" id="cidade" th:field="*{cidade}" maxlength="100"
+										<input type="text" class="form-control" id="cidade" th:field="*{cidade}" maxlength="100" required
 											th:classappend="${#fields.hasErrors('cidade')} ? 'is-invalid'">
 										<div class="invalid-feedback" th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}"></div>
 									</div>
 
 									<div class="col-md-4">
 										<label for="estado" class="form-label-modern">Estado *</label>
-										<select class="form-select" id="estado" th:field="*{estado}"
+										<select class="form-select" id="estado" th:field="*{estado}" required
 											th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid'">
 											<option value="">Selecione...</option>
 											<option th:each="uf : ${listaEstados}" th:value="${uf}" th:text="${uf}"></option>
@@ -477,7 +451,6 @@ body { font-family: 'Inter', sans-serif; }
 							</div>
 						</div>
 
-						<!-- GRUPOS VINCULADOS -->
 						<div class="form-section" th:if="${contato.id != null}">
 							<div class="form-section-head">
 								<h6><i class="fa-solid fa-layer-group text-primary me-2"></i>Grupos Vinculados</h6>

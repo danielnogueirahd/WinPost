@@ -122,6 +122,61 @@ body {
 	font-size: 1.75rem;
 	margin-bottom: 1rem;
 }
+
+/* Offcanvas Customizado */
+.offcanvas-modern {
+	width: 420px !important; /* Aproximadamente 30% em telas normais */
+	max-width: 100%;
+	border-left: 1px solid #eaedf1;
+	box-shadow: -8px 0 32px rgba(0, 0, 0, 0.04);
+}
+
+.offcanvas-modern .offcanvas-header {
+	background-color: #fbfcfe;
+}
+
+/* Lista de Membros e Avatares */
+.avatar-minimalist {
+	width: 42px;
+	height: 42px;
+	background-color: #f1f4f8;
+	color: #0d6efd;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 1rem;
+	flex-shrink: 0;
+	border: 1px solid rgba(13, 110, 253, 0.1);
+}
+
+.member-list-item {
+	transition: background-color 0.2s;
+}
+
+.member-list-item:hover {
+	background-color: #f8f9fc;
+}
+
+.clickable-trigger {
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.clickable-trigger:hover .text-dark {
+	color: #0d6efd !important;
+}
+
+.clickable-trigger:hover .badge-soft-primary {
+	background-color: rgba(13, 110, 253, 0.15);
+	border-color: rgba(13, 110, 253, 0.3);
+}
+
+.min-w-0 {
+	min-width: 0;
+	/* Necessário para o text-truncate funcionar dentro do flexbox */
+}
 </style>
 </head>
 
@@ -194,7 +249,10 @@ body {
 								<td class="ps-4 fw-bold text-muted small" th:text="${grupo.id}"></td>
 
 								<td>
-									<div class="d-flex align-items-center">
+									<div class="d-flex align-items-center clickable-trigger"
+										onclick="abrirOffcanvasMembros(this)"
+										th:data-grupo-nome="${grupo.nome}"
+										th:data-grupo-id="${grupo.id}">
 										<div
 											class="bg-light text-primary rounded me-3 d-flex align-items-center justify-content-center shadow-sm"
 											style="width: 36px; height: 36px;">
@@ -211,14 +269,52 @@ body {
 								</td>
 
 								<td class="text-center"><span
-									class="badge badge-soft-primary px-3 py-2 rounded-pill">
-										<i class="fa-solid fa-users me-1 small"></i> <span
+									class="badge badge-soft-primary px-3 py-2 rounded-pill clickable-trigger"
+									onclick="abrirOffcanvasMembros(this)"
+									th:data-grupo-nome="${grupo.nome}"
+									th:data-grupo-id="${grupo.id}"> <i
+										class="fa-solid fa-users me-1 small"></i> <span
 										th:text="${#lists.size(grupo.contatos)}">0</span> membros
-								</span></td>
+								</span>
+
+									<div th:id="'membros-grupo-' + ${grupo.id}"
+										class="d-none text-start">
+										<div th:each="contato : ${grupo.contatos}"
+											class="member-list-item border-0 border-bottom py-3 px-4 d-flex align-items-center gap-3">
+											<div class="avatar-minimalist">
+												<span
+													th:text="${#strings.substring(contato.nome, 0, 1).toUpperCase()}">A</span>
+											</div>
+											<div class="flex-grow-1 min-w-0">
+												<h6 class="mb-0 fw-bold text-dark text-truncate"
+													th:text="${contato.nome}">Nome do Contato</h6>
+												<p class="mb-0 text-muted small text-truncate"
+													th:text="${contato.email != null and !contato.email.isEmpty() ? contato.email : 'Sem e-mail cadastrado'}">email@exemplo.com</p>
+											</div>
+											<div class="text-end"
+												th:if="${contato.cidade != null and !contato.cidade.isEmpty()}">
+												<span
+													class="badge bg-light text-secondary border fw-medium rounded-pill"
+													th:text="${contato.cidade}">Cidade</span>
+											</div>
+										</div>
+
+										<div th:if="${#lists.isEmpty(grupo.contatos)}"
+											class="text-center py-5">
+											<div
+												class="modal-icon-danger bg-light text-muted mb-3 mx-auto"
+												style="width: 56px; height: 56px; font-size: 1.25rem;">
+												<i class="fa-solid fa-user-slash"></i>
+											</div>
+											<h6 class="fw-bold text-dark mb-1">Nenhum membro</h6>
+											<p class="text-muted small mb-0">Este grupo ainda não
+												possui contatos vinculados.</p>
+										</div>
+									</div></td>
 
 								<td class="text-end pe-4">
 									<div class="d-flex justify-content-end gap-1">
-										<a th:href="@{/mensagens/preparar-grupo/{id}(id=${grupo.id})}"
+										<a href="#" onclick="mostrarAvisoEmConstrucao(event)"
 											class="btn btn-action text-success" data-bs-toggle="tooltip"
 											title="Preparar Disparo"> <i
 											class="fa-solid fa-paper-plane"></i>
@@ -279,6 +375,28 @@ body {
 		</div>
 	</div>
 
+	<div class="offcanvas offcanvas-end offcanvas-modern" tabindex="-1"
+		id="offcanvasMembros" aria-labelledby="offcanvasMembrosLabel">
+		<div class="offcanvas-header border-bottom py-3 px-4">
+			<div>
+				<h5 class="offcanvas-title fw-bold text-dark mb-0 h5"
+					id="offcanvasMembrosLabel">Membros do Grupo</h5>
+				<p
+					class="text-muted small mb-0 mt-1 d-flex align-items-center gap-1">
+					<i class="fa-solid fa-layer-group text-primary opacity-75"></i> <span
+						id="offcanvasGrupoNome">Nome do Grupo</span>
+				</p>
+			</div>
+			<button type="button" class="btn-close text-reset shadow-none"
+				data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<div class="offcanvas-body p-0 custom-scrollbar"
+			style="background-color: #fff;">
+			<div id="offcanvasMembrosConteudo" class="d-flex flex-column">
+			</div>
+		</div>
+	</div>
+
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script
@@ -287,46 +405,101 @@ body {
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 	<script>
-        $(document).ready(function() {
-            var table = $('#tabelaGrupos').DataTable({
-                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
-                columnDefs: [{ orderable: false, targets: -1 }],
-                paging: true,
-                dom: 'rtip', // Oculta busca padrão para usar a nossa
-                pageLength: 10
-            });
+		$(document).ready(function() {
+			var table = $('#tabelaGrupos').DataTable({
+				language : { url : 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
+				columnDefs : [ { orderable : false, targets : -1 } ],
+				paging : true,
+				dom : 'rtip',
+				pageLength : 10
+			});
 
-            $('#buscaRapida').on('keyup', function() { table.search(this.value).draw(); });
+			$('#buscaRapida').on('keyup', function() {
+				table.search(this.value).draw();
+			});
 
-            // Inicializar Tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
-        });
+			var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+			tooltipTriggerList.map(function(el) {
+				return new bootstrap.Tooltip(el);
+			});
+		});
 
-        function confirmarExclusaoPremium(botao) {
-            const url = botao.getAttribute('data-url');
-            const nome = botao.getAttribute('data-nome');
-            
-            document.getElementById('nomeGrupoExclusao').textContent = nome;
-            document.getElementById('btnConfirmarExclusaoLink').setAttribute('href', url);
-            
-            var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
-            modal.show();
-        }
-    </script>
+		function confirmarExclusaoPremium(botao) {
+			const url = botao.getAttribute('data-url');
+			const nome = botao.getAttribute('data-nome');
+
+			document.getElementById('nomeGrupoExclusao').textContent = nome;
+			document.getElementById('btnConfirmarExclusaoLink').setAttribute('href', url);
+
+			var modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
+			modal.show();
+		}
+
+		// Função para abrir o Offcanvas dinâmico (SEPARADA do script do Thymeleaf)
+		function abrirOffcanvasMembros(elemento) {
+		    const grupoId = elemento.getAttribute('data-grupo-id');
+		    const grupoNome = elemento.getAttribute('data-grupo-nome');
+
+		    document.getElementById('offcanvasGrupoNome').textContent = grupoNome;
+
+		    const conteudoEscondido = document.getElementById('membros-grupo-' + grupoId);
+		    const containerMembros = document.getElementById('offcanvasMembrosConteudo');
+
+		    if (conteudoEscondido) {
+		        containerMembros.innerHTML = conteudoEscondido.innerHTML;
+		    } else {
+		        containerMembros.innerHTML = '<div class="p-4 text-center text-danger">Falha ao carregar a lista de membros.</div>';
+		    }
+
+		    const offcanvasElement = document.getElementById('offcanvasMembros');
+		    const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
+		    offcanvasInstance.show();
+		}
+		function mostrarAvisoEmConstrucao(event) {
+		    if (event) event.preventDefault();
+
+		    if (typeof Swal !== 'undefined') {
+		        Swal.fire({
+		            title: '🚀 Novidade em Breve!',
+		            html: `
+		                <span class="text-muted">
+		                    O módulo de <b>Mensagens e Disparos</b> está em fase final de desenvolvimento,
+		                    recebendo os últimos ajustes de segurança, desempenho e interface.
+		                    <br><br>
+		                    A funcionalidade estará disponível na próxima atualização do sistema.
+		                </span>
+		            `,
+		            icon: 'info',
+		            confirmButtonColor: '#2b52c0',
+		            confirmButtonText: 'Entendi',
+		            customClass: {
+		                popup: 'rounded-4 shadow-lg border-0',
+		                confirmButton: 'rounded-pill fw-bold px-4 shadow-sm'
+		            }
+		        });
+		    } else {
+		        alert(
+		            "🚀 Novidade em Breve!\n\n" +
+		            "O módulo de Mensagens e Disparos está em fase final de desenvolvimento, recebendo os últimos ajustes de segurança, desempenho e interface.\n\n" +
+		            "A funcionalidade estará disponível na próxima atualização do sistema."
+		        );
+		    }
+		}
+	</script>
+
 
 	<script th:if="${mensagemSucesso} or ${mensagem}">
-        const msg = "[[${mensagemSucesso ?: mensagem}]]";
-        if(msg && msg !== 'null' && msg.trim() !== '') {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: msg,
-                icon: 'success',
-                confirmButtonColor: '#0d6efd',
-                timer: 3000
-            });
-        }
-    </script>
+		const msg = "[[${mensagemSucesso ?: mensagem}]]";
+		if (msg && msg !== 'null' && msg.trim() !== '') {
+			Swal.fire({
+				title : 'Sucesso!',
+				text : msg,
+				icon : 'success',
+				confirmButtonColor : '#0d6efd',
+				timer : 3000
+			});
+		}
+	</script>
 
 </body>
 </html>
