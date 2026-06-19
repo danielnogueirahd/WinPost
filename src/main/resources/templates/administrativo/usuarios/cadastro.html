@@ -126,10 +126,13 @@
 							<label class="form-label fw-bold text-secondary small">Nome
 								de Login</label>
 							<div class="input-group">
-								<span class="input-group-text bg-white text-muted"><i
-									class="fa-solid fa-at"></i></span> <input type="text"
+								<span class="input-group-text bg-white text-muted"> <i
+									class="fa-solid fa-user"></i>
+								</span> <input type="text"
 									class="form-control bg-white border-start-0 py-2 ps-0"
-									th:field="*{username}" placeholder="joao.silva" required>
+									th:field="*{username}" placeholder="joao.silva" required
+									oninput="this.value = this.value.replace('@', '')"
+									title="O nome de login não deve conter o símbolo @">
 							</div>
 						</div>
 

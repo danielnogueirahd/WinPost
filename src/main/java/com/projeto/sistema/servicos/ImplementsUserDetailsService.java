@@ -25,11 +25,13 @@ public class ImplementsUserDetailsService implements UserDetailsService {
     private UsuarioRepositorio usuarioRepositorio;
 
     @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepositorio.findByUsernameOrEmail(login, login);
+    public UserDetails loadUserByUsername(String emailLogin) throws UsernameNotFoundException {
+        
+        // CORREÇÃO: Busca apenas pelo campo EMAIL do usuário
+        Usuario usuario = usuarioRepositorio.findByEmail(emailLogin);
 
         if (usuario == null) {
-            throw new UsernameNotFoundException("Usuário não encontrado!");
+            throw new UsernameNotFoundException("E-mail não encontrado ou inválido!");
         }
 
         List<GrantedAuthority> autoridades = new ArrayList<>();
@@ -45,7 +47,7 @@ public class ImplementsUserDetailsService implements UserDetailsService {
                 autoridades.stream().anyMatch(a -> a.getAuthority().equals("CONFIGURACOES_SISTEMA"));
 
         return new UsuarioLogado(
-                usuario.getUsername(),
+                usuario.getUsername(), // Mantém o username original apenas para referência interna (se necessário)
                 usuario.getSenha(),
                 autoridades,
                 usuario.getEmpresa(),

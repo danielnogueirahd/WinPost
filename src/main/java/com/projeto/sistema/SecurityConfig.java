@@ -29,7 +29,7 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/administrativo/agenda", true)
+                .defaultSuccessUrl("/administrativo", true) // CORRIGIDO PARA A DASHBOARD CENTRAL
                 .permitAll()
             )
             .logout(logout -> logout

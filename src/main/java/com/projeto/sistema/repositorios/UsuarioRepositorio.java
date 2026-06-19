@@ -13,7 +13,10 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
 
     Usuario findByUsername(String username);
 
-    // Login por username ou email
+    // O método que precisávamos adicionar para o login via e-mail funcionar:
+    Usuario findByEmail(String email);
+
+    // Login por username ou email (Pode deixar aqui caso o sistema use em outro lugar)
     Usuario findByUsernameOrEmail(String username, String email);
 
     // Usuários da empresa (Tenant Admin vê apenas os seus)
