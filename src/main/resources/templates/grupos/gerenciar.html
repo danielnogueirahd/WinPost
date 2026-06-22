@@ -48,8 +48,8 @@ body {
 }
 
 .input-group-custom:focus-within {
-	border-color: #0d6efd;
-	box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+	border-color: #1A56DB;
+	box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
 }
 
 .input-group-custom .form-control {
@@ -78,9 +78,9 @@ body {
 
 /* Badges Modernas */
 .badge-soft-primary {
-	background-color: rgba(13, 110, 253, 0.1);
-	color: #0d6efd;
-	border: 1px solid rgba(13, 110, 253, 0.2);
+	background-color: rgba(26, 86, 219, 0.1);
+	color: #1A56DB;
+	border: 1px solid rgba(26, 86, 219, 0.2);
 	font-weight: 600;
 }
 
@@ -95,8 +95,8 @@ body {
 }
 
 .btn-action.edit:hover {
-	color: #0d6efd;
-	background-color: rgba(13, 110, 253, 0.1);
+	color: #1A56DB;
+	background-color: rgba(26, 86, 219, 0.1);
 }
 
 .btn-action.delete:hover {
@@ -123,59 +123,159 @@ body {
 	margin-bottom: 1rem;
 }
 
-/* Offcanvas Customizado */
-.offcanvas-modern {
-	width: 420px !important; /* Aproximadamente 30% em telas normais */
-	max-width: 100%;
-	border-left: 1px solid #eaedf1;
-	box-shadow: -8px 0 32px rgba(0, 0, 0, 0.04);
+/* =======================================================
+   ESTILOS PREMIUM DO OFFCANVAS PADRÃO (Modern SaaS)
+   ======================================================= */
+.offcanvas-header {
+	background: linear-gradient(135deg, #1A56DB, #0D1B3E);
+	color: white;
+	border-bottom: none;
+	padding: 1.5rem;
 }
 
-.offcanvas-modern .offcanvas-header {
-	background-color: #fbfcfe;
+.offcanvas-title {
+	font-weight: 700;
+	font-size: 1.2rem;
 }
 
-/* Lista de Membros e Avatares */
-.avatar-minimalist {
-	width: 42px;
-	height: 42px;
-	background-color: #f1f4f8;
-	color: #0d6efd;
+.btn-close-white {
+	filter: invert(1) grayscale(100%) brightness(200%);
+	opacity: 0.8;
+}
+
+.btn-close-white:hover {
+	opacity: 1;
+}
+
+.offcanvas-body {
+	padding: 0;
+	background-color: #f8f9fb;
+}
+
+/* O Cabeçalho Escuro */
+.perfil-header {
+	background: linear-gradient(135deg, #1A56DB, #0D1B3E);
+	padding: 0 1.5rem 2rem 1.5rem;
+	color: white;
+	text-align: center;
+	border-radius: 0 0 20px 20px;
+	margin-bottom: 1.5rem;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-circle {
+	width: 80px;
+	height: 80px;
+	background-color: rgba(255, 255, 255, 0.2);
 	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+	border: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+.perfil-nome {
+	font-size: 1.4rem;
+	font-weight: 700;
+	margin-bottom: 0.2rem;
+}
+
+.perfil-empresa {
+	font-size: 0.85rem;
+	opacity: 0.85;
+	background: rgba(255, 255, 255, 0.15);
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-weight: 500;
+}
+
+/* Caixas de Informação Claras */
+.info-section {
+	background: white;
+	border-radius: 12px;
+	padding: 1.25rem;
+	margin: 0 1.5rem 1.5rem 1.5rem;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+	border: 1px solid #eaecf0;
+}
+
+.info-section h6 {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #6b7280;
+	margin-bottom: 1rem;
+	letter-spacing: 0.5px;
+}
+
+.info-item {
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #f1f4f8;
+}
+
+.info-item:last-child {
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: none;
+}
+
+.info-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 8px;
+	background: #EFF6FF;
+	color: #1A56DB;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-weight: 700;
-	font-size: 1rem;
+	margin-right: 12px;
 	flex-shrink: 0;
-	border: 1px solid rgba(13, 110, 253, 0.1);
+	font-size: 1rem;
+	font-weight: 700;
 }
 
-.member-list-item {
-	transition: background-color 0.2s;
+.info-content p {
+	margin: 0;
+	font-size: 0.95rem;
+	color: #111827;
+	font-weight: 600;
 }
 
-.member-list-item:hover {
-	background-color: #f8f9fc;
+.info-content span {
+	font-size: 0.75rem;
+	color: #6B7280;
 }
 
+.info-content .meta-data {
+	font-size: 0.75rem;
+	color: #9CA3AF;
+	font-weight: 400;
+	margin-top: 2px;
+}
+
+/* Lógica da Tabela */
 .clickable-trigger {
 	cursor: pointer;
 	transition: all 0.2s;
 }
 
 .clickable-trigger:hover .text-dark {
-	color: #0d6efd !important;
+	color: #1A56DB !important;
 }
 
 .clickable-trigger:hover .badge-soft-primary {
-	background-color: rgba(13, 110, 253, 0.15);
-	border-color: rgba(13, 110, 253, 0.3);
+	background-color: rgba(26, 86, 219, 0.15);
+	border-color: rgba(26, 86, 219, 0.3);
 }
 
 .min-w-0 {
 	min-width: 0;
-	/* Necessário para o text-truncate funcionar dentro do flexbox */
 }
 </style>
 </head>
@@ -231,14 +331,14 @@ body {
 			<div class="card-body p-0">
 				<div class="table-responsive">
 					<table class="table table-hover align-middle mb-0"
-						id="tabelaGrupos">
+						style="width: 100%;" id="tabelaGrupos">
 						<thead class="table-custom-header bg-light">
 							<tr>
 								<th class="ps-4" style="width: 8%;">ID</th>
-								<th style="width: 25%;">Grupo</th>
+								<th style="width: 30%;">Grupo</th>
 								<th style="width: 30%;">Descrição</th>
 								<th style="width: 15%;" class="text-center">Membros</th>
-								<th style="width: 22%;" class="text-end pe-4">Ações</th>
+								<th style="width: 17%;" class="text-center pe-4">Ações</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -249,7 +349,8 @@ body {
 									<div class="d-flex align-items-center clickable-trigger"
 										onclick="abrirOffcanvasMembros(this)"
 										th:data-grupo-nome="${grupo.nome}"
-										th:data-grupo-id="${grupo.id}">
+										th:data-grupo-id="${grupo.id}"
+										th:data-grupo-qtd="${#lists.size(grupo.contatos)}">
 										<div
 											class="bg-light text-primary rounded me-3 d-flex align-items-center justify-content-center shadow-sm"
 											style="width: 36px; height: 36px;">
@@ -269,30 +370,51 @@ body {
 									class="badge badge-soft-primary px-3 py-2 rounded-pill clickable-trigger"
 									onclick="abrirOffcanvasMembros(this)"
 									th:data-grupo-nome="${grupo.nome}"
-									th:data-grupo-id="${grupo.id}"> <i
+									th:data-grupo-id="${grupo.id}"
+									th:data-grupo-qtd="${#lists.size(grupo.contatos)}"> <i
 										class="fa-solid fa-users me-1 small"></i> <span
 										th:text="${#lists.size(grupo.contatos)}">0</span> membros
 								</span>
 
-									<div th:id="'membros-grupo-' + ${grupo.id}"
-										class="d-none text-start">
-										<div th:each="contato : ${grupo.contatos}"
-											class="member-list-item border-0 border-bottom py-3 px-4 d-flex align-items-center gap-3">
-											<div class="avatar-minimalist">
-												<span
-													th:text="${#strings.substring(contato.nome, 0, 1).toUpperCase()}">A</span>
-											</div>
-											<div class="flex-grow-1 min-w-0">
-												<h6 class="mb-0 fw-bold text-dark text-truncate"
-													th:text="${contato.nome}">Nome do Contato</h6>
-												<p class="mb-0 text-muted small text-truncate"
-													th:text="${contato.email != null and !contato.email.isEmpty() ? contato.email : 'Sem e-mail cadastrado'}">email@exemplo.com</p>
-											</div>
-											<div class="text-end"
-												th:if="${contato.cidade != null and !contato.cidade.isEmpty()}">
-												<span
-													class="badge bg-light text-secondary border fw-medium rounded-pill"
-													th:text="${contato.cidade}">Cidade</span>
+									<div th:id="'membros-grupo-' + ${grupo.id}" class="d-none">
+
+										<div th:if="${not #lists.isEmpty(grupo.contatos)}"
+											class="info-section mb-4">
+											<h6>Lista de Contatos Vinculados</h6>
+
+											<div th:each="contato : ${grupo.contatos}" class="info-item">
+												<div class="info-icon">
+													<span
+														th:text="${#strings.substring(contato.nome, 0, 1).toUpperCase()}">A</span>
+												</div>
+												<div class="info-content min-w-0 w-100">
+													<div class="d-flex justify-content-between align-items-center mb-1">
+
+														<div class="d-flex align-items-center gap-2" style="min-width: 0;">
+															<p class="text-truncate mb-0 text-dark fw-bold" th:text="${contato.nome}">Nome do Contato</p>
+
+															<span
+																th:if="${contato.cargo != null and !contato.cargo.isEmpty()}"
+																class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill flex-shrink-0"
+																style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap;"
+																th:text="${contato.cargo}"> Comercial </span>
+														</div>
+
+														<span
+															th:if="${contato.cidade != null and !contato.cidade.isEmpty()}"
+															class="badge bg-light text-secondary border fw-medium rounded-pill ms-2 flex-shrink-0"
+															th:text="${contato.cidade}">Cidade</span>
+													</div>
+
+													<div class="meta-data d-flex align-items-center gap-2 mt-1">
+														<span><i class="fa-solid fa-envelope me-1"></i> <th:block
+																th:text="${contato.email != null and !contato.email.isEmpty() ? contato.email : 'Sem e-mail'}"></th:block></span>
+														<span th:if="${contato.telefone != null}">&bull;</span> <span
+															th:if="${contato.telefone != null}"><i
+															class="fa-solid fa-phone me-1"></i> <th:block
+																th:text="${contato.telefone}"></th:block></span>
+													</div>
+												</div>
 											</div>
 										</div>
 
@@ -306,11 +428,14 @@ body {
 											<h6 class="fw-bold text-dark mb-1">Nenhum membro</h6>
 											<p class="text-muted small mb-0">Este grupo ainda não
 												possui contatos vinculados.</p>
+											<a th:href="@{/grupos/editar/{id}(id=${grupo.id})}"
+												class="btn btn-sm btn-outline-primary mt-3 rounded-pill fw-bold px-4">
+												Vincular Contatos </a>
 										</div>
 									</div></td>
 
-								<td class="text-end pe-4">
-									<div class="d-flex justify-content-end gap-1">
+								<td class="text-center pe-4">
+									<div class="d-flex justify-content-center gap-1">
 										<a href="#" onclick="mostrarAvisoEmConstrucao(event)"
 											class="btn btn-action text-success" data-bs-toggle="tooltip"
 											title="Preparar Disparo"> <i
@@ -372,25 +497,30 @@ body {
 		</div>
 	</div>
 
-	<div class="offcanvas offcanvas-end offcanvas-modern" tabindex="-1"
-		id="offcanvasMembros" aria-labelledby="offcanvasMembrosLabel">
-		<div class="offcanvas-header border-bottom py-3 px-4">
-			<div>
-				<h5 class="offcanvas-title fw-bold text-dark mb-0 h5"
-					id="offcanvasMembrosLabel">Membros do Grupo</h5>
-				<p
-					class="text-muted small mb-0 mt-1 d-flex align-items-center gap-1">
-					<i class="fa-solid fa-layer-group text-primary opacity-75"></i> <span
-						id="offcanvasGrupoNome">Nome do Grupo</span>
-				</p>
-			</div>
-			<button type="button" class="btn-close text-reset shadow-none"
+	<div class="offcanvas offcanvas-end shadow" tabindex="-1"
+		id="offcanvasMembros" aria-labelledby="offcanvasMembrosLabel"
+		style="width: 420px; border-left: none;">
+
+		<div class="offcanvas-header pb-0">
+			<button type="button" class="btn-close btn-close-white ms-auto"
 				data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
-		<div class="offcanvas-body p-0 custom-scrollbar"
-			style="background-color: #fff;">
-			<div id="offcanvasMembrosConteudo" class="d-flex flex-column">
+
+		<div class="offcanvas-body">
+
+			<div class="perfil-header">
+				<div class="avatar-circle">
+					<i class="fa-solid fa-layer-group"></i>
+				</div>
+				<h3 class="perfil-nome" id="offcanvasGrupoNome">Nome do Grupo</h3>
+				<div class="perfil-empresa">
+					<i class="fa-solid fa-users me-1"></i> <span id="offcanvasGrupoQtd">0</span>
+					membros vinculados
+				</div>
 			</div>
+
+			<div id="offcanvasMembrosConteudo"></div>
+
 		</div>
 	</div>
 
@@ -408,7 +538,8 @@ body {
 				columnDefs : [ { orderable : false, targets : -1 } ],
 				paging : true,
 				dom : 'rtip',
-				pageLength : 10
+				pageLength : 10,
+				autoWidth: false
 			});
 
 			$('#buscaRapida').on('keyup', function() {
@@ -432,12 +563,13 @@ body {
 			modal.show();
 		}
 
-		// Função para abrir o Offcanvas dinâmico (SEPARADA do script do Thymeleaf)
 		function abrirOffcanvasMembros(elemento) {
 		    const grupoId = elemento.getAttribute('data-grupo-id');
 		    const grupoNome = elemento.getAttribute('data-grupo-nome');
+		    const grupoQtd = elemento.getAttribute('data-grupo-qtd');
 
 		    document.getElementById('offcanvasGrupoNome').textContent = grupoNome;
+		    document.getElementById('offcanvasGrupoQtd').textContent = grupoQtd;
 
 		    const conteudoEscondido = document.getElementById('membros-grupo-' + grupoId);
 		    const containerMembros = document.getElementById('offcanvasMembrosConteudo');
@@ -452,6 +584,7 @@ body {
 		    const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
 		    offcanvasInstance.show();
 		}
+
 		function mostrarAvisoEmConstrucao(event) {
 		    if (event) event.preventDefault();
 
@@ -475,11 +608,7 @@ body {
 		            }
 		        });
 		    } else {
-		        alert(
-		            "🚀 Novidade em Breve!\n\n" +
-		            "O módulo de Mensagens e Disparos está em fase final de desenvolvimento, recebendo os últimos ajustes de segurança, desempenho e interface.\n\n" +
-		            "A funcionalidade estará disponível na próxima atualização do sistema."
-		        );
+		        alert("Novidade a caminho na próxima atualização!");
 		    }
 		}
 	</script>

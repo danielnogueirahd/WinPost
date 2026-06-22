@@ -98,6 +98,9 @@ public class Contatos implements Serializable {
 	// MUDANÇA AQUI: Alterado de 'boolean' para 'Boolean' para aceitar NULL do banco
 	@Column(name = "exibir_na_agenda")
 	private Boolean exibirNaAgenda = false;
+	
+	@Column(length = 50)
+	private String cargo;
 
 	// --- RELACIONAMENTOS ---
 
@@ -239,7 +242,13 @@ public class Contatos implements Serializable {
 	public void setEmpresa(Empresa empresa) {
 		this.empresa = empresa;
 	}
+	public String getCargo() {
+	    return cargo;
+	}
 
+	public void setCargo(String cargo) {
+	    this.cargo = cargo;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
