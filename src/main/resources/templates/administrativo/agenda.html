@@ -405,12 +405,12 @@ body { font-family: 'Inter', sans-serif; }
 								<div class="btn-group shadow-sm bg-white rounded-3">
 									<a th:href="@{/administrativo/agenda(mes=${mesExibicao == 1 ? 12 : mesExibicao - 1}, ano=${mesExibicao == 1 ? anoExibicao - 1 : anoExibicao})}"
 										class="btn btn-outline-light btn-sm text-dark border-0 py-1 px-3">
-										<i class="fa-solid fa-chevron-left"></i>
+										<i class="fa-solid fa-angle-left"></i>
 									</a>
 									<a href="/administrativo/agenda" class="btn btn-outline-light btn-sm text-dark border-0 fw-bold px-3 border-start border-end">Hoje</a>
 									<a th:href="@{/administrativo/agenda(mes=${mesExibicao == 12 ? 1 : mesExibicao + 1}, ano=${mesExibicao == 12 ? anoExibicao + 1 : anoExibicao})}"
 										class="btn btn-outline-light btn-sm text-dark border-0 py-1 px-3">
-										<i class="fa-solid fa-chevron-right"></i>
+										<i class="fa-solid fa-angle-right"></i>
 									</a>
 								</div>
 								<h4 class="fw-bold text-dark mb-0 text-capitalize ms-1 fs-5">
@@ -463,7 +463,7 @@ body { font-family: 'Inter', sans-serif; }
 
 					<div class="sidebar-card">
 						<div class="sidebar-card-header d-flex justify-content-between align-items-center">
-							<span><i class="fa-regular fa-calendar-day text-primary me-2"></i> Hoje</span>
+							<span><i class="fa-solid fa-angle-right"></i> Hoje</span>
 						</div>
 						<div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
 

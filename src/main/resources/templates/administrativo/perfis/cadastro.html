@@ -225,56 +225,106 @@ body {
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
 	<script>
         document.addEventListener('DOMContentLoaded', function() {
             const btnSelectAll = document.getElementById('btnSelectAll');
             const checkboxes = document.querySelectorAll('.toggle-permissao');
-            let todasSelecionadas = false;
+            const botoesModulo = document.querySelectorAll('.btn-marcar-modulo');
 
-            btnSelectAll.addEventListener('click', function() {
-                todasSelecionadas = !todasSelecionadas;
-                checkboxes.forEach(chk => chk.checked = todasSelecionadas);
+            // =========================================================
+            // FUNÇÃO 1: Atualiza a interface do botão "Marcar Todas"
+            // =========================================================
+            function atualizarBotaoGeral() {
+                // Conta quantos existem no total e quantos estão checados
+                const total = checkboxes.length;
+                const checked = document.querySelectorAll('.toggle-permissao:checked').length;
                 
-                if(todasSelecionadas) {
-                    this.innerHTML = '<i class="fa-solid fa-eraser me-1"></i>Desmarcar Todas';
-                    this.classList.replace('btn-outline-primary', 'btn-outline-danger');
-					this.classList.replace('bg-white', 'bg-light');
+                // Se todos estiverem checados
+                if (total > 0 && total === checked) {
+                    btnSelectAll.innerHTML = '<i class="fa-solid fa-eraser me-1"></i>Desmarcar Todas';
+                    btnSelectAll.classList.remove('btn-outline-primary', 'bg-white');
+                    btnSelectAll.classList.add('btn-outline-danger', 'bg-light');
                 } else {
-                    this.innerHTML = '<i class="fa-solid fa-check-double me-1"></i>Marcar Todas';
-                    this.classList.replace('btn-outline-danger', 'btn-outline-primary');
-					this.classList.replace('bg-light', 'bg-white');
+                    btnSelectAll.innerHTML = '<i class="fa-solid fa-check-double me-1"></i>Marcar Todas';
+                    btnSelectAll.classList.remove('btn-outline-danger', 'bg-light');
+                    btnSelectAll.classList.add('btn-outline-primary', 'bg-white');
                 }
-            });
-        });
-        
-     // LÓGICA PARA OS BOTÕES DE CADA MÓDULO
-        const botoesModulo = document.querySelectorAll('.btn-marcar-modulo');
+            }
 
-        botoesModulo.forEach(botao => {
-            botao.addEventListener('click', function() {
-                // Encontra a "caixa" cinza inteira deste módulo específico
-                const moduloContainer = this.closest('.bg-light'); 
-                
-                // Pega apenas os checkboxes que estão DENTRO deste módulo
+            // =========================================================
+            // FUNÇÃO 2: Atualiza a interface de um botão de "Módulo"
+            // =========================================================
+            function atualizarBotaoModulo(moduloContainer, botaoModulo) {
                 const checkboxesModulo = moduloContainer.querySelectorAll('.toggle-permissao');
-                
-                // Verifica se TODOS os checkboxes deste módulo já estão marcados
-                const todosMarcados = Array.from(checkboxesModulo).every(chk => chk.checked);
+                const totalModulo = checkboxesModulo.length;
+                const checkedModulo = moduloContainer.querySelectorAll('.toggle-permissao:checked').length;
 
-                // Se todos estão marcados, ele desmarca. Se falta algum, ele marca todos.
-                checkboxesModulo.forEach(chk => chk.checked = !todosMarcados);
-
-                // Altera o visual do botãozinho do módulo
-                if (!todosMarcados) {
-                    this.innerHTML = '<i class="fa-solid fa-eraser me-1"></i>Desmarcar Módulo';
-                    this.classList.replace('btn-light', 'btn-outline-danger');
-                    this.classList.remove('border');
+                // Se todos deste módulo estiverem checados
+                if (totalModulo > 0 && totalModulo === checkedModulo) {
+                    botaoModulo.innerHTML = '<i class="fa-solid fa-eraser me-1"></i>Desmarcar Módulo';
+                    botaoModulo.classList.remove('btn-light', 'border');
+                    botaoModulo.classList.add('btn-outline-danger');
                 } else {
-                    this.innerHTML = '<i class="fa-solid fa-check me-1"></i>Selecionar Módulo';
-                    this.classList.replace('btn-outline-danger', 'btn-light');
-                    this.classList.add('border');
+                    botaoModulo.innerHTML = '<i class="fa-solid fa-check me-1"></i>Selecionar Módulo';
+                    botaoModulo.classList.remove('btn-outline-danger');
+                    botaoModulo.classList.add('btn-light', 'border');
                 }
+            }
+
+            // =========================================================
+            // EVENTO A: Clique no Botão "Marcar Todas"
+            // =========================================================
+            btnSelectAll.addEventListener('click', function() {
+                // Descobre se a intenção atual é marcar ou desmarcar (baseado no texto atual do botão)
+                const intencaoDeMarcar = this.innerHTML.includes('Marcar Todas');
+                
+                checkboxes.forEach(chk => chk.checked = intencaoDeMarcar);
+                
+                // Atualiza o visual dele mesmo e de TODOS os botões de módulo
+                atualizarBotaoGeral();
+                botoesModulo.forEach(btn => atualizarBotaoModulo(btn.closest('.bg-light'), btn));
             });
+
+            // =========================================================
+            // EVENTO B: Clique no Botão de "Módulo"
+            // =========================================================
+            botoesModulo.forEach(botao => {
+                botao.addEventListener('click', function() {
+                    const moduloContainer = this.closest('.bg-light'); 
+                    const checkboxesModulo = moduloContainer.querySelectorAll('.toggle-permissao');
+                    
+                    // Descobre se a intenção atual é marcar ou desmarcar
+                    const intencaoDeMarcar = this.innerHTML.includes('Selecionar');
+
+                    checkboxesModulo.forEach(chk => chk.checked = intencaoDeMarcar);
+
+                    // Atualiza o visual dele mesmo e do botão geral (caso este módulo fosse o último que faltava)
+                    atualizarBotaoModulo(moduloContainer, this);
+                    atualizarBotaoGeral();
+                });
+            });
+
+            // =========================================================
+            // EVENTO C: Clique MANUAL em um Checkbox (O Corretor do Bug)
+            // =========================================================
+            checkboxes.forEach(chk => {
+                chk.addEventListener('change', function() {
+                    // Descobre qual módulo esse checkbox pertence e pega o botão dele
+                    const moduloContainer = this.closest('.bg-light');
+                    const botaoModulo = moduloContainer.querySelector('.btn-marcar-modulo');
+
+                    // Manda recalcular o estado daquele módulo e o estado do botão global
+                    atualizarBotaoModulo(moduloContainer, botaoModulo);
+                    atualizarBotaoGeral();
+                });
+            });
+
+            // Chama as atualizações logo ao carregar a página (para quando você for EDITAR um perfil já existente)
+            atualizarBotaoGeral();
+            botoesModulo.forEach(btn => atualizarBotaoModulo(btn.closest('.bg-light'), btn));
         });
     </script>
 </body>
